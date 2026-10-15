@@ -285,6 +285,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .gside .easeparams{order:-1}
 .easeparams .epchips{display:flex;flex-wrap:wrap;gap:4px;margin:2px 0 6px 78px}.easeparams .epchips button{font:inherit;font-size:11px;padding:2px 7px;border-radius:3px;border:1px solid var(--line2);background:var(--bg2);color:var(--fg2);cursor:pointer}.easeparams .epchips button.on{background:var(--accbg);border-color:var(--accline);color:var(--fg)}
 .easeparams .epseg{grid-column:2/4;display:flex}.easeparams .epseg button{flex:1;font-size:11px;padding:3px 4px;white-space:nowrap}
+.prow .audv{flex:none;min-width:58px;text-align:right;font-size:11.5px;color:var(--val);font-variant-numeric:tabular-nums}
 .easeparams .ephint{margin:4px 0 0;font-size:12px;color:var(--fg2);line-height:1.5}
 .app[data-mode=mobile] .gside .easeparams:empty{display:none}
 .kfnav{width:14px;height:20px;display:grid;place-items:center;color:var(--kf);flex:none;border-radius:var(--r)}
@@ -579,7 +580,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v29</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v31</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -634,6 +635,8 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v31</b><span>소리 편집이 생겼습니다. 볼륨 증폭(최대 400%), 자동 음량 맞춤, 페이드 인·아웃, 물속·전화기·라디오·홀·메아리 효과, 저음·중음·고음, 좌우 위치를 고를 수 있고, 영상에서 소리만 분리하거나 WAV 파일로 저장할 수 있습니다. 타임라인에 소리 파형이 보입니다.</span></li>
+        <li><b>v30</b><span>빈 곳을 누르면 레이어 선택이 풀립니다. 캔버스 바깥 회색 영역과 타임라인의 빈 곳도 해당됩니다.</span></li>
         <li><b>v29</b><span>로고를 새로 만들었습니다. 가로획 끝에서 공이 굴러 떨어지며 사이 동작(트윈)을 그리는 t 모양입니다.</span></li>
         <li><b>v28</b><span>선 긋기 도구(B)가 생겼습니다. 마우스나 손가락으로 그은 선이 그대로 선 레이어가 되고, 그은 순서와 속도 그대로 그려지는 효과를 넣을 수 있습니다. 선에 지워지는 애니메이션도 넣을 수 있습니다.</span></li>
         <li><b>v27</b><span>"레이어를 먼저 선택하세요"처럼 할 수 없다는 안내가 더 크고 눈에 띄는 경고로 나옵니다.</span></li>
@@ -1945,7 +1948,8 @@ view.addEventListener('pointerdown', e => {
       drag = { mode: 'scale', L, inv, v0, h: hh, sx0: pv(L.p.sx, t), sy0: pv(L.p.sy, t), ax, ay }; return;
     }
   }
-  const hit = hitLayer(cx, cy);
+  const inComp = cx >= 0 && cy >= 0 && cx <= S.proj.w && cy <= S.proj.h;
+  let hit = hitLayer(cx, cy); if (hit && !inComp && hit.id !== S.sel) hit = null; // outside the frame: only the selected layer can be grabbed
   if (hit) {
     const now = performance.now();
     if (hit.id === S.sel && now - lastTap < 320 && hit.type === 'group') { const inner = hitLayer(cx, cy, true); if (inner) { groupChain(inner).forEach(G => G.open = true); select(inner.id); dirtyTL = true; lastTap = 0; drag = { mode: 'move', L: inner, start: [cx, cy], x0: pv(inner.p.x, t), y0: pv(inner.p.y, t), pinv: parentInv(inner, t), moved: false }; return; } }
@@ -2234,6 +2238,7 @@ function drawTLBase() {
       x.globalAlpha = L.visible ? 1 : .45;
       x.beginPath(); x.roundRect(bx0, by, Math.max(2, bx1 - bx0), bh, 2); x.fillStyle = rgba(col, L.type === 'group' ? (sel ? .26 : .12) : (sel ? .42 : .24)); x.fill(); x.strokeStyle = rgba(col, sel ? 1 : .6); x.lineWidth = sel ? 1.5 : 1; x.stroke();
       if (L.type === 'group') { x.fillStyle = rgba(col, .55); x.fillRect(bx0, by, Math.max(2, bx1 - bx0), 2); }
+      if (L.type === 'audio' || L.type === 'video') { const M = MEDIA.get(L.media); if (M && M.abuf) { const pk = audPeaks(M), xa = Math.max(bx0 + 1, d.LW), xb = Math.min(bx1 - 1, x.canvas.width / DPR), mid = by + bh / 2, amp = (bh / 2 - 2) * Math.min(1.6, (L.p.vol.k.length ? 1 : clamp(L.p.vol.v / 100, 0, 1.6))); x.fillStyle = rgba(col, sel ? .75 : .5); for (let px = xa; px < xb; px += 2) { const mt = mediaTime(L, xT(px, d)), i = Math.floor(mt * 100); if (i < 0 || i >= pk.length) continue; const v = Math.min(1, pk[i] / audPeak(M) * .9 * amp / (bh / 2 - 2)) * (bh / 2 - 2); x.fillRect(px, mid - v, 1.2, v * 2 || 1); } } }
       if (sel) { x.fillStyle = rgba(col, 1); x.fillRect(bx0 + 2, by + bh / 2 - 6, 2, 12); x.fillRect(bx1 - 4, by + bh / 2 - 6, 2, 12); }
       x.save(); x.beginPath(); x.rect(Math.max(bx0, d.LW) + 8, by, Math.max(0, bx1 - Math.max(bx0, d.LW) - 14), bh); x.clip();
       x.fillStyle = '#ececec'; x.font = `500 ${mob ? 12 : 11}px "IBM Plex Sans KR", sans-serif`; x.textBaseline = 'middle';
@@ -2331,7 +2336,7 @@ tlc.addEventListener('pointerdown', e => {
   if (y < d.RUL) { if (mob) { tld = { mode: 'scroll', x, y, t0: S.time, sy0: TL.sy }; } else { tld = { mode: 'scrub' }; setTime(snapT(xT(x, d))); } return; }
   const r = rowAt(y);
   if (x < d.LW) {
-    if (!r) { tld = { mode: 'scroll', x, y, t0: S.time, sy0: TL.sy, vOnly: true }; return; }
+    if (!r) { tld = { mode: 'scroll', x, y, t0: S.time, sy0: TL.sy, vOnly: true, empty: true }; return; }
     const L = r.L; const ex = d.LW - (mob ? 18 : 40);
     if (r.t === 'L' && Math.abs(x - ex) < (mob ? 16 : 9)) { L.visible = !L.visible; commit(); invalidate(); return; }
     if (r.t === 'L' && !mob && Math.abs(x - (d.LW - 16)) < 8) { L.locked = !L.locked; commit(); invalidate(); refreshInspector(); return; }
@@ -2376,7 +2381,7 @@ tlc.addEventListener('pointerdown', e => {
       if (mob && x >= bx0 && x <= bx1) { tld = { mode: 'scroll', x, y, t0: S.time, sy0: TL.sy, tapSel: L.id }; return; }
     }
   }
-  if (mob) { tld = { mode: 'scroll', x, y, t0: S.time, sy0: TL.sy }; return; }
+  if (mob) { tld = { mode: 'scroll', x, y, t0: S.time, sy0: TL.sy, empty: true }; return; }
   if (!e.shiftKey) S.selK = []; TL.marq = { x0: x, y0: y, x1: x, y1: y }; tld = { mode: 'marq', base: [...S.selK] }; dirtyTL = dirtyGraph = true; refreshKfBar();
 });
 tlc.addEventListener('pointermove', e => {
@@ -2474,6 +2479,7 @@ function tlEnd(e) {
   if (tpinch) { if (tptrs.size < 2) tpinch = null; return; }
   if (!tld) return; const d = tlDims();
   if (tld.mode === 'scroll' && !tld.moved && tld.tapSel) select(tld.tapSel);
+  else if (tld.mode === 'scroll' && !tld.moved && tld.empty && (S.sel || S.selK.length)) { S.selK = []; select(null); }
   if (tld.mode === 'label' && tld.reorder && !tld.dragged) layerMenu(tld.r.L, tld.cx, tld.cy);
   else if (tld.mode === 'label' && tld.drop != null && tld.r.t === 'L' && (S.mode === 'pc' || tld.reorder)) {
     const di = dropIndex(tld.drop), rows = di.rows, idx = di.idx; const L = tld.r.L;
@@ -2482,7 +2488,7 @@ function tlEnd(e) {
   }
   if (tld.mode === 'kf' && tld.moved) { dedupeKeys(); commit(); }
   if (['barmove', 'trimS', 'trimE'].includes(tld.mode) && (tld.moved || tld.mode !== 'barmove')) { commit(); if (tld.snap && S.proj.dur > tld.snap.dur + 1e-6) toast(`레이어에 맞춰 프로젝트 길이를 ${+S.proj.dur.toFixed(2)}초로 늘렸어요`); }
-  if (tld.mode === 'marq') { TL.marq = null; refreshKfBar(); }
+  if (tld.mode === 'marq') { const mq = TL.marq; if (mq && Math.hypot(mq.x1 - mq.x0, mq.y1 - mq.y0) < 4 && !e.shiftKey && S.sel) select(null); TL.marq = null; refreshKfBar(); }
   tld = null; dirtyTL = true;
 }
 tlc.addEventListener('pointerup', tlEnd); tlc.addEventListener('pointercancel', tlEnd);
@@ -3113,7 +3119,7 @@ function stylePanel(L) {
       h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('image') + '미디어 교체', onclick: () => { S.replaceTarget = L.id; (L.type === 'audio' ? $('#audioIn') : $('#replIn')).click(); } }),
         L.type !== 'audio' ? h('button', { class: 'btn sm', html: icon('fit') + '화면 맞춤', onclick: () => fitLayer(L, false) }) : null,
         L.type !== 'audio' ? h('button', { class: 'btn sm', html: icon('fit') + '꽉 채우기', onclick: () => fitLayer(L, true) }) : null)));
-    if (L.type !== 'image') out.push(sec('소리·속도', numRow(L, 'vol'), selRow('재생 속도', String(L.speed || 1), [['0.25', '0.25×'], ['0.5', '0.5×'], ['1', '1×'], ['1.5', '1.5×'], ['2', '2×'], ['4', '4×']], v => { L.speed = parseFloat(v); commit(); invalidate(); })));
+    if (L.type !== 'image') { out.push(sec('재생 속도', selRow('재생 속도', String(L.speed || 1), [['0.25', '0.25×'], ['0.5', '0.5×'], ['1', '1×'], ['1.5', '1.5×'], ['2', '2×'], ['4', '4×']], v => { L.speed = parseFloat(v); commit(); invalidate(); }))); out.push(soundSection(L, () => refreshInspector())); }
     if (L.type !== 'audio') out.push(sec('빠른 보정', h('p', { class: 'hint' }, '사진·영상 색감은 이펙트 탭의 색 보정, 크로마키, 듀오톤 등으로 바꿀 수 있어요.'), h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('fx') + '색 보정 추가', onclick: () => addFx(L, 'color') }), h('button', { class: 'btn sm', html: icon('drop') + '크로마키 (배경색 지우기)', onclick: () => chromaQuick(L) }))));
   }
   if (L.type === 'adjust') out.push(sec('조정 레이어', h('p', { class: 'hint' }, '조정 레이어는 아래에 있는 모든 레이어에 이펙트를 한꺼번에 적용합니다. 이펙트 탭에서 효과를 추가하고, 마스크로 적용 범위를 정할 수 있어요.'), h('button', { class: 'btn sm', html: icon('fx') + '이펙트 추가', onclick: () => fxBrowser() })));
@@ -3435,14 +3441,14 @@ function syncMediaPlaying(force) {
     const el = L.type === 'video' ? videoFor(L, M) : audioFor(L, M);
     const active = layerActive(L, t) && L.visible && mediaTime(L, t) < (M.dur || 1e9);
     if (active) {
-      const mt = mediaTime(L, t); el.playbackRate = L.speed || 1; const vol = clamp(pv(L.p.vol, t) / 100, 0, 1); el.volume = vol; el.muted = vol <= 0;
+      const mt = mediaTime(L, t); el.playbackRate = L.speed || 1; const vol = clamp(audGain(L, M, t), 0, 1); if (L.type === 'video' && M.abuf) el.muted = true; else { el.volume = vol; el.muted = vol <= 0; }
       if (el.paused || force) { try { el.currentTime = mt; } catch (e) { } el.play().catch(() => { el.muted = true; el.play().catch(() => { }); }); }
       else if (Math.abs(el.currentTime - mt) > .25) { try { el.currentTime = mt; } catch (e) { } }
     } else if (!el.paused) el.pause();
   });
   syncAudioBuffers(t, force);
 }
-function restartMedia() { VEL.forEach(v => v.pause()); AEL.forEach(a => a.pause()); stopAllAudio(); syncMediaPlaying(true); }
+function restartMedia() { S.proj.layers.forEach(L => { if (L.type === 'video') ensureAbuf(MEDIA.get(L.media)); }); VEL.forEach(v => v.pause()); AEL.forEach(a => a.pause()); stopAllAudio(); syncMediaPlaying(true); }
 
 /* ---------- audio engine: decoded buffers played with Web Audio (no <audio> element or media URL needed) ---------- */
 const AUD = { ctx: null, nodes: new Map() };
@@ -3459,31 +3465,168 @@ async function decodeAudioBlob(blob) {
 }
 function stopAudioNode(id) {
   const n = AUD.nodes.get(id); if (!n) return; AUD.nodes.delete(id);
-  try { n.src.onended = null; n.src.stop(); } catch (e) { } try { n.src.disconnect(); n.g.disconnect(); } catch (e) { }
+  try { n.src.onended = null; n.src.stop(); } catch (e) { } try { n.src.disconnect(); n.g.disconnect(); } catch (e) { } (n.osc || []).forEach(o => { try { o.stop(); o.disconnect(); } catch (e) { } });
 }
 function stopAllAudio() { [...AUD.nodes.keys()].forEach(stopAudioNode); }
 function syncAudioBuffers(t, force) {
-  AUD.nodes.forEach((n, id) => { const L = findL(id); if (!L || L.type !== 'audio') stopAudioNode(id); });
+  AUD.nodes.forEach((n, id) => { const L = findL(id); if (!L || (L.type !== 'audio' && L.type !== 'video')) stopAudioNode(id); });
   const ac = AUD.ctx; if (!ac || !S.playing) return;
   const solo = S.proj.layers.some(l => l.solo);
   S.proj.layers.forEach(L => {
-    if (L.type !== 'audio') return; const M = MEDIA.get(L.media); if (!M || !M.abuf) return;
+    if (L.type !== 'audio' && L.type !== 'video') return; const M = MEDIA.get(L.media); if (!M || !M.abuf) return;
     const rate = L.speed || 1, mt = mediaTime(L, t);
     const active = layerActive(L, t) && L.visible && (!solo || L.solo) && mt >= 0 && mt < M.abuf.duration - 0.01;
     let n = AUD.nodes.get(L.id);
     if (!active) { if (n) stopAudioNode(L.id); return; }
-    const vol = clamp(pv(L.p.vol, t) / 100, 0, 4);
+    const vol = clamp(audGain(L, M, t), 0, 32);
     if (n && (force || n.rate !== rate || n.buf !== M.abuf)) { stopAudioNode(L.id); n = null; }
     if (n) { const expect = n.mt0 + (ac.currentTime - n.t0) * rate; if (Math.abs(expect - mt) > 0.3) { stopAudioNode(L.id); n = null; } }
     if (!n) {
       const src = ac.createBufferSource(); src.buffer = M.abuf; src.playbackRate.value = rate;
-      const g = ac.createGain(); g.gain.value = vol; src.connect(g).connect(ac.destination);
+      const ch = audChain(ac, L, src, ac.destination), g = ch.g; g.gain.value = vol;
       const remain = Math.max(0.01, (Math.min(L.end, S.proj.dur) - t) * rate);
       try { src.start(0, mt, remain); } catch (e) { return; }
-      n = { src, g, rate, buf: M.abuf, t0: ac.currentTime, mt0: mt }; AUD.nodes.set(L.id, n);
+      n = { src, g, osc: ch.osc, rate, buf: M.abuf, t0: ac.currentTime, mt0: mt }; AUD.nodes.set(L.id, n);
       src.onended = () => { if (AUD.nodes.get(L.id) === n) AUD.nodes.delete(L.id); };
     } else n.g.gain.setTargetAtTime(vol, ac.currentTime, 0.02);
   });
+}
+
+/* ---------- sound editing: per-layer effect chain shared by playback and export ---------- */
+const AUD_DEF = { norm: false, fadeIn: 0, fadeOut: 0, pan: 0, low: 0, mid: 0, high: 0, water: 0, phone: 0, echo: 0, echoT: .3, reverb: 0 };
+const audOf = L => Object.assign({}, AUD_DEF, L.aud || {});
+const AUD_PRESETS = [
+  { v: 'none', l: '원래 소리', a: {} },
+  { v: 'water', l: '물속', a: { water: 75, reverb: 15 } },
+  { v: 'phone', l: '전화기', a: { phone: 80, low: -6 } },
+  { v: 'radio', l: '옛날 라디오', a: { phone: 45, mid: 6, reverb: 8 } },
+  { v: 'hall', l: '큰 홀', a: { reverb: 55 } },
+  { v: 'echo', l: '메아리', a: { echo: 55, echoT: .38 } },
+  { v: 'bass', l: '저음 강화', a: { low: 9 } },
+  { v: 'clear', l: '목소리 또렷하게', a: { low: -4, mid: 3, high: 5 } },
+];
+const AUD_FXKEYS = ['pan', 'low', 'mid', 'high', 'water', 'phone', 'echo', 'echoT', 'reverb'];
+function audPeak(M) {
+  if (M.peak != null) return M.peak; let p = 0; const b = M.abuf;
+  for (let c = 0; c < b.numberOfChannels; c++) { const d = b.getChannelData(c); for (let i = 0; i < d.length; i += 2) { const v = d[i] < 0 ? -d[i] : d[i]; if (v > p) p = v; } }
+  return (M.peak = p || 1);
+}
+function audGain(L, M, t) {
+  const a = audOf(L); let g = clamp(pv(L.p.vol, t) / 100, 0, 4);
+  if (a.norm && M && M.abuf) g *= Math.min(8, .95 / audPeak(M));
+  if (a.fadeIn > 0) g *= clamp((t - L.start) / a.fadeIn, 0, 1);
+  if (a.fadeOut > 0) g *= clamp((L.end - t) / a.fadeOut, 0, 1);
+  return g;
+}
+const IRC = new WeakMap();
+function reverbIR(ac) {
+  let b = IRC.get(ac); if (b) return b; const sr = ac.sampleRate, n = Math.floor(sr * 2.4); b = ac.createBuffer(2, n, sr);
+  for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); let s = 1 + c * 7; for (let i = 0; i < n; i++) { s = (s * 16807) % 2147483647; d[i] = ((s / 2147483647) * 2 - 1) * Math.pow(1 - i / n, 3.4); } }
+  IRC.set(ac, b); return b;
+}
+/* src → EQ → 물속 → 전화기 → gain → pan → (dry + 메아리 + 울림) → dest. Returns the gain node and any oscillators to stop later. */
+function audChain(ac, L, src, dest) {
+  const a = audOf(L), osc = []; let node = src; const link = n => { node.connect(n); node = n; return n; };
+  const bq = (type, f, q, gain) => { const b = ac.createBiquadFilter(); b.type = type; b.frequency.value = f; if (q != null) b.Q.value = q; if (gain != null) b.gain.value = gain; return link(b); };
+  if (a.low) bq('lowshelf', 180, null, a.low);
+  if (a.mid) bq('peaking', 1100, .9, a.mid);
+  if (a.high) bq('highshelf', 4500, null, a.high);
+  if (a.water > 0) {
+    const k = a.water / 100, f = bq('lowpass', 1900 - 1550 * k, 1.5 + 7 * k);
+    const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = 2.6 + 1.6 * k; lg.gain.value = f.frequency.value * .45 * k; lfo.connect(lg).connect(f.frequency); lfo.start(0); osc.push(lfo);
+  }
+  if (a.phone > 0) {
+    const k = a.phone / 100; bq('highpass', 250 + 450 * k, .7); bq('lowpass', 5200 - 2000 * k, .7);
+    const ws = ac.createWaveShaper(), n = 1024, c = new Float32Array(n), amt = 1 + 18 * k; for (let i = 0; i < n; i++) { const x = i / (n - 1) * 2 - 1; c[i] = (1 + amt) * x / (1 + amt * Math.abs(x)) / (1 + amt * .35); } ws.curve = c; link(ws);
+  }
+  const g = link(ac.createGain());
+  if (a.pan && ac.createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = clamp(a.pan / 100, -1, 1); link(p); }
+  node.connect(dest);
+  if (a.echo > 0) { const dl = ac.createDelay(2), fb = ac.createGain(), wet = ac.createGain(); dl.delayTime.value = clamp(a.echoT, .03, 1.5); fb.gain.value = .2 + .45 * a.echo / 100; wet.gain.value = .7 * a.echo / 100; node.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(dest); }
+  if (a.reverb > 0) { const cv = ac.createConvolver(), wet = ac.createGain(); cv.buffer = reverbIR(ac); wet.gain.value = 1.2 * a.reverb / 100; node.connect(cv); cv.connect(wet); wet.connect(dest); }
+  return { g, osc };
+}
+/* decoded sound for a video file, so its sound can be amplified and run through effects */
+function ensureAbuf(M) {
+  if (!M || M.abuf !== undefined || !M.blob || M._dec) return M && M._dec;
+  M._dec = decodeAudioBlob(M.blob).then(b => { M.abuf = b; M.pk = null; dirtyTL = true; if (S.playing) restartMedia(); return b; }).catch(() => { M.abuf = null; return null; });
+  return M._dec;
+}
+async function abufNow(M) { if (!M) return null; if (M.abuf === undefined) await ensureAbuf(M); return M.abuf || null; }
+/* schedule one layer into an offline context; context time = project time - offset */
+function scheduleLayerAudio(oac, L, M, offset, from, to) {
+  const st = Math.max(from, L.start), en = Math.min(to, L.end); if (en <= st) return false;
+  const rate = L.speed || 1, src = oac.createBufferSource(); src.buffer = M.abuf; src.playbackRate.value = rate;
+  const ch = audChain(oac, L, src, oac.destination), g = ch.g.gain;
+  g.setValueAtTime(audGain(L, M, st), st - offset); for (let t = st + 1 / 60; t <= en; t += 1 / 60) g.linearRampToValueAtTime(audGain(L, M, t), t - offset);
+  const mt = mediaTime(L, st); if (mt >= M.abuf.duration) return false;
+  src.start(st - offset, Math.max(0, mt), (en - st) * rate); return true;
+}
+async function renderLayerAudio(L) {
+  const M = MEDIA.get(L.media), b = await abufNow(M); if (!b) throw new Error('no sound');
+  const sr = 48000, len = Math.max(1, Math.ceil((L.end - L.start) * sr)), oac = new OfflineAudioContext(2, len, sr);
+  if (!scheduleLayerAudio(oac, L, M, L.start, L.start, L.end)) throw new Error('empty');
+  return await oac.startRendering();
+}
+function wavBlob(buf) {
+  const ch = Math.min(2, buf.numberOfChannels), sr = buf.sampleRate, n = buf.length, bytes = n * ch * 2, ab = new ArrayBuffer(44 + bytes), v = new DataView(ab);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + bytes, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, ch, true); v.setUint32(24, sr, true); v.setUint32(28, sr * ch * 2, true); v.setUint16(32, ch * 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, bytes, true);
+  const d = [...Array(ch)].map((_, c) => buf.getChannelData(c)); let o = 44;
+  for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++) { const s = clamp(d[c][i], -1, 1); v.setInt16(o, s < 0 ? s * 0x8000 : s * 0x7fff, true); o += 2; }
+  return new Blob([ab], { type: 'audio/wav' });
+}
+async function saveLayerAudio(L) {
+  toast('소리 파일을 만드는 중…');
+  try { const b = await renderLayerAudio(L); resultSheet(wavBlob(b), 'wav', (L.name || '소리').replace(/[\\/:*?"<>|]/g, '_')); }
+  catch (e) { console.warn(e); toast('이 레이어에서 소리를 꺼내지 못했어요. 영상에 소리가 없을 수 있어요'); }
+}
+async function extractAudio(L) {
+  const M = MEDIA.get(L.media); if (!M) return;
+  toast('영상에서 소리를 꺼내는 중…'); const b = await abufNow(M);
+  if (!b) { toast('이 영상에서는 소리를 찾지 못했어요'); return; }
+  const A = makeLayer('audio', { media: L.media, start: L.start, end: L.end, name: ((L.name || '영상') + ' 소리').slice(0, 28) });
+  A.trimIn = L.trimIn || 0; A.speed = L.speed || 1; A.p.vol = deep(L.p.vol); if (L.aud) A.aud = deep(L.aud);
+  L.p.vol = P(0); delete L.aud;
+  S.proj.layers.unshift(A); select(A.id); commit(); invalidate(); if (S.playing) restartMedia();
+  toast('영상의 소리를 오디오 레이어로 분리했어요', { l: '소리 파일로 저장', fn: () => saveLayerAudio(A) });
+}
+function audPeaks(M) { // max level per 10ms, for the timeline waveform
+  if (M.pk) return M.pk; const b = M.abuf, bin = Math.max(1, Math.round(b.sampleRate / 100)), n = Math.ceil(b.length / bin), pk = new Float32Array(n);
+  for (let c = 0; c < Math.min(2, b.numberOfChannels); c++) { const d = b.getChannelData(c); for (let i = 0; i < n; i++) { let m = pk[i]; const e = Math.min(d.length, (i + 1) * bin); for (let j = i * bin; j < e; j += 4) { const v = d[j] < 0 ? -d[j] : d[j]; if (v > m) m = v; } pk[i] = m; } }
+  return (M.pk = pk);
+}
+let audRestartT = 0;
+function audChanged(L) { dirtyTL = true; if (S.playing) { clearTimeout(audRestartT); audRestartT = setTimeout(restartMedia, 120); } }
+function audSlider(L, key, label, mn, mx, st, fmt) {
+  const a = audOf(L), val = a[key];
+  const out = h('span', { class: 'audv' }, fmt(val)), sl = h('input', { type: 'range', class: 'slider', min: mn, max: mx, step: st, value: val, 'aria-label': label });
+  sl.oninput = () => { const v = parseFloat(sl.value); L.aud = Object.assign(L.aud || {}, { [key]: v }); out.textContent = fmt(v); audChanged(L); };
+  sl.onchange = () => { commit(); };
+  return h('div', { class: 'prow' }, h('span', { class: 'kfb none' }), h('div', { class: 'plabel static' }, label), sl, out);
+}
+function soundSection(L, rf) {
+  const a = audOf(L), M = MEDIA.get(L.media);
+  const cur = (AUD_PRESETS.find(p => p.v !== 'none' && AUD_FXKEYS.every(k => (p.a[k] ?? AUD_DEF[k]) === a[k])) || (AUD_FXKEYS.every(k => a[k] === AUD_DEF[k]) ? AUD_PRESETS[0] : null));
+  const db = v => (v > 0 ? '+' : '') + Math.round(v) + 'dB', pc = v => Math.round(v) + '%', sc = v => (+v).toFixed(1) + '초';
+  const kids = [
+    numRow(L, 'vol', { label: '볼륨 (증폭)' }),
+    togRow('자동 음량 맞춤', a.norm, v => { L.aud = Object.assign(L.aud || {}, { norm: v }); commit(); audChanged(L); }, '작게 녹음된 소리를 알맞게 키워요'),
+    audSlider(L, 'fadeIn', '페이드 인', 0, 5, .1, sc), audSlider(L, 'fadeOut', '페이드 아웃', 0, 5, .1, sc),
+    h('div', { class: 'addsec', style: 'margin-top:8px' }, '소리 효과'),
+    pillsRow(null, AUD_PRESETS.map(p => ({ v: p.v, l: p.l })), cur ? cur.v : '', v => { const p = AUD_PRESETS.find(x => x.v === v); const keep = { norm: a.norm, fadeIn: a.fadeIn, fadeOut: a.fadeOut }; L.aud = Object.assign(keep, p.a); commit(); audChanged(L); rf(); toast(v === 'none' ? '효과를 모두 껐어요' : `‘${p.l}’ 효과를 넣었어요. 재생해서 들어 보세요`); }),
+    audSlider(L, 'water', '물먹은 소리', 0, 100, 1, pc), audSlider(L, 'phone', '전화기 소리', 0, 100, 1, pc),
+    audSlider(L, 'echo', '메아리', 0, 100, 1, pc), audSlider(L, 'echoT', '메아리 간격', .05, 1, .01, v => (+v).toFixed(2) + '초'),
+    audSlider(L, 'reverb', '울림', 0, 100, 1, pc),
+    audSlider(L, 'low', '저음', -12, 12, .5, db), audSlider(L, 'mid', '중음', -12, 12, .5, db), audSlider(L, 'high', '고음', -12, 12, .5, db),
+    audSlider(L, 'pan', '좌우 위치', -100, 100, 1, v => v == 0 ? '가운데' : (v < 0 ? '왼쪽 ' : '오른쪽 ') + Math.abs(Math.round(v))),
+    h('p', { class: 'hint' }, '효과는 재생할 때 바로 들리고, 내보낸 영상에도 그대로 들어가요.'),
+    h('div', { class: 'btnrow' },
+      L.type === 'video' ? h('button', { class: 'btn sm', html: icon('music') + '소리 분리 (음악 추출)', onclick: () => extractAudio(L) }) : null,
+      h('button', { class: 'btn sm', html: icon('export') + '소리 파일로 저장 (WAV)', onclick: () => saveLayerAudio(L) }))
+  ];
+  if (M && L.type === 'video') ensureAbuf(M);
+  return sec('소리 편집', ...kids);
 }
 
 /* ================= MEDIA IMPORT ================= */
@@ -3560,7 +3703,7 @@ async function importFiles(files, force) {
       const end = type === 'image' ? pr.dur : Math.min(pr.dur, tm.start + M.dur);
       const L = makeLayer(type, { media: M.id, start: tm.start, end: Math.max(tm.start + frameDur(), end), name: (f.name || '').replace(/\.[^.]+$/, '').slice(0, 24) || undefined });
       if (type === 'audio') { S.proj.layers.unshift(L); select(L.id); commit(); invalidate(); }
-      else { addLayer(L); fitLayer(L, false); }
+      else { addLayer(L); fitLayer(L, false); if (type === 'video') ensureAbuf(M); }
       added++;
     } catch (e) { console.warn(e); toast(`‘${f.name}’을(를) 불러오지 못했어요`); }
   }
@@ -3845,13 +3988,9 @@ async function renderAudioMix() {
   const sr = 48000, len = Math.max(1, Math.ceil(S.proj.dur * sr)); const oac = new OfflineAudioContext(2, len, sr); let any = false;
   for (const L of layers) {
     const M = MEDIA.get(L.media);
-    if (M.abuf === undefined) { try { const ab = await M.blob.arrayBuffer(); M.abuf = await new Promise((res, rej) => { const p = oac.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); }); } catch (e) { M.abuf = null; } }
+    if (M.abuf === undefined) await abufNow(M);
     if (!M.abuf) continue;
-    const src = oac.createBufferSource(); src.buffer = M.abuf; src.playbackRate.value = L.speed || 1; const g = oac.createGain(); const vp = L.p.vol;
-    if (vp.k.length) { g.gain.setValueAtTime(clamp(pv(vp, L.start) / 100, 0, 4), 0); for (let t = L.start; t <= L.end; t += 1 / 30) g.gain.linearRampToValueAtTime(clamp(pv(vp, t) / 100, 0, 4), t); } else g.gain.value = clamp(vp.v / 100, 0, 4);
-    src.connect(g).connect(oac.destination);
-    const st = Math.max(0, L.start); const dur = Math.max(0, Math.min(L.end, S.proj.dur) - st) * (L.speed || 1); if (dur <= 0) continue;
-    src.start(st, Math.max(0, L.trimIn || 0), dur); any = true;
+    if (scheduleLayerAudio(oac, L, M, 0, 0, S.proj.dur)) any = true;
   }
   if (!any) return null; return await oac.startRendering();
 }
@@ -3915,9 +4054,9 @@ function progressSheet() {
     set(f, s, cv) { bar.style.width = (f * 100).toFixed(1) + '%'; lab.textContent = `${Math.round(f * 100)}% · ${s}`; const now = performance.now(); if (cv && now - lastThumb > 250) { lastThumb = now; const tw = 480, th = Math.round(tw * cv.height / cv.width); thumb.width = tw; thumb.height = th; thumb.getContext('2d').drawImage(cv, 0, 0, tw, th); } }
   };
 }
-function resultSheet(blob, ext) {
-  const url = URL.createObjectURL(blob); const name = `${(S.proj.name || 'tweeny-motion').replace(/[\\/:*?"<>|]/g, '_')}.${ext}`;
-  const prev = ext === 'png' ? h('img', { src: url, class: 'exportprev', style: 'object-fit:contain' }) : h('video', { src: url, class: 'exportprev', controls: true, playsinline: true, loop: true });
+function resultSheet(blob, ext, base) {
+  const url = URL.createObjectURL(blob); const name = `${base || (S.proj.name || 'tweeny-motion').replace(/[\\/:*?"<>|]/g, '_')}.${ext}`;
+  const prev = ext === 'png' ? h('img', { src: url, class: 'exportprev', style: 'object-fit:contain' }) : ext === 'wav' ? h('audio', { src: url, controls: true, style: 'width:100%;margin:8px 0' }) : h('video', { src: url, class: 'exportprev', controls: true, playsinline: true, loop: true });
   const body = h('div', null, prev, h('p', { class: 'hint', style: 'text-align:center' }, `${name} · ${(blob.size / 1048576).toFixed(1)}MB`),
     h('p', { class: 'hint' }, '저장을 누르면 기기에 파일로 저장됩니다. 휴대폰에서는 저장 후 사진 앱으로 옮길 수 있어요.'));
   openSheet('내보내기 완료', body, { narrow: true, onClose: () => setTimeout(() => URL.revokeObjectURL(url), 60000), foot: close => [h('button', { class: 'btn ghost', onclick: close }, '닫기'), h('button', { class: 'btn primary', html: icon('export') + '저장', onclick: () => saveBlob(blob, name) })] });
@@ -3926,8 +4065,8 @@ function exportSheet() {
   pause(); const pr = S.proj; const canMP4 = !!(window.VideoEncoder && window.VideoFrame);
   const st = { fmt: canMP4 ? 'mp4' : 'webm', scale: 1, fps: pr.fps, bpp: .15 };
   const body = h('div'); const optList = h('div', { class: 'optlist' });
-  const fmts = [['mp4', 'MP4 동영상', canMP4 ? 'H.264, 소리 포함. 프레임 단위로 정확하게 저장합니다' : '이 브라우저는 실시간 녹화 방식으로 저장해요', 'video'], ['webm', 'WebM 동영상', '재생하면서 녹화하는 방식입니다', 'video'], ['png', '현재 프레임 이미지 (PNG)', `${fmtTC(S.time, pr.fps)} 화면을 고화질 이미지로`, 'image'], ['json', '프로젝트 파일 (.json)', '나중에 다시 열어 편집할 수 있게 저장', 'folder']];
-  fmts.forEach(([k, t, d, ic]) => { const b = h('button', { class: 'opt' + (k === st.fmt ? ' on' : '') }, h('i', { html: icon(ic) }), h('div', null, h('b', null, t), h('span', null, d))); b.onclick = () => { st.fmt = k; $$('.opt', optList).forEach(x => x.classList.remove('on')); b.classList.add('on'); vopts.hidden = k === 'json'; fpsRow.hidden = k === 'png' || k === 'json'; qRow.hidden = fpsRow.hidden; }; optList.append(b); });
+  const fmts = [['mp4', 'MP4 동영상', canMP4 ? 'H.264, 소리 포함. 프레임 단위로 정확하게 저장합니다' : '이 브라우저는 실시간 녹화 방식으로 저장해요', 'video'], ['webm', 'WebM 동영상', '재생하면서 녹화하는 방식입니다', 'video'], ['png', '현재 프레임 이미지 (PNG)', `${fmtTC(S.time, pr.fps)} 화면을 고화질 이미지로`, 'image'], ['wav', '소리만 (WAV)', '모든 소리를 효과까지 섞어서 오디오 파일로', 'music'], ['json', '프로젝트 파일 (.json)', '나중에 다시 열어 편집할 수 있게 저장', 'folder']];
+  fmts.forEach(([k, t, d, ic]) => { const b = h('button', { class: 'opt' + (k === st.fmt ? ' on' : '') }, h('i', { html: icon(ic) }), h('div', null, h('b', null, t), h('span', null, d))); b.onclick = () => { st.fmt = k; $$('.opt', optList).forEach(x => x.classList.remove('on')); b.classList.add('on'); vopts.hidden = k === 'json' || k === 'wav'; fpsRow.hidden = k === 'png' || k === 'json' || k === 'wav'; qRow.hidden = fpsRow.hidden; }; optList.append(b); });
   const res = pillsRow(null, [1, .75, .5, .25].map(s => ({ v: s, l: `${s === 1 ? '원본' : Math.round(s * 100) + '%'} ${even(pr.w * s)}×${even(pr.h * s)}` })), 1, v => st.scale = v);
   const fpsS = h('select', { class: 'sel' }); [24, 25, 30, 50, 60].concat([pr.fps]).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b).forEach(f => fpsS.append(h('option', { value: f }, f + ' fps'))); fpsS.value = pr.fps; fpsS.onchange = () => st.fps = +fpsS.value;
   const fpsRow = h('div', { class: 'frow' }, h('label', null, '프레임 속도'), fpsS);
@@ -3939,6 +4078,7 @@ function exportSheet() {
 async function runExport(st) {
   const pr = S.proj;
   if (st.fmt === 'json') { saveProjectFile(); return; }
+  if (st.fmt === 'wav') { toast('소리를 섞는 중…'); const b = await renderAudioMix().catch(() => null); if (!b) { toast('내보낼 소리가 없어요. 오디오나 소리 있는 영상을 넣어 주세요'); return; } resultSheet(wavBlob(b), 'wav'); return; }
   if (st.fmt === 'png') { const cv = document.createElement('canvas'); cv.width = even(pr.w * st.scale); cv.height = even(pr.h * st.scale); exporting = true; await prepVideos(S.time); renderFrame(cv, cv.getContext('2d'), S.time, cv.width / pr.w); exporting = false; invalidate(); cv.toBlob(b => b ? resultSheet(b, 'png') : toast('이미지를 만들지 못했어요'), 'image/png'); return; }
   const prog = progressSheet(); exporting = true; VEL.forEach(v => v.pause());
   try {
