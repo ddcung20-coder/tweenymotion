@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>MotionLab</title>
+<title>tweeny motion</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -404,12 +404,148 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .pseek::-moz-range-progress{height:3px;background:var(--acc)}
 .pseek::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#fff;border:0}
 @media (max-width:520px){.pbar #pDur{display:none}}
+
+/* brand */
+.brand .dmark{width:17px;height:17px;flex:none;display:block}
+.brand .wm{font-family:'Unbounded',var(--ui);font-weight:600;font-size:12px;letter-spacing:-.01em}
+
+/* ================= intro page ================= */
+#intro{position:fixed;inset:0;z-index:300;overflow-y:auto;overflow-x:hidden;background:var(--bg0);color:var(--fg);font-size:15px;line-height:1.65;word-break:keep-all;overflow-wrap:anywhere;-webkit-user-select:text;user-select:text;transition:opacity .25s ease;overscroll-behavior:contain}
+#intro.out{opacity:0;pointer-events:none}
+#intro a{text-decoration:none;color:inherit}
+#intro .iw{max-width:1120px;margin:0 auto;padding:0 28px}
+#intro .inav{position:sticky;top:0;z-index:2;background:rgba(20,20,20,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+#intro .inav .iw{display:flex;align-items:center;height:56px;gap:10px}
+#intro .ilogo{display:flex;align-items:center;gap:9px;font-family:'Unbounded',var(--ui);font-weight:600;font-size:16px;letter-spacing:-.01em;color:#fff}
+#intro .ilogo svg{width:22px;height:22px}
+#intro .inav .sp{flex:1}
+#intro .ilink{color:var(--fg2);font-size:14px;padding:8px 10px;border-radius:4px}
+#intro .ilink:hover{color:var(--fg);background:var(--bg2)}
+#intro .ibtn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 22px;border-radius:6px;font-size:15px;font-weight:600;background:var(--acc);color:#fff;transition:background .15s}
+#intro .ibtn:hover{background:#3f99f2}
+#intro .ibtn.sm{height:36px;padding:0 16px;font-size:14px}
+#intro .ibtn.ghost{background:var(--bg2);color:var(--fg);border:1px solid var(--line2)}
+#intro .ibtn.ghost:hover{background:var(--bg3)}
+#intro .ibtn svg{width:16px;height:16px}
+#intro .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;align-items:center;padding:72px 0 80px}
+#intro .eyebrow{font-size:13px;font-weight:600;color:var(--acc2);margin:0 0 14px;letter-spacing:.02em}
+#intro h1{font-size:clamp(30px,3.6vw,44px);line-height:1.18;letter-spacing:-.025em;margin:0 0 20px;color:#fff;font-weight:700;text-wrap:balance}
+#intro .lead{font-size:17px;color:var(--fg2);margin:0 0 30px;max-width:30em}
+#intro .lead b{color:var(--fg);font-weight:600}
+#intro .cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#intro .note{font-size:13px;color:var(--fg3);margin:18px 0 0}
+#intro .demo{background:var(--bg1);border:1px solid var(--line2);border-radius:10px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+#intro .demo .dbar{height:30px;display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid var(--line);font-size:11px;color:var(--fg3)}
+#intro .demo .dbar i{width:9px;height:9px;border-radius:50%;background:var(--bg4)}
+#intro .demo .dbar span{margin-left:8px;font-family:var(--mono)}
+#intro .demo canvas{display:block;width:100%;aspect-ratio:16/11}
+#intro section{padding:72px 0;border-top:1px solid var(--line)}
+#intro h2{font-size:clamp(24px,3vw,32px);letter-spacing:-.02em;line-height:1.3;margin:0 0 10px;color:#fff}
+#intro .sub{color:var(--fg2);margin:0 0 36px;max-width:40em}
+#intro .feat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#intro .feat div{background:var(--bg1);padding:26px 24px 28px}
+#intro .feat svg{width:22px;height:22px;color:var(--acc2);margin-bottom:14px;display:block}
+#intro .feat h3{font-size:16px;margin:0 0 8px;color:#fff;letter-spacing:-.01em}
+#intro .feat p{margin:0;font-size:14px;color:var(--fg2);line-height:1.7}
+#intro .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;counter-reset:st;margin:0;padding:0;list-style:none}
+#intro .steps li{counter-increment:st;padding-top:18px;border-top:2px solid var(--bg4)}
+#intro .steps li::before{content:counter(st,decimal-leading-zero);display:block;font-family:var(--mono);font-size:13px;color:var(--acc2);margin-bottom:10px}
+#intro .steps h3{font-size:17px;margin:0 0 6px;color:#fff}
+#intro .steps p{margin:0;font-size:14px;color:var(--fg2)}
+#intro .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 48px;margin:0;padding:0;list-style:none}
+#intro .facts li{display:grid;grid-template-columns:120px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);font-size:14px}
+#intro .facts b{color:var(--fg);font-weight:600}
+#intro .facts span{color:var(--fg2)}
+#intro kbd{font-family:var(--mono);font-size:12px;background:var(--bg2);border:1px solid var(--line2);border-bottom-width:2px;border-radius:4px;padding:1px 6px;color:var(--fg)}
+#intro .endcta{text-align:center;padding:84px 0 96px}
+#intro .endcta h2{margin-bottom:12px}
+#intro .endcta p{color:var(--fg2);margin:0 0 28px}
+#intro footer{border-top:1px solid var(--line);padding:22px 0 calc(22px + env(safe-area-inset-bottom,0px));font-size:12.5px;color:var(--fg3)}
+#intro footer .iw{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:900px){
+  #intro .hero{grid-template-columns:minmax(0,1fr);gap:40px;padding:44px 0 56px}
+  #intro .feat{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #intro .steps{grid-template-columns:minmax(0,1fr);gap:20px}
+  #intro .facts{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:560px){
+  #intro{font-size:14.5px}
+  #intro .iw{padding:0 16px}
+  #intro .inav .iw{height:52px}
+  #intro .ilink{display:none}
+  #intro .lead{font-size:16px}
+  #intro .cta .ibtn{flex:1 1 auto;justify-content:center}
+  #intro section{padding:52px 0}
+  #intro .feat{grid-template-columns:minmax(0,1fr)}
+  #intro .feat div{padding:22px 20px}
+  #intro .facts li{grid-template-columns:96px 1fr;gap:12px}
+  #intro .endcta{padding:60px 0 72px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
+<div id="intro" role="dialog" aria-label="tweeny motion 소개">
+  <div class="inav"><div class="iw">
+    <div class="ilogo"><svg viewBox="0 0 20 20" aria-hidden="true"><rect width="20" height="20" rx="5" fill="#2d8ceb"/><path d="M5 14.5C9 14.5 11 5.5 15 5.5" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="12.5" width="4" height="4" transform="rotate(45 5 14.5)" fill="#fff"/><rect x="13" y="3.5" width="4" height="4" transform="rotate(45 15 5.5)" fill="#fff"/></svg>tweeny motion</div><div class="sp"></div>
+    <a class="ilink" href="#in-feat" data-scroll>기능</a><a class="ilink" href="#in-flow" data-scroll>사용 방법</a>
+    <button class="ibtn sm" data-start>시작하기</button>
+  </div></div>
+  <div class="iw">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">브라우저용 모션그래픽 편집기</p>
+        <h1>키프레임 애니메이션을<br>설치 없이 바로 만드세요</h1>
+        <p class="lead">tweeny motion은 텍스트·도형·사진·영상 레이어에 키프레임을 걸어 움직임을 만들고, <b>MP4 동영상으로 내보내는</b> 편집기입니다. 가입이나 설치 없이 PC와 휴대폰 브라우저에서 바로 열립니다.</p>
+        <div class="cta">
+          <button class="ibtn" data-start><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12.5-7.5z"/></svg>바로 시작하기</button>
+          <a class="ibtn ghost" href="#in-feat" data-scroll>기능 둘러보기</a>
+        </div>
+        <p class="note">작업 내용은 이 브라우저에 자동 저장되며, 어떤 서버로도 업로드되지 않습니다.</p>
+      </div>
+      <div class="demo"><div class="dbar"><i></i><i></i><i></i><span>컴포지션 · 1080×1080 · 30fps</span></div><canvas id="introCv"></canvas></div>
+    </div>
+  </div>
+  <section id="in-feat"><div class="iw">
+    <h2>할 수 있는 것</h2>
+    <p class="sub">짧은 인트로, 자막 애니메이션, 로고 모션, SNS용 세로 영상처럼 레이어를 겹쳐 움직이는 작업에 맞춰져 있습니다.</p>
+    <div class="feat">
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3 2.5 8 12 13l9.5-5z"/><path d="m2.5 12.5 9.5 5 9.5-5"/><path d="m2.5 17 9.5 5 9.5-5" opacity=".5"/></svg><h3>레이어</h3><p>텍스트, 기본 도형, 펜으로 그린 자유 도형, 사진, 동영상, 오디오, 조정 레이어를 쌓고 끌어서 순서를 바꿉니다.</p></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 20c5 0 6-16 18-16"/><rect x="1.5" y="18.5" width="3" height="3" transform="rotate(45 3 20)" fill="currentColor"/><rect x="19.5" y="2.5" width="3" height="3" transform="rotate(45 21 4)" fill="currentColor"/></svg><h3>키프레임과 그래프</h3><p>위치·크기·회전·불투명도 등 거의 모든 값에 키프레임을 겁니다. 그래프 에디터에서 가속·감속 곡선을 직접 조정합니다.</p></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg><h3>이펙트</h3><p>등장·퇴장, 반복 움직임, 블러, 색상, 빛, 왜곡, 글리치 효과를 레이어마다 겹쳐 적용하고 값도 애니메이션할 수 있습니다.</p></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="5.5" stroke-dasharray="2.5 2"/></svg><h3>마스크와 트랙 매트</h3><p>사각형·원·펜 마스크로 레이어를 잘라내고, 위 레이어의 모양이나 밝기를 알파·루마 매트로 사용합니다.</p></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M7 4 12.5 14H1.5z"/><circle cx="18" cy="15" r="4.5"/><path d="M10 19c2 1.5 4 1.6 5.5.6" stroke-dasharray="1.5 2"/></svg><h3>모양 연결</h3><p>시작 사진과 끝 사진에서 테두리를 따서, 한 모양이 다른 모양으로 이어지는 애니메이션을 만듭니다. 떨어진 조각도 함께 처리합니다.</p></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M4 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg><h3>내보내기</h3><p>MP4(H.264, 소리 포함)나 WebM 동영상, 현재 프레임 PNG로 저장합니다. 프로젝트 파일로 받아 다른 기기에서 이어 작업할 수 있습니다.</p></div>
+    </div>
+  </div></section>
+  <section id="in-flow"><div class="iw">
+    <h2>사용 방법</h2>
+    <p class="sub">After Effects나 Alight Motion 같은 타임라인 편집기를 써 봤다면 익숙한 구조입니다.</p>
+    <ol class="steps">
+      <li><h3>레이어 추가</h3><p>위쪽 도구줄에서 텍스트·도형을 넣거나 갤러리에서 사진·영상을 불러옵니다.</p></li>
+      <li><h3>움직임 만들기</h3><p>플레이헤드를 옮기고 값을 바꾸면 키프레임이 찍힙니다. 애니메이션 프리셋이나 이펙트로 빠르게 시작해도 됩니다.</p></li>
+      <li><h3>확인하고 내보내기</h3><p>전체화면으로 재생해 보고, 내보내기에서 해상도와 화질을 골라 동영상으로 저장합니다.</p></li>
+    </ol>
+  </div></section>
+  <section><div class="iw">
+    <h2>알아 두면 좋은 것</h2>
+    <p class="sub">시작하기 전에 확인할 몇 가지입니다.</p>
+    <ul class="facts">
+      <li><b>저장</b><span>편집할 때마다 이 브라우저에 자동 저장됩니다. 브라우저 데이터를 지우면 사라지므로, 중요한 작업은 프로젝트 파일로 받아 두세요.</span></li>
+      <li><b>기기</b><span>화면 크기에 따라 PC 배치와 모바일 배치가 자동으로 바뀝니다. 휴대폰에서는 두 손가락으로 크기와 회전을 조절합니다.</span></li>
+      <li><b>브라우저</b><span>최신 Chrome, Edge, Safari를 권장합니다. 프레임 단위 MP4 내보내기는 WebCodecs를 지원하는 브라우저에서 동작합니다.</span></li>
+      <li><b>단축키</b><span><kbd>Space</kbd> 재생, <kbd>Ctrl</kbd>+<kbd>Z</kbd> 되돌리기, <kbd>K</kbd> 키프레임, <kbd>G</kbd> 그래프. 전체 목록은 편집기의 도움말에 있습니다.</span></li>
+    </ul>
+  </div></section>
+  <div class="endcta"><div class="iw">
+    <h2>빈 캔버스에서 시작합니다</h2>
+    <p>저장된 작업이 있으면 그대로 이어서 열립니다.</p>
+    <button class="ibtn" data-start><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12.5-7.5z"/></svg>바로 시작하기</button>
+  </div></div>
+  <footer><div class="iw"><span>tweeny motion</span><span>모든 처리는 이 기기 안에서 이루어집니다</span></div></footer>
+</div>
 <div class="app" id="app" data-mode="pc">
   <header class="topbar">
-    <div class="brand"><b></b><span>MotionLab</span></div>
+    <div class="brand"><svg class="dmark" viewBox="0 0 20 20" aria-hidden="true"><rect width="20" height="20" rx="5" fill="#2d8ceb"/><path d="M5 14.5C9 14.5 11 5.5 15 5.5" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="12.5" width="4" height="4" transform="rotate(45 5 14.5)" fill="#fff"/><rect x="13" y="3.5" width="4" height="4" transform="rotate(45 15 5.5)" fill="#fff"/></svg><span class="wm">tweeny motion</span></div>
     <nav class="menus pconly" id="menus">
       <button data-menu="file">파일</button><button data-menu="edit">편집</button><button data-menu="layer">레이어</button><button data-menu="view">보기</button><button data-menu="help">도움말</button>
     </nav>
@@ -3079,7 +3215,7 @@ function menuItems(kind) {
     { l: ck(S.guides) + '가이드 표시', ic: 'grid', fn: toggleGuides }, { l: ck(S.snap) + '스냅', ic: 'magnet', fn: toggleSnap }, '-',
     { l: ck(S.dock === 'timeline') + '타임라인', ic: 'layers', fn: () => setDock('timeline') }, { l: ck(S.dock === 'graph') + '그래프 편집기', ic: 'graph', k: 'G', fn: () => setDock('graph') }, '-',
     ...modeItems()];
-  return [{ l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample }];
+  return [{ l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample }];
 }
 function openMenu(b) {
   if (ctxClosed.owner === b && performance.now() - ctxClosed.t < 300) return;
@@ -3094,7 +3230,7 @@ function mainMenu(e) {
     '-', { l: '사진·동영상 가져오기', ic: 'image', fn: () => $('#fileIn').click() }, { l: '오디오 가져오기', ic: 'music', fn: () => $('#audioIn').click() }, { l: '모양 연결 (사진 모핑)…', ic: 'morph', fn: morphSheet },
     '-', { l: '전체화면 미리보기', ic: 'present', fn: openPlayer }, { l: '프로젝트 설정', ic: 'settings', fn: projectSheet }, { l: S.dock === 'graph' ? '타임라인으로 돌아가기' : '그래프 편집기 열기', ic: S.dock === 'graph' ? 'layers' : 'graph', fn: () => setDock(S.dock === 'graph' ? 'timeline' : 'graph') },
     ...modeItems(),
-    '-', { l: '도움말 · 단축키', ic: 'help', fn: helpSheet }]);
+    '-', { l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }]);
 }
 
 /* ================= PROJECT FILES ================= */
@@ -3106,7 +3242,7 @@ async function saveProjectFile() {
   const embed = size < 80 * 1024 * 1024;
   if (embed) for (const id in pr.media) { const M = MEDIA.get(id); if (M && M.blob) pr.embedded[id] = await blobToDataURL(M.blob); }
   const blob = new Blob([JSON.stringify(pr)], { type: 'application/json' });
-  await saveBlob(blob, (pr.name || 'motionlab').replace(/[\\/:*?"<>|]/g, '_') + '.json');
+  await saveBlob(blob, (pr.name || 'tweeny-motion').replace(/[\\/:*?"<>|]/g, '_') + '.json');
   if (!embed) toast('미디어가 커서 프로젝트 파일에는 레이어 정보만 담았어요');
 }
 async function openProjectFile(f) {
@@ -3221,7 +3357,7 @@ function progressSheet() {
   };
 }
 function resultSheet(blob, ext) {
-  const url = URL.createObjectURL(blob); const name = `${(S.proj.name || 'motionlab').replace(/[\\/:*?"<>|]/g, '_')}.${ext}`;
+  const url = URL.createObjectURL(blob); const name = `${(S.proj.name || 'tweeny-motion').replace(/[\\/:*?"<>|]/g, '_')}.${ext}`;
   const prev = ext === 'png' ? h('img', { src: url, class: 'exportprev', style: 'object-fit:contain' }) : h('video', { src: url, class: 'exportprev', controls: true, playsinline: true, loop: true });
   const body = h('div', null, prev, h('p', { class: 'hint', style: 'text-align:center' }, `${name} · ${(blob.size / 1048576).toFixed(1)}MB`),
     h('p', { class: 'hint' }, '저장을 누르면 기기에 파일로 저장됩니다. 휴대폰에서는 저장 후 사진 앱으로 옮길 수 있어요.'));
@@ -3267,7 +3403,7 @@ function buildSample() {
   const star = makeLayer('shape', { kind: 'star', w: 280, h: 280, sides: 5, inner: 46, rad: 14, fill: '#ffbf47', y: 760, name: '별', start: 0, end: 7 });
   K(star.p.sx, .5, 0, 6); K(star.p.sx, 1.2, 100); K(star.p.sy, .5, 0, 6); K(star.p.sy, 1.2, 100);
   const sp = makeFx('spin'); sp.p.rps.v = 36; star.fx.push(sp); const fl = makeFx('float'); fl.p.amp.v = 14; star.fx.push(fl); const sh = makeFx('shadow'); sh.p.dist.v = 24; sh.p.soft.v = 40; sh.p.op.v = 55; star.fx.push(sh);
-  const title = makeLayer('text', { content: 'MOTION LAB', font: 'Unbounded', weight: 800, size: 112, y: 1190, name: '타이틀', start: 0, end: 7 });
+  const title = makeLayer('text', { content: 'TWEENY MOTION', font: 'Unbounded', weight: 800, size: 92, y: 1190, name: '타이틀', start: 0, end: 7 });
   title.text.revealMode = 'up'; K(title.p.reveal, .9, 0, 0); K(title.p.reveal, 2.0, 100); title.p.ls.v = 4;
   const sw = makeFx('sweep'); sw.p.freq.v = .35; sw.p.int.v = 90; title.fx.push(sw);
   const sub = makeLayer('text', { content: '키프레임 · 그래프 · 마스크 · 이펙트', font: 'Noto Sans KR', weight: 500, size: 44, fill: '#c3c7ec', y: 1300, name: '부제', start: 0, end: 7 });
@@ -3589,6 +3725,7 @@ function bindPlayer() {
 const keysDown = new Set();
 function inField(e) { const t = e.target; return t && (t.tagName === 'INPUT' && !['range', 'color', 'checkbox'].includes(t.type) || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable); }
 document.addEventListener('keydown', e => {
+  if (INTRO.open) { if (e.key === 'Enter' && !e.target.closest('a,button')) { e.preventDefault(); closeIntro(); } return; }
   if (inField(e)) return; const k = e.key, mod = e.ctrlKey || e.metaKey, L = selL();
   if (PL.open) {
     if (k === 'Escape') closePlayer(); else if (k === ' ') { e.preventDefault(); togglePlay(); } else if (k === 'ArrowLeft') { e.preventDefault(); stepFrame(e.shiftKey ? -10 : -1); } else if (k === 'ArrowRight') { e.preventDefault(); stepFrame(e.shiftKey ? 10 : 1); } else if (k === 'Home') setTime(0); else if (k === 'End') setTime(S.proj.dur); else if (k === 'l' || k === 'L') toggleLoop();
@@ -3686,9 +3823,63 @@ function bind() {
   window.addEventListener('resize', () => applyMode());
   document.addEventListener('visibilitychange', () => { if (document.hidden && S.playing) pause(); });
 }
+
+/* ================= INTRO PAGE ================= */
+const INTRO = { open: false, raf: 0 };
+function introDemo() {
+  const cv = $('#introCv'); if (!cv) return; const x = cv.getContext('2d');
+  const N = 96, ease = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+  const samp = f => Array.from({ length: N }, (_, i) => f(i / N));
+  const poly = (pts, u) => { const n = pts.length, s = u * n, i = Math.floor(s) % n, k = s - Math.floor(s), a = pts[i], b = pts[(i + 1) % n]; return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]; };
+  const tri = [[0, -1.05], [.95, .6], [-.95, .6]], sq = [[-.8, -.8], [.8, -.8], [.8, .8], [-.8, .8]];
+  const SH = [samp(u => poly(tri, u)), samp(u => { const a = -Math.PI / 2 + u * TAU; return [Math.cos(a) * .9, Math.sin(a) * .9]; }), samp(u => poly(sq, (u + .125) % 1))];
+  const COL = ['#2d8ceb', '#f2b630', '#3cbf7f'], CYC = 6, seg = CYC / 3;
+  const draw = now => {
+    const r = cv.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1), W = Math.round(r.width * dpr), H = Math.round(r.height * dpr);
+    if (!W || !H) { INTRO.raf = requestAnimationFrame(draw); return; }
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); const w = r.width, h = r.height, tlH = Math.min(118, h * .36), vh = h - tlH;
+    const t = (now / 1000) % CYC, si = Math.floor(t / seg), u = clamp((t - si * seg - seg * .3) / (seg * .7), 0, 1), e = ease(u);
+    const A = SH[si], B = SH[(si + 1) % 3];
+    x.fillStyle = '#1a1a1a'; x.fillRect(0, 0, w, vh);
+    const fs = Math.min(vh * .78, w * .5), fx = (w - fs) / 2, fy = (vh - fs) / 2; x.fillStyle = '#0b0c10'; x.fillRect(fx, fy, fs, fs);
+    const cx = fx + fs / 2, cy = fy + fs / 2, R = fs * .3, rot = (si + e) * TAU / 3 * .5, sc = 1 + Math.sin(e * Math.PI) * .12;
+    x.save(); x.translate(cx, cy); x.rotate(rot); x.scale(sc, sc); x.beginPath();
+    A.forEach((p, i) => { const q = B[i], X = (p[0] + (q[0] - p[0]) * e) * R, Y = (p[1] + (q[1] - p[1]) * e) * R; i ? x.lineTo(X, Y) : x.moveTo(X, Y); }); x.closePath();
+    x.fillStyle = lerpColor(COL[si], COL[(si + 1) % 3], e); x.fill(); x.restore();
+    x.strokeStyle = 'rgba(255,255,255,.85)'; x.lineWidth = 1.2; x.beginPath(); x.arc(cx, cy, 6, 0, TAU); x.moveTo(cx - 10, cy); x.lineTo(cx + 10, cy); x.moveTo(cx, cy - 10); x.lineTo(cx, cy + 10); x.stroke();
+    // timeline
+    x.fillStyle = '#232323'; x.fillRect(0, vh, w, tlH); x.fillStyle = '#111'; x.fillRect(0, vh, w, 1);
+    const lw = Math.min(92, w * .24), rows = ['모양', '회전', '색'], rh = (tlH - 22) / rows.length, tx0 = lw + 8, tx1 = w - 14;
+    x.font = '500 11px "IBM Plex Sans KR", sans-serif'; x.textBaseline = 'middle';
+    x.fillStyle = '#727272'; for (let i = 0; i <= 6; i++) { const X = tx0 + (tx1 - tx0) * i / 6; x.fillRect(X, vh + 6, 1, 6); }
+    rows.forEach((nm, i) => {
+      const Y = vh + 22 + rh * i + rh / 2; x.fillStyle = i % 2 ? '#262626' : '#2a2a2a'; x.fillRect(0, Y - rh / 2, w, rh);
+      x.fillStyle = '#a2a2a2'; x.fillText(nm, 12, Y);
+      x.fillStyle = '#3d3d3d'; x.fillRect(tx0, Y - .5, tx1 - tx0, 1);
+      for (let k = 0; k <= 3; k++) { for (const off of [.3, 1]) { if (k === 3 && off === 1) continue; const tt = (k + (k < 3 ? off : 0)) * seg; if (tt > CYC + .001) continue; const X = tx0 + (tx1 - tx0) * tt / CYC; x.save(); x.translate(X, Y); x.rotate(Math.PI / 4); x.fillStyle = '#f2b630'; x.fillRect(-3.5, -3.5, 7, 7); x.restore(); } }
+    });
+    const px = tx0 + (tx1 - tx0) * t / CYC; x.fillStyle = '#3d9bff'; x.fillRect(px - .5, vh + 2, 1.5, tlH - 2); x.beginPath(); x.moveTo(px - 5, vh + 2); x.lineTo(px + 6, vh + 2); x.lineTo(px + .5, vh + 9); x.closePath(); x.fill();
+    if (INTRO.open) INTRO.raf = requestAnimationFrame(draw);
+  };
+  cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(draw);
+}
+function showIntro() {
+  const el = $('#intro'); if (!el) return; if (S.playing) pause(); closeCtx();
+  el.hidden = false; el.classList.remove('out'); el.scrollTop = 0; INTRO.open = true; introDemo();
+}
+function closeIntro() {
+  const el = $('#intro'); if (!el || !INTRO.open) return; INTRO.open = false; cancelAnimationFrame(INTRO.raf);
+  el.classList.add('out'); setTimeout(() => { if (!INTRO.open) el.hidden = true; }, 260); resizeAll(); invalidate();
+}
+function bindIntro() {
+  const el = $('#intro'); if (!el) return;
+  $$('[data-start]', el).forEach(b => b.onclick = closeIntro);
+  $$('[data-scroll]', el).forEach(a => a.onclick = e => { e.preventDefault(); const t = el.querySelector(a.getAttribute('href')); if (t) el.scrollTo({ top: t.offsetTop - 56, behavior: 'smooth' }); });
+}
 async function init() {
   try { S.modePref = localStorage.getItem('ml_mode') || 'auto'; } catch (e) { }
-  bind(); buildGraphUI(); applyMode(true); setDock('timeline');
+  bind(); bindIntro(); showIntro(); buildGraphUI(); applyMode(true); setDock('timeline');
   ensureFont('Unbounded', 800); ensureFont('Noto Sans KR', 700);
   const ok = await loadSaved();
   if (!ok) S.proj = newProject({ name: '새 프로젝트' });
