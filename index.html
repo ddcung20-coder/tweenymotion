@@ -612,7 +612,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v36</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v37</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -667,6 +667,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v37</b><span>스윕 등장·스윕 퇴장 이펙트가 생겼습니다. 모양 연결에서 사진(모양)을 하나만 골라도 무에서 스르륵 생겨나거나 사라지게 만들 수 있습니다.</span></li>
         <li><b>v36</b><span>선택한 레이어는 선택 상자 안 어디를 끌어도 움직입니다. 잠긴 레이어를 누르면 잠겨 있다고 알려 줍니다. 모바일에서 살짝 흔들린 탭도 빈 곳 누르기로 인식해 선택이 풀립니다.</span></li>
         <li><b>v35</b><span>도형과 선은 실제로 그려진 부분을 눌러야 선택되고, 그 주변 빈 곳을 누르면 선택이 풀립니다. 내 프로젝트에 백업 안내와 파일 저장 버튼을 넣었습니다.</span></li>
         <li><b>v34</b><span>계정에는 프로젝트를 압축해서 아주 작게 올립니다(계정당 3MB, 프로젝트당 300KB까지). 내 프로젝트에서 기기·계정 사용량과 프로젝트별 용량을 볼 수 있습니다.</span></li>
@@ -1709,7 +1710,18 @@ def('blurin', '블러 인', 'in', '흐릿하게 시작해 선명해집니다', [
 def('blurout', '블러 아웃', 'in', '끝날 때 흐릿해지며 사라짐', [DUR(0.7), N('r', '최대 블러', 40, 0, 200, 1, 'px')], { post(E) { const f = eIn(1 - E.rem / Math.max(.01, E.p.dur)); return blurCore(E, f * E.p.r * E.s); } });
 def('pixelin', '모자이크 인', 'in', '픽셀 조각에서 또렷해짐', [DUR(0.8), N('size', '최대 크기', 60, 2, 300, 1, 'px')], { post(E) { const f = eOut(E.lt / Math.max(.01, E.p.dur)); pixelCore(E, (1 - f) * E.p.size * E.s); return grow(E.box, E.p.size * E.s); } });
 def('wipein', '와이프 인', 'in', '한쪽부터 드러납니다', [DUR(0.7), O('dir', '방향', 'left', DIRS), N('soft', '경계 부드럽기', 20, 0, 300, 1, 'px')], { post(E) { const f = eOut(E.lt / Math.max(.01, E.p.dur)); wipe(E, f, E.o.dir, E.p.soft * E.s); } });
+def('sweepin', '스윕 등장', 'in', '시계 바늘처럼 한 바퀴 쓸며 나타납니다', [DUR(0.8), N('ang', '시작 각도', 0, -180, 180, 1, '°'), O('dir', '방향', 'cw', [['cw', '시계 방향'], ['ccw', '반시계 방향']]), N('soft', '경계 부드럽기', 14, 0, 120, 1, '°')], { post(E) { const f = eOut(E.lt / Math.max(.01, E.p.dur)); sweepMask(E, f, E.p.ang, E.o.dir === 'ccw', E.p.soft); } });
+def('sweepout', '스윕 퇴장', 'in', '끝날 때 한 바퀴 쓸며 사라집니다', [DUR(0.8), N('ang', '시작 각도', 0, -180, 180, 1, '°'), O('dir', '방향', 'cw', [['cw', '시계 방향'], ['ccw', '반시계 방향']]), N('soft', '경계 부드럽기', 14, 0, 120, 1, '°')], { post(E) { const f = eIn(1 - E.rem / Math.max(.01, E.p.dur)); if (f <= 0) return; const ccw = E.o.dir === 'ccw'; sweepMask(E, 1 - f, E.p.ang + (ccw ? -1 : 1) * f * 360, ccw, E.p.soft); } });
 def('wipeout', '와이프 아웃', 'in', '한쪽부터 지워집니다', [DUR(0.7), O('dir', '방향', 'left', DIRS), N('soft', '경계 부드럽기', 20, 0, 300, 1, 'px')], { post(E) { const f = eIn(1 - E.rem / Math.max(.01, E.p.dur)); wipe(E, 1 - f, E.o.dir, E.p.soft * E.s, true); } });
+/* radial (clock-hand) reveal: f = share of the full turn that is visible, starting at startDeg (0 = 12 o'clock) */
+function sweepMask(E, f, startDeg, ccw, softDeg) {
+  if (f >= 1) return; if (!E.x.createConicGradient) { wipe(E, f, 'left', 20); return; }
+  const b = E.box, cx = b.x + b.w / 2, cy = b.y + b.h / 2, sf = softDeg / 360, a = clamp(f * (1 + sf) - sf, 0, 1), c = clamp(f * (1 + sf), 0, 1);
+  const g = E.x.createConicGradient((startDeg - 90) * D2R, cx, cy);
+  if (!ccw) { g.addColorStop(0, '#000'); g.addColorStop(a, '#000'); g.addColorStop(Math.max(a, c, a + 1e-4), 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0)'); }
+  else { g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(Math.min(1 - Math.max(a, c), 1 - a - 1e-4), 'rgba(0,0,0,0)'); g.addColorStop(1 - a, '#000'); g.addColorStop(1, '#000'); }
+  E.x.globalCompositeOperation = 'destination-in'; E.x.fillStyle = g; E.x.fillRect(0, 0, E.W, E.H);
+}
 function wipe(E, f, dir, soft, rev) {
   const b = E.box; if (f >= 1) return; const hz = dir === 'left' || dir === 'right'; const len = hz ? b.w : b.h;
   let pos = (len + soft) * f - soft; const fwd = (dir === 'left' || dir === 'down') !== !!rev;
@@ -4503,11 +4515,22 @@ function buildMorph(As, Bs) {
     return { A: PA, B: PB };
   });
 }
+/* one outline only: it grows out of nothing (or shrinks away). from = where it starts: center | bottom | top | left | right | point */
+function buildSingle(Ps, from, appear) {
+  const info = (Ps || []).map(P => { let per = 0; for (let i = 0; i < P.length; i++) { const p = P[i], q = P[(i + 1) % P.length]; per += Math.hypot(q[0] - p[0], q[1] - p[1]); } return { P, per }; }).filter(o => o.P && o.P.length >= 3);
+  if (!info.length) return null; const all = polysBox(Ps), maxPer = Math.max(...info.map(o => o.per)) || 1;
+  return info.map(({ P, per }) => {
+    const N = Math.round(clamp(MORPH_N * per / maxPer, 28, MORPH_N)); let R = resampleClosed(P, N); if (!R) return null; if (polyArea(R) < 0) R.reverse();
+    const bx = polysBox([R]), c = R.reduce((s_, p) => [s_[0] + p[0] / N, s_[1] + p[1] / N], [0, 0]);
+    const D = R.map(([x, y]) => from === 'bottom' ? [x, bx.y1] : from === 'top' ? [x, bx.y0] : from === 'left' ? [bx.x0, y] : from === 'right' ? [bx.x1, y] : from === 'point' ? [all.cx, all.cy] : [c[0], c[1]]);
+    return appear ? { A: D, B: R } : { A: R, B: D };
+  }).filter(Boolean);
+}
 /* pick an image from the gallery (shared hidden input) */
 function pickImage(cb) { morphPick = cb; const i = $('#morphIn'); i.value = ''; i.click(); }
 let morphPick = null;
 function morphSheet() {
-  const st = { A: null, B: null, sens: 50, fit: true, multi: true, dur: 1.5, ease: 1, color: true, built: null };
+  const st = { A: null, B: null, sens: 50, fit: true, multi: true, dur: 1.5, ease: 1, color: true, built: null, from: 'center' };
   const ui = {}; let makeBtn = null, raf = 0;
   const shapes = S.proj.layers.filter(morphable).reverse();
   const loadImg = async (key, f) => {
@@ -4521,7 +4544,7 @@ function morphSheet() {
   const pathOf = (x, polys, map) => { x.beginPath(); polys.forEach(P => { P.forEach((p, i) => { const [X, Y] = map(p); i ? x.lineTo(X, Y) : x.moveTo(X, Y); }); x.closePath(); }); };
   const drawThumb = key => {
     const cv = ui[key].cv, x = cv.getContext('2d'), W = cv.width, H = cv.height, sl = st[key]; x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = '#151515'; x.fillRect(0, 0, W, H);
-    if (!sl) { x.fillStyle = '#5e5e5e'; x.font = '600 22px "IBM Plex Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(key === 'A' ? '시작 모양' : '끝 모양', W / 2, H / 2); return; }
+    if (!sl) { x.fillStyle = '#5e5e5e'; x.font = '600 22px "IBM Plex Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(key === 'A' ? '시작 모양' : '끝 모양', W / 2, H / 2 - 14); x.font = '500 16px "IBM Plex Sans KR", sans-serif'; x.fillText('비워 두면 ' + (key === 'A' ? '무(無)에서 생겨나요' : '스르륵 사라져요'), W / 2, H / 2 + 16); return; }
     if (sl.kind === 'img') {
       const k = Math.min(W / sl.iw, H / sl.ih) * .92, ox = (W - sl.iw * k) / 2, oy = (H - sl.ih * k) / 2; x.drawImage(sl.img, ox, oy, sl.iw * k, sl.ih * k);
       if (sl.trace && sl.trace.pieces) { x.fillStyle = 'rgba(0,0,0,.35)'; x.fillRect(0, 0, W, H); pathOf(x, sl.trace.pieces, ([px, py]) => [ox + px * k, oy + py * k]); x.fillStyle = 'rgba(61,155,255,.2)'; x.fill(); x.lineWidth = 3; x.strokeStyle = '#3d9bff'; x.stroke(); }
@@ -4538,7 +4561,9 @@ function morphSheet() {
       if (sl.trace && sl.trace.err) { s_.className = 'st err'; s_.textContent = sl.trace.err + ' — 테두리가 명확한 사진을 골라 주세요'; }
       else if (sl.trace) { const n = sl.trace.pieces.length; s_.className = 'st ok'; s_.textContent = n > 1 ? `윤곽을 찾았어요. 조각 ${n}개` : '윤곽을 찾았어요. 파란 선이 따낸 모양입니다'; }
     });
-    st.built = slotOk(st.A) && slotOk(st.B) ? buildMorph(morphSlotPolys(st.A, st.fit), morphSlotPolys(st.B, st.fit)) : null;
+    const okA = slotOk(st.A), okB = slotOk(st.B); st.single = okA !== okB ? (okB ? 'in' : 'out') : null;
+    st.built = okA && okB ? buildMorph(morphSlotPolys(st.A, st.fit), morphSlotPolys(st.B, st.fit)) : st.single ? buildSingle(morphSlotPolys(okB ? st.B : st.A, st.fit), st.from, okB) : null;
+    if (fromRow) fromRow.style.display = st.single ? '' : 'none';
     if (makeBtn) makeBtn.disabled = !st.built;
   };
   const mkSlot = (key, title) => {
@@ -4557,10 +4582,10 @@ function morphSheet() {
   const prev = h('canvas', { class: 'mprev', width: 640, height: 300 });
   const drawPrev = () => {
     const x = prev.getContext('2d'), W = prev.width, H = prev.height; x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = '#111'; x.fillRect(0, 0, W, H);
-    const P = st.built; if (!P) { x.fillStyle = '#5e5e5e'; x.font = '600 20px "IBM Plex Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('두 모양을 고르면 여기서 미리 볼 수 있어요', W / 2, H / 2); return; }
+    const P = st.built; if (!P) { x.fillStyle = '#5e5e5e'; x.font = '600 20px "IBM Plex Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('모양을 하나 이상 고르면 여기서 미리 볼 수 있어요', W / 2, H / 2); return; }
     const b = polysBox(P.flatMap(p => [p.A, p.B])), k = Math.min(W * .86 / Math.max(1, b.w), H * .86 / Math.max(1, b.h));
     const cyc = 1.2 + st.dur, ph = (performance.now() / 1000) % cyc, u = clamp((ph - .4) / st.dur, 0, 1), e = easeVal(EASES[st.ease].e, u);
-    const ca = st.A.col || '#3d9bff', cb = st.color ? (st.B.col || ca) : ca;
+    const one = st.A || st.B, ca = (st.A || one).col || '#3d9bff', cb = st.color && st.B ? (st.B.col || ca) : ca;
     pathOf(x, P.map(p => p.A.map((a, i) => [a[0] + (p.B[i][0] - a[0]) * e, a[1] + (p.B[i][1] - a[1]) * e])), ([a, c]) => [W / 2 + (a - b.cx) * k, H / 2 + (c - b.cy) * k]);
     x.fillStyle = lerpColor(ca, cb, clamp(e, 0, 1)); x.fill();
   };
@@ -4569,10 +4594,13 @@ function morphSheet() {
   let sensT = 0; sens.oninput = () => { st.sens = +sens.value; sens.style.setProperty('--p', st.sens + '%'); clearTimeout(sensT); sensT = setTimeout(() => { retrace('A'); retrace('B'); refresh(); }, 120); };
   const tog = (val, fn) => { const t = h('button', { class: 'tog' + (val ? ' on' : '') }); t.onclick = () => { const nv = !t.classList.contains('on'); t.classList.toggle('on', nv); fn(nv); }; return t; };
   const durI = h('input', { class: 'num', value: st.dur, inputmode: 'decimal' }); durI.onchange = () => { const v = safeEval(durI.value); if (!isNaN(v)) st.dur = clamp(v, .1, 60); durI.value = st.dur; };
+  const fromS = h('select', { class: 'sel' }); [['center', '가운데에서 피어나기'], ['bottom', '아래에서 솟아나기'], ['top', '위에서 흘러내리기'], ['left', '왼쪽에서 펼쳐지기'], ['right', '오른쪽에서 펼쳐지기'], ['point', '한 점에서 모여들기']].forEach(([v, l]) => fromS.append(h('option', { value: v }, l))); fromS.onchange = () => { st.from = fromS.value; refresh(); };
+  const fromRow = h('div', { class: 'frow', style: 'display:none' }, h('label', null, '생겨나는 방식'), fromS);
   const easeS = h('select', { class: 'sel' }); EASES.forEach((e, i) => easeS.append(h('option', { value: i }, e.n))); easeS.value = st.ease; easeS.onchange = () => st.ease = +easeS.value;
   const body = h('div', null,
     h('div', { class: 'mnotice', html: icon('help') + '<span>테두리가 명확한 사진만 사용해주세요.</span>' }),
     h('p', { class: 'hint', style: 'margin-top:0' }, '시작 사진과 끝 사진에서 도형의 윤곽을 따서, 한 모양이 다른 모양으로 바뀌는 애니메이션을 만듭니다. 떨어진 조각이 여러 개여도 함께 처리합니다. 단색 배경 위의 도형이나 배경이 투명한 PNG에서 가장 정확합니다.'),
+    h('p', { class: 'hint', style: 'margin-top:-4px;color:var(--fg2)' }, '모양을 하나만 골라도 돼요. ‘끝’에만 고르면 무(無)에서 스르륵 생겨나고, ‘시작’에만 고르면 스르륵 사라집니다.'),
     h('div', { class: 'mslots' }, mkSlot('A', '시작'), mkSlot('B', '끝')),
     h('div', { class: 'addsec' }, '미리보기'), prev,
     h('div', { class: 'addsec' }, '설정'),
@@ -4581,19 +4609,21 @@ function morphSheet() {
     h('p', { class: 'hint', style: 'margin:-4px 0 6px 102px' }, '테두리가 덜 잡히면 올리고, 배경까지 잡히면 내려 보세요.'),
     h('div', { class: 'frow' }, h('label', null, '크기 맞추기'), tog(st.fit, v => { st.fit = v; refresh(); }), h('span', { class: 'hint', style: 'margin:0' }, '끄면 사진 속 크기·위치 그대로')),
     h('div', { class: 'frow' }, h('label', null, '색도 같이 바꾸기'), tog(st.color, v => { st.color = v; })),
+    fromRow,
     h('div', { class: 'frow' }, h('label', null, '연결 시간'), durI, h('span', { class: 'unit' }, '초')),
     h('div', { class: 'frow' }, h('label', null, '움직임 느낌'), easeS));
   const create = () => {
     const P = st.built; if (!P) return; const pr = S.proj, fps = pr.fps;
-    const b = polysBox(P.map(p => p.A)), pos = [b.cx, b.cy], r2 = v => Math.round(v * 100) / 100;
+    const b = polysBox(P.flatMap(p => [p.A, p.B])), pos = [b.cx, b.cy], r2 = v => Math.round(v * 100) / 100;
     const pairs = P.map(p => ({ a: p.A.map(([px, py]) => [r2(px - pos[0]), r2(py - pos[1])]), b: p.B.map(([px, py]) => [r2(px - pos[0]), r2(py - pos[1])]) }));
     const tm = newLayerTimes(), t0 = Math.round(tm.start * fps) / fps, t1 = t0 + st.dur;
-    const ca = st.A.col || '#3d9bff', cb = st.color ? (st.B.col || ca) : ca;
+    const one = st.A || st.B, ca = (st.A || one).col || '#3d9bff', cb = st.color && st.A && st.B ? (st.B.col || ca) : ca;
     const L = makeLayer('path', { x: r2(pos[0]), y: r2(pos[1]), w: 100, h: 100, pts: pairs[0].a, fill: ca, smooth: false, name: '모양 연결', start: t0, end: Math.max(pr.dur, t1 + .5) });
     L.shape.morph = { pairs }; L.shape.closed = true; L.p.mp = P_(0); L.open = true;
     const e = deep(EASES[st.ease].e); upsertKey(L.p.mp, t0, 0).e = e; upsertKey(L.p.mp, t1, 100);
     if (ca !== cb) { upsertKey(L.p.fill, t0, ca).e = deep(e); upsertKey(L.p.fill, t1, cb); }
-    let hid = 0; ['A', 'B'].forEach(k => { const sl = st[k]; if (sl.kind === 'layer') { const o = findL(sl.lid); if (o && o.visible) { o.visible = false; hid++; } } });
+    if (st.single) L.name = st.single === 'in' ? '모양 나타나기' : '모양 사라지기';
+    let hid = 0; ['A', 'B'].forEach(k => { const sl = st[k]; if (sl && sl.kind === 'layer') { const o = findL(sl.lid); if (o && o.visible) { o.visible = false; hid++; } } });
     closeS(); addLayer(L); setTime(t0); openTab('style');
     toast(hid ? '모양 연결 레이어를 만들었어요 (원래 도형은 숨겼어요)' : '모양 연결 레이어를 만들었어요');
   };
