@@ -612,7 +612,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v35</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v36</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -667,6 +667,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v36</b><span>선택한 레이어는 선택 상자 안 어디를 끌어도 움직입니다. 잠긴 레이어를 누르면 잠겨 있다고 알려 줍니다. 모바일에서 살짝 흔들린 탭도 빈 곳 누르기로 인식해 선택이 풀립니다.</span></li>
         <li><b>v35</b><span>도형과 선은 실제로 그려진 부분을 눌러야 선택되고, 그 주변 빈 곳을 누르면 선택이 풀립니다. 내 프로젝트에 백업 안내와 파일 저장 버튼을 넣었습니다.</span></li>
         <li><b>v34</b><span>계정에는 프로젝트를 압축해서 아주 작게 올립니다(계정당 3MB, 프로젝트당 300KB까지). 내 프로젝트에서 기기·계정 사용량과 프로젝트별 용량을 볼 수 있습니다.</span></li>
         <li><b>v33</b><span>‘내 프로젝트’가 생겼습니다. 만든 프로젝트가 모두 자동으로 저장되고, 목록에서 골라 다시 열거나 이름 바꾸기·복제·삭제를 할 수 있습니다. 게스트는 이 컴퓨터에, 구글 로그인 사용자는 계정에 저장됩니다.</span></li>
@@ -1945,6 +1946,7 @@ function hitShape(L, t, p, tol) {
   }
   return false;
 }
+function lockedAt(cx, cy) { const t = S.time; for (let i = S.proj.layers.length - 1; i >= 0; i--) { const L = S.proj.layers[i]; if (!L.visible || !(L.locked || groupLocked(L)) || L.type === 'audio' || L.type === 'adjust' || L.type === 'group' || !layerActive(L, t)) continue; let inv; try { inv = layerMatrix(L, t).inverse(); } catch (e) { continue; } const p = inv.transformPoint(new DOMPoint(cx, cy)), b = layerBounds(L, t); if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) return L; } return null; }
 function hitLayer(cx, cy, raw) {
   const t = S.time, Ls = S.proj.layers, m = VM();
   for (let i = Ls.length - 1; i >= 0; i--) {
@@ -1957,7 +1959,7 @@ function hitLayer(cx, cy, raw) {
     const tol = (S.mode === 'mobile' ? 12 : 4) / (m.z * detScale(M));
     if (p.x >= b.x - tol && p.x <= b.x + b.w + tol && p.y >= b.y - tol && p.y <= b.y + b.h + tol) {
       if (pv(L.p.op, t) < 1) continue; // fully transparent right now: click goes through
-      if ((L.type === 'shape' || L.type === 'path') && !hitShape(L, t, p, tol)) continue;
+      if ((L.type === 'shape' || L.type === 'path') && L.id !== S.sel && !hitShape(L, t, p, tol)) continue; // the selected layer can be dragged anywhere inside its box
       if (raw) return L;
       const chain = groupChain(L).reverse(); const closed = chain.find(G => !G.open); return closed || L;
     }
@@ -2014,6 +2016,7 @@ view.addEventListener('pointerdown', e => {
     drag = { mode: 'move', L: hit, start: [cx, cy], x0: pv(hit.p.x, t), y0: pv(hit.p.y, t), pinv: parentInv(hit, t), moved: false };
     return;
   }
+  if (inComp) { const lk = lockedAt(cx, cy); if (lk && !lockedAt.told) { lockedAt.told = true; toast(`‘${lk.name}’ 레이어는 잠겨 있어요. 타임라인에서 레이어를 ${mob ? '길게 누르면' : '오른쪽 클릭하면'} 잠금을 풀 수 있어요`); } }
   if (mob) { drag = { mode: 'pan', sx, sy, px: S.view.px, py: S.view.py, tapDesel: true }; materializeZoom(); return; }
   select(null); drag = { mode: 'pan', sx, sy, px: S.view.px, py: S.view.py, noop: true };
 });
@@ -2030,7 +2033,7 @@ view.addEventListener('pointermove', e => {
   if (drag.mode === 'brush') { const ev = e.getCoalescedEvents ? e.getCoalescedEvents() : [e]; (ev.length ? ev : [e]).forEach(q => { const [qx, qy] = stageXY(q); if (Math.hypot(qx - drag.last[0], qy - drag.last[1]) >= 1.5) { drag.last = [qx, qy]; drag.pts.push(toComp(m, qx, qy)); } }); dirtyView = true; return; }
   const L = drag.L;
   switch (drag.mode) {
-    case 'pan': if (drag.noop) return; if (Math.hypot(sx - drag.sx, sy - drag.sy) > 4) drag.tapDesel = false; S.view.px = drag.px + sx - drag.sx; S.view.py = drag.py + sy - drag.sy; dirtyView = true; break;
+    case 'pan': if (drag.noop) return; if (Math.hypot(sx - drag.sx, sy - drag.sy) > (S.mode === 'mobile' ? 10 : 4)) drag.tapDesel = false; S.view.px = drag.px + sx - drag.sx; S.view.py = drag.py + sy - drag.sy; dirtyView = true; break;
     case 'move': {
       let dx = cx - drag.start[0], dy = cy - drag.start[1];
       if (!drag.moved && Math.hypot(dx, dy) * m.z < 3) return; drag.moved = true;
@@ -2332,6 +2335,7 @@ function drawTLBase() {
       x.restore();
       // eye
       const ex = d.LW - (mob ? 18 : 40); x.strokeStyle = L.visible ? '#a0a0a0' : '#4a4a4a'; x.lineWidth = 1.4; x.beginPath(); x.ellipse(ex, cy, 7, 4.5, 0, 0, TAU); x.stroke(); if (L.visible) { x.fillStyle = '#a0a0a0'; x.beginPath(); x.arc(ex, cy, 2, 0, TAU); x.fill(); } else { x.beginPath(); x.moveTo(ex - 7, cy + 5); x.lineTo(ex + 7, cy - 5); x.stroke(); }
+      if (mob && L.locked) { const lx = d.LW - 40; x.strokeStyle = '#ffbf47'; x.lineWidth = 1.5; x.beginPath(); x.roundRect(lx - 5, cy - 1, 10, 7, 1.5); x.stroke(); x.beginPath(); x.arc(lx, cy - 2, 3, Math.PI, 0); x.stroke(); }
       if (!mob) { const lx = d.LW - 16; x.strokeStyle = L.locked ? '#ffbf47' : '#4a4a4a'; x.beginPath(); x.roundRect(lx - 5, cy - 1, 10, 7, 1.5); x.stroke(); x.beginPath(); x.arc(lx, cy - 2, 3, Math.PI, 0); x.stroke(); }
       if (L.matte !== 'none') { x.fillStyle = '#ff6fb1'; x.font = '600 9px "IBM Plex Sans KR", sans-serif'; x.fillText('매트', d.LW - iconsW - 22, cy); }
       if (L.solo) { x.fillStyle = '#ffbf47'; x.font = '700 9px "IBM Plex Sans KR", sans-serif'; x.fillText('S', d.LW - iconsW - 8, cy); }
@@ -2616,10 +2620,10 @@ function graphKeys() {
   if (pair[gk.key] && getProp(L, pair[gk.key])) keys.push(pair[gk.key]);
   return keys.map(k => ({ L, k, p: getProp(L, k) }));
 }
-function ensureGraphKey() {
+function ensureGraphKey(autoSel) {
   const sk = S.selK.find(s => findL(s.lid) && getProp(findL(s.lid), s.key)); if (sk) { S.graphKey = { lid: sk.lid, key: sk.key }; return; }
   let L = selL(); const le = S.lastEdit && findL(S.lastEdit.lid);
-  if (!L && le) { select(le.id, true); L = le; }
+  if (!L && le && autoSel) { select(le.id, true); L = le; } // only when the graph is being opened, never right after the person deselected
   if (!L) return;
   const lk = S.lastKeyBy && S.lastKeyBy[L.id]; if (lk && getProp(L, lk)) { S.graphKey = { lid: L.id, key: lk }; return; }
   if (S.graphKey && S.graphKey.lid === L.id && getProp(L, S.graphKey.key)) return;
@@ -3930,13 +3934,13 @@ async function libSheet() {
   await saveNow();
   const body = h('div', { class: 'lib' }), grid = h('div', { class: 'libgrid' }), info = h('div', { class: 'libinfo' });
   const where = AUTH.user
-    ? h('div', { class: 'libwhere cloud', html: icon('user') + `<span><b>${(AUTH.user.email || AUTH.user.name || '').replace(/[<>&]/g, '')}</b> 계정에 저장돼요. 다른 기기에서 같은 계정으로 로그인하면 이어서 열 수 있어요.</span>` })
+    ? h('div', { class: 'libwhere cloud', html: icon('user') + `<span><b>${(AUTH.user.email || AUTH.user.name || '').replace(/[<>&]/g, '')}</b> 계정에 저장돼요. 다른 기기에서 같은 계정으로 로그인하면 이어서 열 수 있어요. 단, 기기에 있는 사진이나 동영상은 다른 기기에서 불러와지지 않습니다. 정확한 저장을 원하시면 프로젝트 저장(.json)으로 해 주십시오.</span>` })
     : h('div', { class: 'libwhere' }, h('span', { html: icon('folder') + '<span>게스트: 이 컴퓨터(브라우저)에만 저장돼요. 브라우저 데이터를 지우면 함께 사라져요.</span>' }), h('button', { class: 'btn sm', onclick: async () => { const ok = await googleLogin(); if (ok) { closeSheet(); setTimeout(libSheet, 300); } } }, '구글로 로그인'));
   const tools = h('div', { class: 'btnrow libtools' },
     h('button', { class: 'btn primary sm', html: icon('plus') + '새 프로젝트', onclick: async () => { closeSheet(); await saveNow(); startProject(newProject({ name: nextProjName() })); toast('새 프로젝트를 만들었어요'); } }),
     h('button', { class: 'btn sm', html: icon('folder') + '파일에서 열기 (.json)', onclick: () => { closeSheet(); $('#projIn').click(); } }));
   const usage = h('div', { class: 'libusage' });
-  const warn = h('div', { class: 'libwarn' }, h('div', { class: 'lw-t' }, h('b', null, '⚠ 꼭 백업하세요'), h('span', null, '브라우저 데이터(쿠키 및 사이트 데이터)를 지우면 이 기기에 저장된 프로젝트와 사진·영상·소리가 모두 사라져요. ' + (AUTH.user ? '계정에는 설계도만 남고 사진·영상은 사라져요. ' : '') + '중요한 작업은 ‘프로젝트 파일로 저장 (.json)’으로 꼭 내려받아 두세요. 이 파일에는 사진·영상까지 모두 들어가요.')), h('button', { class: 'btn sm', html: icon('export') + '지금 프로젝트 파일로 저장 (.json)', onclick: () => saveProjectFile() }));
+  const warn = h('div', { class: 'libwarn' }, h('div', { class: 'lw-t' }, h('b', null, '⚠ 꼭 백업하세요'), h('span', null, AUTH.user ? '기기에 있는 사진이나 동영상은 다른 기기에서 불러와지지 않습니다. 정확한 저장을 원하시면 프로젝트 저장(.json)으로 해 주십시오. 브라우저 데이터(쿠키 및 사이트 데이터)를 지우면 이 기기의 사진·영상·소리도 사라져요.' : '브라우저 데이터(쿠키 및 사이트 데이터)를 지우면 이 기기에 저장된 프로젝트와 사진·영상·소리가 모두 사라져요. 중요한 작업은 ‘프로젝트 파일로 저장 (.json)’으로 꼭 내려받아 두세요. 이 파일에는 사진·영상까지 모두 들어가요.')), h('button', { class: 'btn sm', html: icon('export') + '지금 프로젝트 파일로 저장 (.json)', onclick: () => saveProjectFile() }));
   body.append(where, warn, usage, tools, info, grid);
   const closeSheet = openSheet('내 프로젝트', body);
   const draw = (list, cloudOK) => {
@@ -4364,7 +4368,7 @@ function setDock(d) {
   S.dock = d; $('#graphPanel').hidden = d !== 'graph'; app.classList.toggle('graphmode', d === 'graph'); tlc.style.visibility = d === 'graph' ? 'hidden' : 'visible';
   if (d === 'graph' && S.mode === 'mobile') { $('#inspector').classList.remove('open'); $$('#mobilebar button').forEach(b => b.classList.remove('on')); }
   $$('#dockSeg button').forEach(b => b.classList.toggle('on', b.dataset.d === d));
-  if (d === 'graph') { if (!S.keepGraphKey) ensureGraphKey(); S.keepGraphKey = false; G.mode = 'speed'; refreshGraphBar(); requestAnimationFrame(() => { resizeGraph(); fitGraph(); }); } else { requestAnimationFrame(() => { resizeTL(); dirtyTL = true; }); dirtyTL = true; }
+  if (d === 'graph') { if (!S.keepGraphKey) ensureGraphKey(true); S.keepGraphKey = false; G.mode = 'speed'; refreshGraphBar(); requestAnimationFrame(() => { resizeGraph(); fitGraph(); }); } else { requestAnimationFrame(() => { resizeTL(); dirtyTL = true; }); dirtyTL = true; }
 }
 
 /* ================= SHAPE MORPH (모양 연결) ================= */
