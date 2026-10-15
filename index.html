@@ -273,8 +273,13 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .prow.selk .colorbox .hex{color:var(--kf)}
 .easeparams .eprow{display:grid;grid-template-columns:72px 1fr 44px;align-items:center;gap:6px;min-height:26px;font-size:11.5px;color:var(--fg2)}
 .easeparams .epv{text-align:right;font-variant-numeric:tabular-nums;color:var(--val)}
-.app[data-mode=mobile] .gside .easeparams{min-width:230px;flex:none;order:-1}
+.app[data-mode=mobile] .gside .easeparams{min-width:250px;flex:none;order:-1;overflow-y:auto;max-height:100%;padding-right:4px}
+.app[data-mode=mobile] .gside:has(.easeparams:not(:empty)){max-height:170px}
 .easeparams:not(:empty){padding:6px 0 8px;border-bottom:1px solid var(--line)}
+.gside .easeparams{order:-1}
+.easeparams .epchips{display:flex;flex-wrap:wrap;gap:4px;margin:2px 0 6px 78px}.easeparams .epchips button{font:inherit;font-size:11px;padding:2px 7px;border-radius:3px;border:1px solid var(--line2);background:var(--bg2);color:var(--fg2);cursor:pointer}.easeparams .epchips button.on{background:var(--accbg);border-color:var(--accline);color:var(--fg)}
+.easeparams .epseg{grid-column:2/4;display:flex}.easeparams .epseg button{flex:1;font-size:11px;padding:3px 4px;white-space:nowrap}
+.easeparams .ephint{margin:4px 0 0;font-size:12px;color:var(--fg2);line-height:1.5}
 .app[data-mode=mobile] .gside .easeparams:empty{display:none}
 .kfnav{width:14px;height:20px;display:grid;place-items:center;color:var(--kf);flex:none;border-radius:var(--r)}
 .kfnav svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
@@ -314,8 +319,15 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .kbd{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:12px}
 .kbd kbd{font-family:var(--mono);font-size:10.5px;background:var(--bg0);border:1px solid var(--line2);border-radius:2px;padding:1px 6px;justify-self:start;white-space:nowrap}
 .kbd span{color:var(--fg2)}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:#383838;color:var(--fg);border:1px solid #4a4a4a;border-radius:3px;padding:7px 12px;font-size:12px;z-index:120;transition:opacity .2s,transform .2s;pointer-events:none;max-width:calc(100% - 32px);text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:#383838;color:#f2f2f2;border:1px solid #555;border-radius:6px;padding:10px 16px;font-size:14px;font-weight:500;line-height:1.45;z-index:120;transition:opacity .2s,transform .2s;pointer-events:none;width:max-content;max-width:min(560px,calc(100vw - 32px));text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4);word-break:keep-all}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{display:flex;align-items:center;gap:10px;background:#3d3014;border:1.5px solid var(--warn);color:#ffe3a6;font-size:15px;font-weight:600;padding:12px 18px;box-shadow:0 10px 32px rgba(0,0,0,.55),0 0 0 4px rgba(230,162,60,.14)}
+.toast.warn .ticon{flex:none;width:22px;height:22px;border-radius:50%;background:var(--warn);color:#2a1d05;display:grid;place-items:center;font-weight:800;font-size:14px;line-height:1}
+.toast.warn.show{animation:toast-nudge .42s ease}
+@keyframes toast-nudge{0%{transform:translate(-50%,0)}20%{transform:translate(calc(-50% - 7px),0)}40%{transform:translate(calc(-50% + 6px),0)}60%{transform:translate(calc(-50% - 4px),0)}80%{transform:translate(calc(-50% + 2px),0)}100%{transform:translate(-50%,0)}}
+.app[data-mode=mobile] ~ .toast{bottom:calc(86px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 24px)}
+.toast.warn{text-align:left}
+@media (prefers-reduced-motion:reduce){.toast.warn.show{animation:none}}
 .ctx{position:fixed;z-index:70;background:#2b2b2b;border:1px solid #444;border-radius:3px;padding:3px;min-width:200px;box-shadow:0 12px 36px rgba(0,0,0,.55);max-height:75vh;overflow-y:auto}
 .ctx button{display:flex;align-items:center;gap:9px;width:100%;padding:5px 10px;border-radius:2px;font-size:12px;color:var(--fg);text-align:left}
 .ctx button svg.i{width:14px;height:14px;color:var(--fg2)}
@@ -421,7 +433,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .agrid button.on i{background:var(--kf);box-shadow:0 0 0 3px rgba(242,182,48,.25)}
 .app[data-mode=mobile] .agrid{grid-template-columns:repeat(3,30px);grid-template-rows:repeat(3,30px)}
 /* shape morph sheet */
-.mnotice{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:3px;background:rgba(242,182,48,.12);border:1px solid rgba(242,182,48,.45);color:#f5c862;font-size:12.5px;font-weight:600;margin-bottom:10px}
+.mnotice{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:4px;background:rgba(242,182,48,.14);border:1.5px solid rgba(242,182,48,.6);color:#ffd77a;font-size:14px;font-weight:600;margin-bottom:10px}
 .mnotice svg.i{width:16px;height:16px}
 .mslots{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .mslot{border:1px solid var(--line2);border-radius:3px;padding:8px;background:var(--bg2);display:flex;flex-direction:column;gap:6px;min-width:0}
@@ -561,7 +573,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 15.5C9 15.5 11 4.5 15.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="2.3" y="13.3" width="4.4" height="4.4" transform="rotate(45 4.5 15.5)" fill="currentColor"/><rect x="13.3" y="2.3" width="4.4" height="4.4" transform="rotate(45 15.5 4.5)" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v25</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 15.5C9 15.5 11 4.5 15.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="2.3" y="13.3" width="4.4" height="4.4" transform="rotate(45 4.5 15.5)" fill="currentColor"/><rect x="13.3" y="2.3" width="4.4" height="4.4" transform="rotate(45 15.5 4.5)" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v27</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -616,6 +628,8 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v27</b><span>"레이어를 먼저 선택하세요"처럼 할 수 없다는 안내가 더 크고 눈에 띄는 경고로 나옵니다.</span></li>
+        <li><b>v26</b><span>바운스 이징: 튀는 횟수를 빠르게 고르는 버튼과, 끝 값에 착지할지 튀어 오른 채 끝낼지 고르는 옵션이 생겼습니다. 바운스·탄성 설정이 그래프 옆 목록 맨 위에 보입니다.</span></li>
         <li><b>v25</b><span>처음 시작하면 튜토리얼이 나옵니다. 화면 구성, 화면 비율 설정, 첫 애니메이션, 저장과 새 프로젝트까지 따라 하며 배울 수 있고, 도움말 메뉴에서 다시 볼 수 있습니다.</span></li>
         <li><b>v24</b><span>시작 화면을 새로 꾸몄습니다. 사각형은 모서리가 각진 채로 만들어집니다.</span></li>
         <li><b>v23</b><span>레이어 가운데를 끌면 중심점이 아니라 레이어가 움직입니다. 입력 중에도 Esc로 창이 닫히고, 값 이름이 잘리지 않습니다.</span></li>
@@ -893,12 +907,14 @@ function cubicBezier(x1, y1, x2, y2, t) {
   return sy(u);
 }
 function bounceOut(t) { const n = 7.5625, d = 2.75; if (t < 1 / d) return n * t * t; if (t < 2 / d) return n * (t -= 1.5 / d) * t + .75; if (t < 2.5 / d) return n * (t -= 2.25 / d) * t + .9375; return n * (t -= 2.625 / d) * t + .984375; }
-/* n bounces, each reaching r times the previous height (r = 1 bounces all the way back); f > 1 makes the bounces quicker */
-function bounceP(t, n, r, f = 1) {
-  n = Math.round(clamp(n, 0, 30)); r = clamp(r, .02, 1); f = clamp(f, .2, 6); let T = 1, H = 1; for (let i = 0; i < n; i++) { H *= r; T += 2 * Math.sqrt(H) / f; }
-  let x = clamp(t, 0, 1) * T; if (x <= 1) return x * x; x -= 1; H = 1;
-  for (let i = 0; i < n; i++) { H *= r; const d = 2 * Math.sqrt(H) / f; if (x <= d) { const s_ = x / d; return 1 - H * (1 - (2 * s_ - 1) * (2 * s_ - 1)); } x -= d; }
-  return 1;
+/* n bounces, each reaching r times the previous height (r = 1 bounces all the way back); f > 1 makes the bounces quicker.
+   down = true ends at the top of the last bounce (back toward the start) instead of landing on the end value */
+function bounceT(n, r, f, down) { n = Math.round(clamp(n, 0, 30)); r = clamp(r, .02, 1); f = clamp(f, .2, 6); let T = 1, H = 1; for (let i = 0; i < n; i++) { H *= r; T += (down && i === n - 1 ? 1 : 2) * Math.sqrt(H) / f; } return T; }
+function bounceP(t, n, r, f = 1, down = false) {
+  n = Math.round(clamp(n, 0, 30)); r = clamp(r, .02, 1); f = clamp(f, .2, 6); if (!n) down = false; const T = bounceT(n, r, f, down);
+  let x = clamp(t, 0, 1) * T; if (x <= 1) return x * x; x -= 1; let H = 1;
+  for (let i = 0; i < n; i++) { H *= r; const d = 2 * Math.sqrt(H) / f, last = down && i === n - 1; if (x <= (last ? d / 2 : d)) { const s_ = Math.min(x / d, last ? .5 : 1); return 1 - H * (1 - (2 * s_ - 1) * (2 * s_ - 1)); } x -= d; }
+  return down ? 1 - H : 1;
 }
 function elasticOut(t, osc = 3, damp = 5) { if (t <= 0) return 0; if (t >= 1) return 1; return 1 - Math.exp(-damp * t) * Math.cos(osc * 2 * Math.PI * t) * (1 - t * 0.0) * (1 - Math.pow(t, 8)); }
 function easeVal(e, t) {
@@ -906,7 +922,7 @@ function easeVal(e, t) {
   switch (e.type) {
     case 'hold': return 0;
     case 'linear': return t;
-    case 'bounce': return e.n != null ? bounceP(t, e.n, e.r, e.f || 1) : bounceOut(t);
+    case 'bounce': return e.n != null ? bounceP(t, e.n, e.r, e.f || 1, e.end === 'down') : bounceOut(t);
     case 'elastic': return elasticOut(t, e.osc || 3, e.damp || 5);
     case 'bez': return cubicBezier(e.x1, e.y1, e.x2, e.y2, t);
   }
@@ -2618,7 +2634,7 @@ function speedBox(W, H, e) {
 /* handle for preset-style easings: the first bounce apex, or the first elastic overshoot */
 function easeParamHandle(e) {
   if (!e) return null;
-  if (e.type === 'bounce') { const n = e.n != null ? e.n : 3, r = e.r != null ? e.r : .3, f = clamp(e.f || 1, .2, 6); if (n < 1) return null; let T = 1, H = 1; for (let i = 0; i < n; i++) { H *= r; T += 2 * Math.sqrt(H) / f; } return { u: (1 + Math.sqrt(r) / f) / T, v: 1 - r }; }
+  if (e.type === 'bounce') { const n = e.n != null ? e.n : 3, r = e.r != null ? e.r : .3, f = clamp(e.f || 1, .2, 6); if (n < 1) return null; const T = bounceT(n, r, f, e.end === 'down'); return { u: (1 + Math.sqrt(r) / f) / T, v: 1 - r }; }
   if (e.type === 'elastic') { const osc = e.osc || 3, tp = 1 / (2 * osc); return { u: tp, v: elasticOut(tp, osc, e.damp || 5) }; }
   return null;
 }
@@ -2677,7 +2693,7 @@ function drawSpeed(W, H, o, isColor) {
       // speed over time
       if (e.type !== 'hold') {
         const sy0 = ty + 52, sh = Math.min(110, H - B.bot - 26 - sy0), N = 120; let vmax = 0; const vel = []; if (sh >= 34) {
-        for (let i = 0; i <= N; i++) { const u = i / N, a = Math.max(0, u - .004), b = Math.min(1, u + .004), d = (ev(b) - ev(a)) / ((b - a) || 1); vel.push(d); vmax = Math.max(vmax, Math.abs(d)); }
+        for (let i = 0; i <= N; i++) { const u = i / N, a = Math.max(0, u - .004), b = Math.min(1, u + .004), m_ = ev(u), d = Math.max(u > a ? Math.abs(m_ - ev(a)) / (u - a) : 0, b > u ? Math.abs(ev(b) - m_) / (b - u) : 0); vel.push(d); vmax = Math.max(vmax, Math.abs(d)); }
         x.fillStyle = 'rgba(255,255,255,.03)'; x.fillRect(rx, sy0, rw, sh);
         x.beginPath(); x.moveTo(rx, sy0 + sh); vel.forEach((d, i) => x.lineTo(rx + rw * i / N, sy0 + sh - Math.abs(d) / (vmax || 1) * sh * .92)); x.lineTo(rx + rw, sy0 + sh); x.closePath(); x.fillStyle = 'rgba(95,211,255,.18)'; x.fill();
         x.beginPath(); vel.forEach((d, i) => { const px = rx + rw * i / N, py = sy0 + sh - Math.abs(d) / (vmax || 1) * sh * .92; i ? x.lineTo(px, py) : x.moveTo(px, py); }); x.strokeStyle = '#5fd3ff'; x.lineWidth = 1.6; x.stroke();
@@ -2836,12 +2852,20 @@ function refreshEaseParams() {
     ? [['n', '튀는 횟수', 0, 20, 1, e.n != null ? e.n : 3, v => v + '번'], ['r', '튀는 높이', .02, 1, .01, e.r != null ? e.r : .3, v => Math.round(v * 100) + '%'], ['f', '빈도', .3, 4, .05, e.f || 1, v => (+v).toFixed(2) + '×']]
     : [['osc', '흔들림 횟수', .5, 12, .1, e.osc || 3, v => (+v).toFixed(1) + '회'], ['damp', '잦아드는 속도', .5, 30, .1, e.damp || 5, v => (+v).toFixed(1)]];
   box.append(h('div', { class: 'glabel', style: 'margin:2px 0 6px' }, e.type === 'bounce' ? '바운스 설정' : '탄성 설정'));
+  const setAll = (k, v) => list.forEach(s_ => { if (s_.k.e && s_.k.e.type === e.type) { if (e.type === 'bounce' && s_.k.e.n == null) { s_.k.e.n = 3; s_.k.e.r = .3; } if (v == null) delete s_.k.e[k]; else s_.k.e[k] = v; } });
   rows.forEach(([k, l, mn, mx, st, val, fmt]) => {
     const out = h('span', { class: 'epv' }, fmt(val)), sl = h('input', { type: 'range', class: 'slider', min: mn, max: mx, step: st, value: val }); sl.style.setProperty('--p', (val - mn) / (mx - mn) * 100 + '%');
-    sl.oninput = () => { const v = parseFloat(sl.value); sl.style.setProperty('--p', (v - mn) / (mx - mn) * 100 + '%'); out.textContent = fmt(v); list.forEach(s_ => { if (s_.k.e && s_.k.e.type === e.type) { if (e.type === 'bounce' && s_.k.e.n == null) { s_.k.e.n = 3; s_.k.e.r = .3; } s_.k.e[k] = v; } }); invalidate(); dirtyGraph = true; };
-    sl.onchange = () => commit();
+    sl.oninput = () => { const v = parseFloat(sl.value); sl.style.setProperty('--p', (v - mn) / (mx - mn) * 100 + '%'); out.textContent = fmt(v); setAll(k, v); invalidate(); dirtyGraph = true; };
+    sl.onchange = () => { commit(); if (k === 'n') refreshEaseParams(); };
     box.append(h('div', { class: 'eprow' }, h('span', null, l), sl, out));
+    if (k === 'n') { const chips = h('div', { class: 'epchips' }); [1, 2, 3, 4, 6, 10].forEach(c => chips.append(h('button', { class: (e.n != null ? e.n : 3) === c ? 'on' : '', onclick: () => { setAll('n', c); commit(); invalidate(); dirtyGraph = true; refreshEaseParams(); } }, c + '번'))); box.append(chips); }
   });
+  if (e.type === 'bounce') {
+    const down = e.end === 'down', n = e.n != null ? e.n : 3;
+    const seg = h('div', { class: 'seg epseg' }, ...[['up', '끝 값에 착지'], ['down', '튀어 오른 채']].map(([v, l]) => h('button', { class: (v === 'down') === down ? 'on' : '', onclick: () => { setAll('end', v === 'down' ? 'down' : null); commit(); invalidate(); dirtyGraph = true; refreshEaseParams(); } }, l)));
+    box.append(h('div', { class: 'eprow' }, h('span', null, '끝날 때'), seg, h('span')));
+    box.append(h('p', { class: 'ephint' }, n < 1 ? '튀는 횟수를 1번 이상으로 하면 끝나는 모양을 고를 수 있어요.' : down ? `${n}번 튀고, 마지막엔 ${Math.round((e.r != null ? e.r : .3) ** n * 100)}% 높이로 튀어 오른 채 끝나요.` : `${n}번 튀고 끝 값에 내려앉아요.`));
+  }
 }
 function refreshBezInputs() { const k = S.selK[0]; const e = k && k.k.e; ['x1', 'y1', 'x2', 'y2'].forEach(n => { const i = $('#bz_' + n); if (i && document.activeElement !== i) i.value = e && e.type === 'bez' ? +e[n].toFixed(3) : ''; }); if (!(gd && gd.mode === 'sp')) refreshEaseParams(); dirtyGraph = true; }
 /* ================= INSPECTOR ================= */
@@ -3222,10 +3246,13 @@ function fitLayer(L, cover) {
 }
 /* ================= APP OPERATIONS ================= */
 const app = $('#app');
+const TOAST_WARN = /(없어요|없습니다|못했|못 했|먼저|선택하세요|선택해야|할 수 없|쓸 수 없|열 수 없|실패|지원하지|않아요|안 돼|안돼|불가)/;
 function toast(msg, act) {
-  const t = $('#toast'); t.innerHTML = ''; t.append(h('span', null, msg)); t.classList.toggle('act', !!act);
+  const t = $('#toast'), warn = TOAST_WARN.test(msg); t.innerHTML = ''; t.classList.remove('show', 'warn'); void t.offsetWidth;
+  if (warn) t.append(h('span', { class: 'ticon', 'aria-hidden': 'true' }, '!'));
+  t.append(h('span', null, msg)); t.classList.toggle('act', !!act); t.classList.toggle('warn', warn); t.setAttribute('role', warn ? 'alert' : 'status');
   if (act) t.append(h('button', { onclick: () => { t.classList.remove('show'); act.fn(); } }, act.l));
-  t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), act ? 4500 : 2200);
+  t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), act ? 4500 : warn ? 3600 : 2400);
 }
 const Hist = { stack: [], idx: -1 };
 function commit() {
