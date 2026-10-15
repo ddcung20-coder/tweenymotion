@@ -250,12 +250,14 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .fxsearch{display:flex;align-items:center;gap:8px;background:var(--bg0);border:1px solid var(--line2);border-radius:var(--r);padding:0 8px;margin-bottom:8px;color:var(--fg3)}
 .fxsearch:focus-within{border-color:var(--acc)}
 .fxsearch input{flex:1;background:none;border:0;outline:none;padding:7px 0;color:var(--fg);-webkit-user-select:text;user-select:text}
-.fxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
-.fxitem{text-align:left;padding:8px 9px;border-radius:3px;background:var(--bg2);border:1px solid var(--line2);display:flex;flex-direction:column;gap:3px}
+.fxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+.fxitem{text-align:left;padding:0;border-radius:4px;background:var(--bg2);border:1px solid var(--line2);display:flex;flex-direction:column;overflow:hidden}
+.fxitem canvas{display:block;width:100%;height:auto;aspect-ratio:16/10;background:#17191f;border-bottom:1px solid var(--line)}
+.fxitem .fxt{display:flex;flex-direction:column;gap:3px;padding:7px 9px 9px}
 .fxitem:hover{border-color:var(--accline);background:var(--bg3)}
 .fxitem b{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
 .fxitem b i{width:7px;height:7px;border-radius:1px}
-.fxitem span{font-size:10.5px;color:var(--fg3);line-height:1.45}
+.fxitem span{font-size:10.5px;color:var(--fg3);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .opt{display:flex;align-items:center;gap:10px;padding:9px;border-radius:3px;background:var(--bg2);border:1px solid var(--line2);text-align:left;width:100%}
 .opt:hover{background:var(--bg3)}
 .opt.on{border-color:var(--acc);background:var(--accbg)}
@@ -406,146 +408,116 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 @media (max-width:520px){.pbar #pDur{display:none}}
 
 /* brand */
-.brand .dmark{width:17px;height:17px;flex:none;display:block}
-.brand .wm{font-family:'Unbounded',var(--ui);font-weight:600;font-size:12px;letter-spacing:-.01em}
+.brand .dmark{width:17px;height:17px;flex:none;display:block;color:var(--acc2)}
+.brand .wm{font-weight:700;font-size:12.5px;letter-spacing:-.01em}
 
-/* ================= intro page ================= */
-#intro{position:fixed;inset:0;z-index:300;overflow-y:auto;overflow-x:hidden;background:var(--bg0);color:var(--fg);font-size:15px;line-height:1.65;word-break:keep-all;overflow-wrap:anywhere;-webkit-user-select:text;user-select:text;transition:opacity .25s ease;overscroll-behavior:contain}
+/* ================= intro (start screen) ================= */
+#intro{position:fixed;inset:0;z-index:300;overflow-y:auto;background:var(--bg0);color:var(--fg);font-size:14.5px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere;-webkit-user-select:text;user-select:text;transition:opacity .2s ease;overscroll-behavior:contain}
 #intro.out{opacity:0;pointer-events:none}
-#intro a{text-decoration:none;color:inherit}
-#intro .iw{max-width:1120px;margin:0 auto;padding:0 28px}
-#intro .inav{position:sticky;top:0;z-index:2;background:rgba(20,20,20,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-#intro .inav .iw{display:flex;align-items:center;height:56px;gap:10px}
-#intro .ilogo{display:flex;align-items:center;gap:9px;font-family:'Unbounded',var(--ui);font-weight:600;font-size:16px;letter-spacing:-.01em;color:#fff}
-#intro .ilogo svg{width:22px;height:22px}
-#intro .inav .sp{flex:1}
-#intro .ilink{color:var(--fg2);font-size:14px;padding:8px 10px;border-radius:4px}
-#intro .ilink:hover{color:var(--fg);background:var(--bg2)}
-#intro .ibtn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 22px;border-radius:6px;font-size:15px;font-weight:600;background:var(--acc);color:#fff;transition:background .15s}
+#intro a{color:var(--acc2);text-decoration:none}
+#intro .ibar{display:flex;align-items:center;gap:10px;height:46px;padding:0 20px;border-bottom:1px solid var(--sep);background:var(--bg1)}
+#intro .ibar .wm{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:#fff;letter-spacing:-.01em}
+#intro .ibar .wm svg{width:19px;height:19px;color:var(--acc2)}
+#intro .ibar .ver{font-size:12px;color:var(--fg3)}
+#intro .ibar .sp{flex:1}
+#intro .ibtn{height:34px;padding:0 16px;border-radius:3px;font-size:13.5px;font-weight:600;background:var(--acc);color:#fff}
 #intro .ibtn:hover{background:#3f99f2}
-#intro .ibtn.sm{height:36px;padding:0 16px;font-size:14px}
-#intro .ibtn.ghost{background:var(--bg2);color:var(--fg);border:1px solid var(--line2)}
-#intro .ibtn.ghost:hover{background:var(--bg3)}
-#intro .ibtn svg{width:16px;height:16px}
-#intro .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;align-items:center;padding:72px 0 80px}
-#intro .eyebrow{font-size:13px;font-weight:600;color:var(--acc2);margin:0 0 14px;letter-spacing:.02em}
-#intro h1{font-size:clamp(30px,3.6vw,44px);line-height:1.18;letter-spacing:-.025em;margin:0 0 20px;color:#fff;font-weight:700;text-wrap:balance}
-#intro .lead{font-size:17px;color:var(--fg2);margin:0 0 30px;max-width:30em}
-#intro .lead b{color:var(--fg);font-weight:600}
-#intro .cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-#intro .note{font-size:13px;color:var(--fg3);margin:18px 0 0}
+#intro .ibtn.sec{background:var(--bg3);color:var(--fg)}
+#intro .ibtn.sec:hover{background:var(--bg4)}
+#intro .ibtn:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+#intro .ibody{display:grid;grid-template-columns:440px minmax(0,620px);gap:56px;justify-content:center;padding:48px 28px 88px}
+#intro .ishow{position:sticky;top:32px;align-self:start;margin:0}
 #intro .demo{background:var(--bg1);border:1px solid var(--line2);border-radius:10px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45)}
 #intro .demo .dbar{height:30px;display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid var(--line);font-size:11px;color:var(--fg3)}
 #intro .demo .dbar i{width:9px;height:9px;border-radius:50%;background:var(--bg4)}
 #intro .demo .dbar span{margin-left:8px;font-family:var(--mono)}
 #intro .demo canvas{display:block;width:100%;aspect-ratio:16/11}
-#intro section{padding:72px 0;border-top:1px solid var(--line)}
-#intro h2{font-size:clamp(24px,3vw,32px);letter-spacing:-.02em;line-height:1.3;margin:0 0 10px;color:#fff}
-#intro .sub{color:var(--fg2);margin:0 0 36px;max-width:40em}
-#intro .feat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-#intro .feat div{background:var(--bg1);padding:26px 24px 28px}
-#intro .feat svg{width:22px;height:22px;color:var(--acc2);margin-bottom:14px;display:block}
-#intro .feat h3{font-size:16px;margin:0 0 8px;color:#fff;letter-spacing:-.01em}
-#intro .feat p{margin:0;font-size:14px;color:var(--fg2);line-height:1.7}
-#intro .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;counter-reset:st;margin:0;padding:0;list-style:none}
-#intro .steps li{counter-increment:st;padding-top:18px;border-top:2px solid var(--bg4)}
-#intro .steps li::before{content:counter(st,decimal-leading-zero);display:block;font-family:var(--mono);font-size:13px;color:var(--acc2);margin-bottom:10px}
-#intro .steps h3{font-size:17px;margin:0 0 6px;color:#fff}
-#intro .steps p{margin:0;font-size:14px;color:var(--fg2)}
-#intro .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 48px;margin:0;padding:0;list-style:none}
-#intro .facts li{display:grid;grid-template-columns:120px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);font-size:14px}
-#intro .facts b{color:var(--fg);font-weight:600}
-#intro .facts span{color:var(--fg2)}
-#intro kbd{font-family:var(--mono);font-size:12px;background:var(--bg2);border:1px solid var(--line2);border-bottom-width:2px;border-radius:4px;padding:1px 6px;color:var(--fg)}
-#intro .endcta{text-align:center;padding:84px 0 96px}
-#intro .endcta h2{margin-bottom:12px}
-#intro .endcta p{color:var(--fg2);margin:0 0 28px}
-#intro footer{border-top:1px solid var(--line);padding:22px 0 calc(22px + env(safe-area-inset-bottom,0px));font-size:12.5px;color:var(--fg3)}
-#intro footer .iw{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-@media (max-width:900px){
-  #intro .hero{grid-template-columns:minmax(0,1fr);gap:40px;padding:44px 0 56px}
-  #intro .feat{grid-template-columns:repeat(2,minmax(0,1fr))}
-  #intro .steps{grid-template-columns:minmax(0,1fr);gap:20px}
-  #intro .facts{grid-template-columns:minmax(0,1fr)}
+#intro h1{font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:0 0 14px;color:#fff;font-weight:700}
+#intro .lead{font-size:16px;margin:0 0 22px;max-width:34em}
+#intro .acts{display:flex;gap:8px;flex-wrap:wrap}
+#intro h2{font-size:14.5px;font-weight:700;color:#fff;margin:44px 0 12px;padding-top:18px;border-top:1px solid var(--line)}
+#intro dl{display:grid;grid-template-columns:88px 1fr;gap:8px 20px;margin:0}
+#intro dt{font-weight:600}
+#intro dd{margin:0;color:var(--fg2)}
+#intro table{border-collapse:collapse;width:100%;font-size:13.5px}
+#intro td{padding:6px 0;border-bottom:1px solid var(--line);color:var(--fg2);vertical-align:top}
+#intro td:first-child{width:170px;color:var(--fg);padding-right:16px}
+#intro kbd{font:12px var(--mono);background:var(--bg2);border:1px solid var(--line2);border-radius:3px;padding:1px 5px;color:var(--fg)}
+#intro ul{margin:0;padding-left:18px;color:var(--fg2)}
+#intro ul li{margin:5px 0}
+#intro .log{list-style:none;padding:0}
+#intro .log li{display:grid;grid-template-columns:44px 1fr;gap:12px}
+#intro .log b{color:var(--fg3);font-weight:500;font-family:var(--mono);font-size:12.5px;padding-top:2px}
+#intro .end{margin-top:40px}
+@media (max-width:1180px){#intro .ibody{grid-template-columns:380px minmax(0,560px);gap:40px}}
+@media (max-width:860px){
+  #intro .ibody{grid-template-columns:minmax(0,1fr);gap:26px;padding:22px 16px 56px}
+  #intro .ishow{position:static}
+  #intro h1{font-size:27px}
+  #intro .lead{font-size:15px}
+  #intro .ibar{padding:0 12px 0 16px}
+  #intro dl{grid-template-columns:72px 1fr;gap:8px 14px}
+  #intro td:first-child{width:auto}
+  #intro .keys{display:none}
 }
-@media (max-width:560px){
-  #intro{font-size:14.5px}
-  #intro .iw{padding:0 16px}
-  #intro .inav .iw{height:52px}
-  #intro .ilink{display:none}
-  #intro .lead{font-size:16px}
-  #intro .cta .ibtn{flex:1 1 auto;justify-content:center}
-  #intro section{padding:52px 0}
-  #intro .feat{grid-template-columns:minmax(0,1fr)}
-  #intro .feat div{padding:22px 20px}
-  #intro .facts li{grid-template-columns:96px 1fr;gap:12px}
-  #intro .endcta{padding:60px 0 72px}
-}
+@media (max-width:400px){#intro .ibar .ver{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
-<div id="intro" role="dialog" aria-label="tweeny motion 소개">
-  <div class="inav"><div class="iw">
-    <div class="ilogo"><svg viewBox="0 0 20 20" aria-hidden="true"><rect width="20" height="20" rx="5" fill="#2d8ceb"/><path d="M5 14.5C9 14.5 11 5.5 15 5.5" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="12.5" width="4" height="4" transform="rotate(45 5 14.5)" fill="#fff"/><rect x="13" y="3.5" width="4" height="4" transform="rotate(45 15 5.5)" fill="#fff"/></svg>tweeny motion</div><div class="sp"></div>
-    <a class="ilink" href="#in-feat" data-scroll>기능</a><a class="ilink" href="#in-flow" data-scroll>사용 방법</a>
-    <button class="ibtn sm" data-start>시작하기</button>
-  </div></div>
-  <div class="iw">
-    <div class="hero">
-      <div>
-        <p class="eyebrow">브라우저용 모션그래픽 편집기</p>
-        <h1>키프레임 애니메이션을<br>설치 없이 바로 만드세요</h1>
-        <p class="lead">tweeny motion은 텍스트·도형·사진·영상 레이어에 키프레임을 걸어 움직임을 만들고, <b>MP4 동영상으로 내보내는</b> 편집기입니다. 가입이나 설치 없이 PC와 휴대폰 브라우저에서 바로 열립니다.</p>
-        <div class="cta">
-          <button class="ibtn" data-start><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12.5-7.5z"/></svg>바로 시작하기</button>
-          <a class="ibtn ghost" href="#in-feat" data-scroll>기능 둘러보기</a>
-        </div>
-        <p class="note">작업 내용은 이 브라우저에 자동 저장되며, 어떤 서버로도 업로드되지 않습니다.</p>
+<div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 15.5C9 15.5 11 4.5 15.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="2.3" y="13.3" width="4.4" height="4.4" transform="rotate(45 4.5 15.5)" fill="currentColor"/><rect x="13.3" y="2.3" width="4.4" height="4.4" transform="rotate(45 15.5 4.5)" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v12</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibody">
+    <div class="ishow"><div class="demo"><div class="dbar"><i></i><i></i><i></i><span>컴포지션 · 1080×1080 · 30fps</span></div><canvas id="introCv"></canvas></div></div>
+    <div>
+      <h1>tweeny motion</h1>
+      <p class="lead">브라우저에서 쓰는 모션그래픽 편집기입니다. 텍스트, 도형, 사진, 영상 레이어에 키프레임을 걸어 움직이고, 결과를 MP4 동영상으로 저장합니다. 설치나 가입은 필요 없습니다.</p>
+      <div class="acts"><button class="ibtn" data-start>바로 시작하기</button><button class="ibtn sec" data-sample>샘플 열기</button></div>
+
+      <h2>기능</h2>
+      <dl>
+        <dt>레이어</dt><dd>텍스트, 도형, 펜으로 그린 도형, 사진, 동영상, 오디오, 조정 레이어. 타임라인에서 끌어 순서를 바꿉니다.</dd>
+        <dt>키프레임</dt><dd>위치, 크기, 회전, 불투명도, 색 등 대부분의 값에 키프레임을 겁니다. 그래프 에디터에서 속도 곡선을 직접 고칩니다.</dd>
+        <dt>이펙트</dt><dd>등장과 퇴장, 반복 움직임, 블러, 색 보정, 빛, 왜곡, 글리치까지 83종. 이펙트 값에도 키프레임을 걸 수 있습니다.</dd>
+        <dt>마스크</dt><dd>사각형, 원, 펜 마스크. 위 레이어의 모양이나 밝기로 자르는 트랙 매트(알파, 루마)도 있습니다.</dd>
+        <dt>모양 연결</dt><dd>시작 사진과 끝 사진에서 윤곽을 따서 한 모양이 다른 모양으로 바뀌는 레이어를 만듭니다.</dd>
+        <dt>내보내기</dt><dd>MP4(H.264, 소리 포함), WebM, 현재 프레임 PNG, 프로젝트 파일(.json).</dd>
+      </dl>
+
+      <div class="keys">
+      <h2>자주 쓰는 단축키</h2>
+      <table>
+        <tr><td><kbd>Space</kbd></td><td>재생, 정지</td></tr>
+        <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>한 프레임 이동. Shift를 누르면 10프레임</td></tr>
+        <tr><td><kbd>K</kbd></td><td>선택한 레이어의 변형 키프레임 추가</td></tr>
+        <tr><td><kbd>S</kbd></td><td>플레이헤드 위치에서 레이어 분할</td></tr>
+        <tr><td><kbd>Ctrl</kbd> <kbd>Z</kbd></td><td>실행 취소. Shift를 함께 누르면 다시 실행</td></tr>
+        <tr><td><kbd>G</kbd></td><td>타임라인과 그래프 전환</td></tr>
+        <tr><td><kbd>Shift</kbd> <kbd>F</kbd></td><td>전체화면 미리보기</td></tr>
+      </table>
       </div>
-      <div class="demo"><div class="dbar"><i></i><i></i><i></i><span>컴포지션 · 1080×1080 · 30fps</span></div><canvas id="introCv"></canvas></div>
+
+      <h2>저장과 제한</h2>
+      <ul>
+        <li>작업은 편집할 때마다 이 브라우저에 저장됩니다. 사진과 영상을 포함해 어떤 파일도 서버로 보내지 않습니다.</li>
+        <li>브라우저의 사이트 데이터를 지우면 작업도 지워집니다. 오래 둘 작업은 파일 메뉴에서 프로젝트 파일로 받아 두세요.</li>
+        <li>프레임 단위 MP4 저장은 WebCodecs를 지원하는 브라우저(Chrome, Edge, 최신 Safari)에서 됩니다. 그 밖의 브라우저는 실시간 녹화로 저장합니다.</li>
+        <li>4K나 긴 영상은 기기 성능에 따라 미리보기가 느려질 수 있습니다. 보기 막대의 품질을 낮추면 편집이 가벼워집니다.</li>
+      </ul>
+
+      <h2>업데이트 기록</h2>
+      <ul class="log">
+        <li><b>v12</b><span>시작 화면과 샘플 프로젝트를 새로 만들고, 화면 문구를 정리했습니다.</span></li>
+        <li><b>v11</b><span>이펙트 창의 카드마다 적용 결과가 재생됩니다.</span></li>
+        <li><b>v7</b><span>모양 연결에서 떨어진 조각도 함께 처리합니다. 도형을 사진으로 채우고, 중심점을 옮길 수 있습니다.</span></li>
+      </ul>
+
+      <div class="end"><button class="ibtn" data-start>바로 시작하기</button></div>
     </div>
   </div>
-  <section id="in-feat"><div class="iw">
-    <h2>할 수 있는 것</h2>
-    <p class="sub">짧은 인트로, 자막 애니메이션, 로고 모션, SNS용 세로 영상처럼 레이어를 겹쳐 움직이는 작업에 맞춰져 있습니다.</p>
-    <div class="feat">
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3 2.5 8 12 13l9.5-5z"/><path d="m2.5 12.5 9.5 5 9.5-5"/><path d="m2.5 17 9.5 5 9.5-5" opacity=".5"/></svg><h3>레이어</h3><p>텍스트, 기본 도형, 펜으로 그린 자유 도형, 사진, 동영상, 오디오, 조정 레이어를 쌓고 끌어서 순서를 바꿉니다.</p></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 20c5 0 6-16 18-16"/><rect x="1.5" y="18.5" width="3" height="3" transform="rotate(45 3 20)" fill="currentColor"/><rect x="19.5" y="2.5" width="3" height="3" transform="rotate(45 21 4)" fill="currentColor"/></svg><h3>키프레임과 그래프</h3><p>위치·크기·회전·불투명도 등 거의 모든 값에 키프레임을 겁니다. 그래프 에디터에서 가속·감속 곡선을 직접 조정합니다.</p></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg><h3>이펙트</h3><p>등장·퇴장, 반복 움직임, 블러, 색상, 빛, 왜곡, 글리치 효과를 레이어마다 겹쳐 적용하고 값도 애니메이션할 수 있습니다.</p></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="5.5" stroke-dasharray="2.5 2"/></svg><h3>마스크와 트랙 매트</h3><p>사각형·원·펜 마스크로 레이어를 잘라내고, 위 레이어의 모양이나 밝기를 알파·루마 매트로 사용합니다.</p></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M7 4 12.5 14H1.5z"/><circle cx="18" cy="15" r="4.5"/><path d="M10 19c2 1.5 4 1.6 5.5.6" stroke-dasharray="1.5 2"/></svg><h3>모양 연결</h3><p>시작 사진과 끝 사진에서 테두리를 따서, 한 모양이 다른 모양으로 이어지는 애니메이션을 만듭니다. 떨어진 조각도 함께 처리합니다.</p></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M4 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg><h3>내보내기</h3><p>MP4(H.264, 소리 포함)나 WebM 동영상, 현재 프레임 PNG로 저장합니다. 프로젝트 파일로 받아 다른 기기에서 이어 작업할 수 있습니다.</p></div>
-    </div>
-  </div></section>
-  <section id="in-flow"><div class="iw">
-    <h2>사용 방법</h2>
-    <p class="sub">After Effects나 Alight Motion 같은 타임라인 편집기를 써 봤다면 익숙한 구조입니다.</p>
-    <ol class="steps">
-      <li><h3>레이어 추가</h3><p>위쪽 도구줄에서 텍스트·도형을 넣거나 갤러리에서 사진·영상을 불러옵니다.</p></li>
-      <li><h3>움직임 만들기</h3><p>플레이헤드를 옮기고 값을 바꾸면 키프레임이 찍힙니다. 애니메이션 프리셋이나 이펙트로 빠르게 시작해도 됩니다.</p></li>
-      <li><h3>확인하고 내보내기</h3><p>전체화면으로 재생해 보고, 내보내기에서 해상도와 화질을 골라 동영상으로 저장합니다.</p></li>
-    </ol>
-  </div></section>
-  <section><div class="iw">
-    <h2>알아 두면 좋은 것</h2>
-    <p class="sub">시작하기 전에 확인할 몇 가지입니다.</p>
-    <ul class="facts">
-      <li><b>저장</b><span>편집할 때마다 이 브라우저에 자동 저장됩니다. 브라우저 데이터를 지우면 사라지므로, 중요한 작업은 프로젝트 파일로 받아 두세요.</span></li>
-      <li><b>기기</b><span>화면 크기에 따라 PC 배치와 모바일 배치가 자동으로 바뀝니다. 휴대폰에서는 두 손가락으로 크기와 회전을 조절합니다.</span></li>
-      <li><b>브라우저</b><span>최신 Chrome, Edge, Safari를 권장합니다. 프레임 단위 MP4 내보내기는 WebCodecs를 지원하는 브라우저에서 동작합니다.</span></li>
-      <li><b>단축키</b><span><kbd>Space</kbd> 재생, <kbd>Ctrl</kbd>+<kbd>Z</kbd> 되돌리기, <kbd>K</kbd> 키프레임, <kbd>G</kbd> 그래프. 전체 목록은 편집기의 도움말에 있습니다.</span></li>
-    </ul>
-  </div></section>
-  <div class="endcta"><div class="iw">
-    <h2>빈 캔버스에서 시작합니다</h2>
-    <p>저장된 작업이 있으면 그대로 이어서 열립니다.</p>
-    <button class="ibtn" data-start><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12.5-7.5z"/></svg>바로 시작하기</button>
-  </div></div>
-  <footer><div class="iw"><span>tweeny motion</span><span>모든 처리는 이 기기 안에서 이루어집니다</span></div></footer>
 </div>
 <div class="app" id="app" data-mode="pc">
   <header class="topbar">
-    <div class="brand"><svg class="dmark" viewBox="0 0 20 20" aria-hidden="true"><rect width="20" height="20" rx="5" fill="#2d8ceb"/><path d="M5 14.5C9 14.5 11 5.5 15 5.5" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="12.5" width="4" height="4" transform="rotate(45 5 14.5)" fill="#fff"/><rect x="13" y="3.5" width="4" height="4" transform="rotate(45 15 5.5)" fill="#fff"/></svg><span class="wm">tweeny motion</span></div>
+    <div class="brand"><svg class="dmark" viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 15.5C9 15.5 11 4.5 15.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="2.3" y="13.3" width="4.4" height="4.4" transform="rotate(45 4.5 15.5)" fill="currentColor"/><rect x="13.3" y="2.3" width="4.4" height="4.4" transform="rotate(45 15.5 4.5)" fill="currentColor"/></svg><span class="wm">tweeny motion</span></div>
     <nav class="menus pconly" id="menus">
       <button data-menu="file">파일</button><button data-menu="edit">편집</button><button data-menu="layer">레이어</button><button data-menu="view">보기</button><button data-menu="help">도움말</button>
     </nav>
@@ -1896,10 +1868,10 @@ function updateHud() {
   const hud = $('#hudTop'); hud.innerHTML = '';
   if (S.pen) {
     hud.append(h('span', { class: 'chip modebadge' }, S.pen.target === 'mask' ? '마스크 그리기' : '펜 그리기'),
-      h('span', { class: 'chip' }, `${S.pen.pts.length}개 점 · 첫 점을 누르면 완성`),
+      h('span', { class: 'chip' }, `점 ${S.pen.pts.length}개. 첫 점을 누르면 닫힙니다`),
       h('button', { class: 'chip', onclick: finishPen }, '완료'), h('button', { class: 'chip', onclick: () => { S.pen = null; updateHud(); dirtyView = true; } }, '취소'));
   } else if (S.anchorEdit) {
-    hud.append(h('span', { class: 'chip modebadge' }, '중심점 이동'), h('span', { class: 'chip' }, '화면을 눌러 끌면 중심점이 옮겨져요 (모서리·가운데에 착 붙어요)'), h('button', { class: 'chip', onclick: () => setAnchorEdit(false) }, '완료'));
+    hud.append(h('span', { class: 'chip modebadge' }, '중심점 이동'), h('span', { class: 'chip' }, '화면을 끌어 중심점을 옮깁니다. 모서리와 가운데에 스냅됩니다'), h('button', { class: 'chip', onclick: () => setAnchorEdit(false) }, '완료'));
   } else if (S.maskEdit) {
     hud.append(h('span', { class: 'chip modebadge' }, '마스크 편집'), h('span', { class: 'chip' }, '핸들을 끌어 모양을 바꾸세요'), h('button', { class: 'chip', onclick: () => { S.maskEdit = false; updateHud(); dirtyView = true; refreshInspector(); } }, '완료'));
   }
@@ -2030,7 +2002,7 @@ function drawTLBase() {
   x.restore();
   // header label
   x.fillStyle = '#767676'; x.font = '600 10px "IBM Plex Sans KR", sans-serif'; x.textBaseline = 'middle'; x.fillText(`레이어 ${pr.layers.length}`, 10, d.RUL / 2);
-  if (!pr.layers.length) { x.fillStyle = '#767676'; x.font = '500 12px "IBM Plex Sans KR", sans-serif'; x.textAlign = 'center'; x.fillText('위의 추가 버튼으로 텍스트·도형·사진을 넣어보세요', (W + d.LW) / 2, d.RUL + 50); x.textAlign = 'left'; }
+  if (!pr.layers.length) { x.fillStyle = '#767676'; x.font = '500 12px "IBM Plex Sans KR", sans-serif'; x.textAlign = 'center'; x.fillText('도구줄에서 텍스트, 도형, 사진을 추가하세요', (W + d.LW) / 2, d.RUL + 50); x.textAlign = 'left'; }
 }
 
 /* ---------- timeline interaction ---------- */
@@ -2613,7 +2585,7 @@ function stylePanel(L) {
   const out = [], rf = () => { commit(); invalidate(); refreshInspector(); };
   if (L.type === 'shape' || L.type === 'path') {
     const s = L.shape;
-    if (s.morph) out.push(sec('모양 연결', numRow(L, 'mp'), h('p', { class: 'hint' }, '0%는 시작 모양, 100%는 끝 모양이에요. 「모핑 진행」 키프레임의 이징을 바꾸면 변하는 느낌이 달라져요.'),
+    if (s.morph) out.push(sec('모양 연결', numRow(L, 'mp'), h('p', { class: 'hint' }, '0%는 시작 모양, 100%는 끝 모양이에요. ‘모핑 진행’ 키프레임의 이징을 바꾸면 변하는 느낌이 달라져요.'),
       h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('flip') + '시작·끝 바꾸기', onclick: () => { morphPairs(s.morph).forEach(pp => { const t_ = pp.a; pp.a = pp.b; pp.b = t_; }); if (!s.morph.pairs) { const t_ = s.morph.a; s.morph.a = s.morph.b; s.morph.b = t_; } rf(); } }), h('button', { class: 'btn sm', html: icon('morph') + '새로 만들기', onclick: morphSheet }))));
     if (L.type === 'shape') out.push(sec('모양', pillsRow(null, Object.keys(SHAPE_NAMES).map(k => ({ v: k, l: SHAPE_NAMES[k], ic: k })), s.kind, v => { s.kind = v; if (v === 'line' || v === 'arrow') { s.strokeOn = true; if (pv(L.p.sw, S.time) < 2) L.p.sw.v = 12; } rf(); })));
     const g = [];
@@ -2630,7 +2602,7 @@ function stylePanel(L) {
       const f = [pillsRow('채우기', [{ v: 'none', l: '없음' }, { v: 'solid', l: '단색' }, { v: 'linear', l: '선형' }, { v: 'radial', l: '원형' }, { v: 'image', l: '사진', ic: 'image' }], s.fillType, v => { if (v === 'image' && !MEDIA.get(s.fillMedia)) { pickFill(); return; } s.fillType = v; rf(); })];
       if (s.fillType === 'image') {
         const M = MEDIA.get(s.fillMedia);
-        f.push(h('p', { class: 'hint', style: 'color:var(--fg2)' }, M ? `${M.name} · 도형 가운데에 맞춰 채워져요` : '사진을 찾을 수 없어요. 다시 골라 주세요.'),
+        f.push(h('p', { class: 'hint', style: 'color:var(--fg2)' }, M ? `${M.name}` : '사진을 찾을 수 없어요. 다시 골라 주세요.'),
           h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('image') + '사진 바꾸기', onclick: pickFill })),
           pillsRow('맞춤', [{ v: 'cover', l: '꽉 채우기' }, { v: 'contain', l: '전체 보이기' }], s.fillFit === 'contain' ? 'contain' : 'cover', v => { s.fillFit = v; commit(); invalidate(); }),
           numRow(L, 'fis'), numRow(L, 'fix'), numRow(L, 'fiy'),
@@ -2682,7 +2654,7 @@ function stylePanel(L) {
 function fxPanel(L) {
   const out = [h('div', { class: 'sec' }, h('button', { class: 'btn primary', style: 'width:100%;justify-content:center', html: icon('plus') + `이펙트 추가 (${Object.keys(FX).length}종)`, onclick: () => fxBrowser() }),
     h('p', { class: 'hint', style: 'margin-top:8px' }, '모든 이펙트에 강도·속도·자동 변화가 있고, 숫자 값은 ◆로 키프레임할 수 있어요. 위에서부터 순서대로 적용됩니다.'))];
-  if (!L.fx.length) out.push(h('div', { class: 'empty' }, h('div', { class: 'big' }, '이펙트가 없어요'), '페이드 인, 랜덤 지터, 글로우, 글리치처럼 다양한 효과를 추가해 보세요.'));
+  if (!L.fx.length) out.push(h('div', { class: 'empty' }, h('div', { class: 'big' }, '이펙트가 없어요'), '아래 버튼으로 이펙트를 추가하세요.'));
   L.fx.forEach((f, i) => {
     const d = FX[f.type]; if (!d) return; const cat = FXCATS.find(c => c[0] === d.cat);
     const card = h('div', { class: 'fxcard' + (f.on ? '' : ' off') });
@@ -2727,7 +2699,7 @@ function maskPanel(L) {
   }
   out.push(sec('레이어 마스크', ...g));
   const Ls = S.proj.layers, i = Ls.indexOf(L), above = Ls[i + 1];
-  out.push(sec('트랙 매트', h('p', { class: 'hint' }, above ? `바로 위 레이어 「${above.name}」의 모양이나 밝기로 이 레이어를 잘라냅니다. 매트로 쓰인 레이어는 화면에 직접 보이지 않아요.` : '이 레이어 위에 다른 레이어가 있어야 트랙 매트를 쓸 수 있어요.'),
+  out.push(sec('트랙 매트', h('p', { class: 'hint' }, above ? `바로 위 레이어 ‘${above.name}’의 모양이나 밝기로 이 레이어를 잘라냅니다. 매트로 쓰인 레이어는 화면에 직접 보이지 않아요.` : '이 레이어 위에 다른 레이어가 있어야 트랙 매트를 쓸 수 있어요.'),
     selRow('매트', L.matte, [['none', '사용 안 함'], ['alpha', '알파 매트'], ['alphaInv', '알파 반전 매트'], ['luma', '루마(밝기) 매트'], ['lumaInv', '루마 반전 매트']], v => { if (!above && v !== 'none') { toast('위에 레이어가 없어요'); refreshInspector(); return; } L.matte = v; commit(); invalidate(); }),
     h('p', { class: 'hint' }, '예: 텍스트 아래에 영상 레이어를 두고 영상에 알파 매트를 켜면 글자 모양 안에서만 영상이 보입니다.')));
   return out;
@@ -2743,7 +2715,7 @@ function animPanel(L) {
   const es = selRow('이징', presetEase, [['auto', '자동 (추천)'], ...EASES.map((e, i) => [String(i), e.n])], v => { presetEase = v; });
   out.push(sec('빠른 애니메이션', h('p', { class: 'hint' }, '버튼 한 번으로 키프레임이 들어갑니다. 넣은 뒤에도 타임라인·그래프에서 자유롭게 고칠 수 있어요.'), durRow, es));
   if (L.type === 'audio') return out;
-  const grid = (items) => { const g = h('div', { class: 'presetgrid' }); items.forEach(([n, d, fn]) => g.append(h('button', { class: 'preset', onclick: () => { fn(); commit(); invalidate(); refreshInspector(); toast(`「${n}」을(를) 넣었어요`); } }, h('b', null, n), h('span', null, d)))); return g; };
+  const grid = (items) => { const g = h('div', { class: 'presetgrid' }); items.forEach(([n, d, fn]) => g.append(h('button', { class: 'preset', onclick: () => { fn(); commit(); invalidate(); refreshInspector(); toast(`‘${n}’을(를) 넣었어요`); } }, h('b', null, n), h('span', null, d)))); return g; };
   const P_ = presetAnim(L);
   out.push(sec('등장 (키프레임)', grid([['페이드 인', '투명 → 보임', () => P_.in('fade')], ['위로 등장', '아래에서 올라옴', () => P_.in('up')], ['아래로 등장', '위에서 내려옴', () => P_.in('down')], ['왼쪽에서', '옆에서 들어옴', () => P_.in('left')], ['오른쪽에서', '옆에서 들어옴', () => P_.in('right')], ['팝', '튀어나오기', () => P_.in('pop')], ['줌 인', '작게 → 크게', () => P_.in('zoom')], ['회전 등장', '돌며 나타남', () => P_.in('spin')], ['떨어지기', '위에서 통통', () => P_.in('drop')]])));
   out.push(sec('퇴장 (키프레임)', grid([['페이드 아웃', '보임 → 투명', () => P_.out('fade')], ['위로 퇴장', '위로 사라짐', () => P_.out('up')], ['아래로 퇴장', '아래로 사라짐', () => P_.out('down')], ['줌 아웃', '작아지며', () => P_.out('zoom')], ['회전 퇴장', '돌며 사라짐', () => P_.out('spin')], ['오른쪽으로', '옆으로 나감', () => P_.out('right')]])));
@@ -2888,11 +2860,11 @@ function moveLayer(L, dir) { const Ls = S.proj.layers, i = Ls.indexOf(L), j = i 
 function deleteLayer(L) {
   const Ls = S.proj.layers; const i = Ls.indexOf(L); if (i < 0) return; Ls.splice(i, 1);
   Ls.forEach(o => { if (o.parent === L.id) o.parent = null; }); const v = VEL.get(L.id); if (v) { v.pause(); VEL.delete(L.id); } const a = AEL.get(L.id); if (a) { a.pause(); AEL.delete(L.id); } stopAudioNode(L.id);
-  S.selK = []; select(null); commit(); invalidate(); toast(`「${L.name}」 레이어를 삭제했어요`, { l: '실행 취소', fn: undo });
+  S.selK = []; select(null); commit(); invalidate(); toast(`‘${L.name}’ 레이어를 삭제했어요`, { l: '실행 취소', fn: undo });
 }
 
 /* ================= TIME & PLAYBACK ================= */
-function updateTC() { const pr = S.proj; $('#tc').innerHTML = `${fmtTC(S.time, pr.fps)}<small class="pconly">/ ${fmtTC(pr.dur, pr.fps)}</small>`; $('#vtc').textContent = `${fmtTC(S.time, pr.fps)} · ${pr.w}×${pr.h} · ${pr.fps}fps`; }
+function updateTC() { const pr = S.proj; $('#tc').innerHTML = `${fmtTC(S.time, pr.fps)}<small class="pconly">/ ${fmtTC(pr.dur, pr.fps)}</small>`; $('#vtc').textContent = `${fmtTC(S.time, pr.fps)}   ${pr.w}×${pr.h}   ${pr.fps}fps`; }
 function setTime(t, keepPlay) { S.time = clamp(t, 0, S.proj.dur); if (S.playing && !keepPlay) pause(); invalidate(); updateTC(); dirtyInsp = true; }
 function stepFrame(n) { const fps = S.proj.fps; setTime(Math.round(S.time * fps + n) / fps); followPlayhead(); }
 function play() {
@@ -3046,7 +3018,7 @@ async function importFiles(files, force) {
       if (!M.ready && type === 'video') { forgetMedia(M); M = await loadMedia(f, 'audio'); if (M.ready) type = 'audio'; }
       if (!M.ready) {
         forgetMedia(M);
-        toast(`「${f.name}」: 이 브라우저에서 열 수 없는 형식이에요${/\.(heic|heif)$/i.test(f.name || '') ? ' (HEIC는 JPG로 바꿔서 올려 주세요)' : ''}`);
+        toast(`‘${f.name}’: 이 브라우저에서 열 수 없는 형식이에요${/\.(heic|heif)$/i.test(f.name || '') ? ' (HEIC는 JPG로 바꿔서 올려 주세요)' : ''}`);
         continue;
       }
       const pr = S.proj; const tm = newLayerTimes();
@@ -3056,7 +3028,7 @@ async function importFiles(files, force) {
       if (type === 'audio') { S.proj.layers.unshift(L); select(L.id); commit(); invalidate(); }
       else { addLayer(L); fitLayer(L, false); }
       added++;
-    } catch (e) { console.warn(e); toast(`「${f.name}」을(를) 불러오지 못했어요`); }
+    } catch (e) { console.warn(e); toast(`‘${f.name}’을(를) 불러오지 못했어요`); }
   }
   if (added) { updateTC(); tlFit(); toast(added > 1 ? `${added}개를 추가했어요` : '추가했어요'); }
 }
@@ -3075,7 +3047,7 @@ async function loadFontFile(f) {
   try {
     const fam = (f.name || '내 글꼴').replace(/\.[^.]+$/, '').slice(0, 40); const buf = await f.arrayBuffer(); const face = new FontFace(fam, buf); await face.load(); document.fonts.add(face);
     const M = await loadMedia(f, 'font'); S.proj.fonts = S.proj.fonts || []; if (!S.proj.fonts.some(x => x.family === fam)) S.proj.fonts.push({ family: fam, media: M.id });
-    fontLoaded.add(fam + '|400'); const L = selL(); if (L && L.type === 'text') { L.text.font = fam; } commit(); invalidate(); measCache.clear(); refreshInspector(); toast(`글꼴 「${fam}」 추가됨`);
+    fontLoaded.add(fam + '|400'); const L = selL(); if (L && L.type === 'text') { L.text.font = fam; } commit(); invalidate(); measCache.clear(); refreshInspector(); toast(`글꼴 ‘${fam}’ 추가됨`);
   } catch (e) { toast('글꼴 파일을 읽지 못했어요 (TTF·OTF·WOFF)'); }
 }
 
@@ -3120,22 +3092,73 @@ function addSheet() {
   body.append(h('div', { class: 'addsec' }, '기본'), g1, h('div', { class: 'addsec' }, '도형'), g2, h('div', { class: 'addsec' }, '배경·특수'), g3);
   close = openSheet('추가하기', body);
 }
+/* ---------- effect previews: each card renders a tiny looping comp through the real renderer ---------- */
+const FXPV = { pool: [], W: 256, H: 160 };
+const FXPV_FULL = new Set(['vignette', 'letterbox', 'lightleak', 'noise', 'scan']);
+/* a small flat landscape used as the preview footage (never added to a project) */
+function fxPreviewMedia() {
+  const id = '__fxpv'; let M = MEDIA.get(id); if (M) return M;
+  const c = document.createElement('canvas'); c.width = 320; c.height = 200; const x = c.getContext('2d');
+  x.fillStyle = '#9ccfe8'; x.fillRect(0, 0, 320, 200);
+  x.fillStyle = '#ffc93c'; x.beginPath(); x.arc(236, 62, 26, 0, TAU); x.fill();
+  x.fillStyle = '#ffffff'; [[70, 50, 30], [96, 44, 22], [118, 54, 18]].forEach(([cx, cy, r]) => { x.beginPath(); x.arc(cx, cy, r, 0, TAU); x.fill(); });
+  x.fillStyle = '#5fae6e'; x.beginPath(); x.moveTo(0, 150); x.quadraticCurveTo(90, 86, 190, 140); x.quadraticCurveTo(250, 112, 320, 128); x.lineTo(320, 200); x.lineTo(0, 200); x.fill();
+  x.fillStyle = '#2f7a4a'; x.beginPath(); x.moveTo(0, 176); x.quadraticCurveTo(150, 128, 320, 170); x.lineTo(320, 200); x.lineTo(0, 200); x.fill();
+  x.fillStyle = '#d9483b'; x.fillRect(206, 132, 34, 26); x.fillStyle = '#7a2c25'; x.beginPath(); x.moveTo(201, 133); x.lineTo(223, 114); x.lineTo(245, 133); x.fill();
+  x.fillStyle = '#f4e3c1'; x.fillRect(218, 142, 9, 16);
+  M = { id, type: 'image', name: 'preview', el: c, w: 320, h: 200, dur: 0, ready: true }; MEDIA.set(id, M); return M;
+}
+function fxPreviewComp(type) {
+  const d = FX[type], keep = S.proj, isIn = d.cat === 'in', cyc = isIn ? 2.6 : 3, M = fxPreviewMedia();
+  const pr = newProject({ name: 'fxpv', w: 320, h: 200, fps: 30, dur: cyc, bg: '#1d1d1d' }); S.proj = pr;
+  try {
+    const L = makeLayer('image', { media: M.id, start: isIn ? .25 : 0, end: isIn ? 2.35 : cyc });
+    if (!FXPV_FULL.has(type)) { L.p.sx.v = 52; L.p.sy.v = 52; }
+    L.fx.push(makeFx(type)); pr.layers.push(L);
+  } finally { S.proj = keep; }
+  return { pr, cyc };
+}
+function fxPreviewDraw(e, t) { renderOffscreen(e.pr, e.cv, e.x, t, FXPV); }
 function fxBrowser() {
   const L = selL(); let cat = 'all', q = ''; const body = h('div'); let close;
   const grid = h('div', { class: 'fxgrid' });
+  const pv = { items: [], raf: 0, rr: 0, hover: null, io: null };
+  const stop = () => { cancelAnimationFrame(pv.raf); pv.raf = 0; if (pv.io) pv.io.disconnect(); };
+  const tick = now => {
+    if (!grid.isConnected) { stop(); return; }
+    const vis = pv.items.filter(e => e.vis), t0 = performance.now();
+    if (vis.length) {
+      const order = pv.hover && pv.hover.vis ? [pv.hover] : [];
+      for (let i = 0; i < vis.length; i++) order.push(vis[(pv.rr + i) % vis.length]);
+      let n = 0;
+      for (const e of order) {
+        if (now - e.last < (e === pv.hover ? 15 : 45)) continue;
+        fxPreviewDraw(e, (now / 1000 + e.phase) % e.cyc); e.last = now; n++;
+        if (performance.now() - t0 > 7) break;
+      }
+      pv.rr = (pv.rr + Math.max(1, n)) % vis.length;
+    }
+    pv.raf = requestAnimationFrame(tick);
+  };
   const render = () => {
-    grid.innerHTML = '';
+    grid.innerHTML = ''; pv.items = []; if (pv.io) pv.io.disconnect();
+    pv.io = 'IntersectionObserver' in window ? new IntersectionObserver(ents => ents.forEach(en => { const e = en.target._pv; if (e) e.vis = en.isIntersecting; }), { root: null, rootMargin: '60px' }) : null;
     Object.values(FX).filter(d => (cat === 'all' || d.cat === cat) && (!q || (d.name + d.desc).toLowerCase().includes(q))).forEach(d => {
       const c = FXCATS.find(x => x[0] === d.cat);
-      grid.append(h('button', { class: 'fxitem', onclick: () => { close(); addFx(selL(), d.id); } }, h('b', null, h('i', { style: `background:${c[2]}` }), d.name), h('span', null, d.desc)));
+      const cv = h('canvas', { width: FXPV.W, height: FXPV.H });
+      const btn = h('button', { class: 'fxitem', title: d.desc, onclick: () => { stop(); close(); addFx(selL(), d.id); } }, cv, h('div', { class: 'fxt' }, h('b', null, h('i', { style: `background:${c[2]}` }), d.name), h('span', null, d.desc)));
+      const comp = fxPreviewComp(d.id), e = { cv, x: cv.getContext('2d'), pr: comp.pr, cyc: comp.cyc, phase: 0, last: -1e9, vis: !pv.io };
+      btn._pv = e; btn.onpointerenter = () => { pv.hover = e; }; btn.onpointerleave = () => { if (pv.hover === e) pv.hover = null; };
+      pv.items.push(e); grid.append(btn); if (pv.io) pv.io.observe(btn);
     });
     if (!grid.children.length) grid.append(h('div', { class: 'hint' }, '검색 결과가 없어요'));
   };
   const si = h('input', { placeholder: '이펙트 검색 (예: 페이드, 흔들, 글로우)', oninput: e => { q = e.target.value.trim().toLowerCase(); render(); } });
   const pills = h('div', { class: 'pills', style: 'margin-bottom:12px' });
   [['all', '전체', ''], ...FXCATS].forEach(([k, l]) => { const b = h('button', { class: k === cat ? 'on' : '' }, l); b.onclick = () => { cat = k; $$('button', pills).forEach(x => x.classList.remove('on')); b.classList.add('on'); render(); }; pills.append(b); });
-  body.append(h('div', { class: 'fxsearch', html: icon('search') }, si), pills, L ? h('p', { class: 'hint' }, `「${L.name}」에 추가됩니다`) : h('p', { class: 'hint' }, '선택한 레이어가 없으면 조정 레이어를 만들어 화면 전체에 적용합니다.'), grid);
-  render(); close = openSheet(`이펙트 (${Object.keys(FX).length}종)`, body);
+  body.append(h('div', { class: 'fxsearch', html: icon('search') }, si), pills, L ? h('p', { class: 'hint' }, `‘${L.name}’ 레이어에 추가됩니다`) : h('p', { class: 'hint' }, '선택한 레이어가 없으면 조정 레이어를 만들어 화면 전체에 적용합니다.'), grid);
+  render(); close = openSheet(`이펙트 (${Object.keys(FX).length}종)`, body, { onClose: stop });
+  pv.raf = requestAnimationFrame(tick);
   if (S.mode === 'pc') setTimeout(() => si.focus(), 50);
 }
 const SIZES = [['1080×1920', '세로 9:16', 1080, 1920], ['1920×1080', '가로 16:9', 1920, 1080], ['1080×1080', '정사각 1:1', 1080, 1080], ['1080×1350', '피드 4:5', 1080, 1350], ['1280×720', 'HD 720p', 1280, 720], ['720×1280', '세로 720p', 720, 1280], ['3840×2160', '4K UHD', 3840, 2160], ['2160×3840', '세로 4K', 2160, 3840]];
@@ -3170,21 +3193,21 @@ function helpSheet() {
     h('div', { class: 'addsec', style: 'margin-top:0' }, '처음이라면'),
     h('ol', { style: 'margin:0 0 6px;padding-left:20px;line-height:1.8;color:var(--fg2)' },
       h('li', null, '추가 버튼으로 텍스트·도형·사진을 넣습니다.'),
-      h('li', null, '레이어를 선택하고 「애니메이션」 탭의 프리셋을 누르면 바로 움직입니다.'),
+      h('li', null, '레이어를 선택하고 ‘애니메이션’ 탭의 프리셋을 누르면 바로 움직입니다.'),
       h('li', null, '직접 움직이려면 플레이헤드를 옮기고 속성 옆 ◆를 눌러 키프레임을 찍으세요. 다른 시간에서 값을 바꾸면 자동으로 키프레임이 생깁니다.'),
-      h('li', null, '「그래프」에서 속도 곡선을 바꿔 부드러움·탄력을 조절하세요.'),
-      h('li', null, '다 되면 「내보내기」로 MP4 동영상을 저장합니다.')),
+      h('li', null, '‘그래프’에서 속도 곡선을 바꿔 부드러움·탄력을 조절하세요.'),
+      h('li', null, '다 되면 ‘내보내기’로 MP4 동영상을 저장합니다.')),
     h('div', { class: 'addsec' }, '키프레임 모양'),
     h('p', { class: 'hint', style: 'color:var(--fg2)' }, '◆ 선형 · 둥근 마름모 베지어 이징 · ■ 정지(홀드) · ● 바운스/탄성. 키프레임을 오른쪽 클릭(모바일은 길게 누르기)하면 이징 메뉴가 열립니다.'),
     h('div', { class: 'addsec' }, '모바일 조작'),
     h('p', { class: 'hint', style: 'color:var(--fg2)' }, '레이어를 선택한 채 두 손가락으로 집거나 돌리면 크기·회전이 바뀝니다. 타임라인은 가운데 파란 선이 현재 시간이며, 좌우로 밀어 이동합니다. 레이어 이름을 길게 누른 뒤 위아래로 끌면 순서가 바뀌고, 끌지 않고 떼면 메뉴가 열립니다.'),
     h('div', { class: 'addsec pconly' }, '단축키'),
-    h('div', { class: 'kbd pconly' }, ...[['Space', '재생 / 정지'], ['← →', '한 프레임 이동 (Shift: 10프레임)'], ['Home / End', '처음 / 끝'], ['K', '선택 레이어 변형 키프레임 추가'], ['Delete', '선택 키프레임 또는 레이어 삭제'], ['Ctrl+Z / Ctrl+Shift+Z', '실행 취소 / 다시 실행'], ['Ctrl+D', '레이어 복제'], ['Ctrl+C / Ctrl+V', '레이어 복사 / 붙여넣기'], ['[  /  ]', '플레이헤드에서 레이어 시작 / 끝 자르기'], ['S', '플레이헤드에서 분할'], ['P', '펜 도구'], ['T', '텍스트 추가'], ['F', '화면에 맞춤'], ['Shift+F', '전체화면 미리보기 (Esc로 닫기)'], ['레이어 이름 끌기', '레이어 순서 바꾸기 (모바일: 길게 누른 뒤 끌기)'], ['도구줄 「모양 연결」', '시작·끝 사진의 모양을 이어 주는 모핑 레이어 만들기'], ['변형 탭 「중심점」', '회전·크기 기준점 옮기기 (화면에서 끌기 또는 9칸)'], ['G', '타임라인 ↔ 그래프'], ['Esc', '펜·마스크 편집 종료, 선택 해제'], ['휠 / Ctrl+휠', '캔버스 확대, 타임라인 확대'], ['Shift+드래그', '한 방향으로만 이동'], ['라벨 좌우 드래그', '값 미세 조절 (Shift 10배, Alt 0.1배)']].flatMap(([k, v]) => [h('kbd', null, k), h('span', null, v)])));
+    h('div', { class: 'kbd pconly' }, ...[['Space', '재생 / 정지'], ['← →', '한 프레임 이동 (Shift: 10프레임)'], ['Home / End', '처음 / 끝'], ['K', '선택 레이어 변형 키프레임 추가'], ['Delete', '선택 키프레임 또는 레이어 삭제'], ['Ctrl+Z / Ctrl+Shift+Z', '실행 취소 / 다시 실행'], ['Ctrl+D', '레이어 복제'], ['Ctrl+C / Ctrl+V', '레이어 복사 / 붙여넣기'], ['[  /  ]', '플레이헤드에서 레이어 시작 / 끝 자르기'], ['S', '플레이헤드에서 분할'], ['P', '펜 도구'], ['T', '텍스트 추가'], ['F', '화면에 맞춤'], ['Shift+F', '전체화면 미리보기 (Esc로 닫기)'], ['레이어 이름 끌기', '레이어 순서 바꾸기 (모바일: 길게 누른 뒤 끌기)'], ['도구줄 ‘모양 연결’', '시작·끝 사진의 모양을 이어 주는 모핑 레이어 만들기'], ['변형 탭 ‘중심점’', '회전·크기 기준점 옮기기 (화면에서 끌기 또는 9칸)'], ['G', '타임라인 ↔ 그래프'], ['Esc', '펜·마스크 편집 종료, 선택 해제'], ['휠 / Ctrl+휠', '캔버스 확대, 타임라인 확대'], ['Shift+드래그', '한 방향으로만 이동'], ['라벨 좌우 드래그', '값 미세 조절 (Shift 10배, Alt 0.1배)']].flatMap(([k, v]) => [h('kbd', null, k), h('span', null, v)])));
   openSheet('도움말', body, { narrow: true });
 }
 function confirmSheet(title, msg, okLabel, fn) { openSheet(title, h('p', { style: 'color:var(--fg2);line-height:1.6;margin:0' }, msg), { narrow: true, foot: close => [h('button', { class: 'btn ghost', onclick: close }, '취소'), h('button', { class: 'btn primary', onclick: () => { close(); fn(); } }, okLabel)] }); }
 const askNew = () => confirmSheet('새 프로젝트', '지금 작업을 지우고 빈 프로젝트를 시작할까요? 필요하면 먼저 프로젝트 파일로 저장하세요.', '새로 시작', () => startProject(newProject({ name: '새 프로젝트' })));
-const askSample = () => confirmSheet('샘플 프로젝트', '지금 작업 대신 샘플을 불러올까요?', '불러오기', () => startProject(buildSample()));
+const askSample = () => confirmSheet('샘플 프로젝트', '지금 작업 대신 샘플을 불러올까요?', '불러오기', () => { const pr = buildSample(); pr.layers.forEach(L => { if (L.type === 'text') ensureFont(L.text.font, L.text.weight); }); startProject(pr); });
 const needL = fn => () => { const L = selL(); if (!L) { toast('레이어를 먼저 선택하세요'); return; } fn(L); };
 function toggleSnap() { S.snap = !S.snap; $('#bSnap').classList.toggle('on', S.snap); toast(S.snap ? '스냅 켜짐' : '스냅 꺼짐'); }
 function toggleGuides() { S.guides = !S.guides; $('#bGuides').classList.toggle('on', S.guides); dirtyView = true; }
@@ -3367,14 +3390,14 @@ function exportSheet() {
   pause(); const pr = S.proj; const canMP4 = !!(window.VideoEncoder && window.VideoFrame);
   const st = { fmt: canMP4 ? 'mp4' : 'webm', scale: 1, fps: pr.fps, bpp: .15 };
   const body = h('div'); const optList = h('div', { class: 'optlist' });
-  const fmts = [['mp4', 'MP4 동영상', canMP4 ? '추천 · H.264 · 소리 포함 · 프레임 단위로 정확하게' : '이 브라우저는 실시간 녹화 방식으로 저장해요', 'video'], ['webm', 'WebM 동영상', '실시간 녹화 · 투명도 없이 저장', 'video'], ['png', '현재 프레임 이미지 (PNG)', `${fmtTC(S.time, pr.fps)} 화면을 고화질 이미지로`, 'image'], ['json', '프로젝트 파일 (.json)', '나중에 다시 열어 편집할 수 있게 저장', 'folder']];
+  const fmts = [['mp4', 'MP4 동영상', canMP4 ? 'H.264, 소리 포함. 프레임 단위로 정확하게 저장합니다' : '이 브라우저는 실시간 녹화 방식으로 저장해요', 'video'], ['webm', 'WebM 동영상', '재생하면서 녹화하는 방식입니다', 'video'], ['png', '현재 프레임 이미지 (PNG)', `${fmtTC(S.time, pr.fps)} 화면을 고화질 이미지로`, 'image'], ['json', '프로젝트 파일 (.json)', '나중에 다시 열어 편집할 수 있게 저장', 'folder']];
   fmts.forEach(([k, t, d, ic]) => { const b = h('button', { class: 'opt' + (k === st.fmt ? ' on' : '') }, h('i', { html: icon(ic) }), h('div', null, h('b', null, t), h('span', null, d))); b.onclick = () => { st.fmt = k; $$('.opt', optList).forEach(x => x.classList.remove('on')); b.classList.add('on'); vopts.hidden = k === 'json'; fpsRow.hidden = k === 'png' || k === 'json'; qRow.hidden = fpsRow.hidden; }; optList.append(b); });
   const res = pillsRow(null, [1, .75, .5, .25].map(s => ({ v: s, l: `${s === 1 ? '원본' : Math.round(s * 100) + '%'} ${even(pr.w * s)}×${even(pr.h * s)}` })), 1, v => st.scale = v);
   const fpsS = h('select', { class: 'sel' }); [24, 25, 30, 50, 60].concat([pr.fps]).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b).forEach(f => fpsS.append(h('option', { value: f }, f + ' fps'))); fpsS.value = pr.fps; fpsS.onchange = () => st.fps = +fpsS.value;
   const fpsRow = h('div', { class: 'frow' }, h('label', null, '프레임 속도'), fpsS);
   const qRow = h('div', { class: 'frow' }, h('label', null, '화질'), pillsRow(null, [{ v: .08, l: '보통' }, { v: .15, l: '높음' }, { v: .28, l: '최고' }], .15, v => st.bpp = v));
   const vopts = h('div', null, h('div', { class: 'addsec' }, '해상도'), res, fpsRow, qRow);
-  body.append(optList, vopts, h('p', { class: 'hint', style: 'margin-top:12px' }, `길이 ${pr.dur}초 · 레이어 ${pr.layers.length}개`));
+  body.append(optList, vopts, h('p', { class: 'hint', style: 'margin-top:12px' }, `길이 ${pr.dur}초, 레이어 ${pr.layers.length}개`));
   openSheet('내보내기', body, { narrow: true, foot: close => [h('button', { class: 'btn ghost', onclick: close }, '취소'), h('button', { class: 'btn primary', html: icon('export') + '내보내기', onclick: () => { close(); runExport(st); } })] });
 }
 async function runExport(st) {
@@ -3393,26 +3416,24 @@ async function runExport(st) {
 
 /* ================= SAMPLE ================= */
 function buildSample() {
-  const pr = newProject({ name: '샘플 프로젝트', w: 1080, h: 1920, fps: 30, dur: 7, bg: '#07060f' }); const keep = S.proj; S.proj = pr;
+  const pr = newProject({ name: '샘플 프로젝트', w: 1080, h: 1920, fps: 30, dur: 6, bg: '#2340e0' }); const keep = S.proj; S.proj = pr;
   const K = (p, t, v, e) => { const k = { t, v, e: e != null ? deep(EASES[e].e) : EASE_DEFAULT() }; p.k.push(k); sortKeys(p); return k; };
-  const bg = makeLayer('shape', { kind: 'rect', w: 1080, h: 1920, fillType: 'linear', fill: '#24135a', fill2: '#052c3b', gang: 60, name: '배경', start: 0, end: 7 });
-  K(bg.p.gang, 0, 60, 1); K(bg.p.gang, 7, 150, 1);
-  const ring = makeLayer('shape', { kind: 'ellipse', w: 620, h: 620, fillType: 'none', strokeOn: true, stroke: '#8f9bff', sw: 14, y: 760, name: '링', start: 0, end: 7 });
-  ring.shape.fillType = 'none'; K(ring.p.trimE, .2, 0, 4); K(ring.p.trimE, 1.5, 100); K(ring.p.rot, 0, -90, 0); K(ring.p.rot, 7, 150, 0);
-  const g = makeFx('glow'); g.p.col.v = '#8f9bff'; g.p.r.v = 34; g.p.int.v = 180; ring.fx.push(g);
-  const star = makeLayer('shape', { kind: 'star', w: 280, h: 280, sides: 5, inner: 46, rad: 14, fill: '#ffbf47', y: 760, name: '별', start: 0, end: 7 });
-  K(star.p.sx, .5, 0, 6); K(star.p.sx, 1.2, 100); K(star.p.sy, .5, 0, 6); K(star.p.sy, 1.2, 100);
-  const sp = makeFx('spin'); sp.p.rps.v = 36; star.fx.push(sp); const fl = makeFx('float'); fl.p.amp.v = 14; star.fx.push(fl); const sh = makeFx('shadow'); sh.p.dist.v = 24; sh.p.soft.v = 40; sh.p.op.v = 55; star.fx.push(sh);
-  const title = makeLayer('text', { content: 'TWEENY MOTION', font: 'Unbounded', weight: 800, size: 92, y: 1190, name: '타이틀', start: 0, end: 7 });
-  title.text.revealMode = 'up'; K(title.p.reveal, .9, 0, 0); K(title.p.reveal, 2.0, 100); title.p.ls.v = 4;
-  const sw = makeFx('sweep'); sw.p.freq.v = .35; sw.p.int.v = 90; title.fx.push(sw);
-  const sub = makeLayer('text', { content: '키프레임 · 그래프 · 마스크 · 이펙트', font: 'Noto Sans KR', weight: 500, size: 44, fill: '#c3c7ec', y: 1300, name: '부제', start: 0, end: 7 });
-  K(sub.p.op, 1.8, 0, 3); K(sub.p.op, 2.4, 100); K(sub.p.y, 1.8, 1350, 4); K(sub.p.y, 2.5, 1300);
-  const line = makeLayer('shape', { kind: 'line', w: 360, h: 40, strokeOn: true, stroke: '#ff6fb1', sw: 6, y: 1380, name: '밑줄', start: 0, end: 7 });
-  K(line.p.trimE, 2.2, 0, 5); K(line.p.trimE, 3.0, 100);
-  const fo = makeFx('fadeout'); fo.p.dur.v = .8; [title, sub, line, star, ring].forEach(L => { const f = deep(fo); f.id = uid(); L.fx.push(f); });
-  const adj = makeLayer('adjust', { name: '필름 질감', start: 0, end: 7 }); const nz = makeFx('noise'); nz.p.amt.v = 10; const vg = makeFx('vignette'); vg.p.amt.v = 55; adj.fx.push(nz, vg);
-  pr.layers.push(bg, ring, star, title, sub, line, adj);
+  const disc = makeLayer('shape', { kind: 'ellipse', w: 560, h: 560, fill: '#ffd23f', x: 690, y: 640, name: '원', start: 0, end: 6 });
+  K(disc.p.sx, .15, 0, 6); K(disc.p.sx, .8, 100); K(disc.p.sy, .15, 0, 6); K(disc.p.sy, .8, 100);
+  K(disc.p.x, 2.7, 690, 5); K(disc.p.x, 3.5, 390);
+  const sq = makeLayer('shape', { kind: 'rect', w: 300, h: 300, fill: '#ff5a36', x: 330, y: 900, name: '사각형', start: 0, end: 6 });
+  K(sq.p.sx, .4, 0, 6); K(sq.p.sx, 1.05, 100); K(sq.p.sy, .4, 0, 6); K(sq.p.sy, 1.05, 100);
+  K(sq.p.x, 2.7, 330, 5); K(sq.p.x, 3.5, 770); K(sq.p.rot, 2.7, 0, 5); K(sq.p.rot, 3.5, 90);
+  const line = makeLayer('shape', { kind: 'line', w: 780, h: 20, strokeOn: true, stroke: '#ffffff', sw: 18, y: 1250, name: '선', start: 0, end: 6 });
+  K(line.p.trimE, .9, 0, 4); K(line.p.trimE, 1.5, 100);
+  const t1 = makeLayer('text', { content: 'tweeny', font: 'Noto Sans KR', weight: 900, size: 240, y: 1430, name: '제목 1', start: 0, end: 6 });
+  t1.text.revealMode = 'up'; t1.p.ls.v = -6; K(t1.p.reveal, 1.1, 0, 0); K(t1.p.reveal, 1.8, 100);
+  const t2 = makeLayer('text', { content: 'motion', font: 'Noto Sans KR', weight: 900, size: 240, y: 1650, name: '제목 2', start: 0, end: 6 });
+  t2.text.revealMode = 'up'; t2.p.ls.v = -6; K(t2.p.reveal, 1.3, 0, 0); K(t2.p.reveal, 2.0, 100);
+  const cap = makeLayer('text', { content: '키프레임 애니메이션 예제', font: 'Noto Sans KR', weight: 500, size: 42, fill: '#c9d2ff', y: 1810, name: '설명', start: 0, end: 6 });
+  K(cap.p.op, 2.0, 0, 3); K(cap.p.op, 2.5, 100);
+  const fo = makeFx('fadeout'); fo.p.dur.v = .5; [disc, sq, line, t1, t2, cap].forEach(L => { const f = deep(fo); f.id = uid(); L.fx.push(f); });
+  pr.layers.push(disc, sq, line, t1, t2, cap);
   S.proj = keep; return pr;
 }
 
@@ -3598,9 +3619,9 @@ function morphSheet() {
     ['A', 'B'].forEach(key => {
       drawThumb(key); const sl = st[key], s_ = ui[key].status;
       if (!sl) { if (s_.className !== 'st err') { s_.className = 'st'; s_.textContent = '아직 고르지 않았어요'; } return; }
-      if (sl.kind === 'layer') { s_.className = 'st ok'; s_.textContent = `도형 레이어 「${sl.name}」`; return; }
+      if (sl.kind === 'layer') { s_.className = 'st ok'; s_.textContent = `도형 레이어 ‘${sl.name}’`; return; }
       if (sl.trace && sl.trace.err) { s_.className = 'st err'; s_.textContent = sl.trace.err + ' — 테두리가 명확한 사진을 골라 주세요'; }
-      else if (sl.trace) { const n = sl.trace.pieces.length; s_.className = 'st ok'; s_.textContent = n > 1 ? `테두리를 찾았어요 · 조각 ${n}개` : '테두리를 찾았어요 · 파란 선이 따낸 모양이에요'; }
+      else if (sl.trace) { const n = sl.trace.pieces.length; s_.className = 'st ok'; s_.textContent = n > 1 ? `윤곽을 찾았어요. 조각 ${n}개` : '윤곽을 찾았어요. 파란 선이 따낸 모양입니다'; }
     });
     st.built = slotOk(st.A) && slotOk(st.B) ? buildMorph(morphSlotPolys(st.A, st.fit), morphSlotPolys(st.B, st.fit)) : null;
     if (makeBtn) makeBtn.disabled = !st.built;
@@ -3636,7 +3657,7 @@ function morphSheet() {
   const easeS = h('select', { class: 'sel' }); EASES.forEach((e, i) => easeS.append(h('option', { value: i }, e.n))); easeS.value = st.ease; easeS.onchange = () => st.ease = +easeS.value;
   const body = h('div', null,
     h('div', { class: 'mnotice', html: icon('help') + '<span>테두리가 명확한 사진만 사용해주세요.</span>' }),
-    h('p', { class: 'hint', style: 'margin-top:0' }, '시작 사진과 끝 사진에서 도형의 테두리를 벡터로 따서, 한 모양이 다른 모양으로 스윽 바뀌는 애니메이션을 만들어요. 섬이나 나라 영토처럼 떨어진 조각이 여러 개여도 함께 따져요. 단색 배경 위의 도형이나 배경이 투명한 PNG가 가장 잘 돼요.'),
+    h('p', { class: 'hint', style: 'margin-top:0' }, '시작 사진과 끝 사진에서 도형의 윤곽을 따서, 한 모양이 다른 모양으로 바뀌는 애니메이션을 만듭니다. 떨어진 조각이 여러 개여도 함께 처리합니다. 단색 배경 위의 도형이나 배경이 투명한 PNG에서 가장 정확합니다.'),
     h('div', { class: 'mslots' }, mkSlot('A', '시작'), mkSlot('B', '끝')),
     h('div', { class: 'addsec' }, '미리보기'), prev,
     h('div', { class: 'addsec' }, '설정'),
@@ -3659,7 +3680,7 @@ function morphSheet() {
     if (ca !== cb) { upsertKey(L.p.fill, t0, ca).e = deep(e); upsertKey(L.p.fill, t1, cb); }
     let hid = 0; ['A', 'B'].forEach(k => { const sl = st[k]; if (sl.kind === 'layer') { const o = findL(sl.lid); if (o && o.visible) { o.visible = false; hid++; } } });
     closeS(); addLayer(L); setTime(t0); openTab('style');
-    toast(hid ? '모양 연결 레이어를 만들었어요 (원래 도형은 숨겼어요)' : '모양 연결 레이어를 만들었어요. 재생해 보세요');
+    toast(hid ? '모양 연결 레이어를 만들었어요 (원래 도형은 숨겼어요)' : '모양 연결 레이어를 만들었어요');
   };
   const closeS = openSheet('모양 연결 (사진 모핑)', body, { onClose: () => { cancelAnimationFrame(raf); morphPick = null; }, foot: close => { makeBtn = h('button', { class: 'btn primary', html: icon('morph') + '만들기', onclick: create, disabled: true }); return [h('button', { class: 'btn ghost', onclick: close }, '취소'), makeBtn]; } });
   refresh(); tick();
@@ -3824,8 +3845,15 @@ function bind() {
   document.addEventListener('visibilitychange', () => { if (document.hidden && S.playing) pause(); });
 }
 
-/* ================= INTRO PAGE ================= */
-const INTRO = { open: false, raf: 0 };
+/* ================= INTRO (start screen) ================= */
+const INTRO = { open: false, raf: 0, pr: null, store: { pool: [] }, last: 0 };
+/* draw a project other than the open one into a canvas, using a separate canvas pool so the editor's buffers keep their size */
+function renderOffscreen(pr, cv, x, t, store) {
+  const keep = S.proj, sRW = RW, sRH = RH, sRS = RS, saved = POOL.splice(0); POOL.push(...store.pool);
+  try { S.proj = pr; renderFrame(cv, x, t, cv.width / pr.w); }
+  catch (err) { }
+  finally { store.pool = POOL.splice(0); POOL.push(...saved); S.proj = keep; RW = sRW; RH = sRH; RS = sRS; }
+}
 function introDemo() {
   const cv = $('#introCv'); if (!cv) return; const x = cv.getContext('2d');
   const N = 96, ease = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
@@ -3864,18 +3892,29 @@ function introDemo() {
   };
   cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(draw);
 }
+function introPlay() {
+  const cv = $('#introCv'); if (!cv) return; const x = cv.getContext('2d');
+  if (!INTRO.pr) { INTRO.pr = buildSample(); INTRO.pr.layers.forEach(L => { if (L.type === 'text') ensureFont(L.text.font, L.text.weight); }); }
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches, t0 = performance.now();
+  const draw = now => {
+    if (!INTRO.open) return;
+    if (now - INTRO.last > 32) { INTRO.last = now; renderOffscreen(INTRO.pr, cv, x, still ? 2.6 : ((now - t0) / 1000) % INTRO.pr.dur, INTRO.store); }
+    INTRO.raf = requestAnimationFrame(draw);
+  };
+  cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(draw);
+}
 function showIntro() {
   const el = $('#intro'); if (!el) return; if (S.playing) pause(); closeCtx();
   el.hidden = false; el.classList.remove('out'); el.scrollTop = 0; INTRO.open = true; introDemo();
 }
 function closeIntro() {
   const el = $('#intro'); if (!el || !INTRO.open) return; INTRO.open = false; cancelAnimationFrame(INTRO.raf);
-  el.classList.add('out'); setTimeout(() => { if (!INTRO.open) el.hidden = true; }, 260); resizeAll(); invalidate();
+  el.classList.add('out'); setTimeout(() => { if (!INTRO.open) el.hidden = true; }, 220); resizeAll(); invalidate();
 }
 function bindIntro() {
   const el = $('#intro'); if (!el) return;
   $$('[data-start]', el).forEach(b => b.onclick = closeIntro);
-  $$('[data-scroll]', el).forEach(a => a.onclick = e => { e.preventDefault(); const t = el.querySelector(a.getAttribute('href')); if (t) el.scrollTo({ top: t.offsetTop - 56, behavior: 'smooth' }); });
+  $$('[data-sample]', el).forEach(b => b.onclick = () => { closeIntro(); if (S.proj.layers.length) askSample(); else startProject(buildSample()); });
 }
 async function init() {
   try { S.modePref = localStorage.getItem('ml_mode') || 'auto'; } catch (e) { }
@@ -3886,7 +3925,6 @@ async function init() {
   S.proj.layers.forEach(L => { if (L.type === 'text') ensureFont(L.text.font, L.text.weight); });
   resetHistory(); updateTC(); refreshInspector(); resizeAll(); fitView(); tlFit(); invalidate();
   requestAnimationFrame(loop);
-  if (!ok) setTimeout(() => toast('빈 프로젝트예요. 위 도구줄에서 텍스트·도형·사진을 추가해 보세요'), 600);
 }
 init();
 </script>
