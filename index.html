@@ -1,6 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>tweeny motion</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -114,10 +113,12 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .tabs::-webkit-scrollbar{display:none}
 .tabs button{flex:none;display:flex;align-items:center;gap:5px;padding:0 9px;color:var(--fg2);font-size:11.5px;white-space:nowrap;position:relative}
 .tabs button svg.i{width:13px;height:13px}
+.app .tabs button{flex:1 1 auto;justify-content:center;padding:0 6px}
+.app .tabs button svg.i{display:none}
 .tabs button:hover{color:var(--fg)}
 .tabs button.on{color:var(--fg)}
 .tabs button.on::after{content:"";position:absolute;left:6px;right:6px;bottom:0;height:2px;background:var(--acc)}
-.insp-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 0 24px;overscroll-behavior:contain}
+.insp-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 0 24px;overscroll-behavior:contain;scrollbar-gutter:stable}
 .insp-body::-webkit-scrollbar,.sheet-body::-webkit-scrollbar,.gside::-webkit-scrollbar{width:10px}
 .insp-body::-webkit-scrollbar-thumb,.sheet-body::-webkit-scrollbar-thumb,.gside::-webkit-scrollbar-thumb{background:#444;border:3px solid var(--bg1);border-radius:6px}
 .empty{padding:28px 20px;text-align:center;color:var(--fg3);line-height:1.6}
@@ -137,24 +138,24 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .prow .kfb.anim{color:var(--kf)}
 .prow .kfb.on svg{fill:var(--kf);stroke:var(--kf)}
 .prow .kfb.none{visibility:hidden}
-.plabel{width:84px;flex:none;color:var(--fg2);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:ew-resize;touch-action:none;padding:3px 0}
+.plabel{width:74px;flex:none;color:var(--fg2);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:ew-resize;touch-action:none;padding:3px 0}
 .plabel:hover{color:var(--fg)}
 .plabel.static{cursor:default}
 .plabel.static:hover{color:var(--fg2)}
 .prow.animated .plabel{color:var(--kf)}
-.slider{flex:1;min-width:40px;-webkit-appearance:none;appearance:none;height:18px;background:transparent;touch-action:pan-y}
+.slider{flex:1;min-width:28px;-webkit-appearance:none;appearance:none;height:18px;background:transparent;touch-action:pan-y}
 .slider::-webkit-slider-runnable-track{height:2px;border-radius:1px;background:linear-gradient(90deg,var(--acc) var(--p,50%),#454545 var(--p,50%))}
 .slider::-moz-range-track{height:2px;background:#454545}
 .slider::-moz-range-progress{height:2px;background:var(--acc)}
 .slider::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:#e6e6e6;margin-top:-4px;border:0;box-shadow:0 0 0 2px var(--bg1)}
 .slider::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:#e6e6e6;border:0}
-.num{width:58px;flex:none;background:transparent;border:1px solid transparent;border-radius:var(--r);padding:2px 4px;text-align:right;font-family:var(--mono);font-size:11.5px;color:var(--val);outline:none;font-variant-numeric:tabular-nums;-webkit-user-select:text;user-select:text}
+.num{width:52px;flex:none;background:transparent;border:1px solid transparent;border-radius:var(--r);padding:2px 4px;text-align:right;font-family:var(--mono);font-size:11.5px;color:var(--val);outline:none;font-variant-numeric:tabular-nums;-webkit-user-select:text;user-select:text}
 .num:hover{border-color:var(--line2)}
 .num:focus{border-color:var(--acc);background:var(--bg0);color:var(--fg)}
-.num.wide{flex:1;width:auto;text-align:left}
+.num.wide{flex:1;width:auto;min-width:0;text-align:left}
 .sheet .num,.gside .num{background:var(--bg0);border-color:var(--line2);color:var(--fg)}
 .unit{width:16px;color:var(--fg3);font-size:10.5px;flex:none}
-.navb{width:18px;height:20px;display:grid;place-items:center;color:var(--fg3);border-radius:var(--r);flex:none;opacity:0}
+.navb{width:16px;height:20px;display:grid;place-items:center;color:var(--fg3);border-radius:var(--r);flex:none;opacity:0}
 .prow:hover .navb{opacity:1}
 .navb:hover{color:var(--fg);background:var(--bg3)}
 .navb svg{width:12px;height:12px}
