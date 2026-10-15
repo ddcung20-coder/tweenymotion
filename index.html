@@ -121,7 +121,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .app[data-mode=mobile] .acct{height:32px;width:32px;padding:0;justify-content:center;border-radius:50%}
 .lib{display:flex;flex-direction:column;gap:10px}
 .libwhere{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:9px 11px;border-radius:5px;background:var(--bg2);border:1px solid var(--line2);font-size:12.5px;color:var(--fg2);line-height:1.5}
-.libwhere>span,.libwhere{min-width:0}.libwhere span{display:flex;gap:8px;align-items:flex-start}.libwhere svg.i{width:16px;height:16px;flex:none;margin-top:1px}.libwhere.cloud{border-color:var(--accline);background:var(--accbg);color:var(--fg)}
+.libwhere>span,.libwhere{min-width:0}.libwhere span{display:flex;gap:8px;align-items:flex-start}.libwhere svg.i{width:16px;height:16px;flex:none;margin-top:1px}.libwhere.cloud{border-color:var(--accline);background:var(--accbg);color:var(--fg);justify-content:flex-start}.libwhere.cloud>span{display:block}
 .libbanner{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px;border-radius:5px;border:1px dashed #6a5a2a;color:#ffd77a;font-size:12.5px}
 .libgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .libitem{position:relative}
@@ -131,6 +131,12 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .libmeta{display:flex;flex-direction:column;gap:2px;min-width:0;padding-right:22px}.libmeta b{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.libmeta span{font-size:11px;color:var(--fg3)}
 .libbadge{align-self:flex-start;margin-top:3px;font-size:10.5px!important;padding:1px 6px;border-radius:9px;border:1px solid var(--line2);color:var(--fg2)!important}.libbadge.now{border-color:var(--acc);color:var(--acc2)!important}.libbadge.cl{border-color:var(--accline);color:var(--acc2)!important}
 .libmore{position:absolute;right:8px;bottom:10px}
+.libmeta .libsize{color:var(--fg2)!important;font-variant-numeric:tabular-nums}
+.libusage{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.ubar{padding:8px 11px;border-radius:5px;background:var(--bg2);border:1px solid var(--line2);display:flex;flex-direction:column;gap:6px}
+.ubar-h{display:flex;justify-content:space-between;gap:8px;font-size:12.5px}.ubar-h span{color:var(--fg2);font-variant-numeric:tabular-nums}
+.ubar-t{height:6px;border-radius:3px;background:var(--bg0);overflow:hidden}.ubar-t i{display:block;height:100%;background:var(--acc);border-radius:3px}
+.ubar-n{font-size:11.5px;color:var(--fg3);line-height:1.45}
 .hint.warn{color:#f5c862}
 .app[data-mode=mobile] ~ .scrim .libgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .authbox{display:flex;flex-direction:column;gap:10px;padding:4px 2px}
@@ -604,7 +610,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v33</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v34</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -659,6 +665,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v34</b><span>계정에는 프로젝트를 압축해서 아주 작게 올립니다(계정당 3MB, 프로젝트당 300KB까지). 내 프로젝트에서 기기·계정 사용량과 프로젝트별 용량을 볼 수 있습니다.</span></li>
         <li><b>v33</b><span>‘내 프로젝트’가 생겼습니다. 만든 프로젝트가 모두 자동으로 저장되고, 목록에서 골라 다시 열거나 이름 바꾸기·복제·삭제를 할 수 있습니다. 게스트는 이 컴퓨터에, 구글 로그인 사용자는 계정에 저장됩니다.</span></li>
         <li><b>v32</b><span>처음 시작할 때 게스트로 쓸지 구글 계정으로 로그인할지 고를 수 있습니다. 오른쪽 위 계정 버튼에서 언제든 로그인·로그아웃할 수 있습니다.</span></li>
         <li><b>v31</b><span>소리 편집이 생겼습니다. 볼륨 증폭(최대 400%), 자동 음량 맞춤, 페이드 인·아웃, 물속·전화기·라디오·홀·메아리 효과, 저음·중음·고음, 좌우 위치를 고를 수 있고, 영상에서 소리만 분리하거나 WAV 파일로 저장할 수 있습니다. 타임라인에 소리 파형이 보입니다.</span></li>
@@ -3779,15 +3786,22 @@ async function loadSaved() {
 }
 
 /* ================= MY PROJECTS: every project kept on this device, and in the Google account when signed in ================= */
-const LIB = { idx: null, fs: null, store: { pool: [] }, cloudT: 0, pending: new Map(), warned: {} };
+const LIB = { idx: null, fs: null, store: { pool: [] }, cloudT: 0, pending: new Map(), warned: {}, sizes: null };
+/* the account keeps only small, compressed project data; pictures, videos and sounds stay on the device */
+const CLOUD_MAX_USER = 3 * 1024 * 1024, CLOUD_MAX_PROJECT = 300 * 1024;
+function fmtBytes(n) { n = n || 0; if (n < 1024) return n + 'B'; if (n < 1048576) return (n / 1024).toFixed(n < 10240 ? 1 : 0) + 'KB'; if (n < 1073741824) return (n / 1048576).toFixed(n < 10485760 ? 1 : 0) + 'MB'; return (n / 1073741824).toFixed(1) + 'GB'; }
+async function gzBytes(str) { if (!window.CompressionStream) return null; try { return new Uint8Array(await new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()); } catch (e) { return null; } }
+async function gunzipStr(u8) { return await new Response(new Blob([u8]).stream().pipeThrough(new DecompressionStream('gzip'))).text(); }
+let persistAsked = false;
+function askPersist() { if (persistAsked) return; persistAsked = true; try { navigator.storage && navigator.storage.persist && navigator.storage.persisted().then(p => { if (!p) navigator.storage.persist().catch(() => { }); }).catch(() => { }); } catch (e) { } }
 function projId(pr) { if (!pr.id) pr.id = 'p' + uid() + Date.now().toString(36); return pr.id; }
 async function libIndex() { if (LIB.idx) return LIB.idx; try { LIB.idx = JSON.parse((await DB.get('kv', 'projects')) || '[]'); } catch (e) { LIB.idx = []; } if (!Array.isArray(LIB.idx)) LIB.idx = []; return LIB.idx; }
 function libPutIndex() { return DB.put('kv', 'projects', JSON.stringify(LIB.idx)).catch(() => { }); }
-function projThumb(pr) {
+function projThumb(pr, size = 200, q = .72) {
   try {
-    const k = 200 / Math.max(pr.w, pr.h), cv = document.createElement('canvas'); cv.width = Math.max(8, Math.round(pr.w * k)); cv.height = Math.max(8, Math.round(pr.h * k));
+    const k = size / Math.max(pr.w, pr.h), cv = document.createElement('canvas'); cv.width = Math.max(8, Math.round(pr.w * k)); cv.height = Math.max(8, Math.round(pr.h * k));
     const x = cv.getContext('2d'); const t = pr === S.proj && S.time > 0.05 ? S.time : Math.min(pr.dur * .5, 2);
-    renderOffscreen(pr, cv, x, t, LIB.store); return cv.toDataURL('image/jpeg', .72);
+    renderOffscreen(pr, cv, x, t, LIB.store); return cv.toDataURL('image/jpeg', q);
   } catch (e) { return ''; }
 }
 let saving = null;
@@ -3797,8 +3811,10 @@ async function saveNow() {
     await DB.put('kv', 'project', js).catch(() => { }); await DB.put('kv', 'proj:' + pr.id, js).catch(() => { });
     const idx = await libIndex(); let e = idx.find(q => q.id === pr.id);
     if (!e) { e = { id: pr.id, created: now }; idx.unshift(e); }
-    Object.assign(e, { name: pr.name, w: pr.w, h: pr.h, dur: pr.dur, n: pr.layers.filter(l => l.type !== 'group').length, updated: now });
-    if (!e.thumb || now - (e.thumbAt || 0) > 5000) { e.thumb = projThumb(pr); e.thumbAt = now; }
+    const media = Object.keys(pr.media || {}).reduce((a, id) => { const M = MEDIA.get(id); return a + (M && M.blob ? M.blob.size : 0); }, 0);
+    Object.assign(e, { name: pr.name, w: pr.w, h: pr.h, dur: pr.dur, n: pr.layers.filter(l => l.type !== 'group').length, updated: now, bytes: js.length + media, media });
+    if (!e.thumb || now - (e.thumbAt || 0) > 5000) { e.thumb = projThumb(pr); e.thumbS = projThumb(pr, 112, .55); e.thumbAt = now; }
+    askPersist();
     await libPutIndex();
     if (AUTH.user) cloudQueue(pr.id, js, e);
   })();
@@ -3818,23 +3834,32 @@ function cloudErr(err) {
   else if (c === 'resource-exhausted') cloudWarn('quota', '오늘은 계정 저장 한도를 넘었어요. 이 기기에는 저장돼 있어요');
   else cloudWarn('net', '계정에 저장하지 못했어요. 인터넷 연결을 확인해 주세요 (이 기기에는 저장됨)');
 }
-function cloudQueue(id, js, e) { LIB.pending.set(id, { js, e: { ...e } }); clearTimeout(LIB.cloudT); LIB.cloudT = setTimeout(cloudFlush, 6000); }
+/* account saves are batched (20s after the last change, at most once a minute while editing; right away on switching projects or leaving the page) to stay well inside the free daily write quota */
+function cloudQueue(id, js, e) { const now = Date.now(); if (!LIB.pending.size) LIB.firstPend = now; LIB.pending.set(id, { js, e: { ...e } }); clearTimeout(LIB.cloudT); LIB.cloudT = setTimeout(cloudFlush, Math.max(0, Math.min(20000, LIB.firstPend + 60000 - now))); }
+async function cloudSizes() { if (!LIB.sizes) { LIB.sizes = new Map(); await cloudList(); } return LIB.sizes; }
 async function cloudFlush() {
   if (!LIB.pending.size || !AUTH.user) return; const jobs = [...LIB.pending.entries()]; LIB.pending.clear();
-  const fs = await fsInit(); if (!fs) return;
+  const fs = await fsInit(); if (!fs) return; const sizes = await cloudSizes();
   for (const [id, { js, e }] of jobs) {
-    if (js.length > 950000) { cloudWarn('big' + id, `‘${e.name}’은 너무 커서 계정에는 저장하지 못했어요 (이 기기에는 저장됨)`); continue; }
-    const meta = { name: e.name, w: e.w, h: e.h, dur: e.dur, n: e.n, thumb: e.thumb || '', updated: e.updated, created: e.created || e.updated };
-    try { const u = userRef(); await u.collection('projects').doc(id).set({ data: js, updated: e.updated }); await u.collection('meta').doc(id).set(meta); const ix = await libIndex(), le = ix.find(q => q.id === id); if (le) { le.cloud = e.updated; libPutIndex(); } }
-    catch (err) { cloudErr(err); }
+    const ix = await libIndex(), le = ix.find(q => q.id === id) || {};
+    const z = await gzBytes(js), thumb = e.thumbS || '', size = (z ? z.length : js.length) + thumb.length + 200;
+    if (size > CLOUD_MAX_PROJECT) { le.cloudSkip = 'big'; libPutIndex(); cloudWarn('big' + id, `‘${e.name}’은 계정에 넣기엔 너무 커요 (${fmtBytes(size)} / 최대 ${fmtBytes(CLOUD_MAX_PROJECT)}). 이 기기에는 저장돼 있어요`); continue; }
+    let used = 0; sizes.forEach((v, k) => { if (k !== id) used += v; });
+    if (used + size > CLOUD_MAX_USER) { le.cloudSkip = 'full'; libPutIndex(); cloudWarn('full', `계정 저장 공간(${fmtBytes(CLOUD_MAX_USER)})이 가득 찼어요. 안 쓰는 프로젝트를 지우면 다시 올라가요. 이 기기에는 저장돼 있어요`); continue; }
+    const meta = { name: e.name, w: e.w, h: e.h, dur: e.dur, n: e.n, thumb, updated: e.updated, created: e.created || e.updated, size };
+    try {
+      const u = userRef(); await u.collection('projects').doc(id).set(z ? { z: firebase.firestore.Blob.fromUint8Array(z), updated: e.updated } : { data: js, updated: e.updated });
+      await u.collection('meta').doc(id).set(meta); sizes.set(id, size);
+      if (le.id) { le.cloud = e.updated; le.cloudBytes = size; le.cloudSkip = null; libPutIndex(); }
+    } catch (err) { cloudErr(err); }
   }
 }
 async function cloudList() {
   const fs = await fsInit(); if (!fs) return null;
-  try { const snap = await userRef().collection('meta').orderBy('updated', 'desc').limit(300).get(); return snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch (err) { cloudErr(err); return null; }
+  try { const snap = await userRef().collection('meta').orderBy('updated', 'desc').limit(300).get(); const list = snap.docs.map(d => ({ id: d.id, ...d.data() })); LIB.sizes = new Map(list.map(c => [c.id, c.size || 0])); return list; } catch (err) { cloudErr(err); return null; }
 }
-async function cloudLoad(id) { const fs = await fsInit(); if (!fs) return null; try { const d = await userRef().collection('projects').doc(id).get(); return d.exists ? d.data().data : null; } catch (err) { cloudErr(err); return null; } }
-async function cloudDelete(id) { const fs = await fsInit(); if (!fs) return; try { const u = userRef(); await u.collection('projects').doc(id).delete(); await u.collection('meta').doc(id).delete(); } catch (err) { cloudErr(err); } }
+async function cloudLoad(id) { const fs = await fsInit(); if (!fs) return null; try { const d = await userRef().collection('projects').doc(id).get(); if (!d.exists) return null; const v = d.data(); return v.z ? await gunzipStr(v.z.toUint8Array()) : v.data; } catch (err) { cloudErr(err); return null; } }
+async function cloudDelete(id) { const fs = await fsInit(); if (!fs) return; try { const u = userRef(); await u.collection('projects').doc(id).delete(); await u.collection('meta').doc(id).delete(); if (LIB.sizes) LIB.sizes.delete(id); } catch (err) { cloudErr(err); } }
 document.addEventListener('visibilitychange', () => { if (document.hidden) { if (saveT) saveNow(); cloudFlush(); } });
 /* ---------- opening, copying, deleting ---------- */
 async function loadProjectMedia(pr) {
@@ -3851,7 +3876,7 @@ async function readProject(id, entry) {
 }
 async function openLibProject(id, entry) {
   if (id === S.proj.id) return true;
-  await saveNow(); toast('여는 중…');
+  await saveNow(); cloudFlush(); toast('여는 중…');
   const pr = await readProject(id, entry); if (!pr) { toast('프로젝트를 열지 못했어요'); return false; }
   const miss = await loadProjectMedia(pr); startProject(pr); fitView(); tlFit();
   toast(miss ? `‘${pr.name}’을 열었어요. 이 기기에 없는 사진·영상 ${miss}개는 ‘미디어 교체’로 다시 넣어 주세요` : `‘${pr.name}’을 열었어요`);
@@ -3891,7 +3916,8 @@ async function libSheet() {
   const tools = h('div', { class: 'btnrow libtools' },
     h('button', { class: 'btn primary sm', html: icon('plus') + '새 프로젝트', onclick: async () => { closeSheet(); await saveNow(); startProject(newProject({ name: nextProjName() })); toast('새 프로젝트를 만들었어요'); } }),
     h('button', { class: 'btn sm', html: icon('folder') + '파일에서 열기 (.json)', onclick: () => { closeSheet(); $('#projIn').click(); } }));
-  body.append(where, tools, info, grid);
+  const usage = h('div', { class: 'libusage' });
+  body.append(where, usage, tools, info, grid);
   const closeSheet = openSheet('내 프로젝트', body);
   const draw = (list, cloudOK) => {
     grid.innerHTML = ''; info.innerHTML = '';
@@ -3909,12 +3935,20 @@ async function libSheet() {
           { l: '복제', ic: 'copy', fn: () => dupLibProject(e.id, e).then(refresh) },
           '-', { l: '삭제', ic: 'trash', danger: true, fn: () => confirmSheet('프로젝트 삭제', `‘${e.name}’을 지울까요? ${AUTH.user ? '계정과 이 기기에서 모두 사라지고' : '이 기기에서 사라지고'} 되돌릴 수 없어요.`, '삭제', () => delLibProject(e.id).then(() => setTimeout(libSheet, 50))) }]); } });
       const card = h('button', { class: 'libcard' + (cur ? ' cur' : ''), onclick: async () => { if (cur) { closeSheet(); return; } if (await openLibProject(e.id, e)) closeSheet(); } },
-        th, h('div', { class: 'libmeta' }, h('b', null, e.name || '이름 없음'), h('span', null, `${ago(Math.max(e.updated || 0, e.cloudUpdated || 0))} · ${e.w}×${e.h} · ${(+e.dur || 0).toFixed(1)}초`), badge));
+        th, h('div', { class: 'libmeta' }, h('b', null, e.name || '이름 없음'), h('span', null, `${ago(Math.max(e.updated || 0, e.cloudUpdated || 0))} · ${e.w}×${e.h} · ${(+e.dur || 0).toFixed(1)}초`),
+          h('span', { class: 'libsize' }, (e.local ? `기기 ${fmtBytes(e.bytes)}` + (e.media ? ` (미디어 ${fmtBytes(e.media)})` : '') : '기기 없음') + (AUTH.user ? (e.cloudBytes ? ` · 계정 ${fmtBytes(e.cloudBytes)}` : e.cloudSkip === 'big' ? ' · 계정: 너무 큼' : e.cloudSkip === 'full' ? ' · 계정: 공간 부족' : '') : '')), badge));
       grid.append(h('div', { class: 'libitem' }, card, more));
     });
   };
+  const bar = (label, used, total, note) => h('div', { class: 'ubar' }, h('div', { class: 'ubar-h' }, h('b', null, label), h('span', null, total ? `${fmtBytes(used)} / ${fmtBytes(total)}` : fmtBytes(used))), h('div', { class: 'ubar-t' }, h('i', { style: `width:${total ? Math.min(100, used / total * 100).toFixed(1) : 0}%` + (total && used / total > .85 ? ';background:var(--warn)' : '') })), note ? h('div', { class: 'ubar-n' }, note) : null);
+  const drawUsage = async (cloudUsed) => {
+    usage.innerHTML = ''; let est = null; try { est = navigator.storage && navigator.storage.estimate ? await navigator.storage.estimate() : null; } catch (e) { }
+    const mine = (LIB.idx || []).reduce((a, e) => a + (e.bytes || 0), 0);
+    usage.append(bar('이 기기', est ? est.usage : mine, est ? est.quota : 0, est ? '사진·영상·소리와 모든 프로젝트가 여기에 저장돼요. 최대 용량은 브라우저가 정해요.' : '사진·영상·소리와 모든 프로젝트가 여기에 저장돼요.'));
+    if (AUTH.user) usage.append(bar('구글 계정', cloudUsed || 0, CLOUD_MAX_USER, `프로젝트 설계도만 압축해서 올려요 (프로젝트당 최대 ${fmtBytes(CLOUD_MAX_PROJECT)}). 사진·영상은 올라가지 않아요.`));
+  };
   const refresh = async () => {
-    LIB.idx = null; const local = (await libIndex()).map(e => ({ ...e, local: true }));
+    LIB.idx = null; const local = (await libIndex()).map(e => ({ ...e, local: true })); drawUsage(0);
     draw(local.slice().sort((a, b) => (b.updated || 0) - (a.updated || 0)), false);
     if (AUTH.user) {
       info.append(h('p', { class: 'hint' }, '계정의 프로젝트를 불러오는 중…'));
@@ -3922,6 +3956,7 @@ async function libSheet() {
       if (!cl) { draw(local, false); info.append(h('p', { class: 'hint warn' }, '계정 목록을 불러오지 못해 이 기기의 프로젝트만 보여요.')); return; }
       const map = new Map(local.map(e => [e.id, e]));
       cl.forEach(c => { const l = map.get(c.id); if (l) { l.cloudUpdated = c.updated; if ((c.updated || 0) > (l.updated || 0)) Object.assign(l, { name: c.name, thumb: c.thumb || l.thumb, w: c.w, h: c.h, dur: c.dur }); } else map.set(c.id, { ...c, cloudUpdated: c.updated, updated: 0, local: false }); });
+      cl.forEach(c => { const m = map.get(c.id); if (m) m.cloudBytes = c.size || m.cloudBytes; }); drawUsage(cl.reduce((a, c) => a + (c.size || 0), 0));
       draw([...map.values()].sort((a, b) => Math.max(b.updated || 0, b.cloudUpdated || 0) - Math.max(a.updated || 0, a.cloudUpdated || 0)), true);
     }
   };
