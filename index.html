@@ -119,6 +119,20 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .acct:hover{color:var(--fg);border-color:#555}.acct svg.i{width:16px;height:16px}.acct span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .acct img,.acct .ini{width:18px;height:18px;border-radius:50%;flex:none;object-fit:cover}.acct .ini{display:grid;place-items:center;background:var(--acc);color:#fff;font-style:normal;font-size:10.5px;font-weight:700}
 .app[data-mode=mobile] .acct{height:32px;width:32px;padding:0;justify-content:center;border-radius:50%}
+.lib{display:flex;flex-direction:column;gap:10px}
+.libwhere{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:9px 11px;border-radius:5px;background:var(--bg2);border:1px solid var(--line2);font-size:12.5px;color:var(--fg2);line-height:1.5}
+.libwhere>span,.libwhere{min-width:0}.libwhere span{display:flex;gap:8px;align-items:flex-start}.libwhere svg.i{width:16px;height:16px;flex:none;margin-top:1px}.libwhere.cloud{border-color:var(--accline);background:var(--accbg);color:var(--fg)}
+.libbanner{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px;border-radius:5px;border:1px dashed #6a5a2a;color:#ffd77a;font-size:12.5px}
+.libgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.libitem{position:relative}
+.libcard{width:100%;display:flex;flex-direction:column;gap:6px;text-align:left;padding:6px;border-radius:6px;border:1px solid var(--line2);background:var(--bg2);color:var(--fg);cursor:pointer}
+.libcard:hover{border-color:#5a5a5a;background:var(--bg3)}.libcard.cur{border-color:var(--acc)}
+.libth{width:100%;height:130px;border-radius:4px;background:#0b0b0b;display:flex;align-items:center;justify-content:center;overflow:hidden}.libth img{max-width:100%;max-height:100%;display:block}
+.libmeta{display:flex;flex-direction:column;gap:2px;min-width:0;padding-right:22px}.libmeta b{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.libmeta span{font-size:11px;color:var(--fg3)}
+.libbadge{align-self:flex-start;margin-top:3px;font-size:10.5px!important;padding:1px 6px;border-radius:9px;border:1px solid var(--line2);color:var(--fg2)!important}.libbadge.now{border-color:var(--acc);color:var(--acc2)!important}.libbadge.cl{border-color:var(--accline);color:var(--acc2)!important}
+.libmore{position:absolute;right:8px;bottom:10px}
+.hint.warn{color:#f5c862}
+.app[data-mode=mobile] ~ .scrim .libgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .authbox{display:flex;flex-direction:column;gap:10px;padding:4px 2px}
 .authbox .authlead{margin:0 0 4px;font-size:15px;font-weight:600;color:var(--fg)}
 .authbtn{height:44px;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid transparent}
@@ -590,7 +604,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v32</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v33</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -645,6 +659,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v33</b><span>‘내 프로젝트’가 생겼습니다. 만든 프로젝트가 모두 자동으로 저장되고, 목록에서 골라 다시 열거나 이름 바꾸기·복제·삭제를 할 수 있습니다. 게스트는 이 컴퓨터에, 구글 로그인 사용자는 계정에 저장됩니다.</span></li>
         <li><b>v32</b><span>처음 시작할 때 게스트로 쓸지 구글 계정으로 로그인할지 고를 수 있습니다. 오른쪽 위 계정 버튼에서 언제든 로그인·로그아웃할 수 있습니다.</span></li>
         <li><b>v31</b><span>소리 편집이 생겼습니다. 볼륨 증폭(최대 400%), 자동 음량 맞춤, 페이드 인·아웃, 물속·전화기·라디오·홀·메아리 효과, 저음·중음·고음, 좌우 위치를 고를 수 있고, 영상에서 소리만 분리하거나 WAV 파일로 저장할 수 있습니다. 타임라인에 소리 파형이 보입니다.</span></li>
         <li><b>v30</b><span>빈 곳을 누르면 레이어 선택이 풀립니다. 캔버스 바깥 회색 영역과 타임라인의 빈 곳도 해당됩니다.</span></li>
@@ -678,6 +693,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
       <button data-menu="file">파일</button><button data-menu="edit">편집</button><button data-menu="layer">레이어</button><button data-menu="view">보기</button><button data-menu="help">도움말</button>
     </nav>
     <div class="divider pconly"></div>
+    <button class="ib pconly" id="bLib" data-ic="folder" title="내 프로젝트 (Ctrl+O)"></button>
     <button class="projname" id="projName" title="프로젝트 설정">프로젝트</button>
     <button class="ib" id="bUndo" data-ic="undo" title="실행 취소 (Ctrl+Z)"></button>
     <button class="ib" id="bRedo" data-ic="redo" title="다시 실행 (Ctrl+Shift+Z)"></button>
@@ -3749,16 +3765,167 @@ const DB = {
   put(store, k, v) { return this.tx(store, 'readwrite', s => s.put(v, k)); },
   get(store, k) { return this.tx(store, 'readonly', s => s.get(k)); },
   clear(store) { return this.tx(store, 'readwrite', s => s.clear()); },
+  del(store, k) { return this.tx(store, 'readwrite', s => s.delete(k)); },
 };
 let saveT = null;
-function scheduleSave() { clearTimeout(saveT); saveT = setTimeout(() => { DB.put('kv', 'project', JSON.stringify(S.proj)).catch(() => { }); }, 1000); }
+function scheduleSave() { clearTimeout(saveT); saveT = setTimeout(() => { saveT = null; saveNow(); }, 1000); }
 async function loadSaved() {
   try {
     const js = await DB.get('kv', 'project'); if (!js) return false; const pr = JSON.parse(js); if (!pr || !pr.layers) return false;
     for (const id in (pr.media || {})) { const rec = await DB.get('media', id).catch(() => null); if (rec && rec.blob) { try { await loadMedia(rec.blob, rec.type, id, rec.name); } catch (e) { } } }
     for (const f of (pr.fonts || [])) { const M = MEDIA.get(f.media); if (M) { try { const face = new FontFace(f.family, await M.blob.arrayBuffer()); await face.load(); document.fonts.add(face); fontLoaded.add(f.family + '|400'); } catch (e) { } } }
-    S.proj = Object.assign(newProject(), pr); return true;
+    S.proj = Object.assign(newProject(), pr); projId(S.proj); return true;
   } catch (e) { return false; }
+}
+
+/* ================= MY PROJECTS: every project kept on this device, and in the Google account when signed in ================= */
+const LIB = { idx: null, fs: null, store: { pool: [] }, cloudT: 0, pending: new Map(), warned: {} };
+function projId(pr) { if (!pr.id) pr.id = 'p' + uid() + Date.now().toString(36); return pr.id; }
+async function libIndex() { if (LIB.idx) return LIB.idx; try { LIB.idx = JSON.parse((await DB.get('kv', 'projects')) || '[]'); } catch (e) { LIB.idx = []; } if (!Array.isArray(LIB.idx)) LIB.idx = []; return LIB.idx; }
+function libPutIndex() { return DB.put('kv', 'projects', JSON.stringify(LIB.idx)).catch(() => { }); }
+function projThumb(pr) {
+  try {
+    const k = 200 / Math.max(pr.w, pr.h), cv = document.createElement('canvas'); cv.width = Math.max(8, Math.round(pr.w * k)); cv.height = Math.max(8, Math.round(pr.h * k));
+    const x = cv.getContext('2d'); const t = pr === S.proj && S.time > 0.05 ? S.time : Math.min(pr.dur * .5, 2);
+    renderOffscreen(pr, cv, x, t, LIB.store); return cv.toDataURL('image/jpeg', .72);
+  } catch (e) { return ''; }
+}
+let saving = null;
+async function saveNow() {
+  clearTimeout(saveT); const pr = S.proj; projId(pr); const js = JSON.stringify(pr), now = Date.now();
+  const job = (async () => {
+    await DB.put('kv', 'project', js).catch(() => { }); await DB.put('kv', 'proj:' + pr.id, js).catch(() => { });
+    const idx = await libIndex(); let e = idx.find(q => q.id === pr.id);
+    if (!e) { e = { id: pr.id, created: now }; idx.unshift(e); }
+    Object.assign(e, { name: pr.name, w: pr.w, h: pr.h, dur: pr.dur, n: pr.layers.filter(l => l.type !== 'group').length, updated: now });
+    if (!e.thumb || now - (e.thumbAt || 0) > 5000) { e.thumb = projThumb(pr); e.thumbAt = now; }
+    await libPutIndex();
+    if (AUTH.user) cloudQueue(pr.id, js, e);
+  })();
+  saving = job; await job; return pr.id;
+}
+/* ---------- Google account storage (Firestore) ---------- */
+async function fsInit() {
+  if (LIB.fs) return LIB.fs; const a = await authInit(); if (!a || !AUTH.user) return null;
+  try { if (!firebase.firestore) await loadScript('https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-firestore-compat.js'); LIB.fs = firebase.firestore(); } catch (e) { console.warn(e); return null; }
+  return LIB.fs;
+}
+const userRef = () => LIB.fs.collection('users').doc(firebase.auth().currentUser.uid);
+function cloudWarn(key, msg) { if (LIB.warned[key]) return; LIB.warned[key] = 1; toast(msg); }
+function cloudErr(err) {
+  console.warn(err); const c = err && err.code;
+  if (c === 'permission-denied') cloudWarn('perm', '계정에 저장할 권한이 없어요. 이 기기에는 저장돼 있어요');
+  else if (c === 'resource-exhausted') cloudWarn('quota', '오늘은 계정 저장 한도를 넘었어요. 이 기기에는 저장돼 있어요');
+  else cloudWarn('net', '계정에 저장하지 못했어요. 인터넷 연결을 확인해 주세요 (이 기기에는 저장됨)');
+}
+function cloudQueue(id, js, e) { LIB.pending.set(id, { js, e: { ...e } }); clearTimeout(LIB.cloudT); LIB.cloudT = setTimeout(cloudFlush, 6000); }
+async function cloudFlush() {
+  if (!LIB.pending.size || !AUTH.user) return; const jobs = [...LIB.pending.entries()]; LIB.pending.clear();
+  const fs = await fsInit(); if (!fs) return;
+  for (const [id, { js, e }] of jobs) {
+    if (js.length > 950000) { cloudWarn('big' + id, `‘${e.name}’은 너무 커서 계정에는 저장하지 못했어요 (이 기기에는 저장됨)`); continue; }
+    const meta = { name: e.name, w: e.w, h: e.h, dur: e.dur, n: e.n, thumb: e.thumb || '', updated: e.updated, created: e.created || e.updated };
+    try { const u = userRef(); await u.collection('projects').doc(id).set({ data: js, updated: e.updated }); await u.collection('meta').doc(id).set(meta); const ix = await libIndex(), le = ix.find(q => q.id === id); if (le) { le.cloud = e.updated; libPutIndex(); } }
+    catch (err) { cloudErr(err); }
+  }
+}
+async function cloudList() {
+  const fs = await fsInit(); if (!fs) return null;
+  try { const snap = await userRef().collection('meta').orderBy('updated', 'desc').limit(300).get(); return snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch (err) { cloudErr(err); return null; }
+}
+async function cloudLoad(id) { const fs = await fsInit(); if (!fs) return null; try { const d = await userRef().collection('projects').doc(id).get(); return d.exists ? d.data().data : null; } catch (err) { cloudErr(err); return null; } }
+async function cloudDelete(id) { const fs = await fsInit(); if (!fs) return; try { const u = userRef(); await u.collection('projects').doc(id).delete(); await u.collection('meta').doc(id).delete(); } catch (err) { cloudErr(err); } }
+document.addEventListener('visibilitychange', () => { if (document.hidden) { if (saveT) saveNow(); cloudFlush(); } });
+/* ---------- opening, copying, deleting ---------- */
+async function loadProjectMedia(pr) {
+  let missing = 0;
+  for (const id in (pr.media || {})) { if (MEDIA.get(id)) continue; const rec = await DB.get('media', id).catch(() => null); if (rec && rec.blob) { try { await loadMedia(rec.blob, rec.type, id, rec.name); } catch (e) { missing++; } } else missing++; }
+  for (const f of (pr.fonts || [])) { const M = MEDIA.get(f.media); if (M && !fontLoaded.has(f.family + '|400')) { try { const face = new FontFace(f.family, await M.blob.arrayBuffer()); await face.load(); document.fonts.add(face); fontLoaded.add(f.family + '|400'); } catch (e) { } } }
+  pr.layers.forEach(L => { if (L.type === 'text') ensureFont(L.text.font, L.text.weight); });
+  return missing;
+}
+async function readProject(id, entry) {
+  let js = await DB.get('kv', 'proj:' + id).catch(() => null);
+  if (AUTH.user && entry && entry.cloudUpdated && (!js || (entry.cloudUpdated > (entry.updated || 0) + 1000))) { const c = await cloudLoad(id); if (c) js = c; }
+  return js ? Object.assign(newProject(), JSON.parse(js)) : null;
+}
+async function openLibProject(id, entry) {
+  if (id === S.proj.id) return true;
+  await saveNow(); toast('여는 중…');
+  const pr = await readProject(id, entry); if (!pr) { toast('프로젝트를 열지 못했어요'); return false; }
+  const miss = await loadProjectMedia(pr); startProject(pr); fitView(); tlFit();
+  toast(miss ? `‘${pr.name}’을 열었어요. 이 기기에 없는 사진·영상 ${miss}개는 ‘미디어 교체’로 다시 넣어 주세요` : `‘${pr.name}’을 열었어요`);
+  return true;
+}
+async function dupLibProject(id, entry) {
+  await saveNow(); const pr = await readProject(id, entry); if (!pr) { toast('복제하지 못했어요'); return; }
+  pr.id = null; pr.name = (pr.name || '프로젝트') + ' 복사본'; const keep = S.proj; projId(pr);
+  const js = JSON.stringify(pr); await DB.put('kv', 'proj:' + pr.id, js); const idx = await libIndex(), now = Date.now();
+  idx.unshift({ id: pr.id, created: now, updated: now, name: pr.name, w: pr.w, h: pr.h, dur: pr.dur, n: pr.layers.length, thumb: (idx.find(q => q.id === id) || entry || {}).thumb || '' }); await libPutIndex();
+  if (AUTH.user) cloudQueue(pr.id, js, idx[0]); S.proj = keep; toast('복제했어요');
+}
+async function delLibProject(id) {
+  const idx = await libIndex(); LIB.idx = idx.filter(q => q.id !== id); await libPutIndex(); await DB.del('kv', 'proj:' + id).catch(() => { });
+  if (AUTH.user) await cloudDelete(id);
+  if (id === S.proj.id) { startProject(newProject({ name: nextProjName() })); }
+  toast('프로젝트를 지웠어요');
+}
+async function renameLibProject(id, name, entry) {
+  name = name.trim(); if (!name) return;
+  if (id === S.proj.id) { S.proj.name = name; updUndo(); commit(); await saveNow(); return; }
+  const pr = await readProject(id, entry); if (!pr) return; pr.name = name; projId(pr); const js = JSON.stringify(pr); await DB.put('kv', 'proj:' + id, js);
+  const idx = await libIndex(); const e = idx.find(q => q.id === id); if (e) { e.name = name; e.updated = Date.now(); } await libPutIndex(); if (AUTH.user && e) cloudQueue(id, js, e);
+}
+async function uploadAllLocal(ids) {
+  const idx = await libIndex(); let n = 0;
+  for (const id of ids) { const js = await DB.get('kv', 'proj:' + id).catch(() => null); const e = idx.find(q => q.id === id); if (js && e) { LIB.pending.set(id, { js, e: { ...e } }); n++; } }
+  await cloudFlush(); toast(`프로젝트 ${n}개를 계정에 올렸어요`);
+}
+function ago(ms) { const s = (Date.now() - ms) / 1000; if (s < 60) return '방금'; if (s < 3600) return Math.floor(s / 60) + '분 전'; if (s < 86400) return Math.floor(s / 3600) + '시간 전'; if (s < 86400 * 7) return Math.floor(s / 86400) + '일 전'; const d = new Date(ms); return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`; }
+async function libSheet() {
+  await saveNow();
+  const body = h('div', { class: 'lib' }), grid = h('div', { class: 'libgrid' }), info = h('div', { class: 'libinfo' });
+  const where = AUTH.user
+    ? h('div', { class: 'libwhere cloud', html: icon('user') + `<span><b>${(AUTH.user.email || AUTH.user.name || '').replace(/[<>&]/g, '')}</b> 계정에 저장돼요. 다른 기기에서 같은 계정으로 로그인하면 이어서 열 수 있어요.</span>` })
+    : h('div', { class: 'libwhere' }, h('span', { html: icon('folder') + '<span>게스트: 이 컴퓨터(브라우저)에만 저장돼요. 브라우저 데이터를 지우면 함께 사라져요.</span>' }), h('button', { class: 'btn sm', onclick: async () => { const ok = await googleLogin(); if (ok) { closeSheet(); setTimeout(libSheet, 300); } } }, '구글로 로그인'));
+  const tools = h('div', { class: 'btnrow libtools' },
+    h('button', { class: 'btn primary sm', html: icon('plus') + '새 프로젝트', onclick: async () => { closeSheet(); await saveNow(); startProject(newProject({ name: nextProjName() })); toast('새 프로젝트를 만들었어요'); } }),
+    h('button', { class: 'btn sm', html: icon('folder') + '파일에서 열기 (.json)', onclick: () => { closeSheet(); $('#projIn').click(); } }));
+  body.append(where, tools, info, grid);
+  const closeSheet = openSheet('내 프로젝트', body);
+  const draw = (list, cloudOK) => {
+    grid.innerHTML = ''; info.innerHTML = '';
+    const localOnly = AUTH.user && cloudOK ? list.filter(e => e.local && !e.cloudUpdated) : [];
+    if (localOnly.length) info.append(h('div', { class: 'libbanner' }, h('span', null, `이 기기에만 있는 프로젝트 ${localOnly.length}개`), h('button', { class: 'btn sm', onclick: async () => { await uploadAllLocal(localOnly.map(e => e.id)); refresh(); } }, '모두 계정에 올리기')));
+    if (!list.length) { grid.append(h('p', { class: 'hint' }, '아직 저장된 프로젝트가 없어요.')); return; }
+    list.forEach(e => {
+      const cur = e.id === S.proj.id;
+      const th = h('div', { class: 'libth' }, e.thumb ? h('img', { src: e.thumb, alt: '' }) : null);
+      const badge = cur ? h('span', { class: 'libbadge now' }, '지금 작업 중') : (AUTH.user && cloudOK ? (e.local && !e.cloudUpdated ? h('span', { class: 'libbadge' }, '이 기기에만') : (!e.local ? h('span', { class: 'libbadge cl' }, '계정에서 열기') : null)) : null);
+      const more = h('button', { class: 'ib libmore', html: icon('more'), title: '더보기', 'aria-label': `${e.name} 메뉴`, onclick: ev => { ev.stopPropagation(); const r = more.getBoundingClientRect();
+        openCtx(Math.max(8, r.right - 200), r.bottom + 4, [
+          { l: '열기', ic: 'folder', fn: async () => { if (await openLibProject(e.id, e)) closeSheet(); } },
+          { l: '이름 바꾸기', ic: 'text', fn: () => { const inp = h('input', { class: 'hex', value: e.name || '', style: 'width:100%;font-family:var(--ui);font-size:14px;height:34px' }); const done = () => { const v = inp.value; c2(); renameLibProject(e.id, v, e).then(() => setTimeout(libSheet, 30)); }; inp.onkeydown = ev => { if (ev.key === 'Enter') done(); }; const c2 = openSheet('이름 바꾸기', inp, { narrow: true, foot: cl => [h('button', { class: 'btn ghost', onclick: () => { cl(); setTimeout(libSheet, 30); } }, '취소'), h('button', { class: 'btn primary', onclick: done }, '저장')] }); setTimeout(() => { inp.focus(); inp.select(); }, 50); } },
+          { l: '복제', ic: 'copy', fn: () => dupLibProject(e.id, e).then(refresh) },
+          '-', { l: '삭제', ic: 'trash', danger: true, fn: () => confirmSheet('프로젝트 삭제', `‘${e.name}’을 지울까요? ${AUTH.user ? '계정과 이 기기에서 모두 사라지고' : '이 기기에서 사라지고'} 되돌릴 수 없어요.`, '삭제', () => delLibProject(e.id).then(() => setTimeout(libSheet, 50))) }]); } });
+      const card = h('button', { class: 'libcard' + (cur ? ' cur' : ''), onclick: async () => { if (cur) { closeSheet(); return; } if (await openLibProject(e.id, e)) closeSheet(); } },
+        th, h('div', { class: 'libmeta' }, h('b', null, e.name || '이름 없음'), h('span', null, `${ago(Math.max(e.updated || 0, e.cloudUpdated || 0))} · ${e.w}×${e.h} · ${(+e.dur || 0).toFixed(1)}초`), badge));
+      grid.append(h('div', { class: 'libitem' }, card, more));
+    });
+  };
+  const refresh = async () => {
+    LIB.idx = null; const local = (await libIndex()).map(e => ({ ...e, local: true }));
+    draw(local.slice().sort((a, b) => (b.updated || 0) - (a.updated || 0)), false);
+    if (AUTH.user) {
+      info.append(h('p', { class: 'hint' }, '계정의 프로젝트를 불러오는 중…'));
+      await cloudFlush(); const cl = await cloudList();
+      if (!cl) { draw(local, false); info.append(h('p', { class: 'hint warn' }, '계정 목록을 불러오지 못해 이 기기의 프로젝트만 보여요.')); return; }
+      const map = new Map(local.map(e => [e.id, e]));
+      cl.forEach(c => { const l = map.get(c.id); if (l) { l.cloudUpdated = c.updated; if ((c.updated || 0) > (l.updated || 0)) Object.assign(l, { name: c.name, thumb: c.thumb || l.thumb, w: c.w, h: c.h, dur: c.dur }); } else map.set(c.id, { ...c, cloudUpdated: c.updated, updated: 0, local: false }); });
+      draw([...map.values()].sort((a, b) => Math.max(b.updated || 0, b.cloudUpdated || 0) - Math.max(a.updated || 0, a.cloudUpdated || 0)), true);
+    }
+  };
+  refresh();
 }
 
 /* ================= SHEETS ================= */
@@ -3896,8 +4063,8 @@ function helpSheet() {
   openSheet('도움말', body, { narrow: true });
 }
 function confirmSheet(title, msg, okLabel, fn) { openSheet(title, h('p', { style: 'color:var(--fg2);line-height:1.6;margin:0' }, msg), { narrow: true, foot: close => [h('button', { class: 'btn ghost', onclick: close }, '취소'), h('button', { class: 'btn primary', onclick: () => { close(); fn(); } }, okLabel)] }); }
-const askNew = () => confirmSheet('새 프로젝트', '지금 작업을 지우고 빈 프로젝트를 시작할까요? 필요하면 먼저 프로젝트 파일로 저장하세요.', '새로 시작', () => startProject(newProject({ name: nextProjName() })));
-const askSample = () => confirmSheet('샘플 프로젝트', '지금 작업 대신 샘플을 불러올까요?', '불러오기', () => { const pr = buildSample(); pr.layers.forEach(L => { if (L.type === 'text') ensureFont(L.text.font, L.text.weight); }); startProject(pr); });
+const askNew = async () => { await saveNow(); startProject(newProject({ name: nextProjName() })); toast('새 프로젝트를 만들었어요. 이전 작업은 ‘내 프로젝트’에 있어요', { l: '내 프로젝트', fn: libSheet }); };
+const askSample = () => confirmSheet('샘플 프로젝트', '샘플을 새 프로젝트로 열까요? 지금 작업은 ‘내 프로젝트’에 그대로 저장돼요.', '열기', async () => { await saveNow(); const pr = buildSample(); pr.layers.forEach(L => { if (L.type === 'text') ensureFont(L.text.font, L.text.weight); }); startProject(pr); });
 const needL = fn => () => { const L = selL(); if (!L) { toast('레이어를 먼저 선택하세요'); return; } fn(L); };
 function toggleSnap() { S.snap = !S.snap; $('#bSnap').classList.toggle('on', S.snap); toast(S.snap ? '스냅 켜짐' : '스냅 꺼짐'); }
 function toggleGuides() { S.guides = !S.guides; $('#bGuides').classList.toggle('on', S.guides); dirtyView = true; }
@@ -3906,7 +4073,7 @@ const ck = on => on ? '✓ ' : '';
 function modeItems() { return [{ cap: '화면 모드' }, ...[['auto', '자동 감지'], ['pc', 'PC 모드'], ['mobile', '모바일 모드']].map(([m, l]) => ({ l: ck(S.modePref === m) + l, ic: m === 'mobile' ? 'video' : 'grid', fn: () => setModePref(m) }))]; }
 function menuItems(kind) {
   if (kind === 'file') return [
-    { l: '새 프로젝트', ic: 'newdoc', fn: askNew }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample },
+    { l: '내 프로젝트…', ic: 'folder', k: 'Ctrl+O', fn: libSheet }, { l: '새 프로젝트', ic: 'newdoc', fn: askNew }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample },
     { l: '프로젝트 파일 열기 (.json)', ic: 'folder', fn: () => $('#projIn').click() }, { l: '프로젝트 파일로 저장', ic: 'export', fn: saveProjectFile }, '-',
     { l: '사진·동영상 가져오기', ic: 'image', fn: () => $('#fileIn').click() }, { l: '오디오 가져오기', ic: 'music', fn: () => $('#audioIn').click() }, { l: '글꼴 파일 가져오기', ic: 'font', fn: () => $('#fontIn').click() }, '-',
     { l: '내보내기', ic: 'export', k: 'Ctrl+E', fn: exportSheet }, { l: '프로젝트 설정', ic: 'settings', fn: projectSheet }];
@@ -3938,7 +4105,7 @@ function openMenu(b) {
 function mainMenu(e) {
   const r = $('#bMenu').getBoundingClientRect();
   openCtx(r.right - 220, r.bottom + 6, [
-    { l: '새 프로젝트', ic: 'newdoc', fn: askNew }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample },
+    { l: '내 프로젝트', ic: 'folder', fn: libSheet }, { l: '새 프로젝트', ic: 'newdoc', fn: askNew }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample },
     { l: '프로젝트 파일 열기 (.json)', ic: 'folder', fn: () => $('#projIn').click() },
     { l: '프로젝트 파일로 저장', ic: 'export', fn: saveProjectFile },
     '-', { l: '사진·동영상 가져오기', ic: 'image', fn: () => $('#fileIn').click() }, { l: '오디오 가져오기', ic: 'music', fn: () => $('#audioIn').click() }, { l: '모양 연결 (사진 모핑)…', ic: 'morph', fn: morphSheet },
@@ -3964,7 +4131,7 @@ async function openProjectFile(f) {
   try {
     const pr = JSON.parse(await f.text()); if (!pr.layers) throw 0;
     for (const id in (pr.embedded || {})) { const blob = dataURLToBlob(pr.embedded[id]); const meta = (pr.media || {})[id] || {}; await loadMedia(blob, meta.type || mediaType(blob), id, meta.name); }
-    delete pr.embedded; startProject(Object.assign(newProject(), pr)); toast('프로젝트를 열었어요');
+    delete pr.embedded; delete pr.id; await saveNow(); startProject(Object.assign(newProject(), pr)); toast('프로젝트를 열었어요. ‘내 프로젝트’에도 저장돼요');
   } catch (e) { toast('프로젝트 파일을 읽지 못했어요'); }
 }
 function startProject(pr) {
@@ -4451,7 +4618,8 @@ document.addEventListener('keydown', e => {
   if (mod && (k === 'g' || k === 'G')) { e.preventDefault(); if (e.shiftKey) { const G = isGroup(L) ? L : groupOf(L); if (G) ungroup(G); else toast('선택한 레이어가 그룹이 아니에요'); } else groupSheet(); return; }
   if (mod && (k === 'c' || k === 'C')) { if (L) { S.layerClip = deep(L); toast('레이어를 복사했어요'); } return; }
   if (mod && (k === 'v' || k === 'V')) { if (S.layerClip) { const C = deep(S.layerClip); C.id = uid(); C.name += ' 복사'; C.fx.forEach(f => f.id = uid()); addLayer(C); } return; }
-  if (mod && (k === 's' || k === 'S')) { e.preventDefault(); toast('작업은 자동 저장돼요. 파일로 받으려면 메뉴 → 프로젝트 파일로 저장'); return; }
+  if (mod && (k === 's' || k === 'S')) { e.preventDefault(); saveNow(); toast(AUTH.user ? '저장했어요. 계정에도 곧 올라가요' : '저장했어요 (이 컴퓨터에 자동 저장돼요)'); return; }
+  if (mod && (k === 'o' || k === 'O')) { e.preventDefault(); libSheet(); return; }
   if (mod && (k === 'e' || k === 'E')) { e.preventDefault(); exportSheet(); return; }
   if (mod) return;
   switch (k) {
@@ -4516,7 +4684,7 @@ function bind() {
   $('#bAuto').onclick = toggleAutoKey;
   $('#bSplit').onclick = () => { const L = selL(); if (L) splitLayer(L); else toast('분할할 레이어를 선택하세요'); };
   $('#bDel').onclick = deleteSelection; bindPlayer();
-  $('#bAcct').onclick = acctMenu; updAcct(); if (authMode() === 'google') authInit(); $('#bExport').onclick = exportSheet; $('#bMenu').onclick = mainMenu; $('#projName').onclick = projectSheet;
+  $('#bLib').onclick = libSheet; $('#bAcct').onclick = acctMenu; updAcct(); if (authMode() === 'google') authInit(); $('#bExport').onclick = exportSheet; $('#bMenu').onclick = mainMenu; $('#projName').onclick = projectSheet;
   $('#bFit').onclick = fitView; $('#qualSel').onchange = e => { S.quality = e.target.value; invalidate(true); };
   $('#bSnap').classList.toggle('on', S.snap); $('#bSnap').onclick = toggleSnap; $('#bGuides').onclick = toggleGuides;
   $$('#menus [data-menu]').forEach(b => { b.onclick = () => openMenu(b); b.onpointerenter = () => { if (ctxEl && ctxEl._owner && ctxEl._owner !== b) { closeCtx(); openMenu(b); } }; });
@@ -4722,7 +4890,7 @@ function authInit() {
     if (!window.firebase) { await loadScript(base + 'firebase-app-compat.js'); await loadScript(base + 'firebase-auth-compat.js'); }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     const a = firebase.auth(); try { await a.setPersistence(firebase.auth.Auth.Persistence.LOCAL); } catch (e) { }
-    a.onAuthStateChanged(u => { AUTH.user = u ? { name: u.displayName || '', email: u.email || '', photo: u.photoURL || '' } : null; if (u) setAuthMode('google'); updAcct(); });
+    a.onAuthStateChanged(u => { AUTH.user = u ? { name: u.displayName || '', email: u.email || '', photo: u.photoURL || '' } : null; if (u) { setAuthMode('google'); LIB.fs = null; saveNow(); } updAcct(); });
     AUTH.inst = a; a.getRedirectResult().catch(() => { });
     return a;
   })().catch(e => { console.warn(e); AUTH.ready = null; return null; });
@@ -4737,6 +4905,7 @@ async function googleLogin() {
     const c = e && e.code;
     if (c === 'auth/popup-blocked' || c === 'auth/operation-not-supported-in-this-environment' || c === 'auth/cancelled-popup-request') { setAuthMode('google'); try { await a.signInWithRedirect(p); return true; } catch (e2) { } }
     if (c === 'auth/popup-closed-by-user') return false;
+    if (c === 'auth/quota-exceeded' || c === 'auth/too-many-requests') { AUTH.busy = true; toast('지금은 로그인하는 사람이 많아 잠시 로그인할 수 없어요. 게스트로 계속 쓸 수 있어요'); return false; }
     toast(c === 'auth/unauthorized-domain' ? '이 주소에서는 구글 로그인을 할 수 없어요 (Firebase 승인 도메인 확인 필요)' : '로그인하지 못했어요. 잠시 후 다시 해 주세요');
     return false;
   }
@@ -4759,7 +4928,7 @@ function askAuthThen(next) {
   if (authMode()) { next && next(); return; }
   authInit(); // load the sign-in library while the person reads the choices
   let done = false; const go = mode => { if (done) return; done = true; close(); if (mode === 'guest') setAuthMode('guest'); setTimeout(() => next && next(), 60); };
-  const gBtn = h('button', { class: 'authbtn google', html: GOOGLE_G + '<span>Google 계정으로 로그인</span>', onclick: async () => { gBtn.disabled = true; const ok = await googleLogin(); gBtn.disabled = false; if (ok) go('google'); else if (!FIREBASE_CONFIG) go('guest'); } });
+  const gBtn = h('button', { class: 'authbtn google', html: GOOGLE_G + '<span>Google 계정으로 로그인</span>', onclick: async () => { gBtn.disabled = true; const ok = await googleLogin(); gBtn.disabled = false; if (ok) go('google'); else if (!FIREBASE_CONFIG || AUTH.busy) go('guest'); } });
   const body = h('div', { class: 'authbox' },
     h('p', { class: 'authlead' }, '어떻게 시작할까요?'),
     gBtn,
