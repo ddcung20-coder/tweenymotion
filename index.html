@@ -534,10 +534,34 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 }
 @media (max-width:400px){#intro .ibar .ver{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ---- tutorial ---- */
+.tut{position:fixed;inset:0;z-index:110;pointer-events:none}
+.tut[hidden]{display:none}
+.tut-ring{position:fixed;border:2px solid var(--kf);border-radius:6px;box-shadow:0 0 0 9999px rgba(0,0,0,.42);transition:left .25s ease,top .25s ease,width .25s ease,height .25s ease,opacity .2s;pointer-events:none}
+.tut-ring::after{content:"";position:absolute;inset:-6px;border:2px solid var(--kf);border-radius:9px;opacity:0;animation:tut-pulse 1.6s ease-out infinite}
+@keyframes tut-pulse{0%{opacity:.7;transform:scale(.97)}100%{opacity:0;transform:scale(1.08)}}
+.tut-ring.none{border-color:transparent}.tut-ring.none::after{display:none}
+.tut-card{position:fixed;width:300px;max-width:calc(100vw - 24px);background:#2b2b2b;border:1px solid #4a4a4a;border-radius:6px;box-shadow:0 18px 48px rgba(0,0,0,.6);padding:14px 14px 12px;color:var(--fg);font-size:13px;line-height:1.6;pointer-events:auto;word-break:keep-all;transition:left .25s ease,top .25s ease}
+.tut-card .tstep{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--fg3);margin-bottom:6px}
+.tut-card .tch{color:var(--kf);font-weight:600;white-space:nowrap}
+.tut-card .tbar{flex:1;max-width:90px;height:3px;border-radius:2px;background:#4a4a4a;overflow:hidden}.tut-card .tbar i{display:block;height:100%;background:var(--kf);transition:width .3s}
+.tut-card .tx{margin-left:auto;background:none;border:0;color:var(--fg3);font:inherit;font-size:11px;cursor:pointer;padding:2px 4px}.tut-card .tx:hover{color:var(--fg)}
+.tut-card h4{margin:0 0 4px;font-size:15px;font-weight:700;color:#fff}
+.tut-card p{margin:0;color:var(--fg2)}.tut-card p b{color:var(--fg);font-weight:600}
+.tut-card .tkf{display:inline-block;width:9px;height:9px;background:var(--kf);transform:rotate(45deg);margin:0 3px 1px}
+.tut-card .tbtns{display:flex;gap:6px;justify-content:flex-end;margin-top:12px}
+.tut-card .tbtns button{font:inherit;font-size:12.5px;border-radius:3px;padding:6px 12px;cursor:pointer;border:1px solid #4a4a4a;background:#363636;color:var(--fg)}
+.tut-card .tbtns button:hover{background:#404040}
+.tut-card .tbtns button.pri{background:var(--acc);border-color:var(--acc);color:#fff}.tut-card .tbtns button.pri:hover{background:var(--acc2)}
+.tut-card .twait{margin-right:auto;align-self:center;font-size:11.5px;color:var(--fg3);display:flex;align-items:center;gap:6px}
+.tut-card .twait i{width:6px;height:6px;border-radius:50%;background:var(--kf);animation:tut-blink 1s ease-in-out infinite}
+@keyframes tut-blink{50%{opacity:.25}}
+.tut-card.ok{border-color:var(--ok)}.tut-card .tok{color:var(--ok);font-weight:600}
+.app[data-mode=mobile]~.tut .tut-card,.tut.mob .tut-card{width:auto;left:12px!important;right:12px}
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 15.5C9 15.5 11 4.5 15.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="2.3" y="13.3" width="4.4" height="4.4" transform="rotate(45 4.5 15.5)" fill="currentColor"/><rect x="13.3" y="2.3" width="4.4" height="4.4" transform="rotate(45 15.5 4.5)" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v24</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 15.5C9 15.5 11 4.5 15.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="2.3" y="13.3" width="4.4" height="4.4" transform="rotate(45 4.5 15.5)" fill="currentColor"/><rect x="13.3" y="2.3" width="4.4" height="4.4" transform="rotate(45 15.5 4.5)" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v25</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -592,6 +616,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v25</b><span>처음 시작하면 튜토리얼이 나옵니다. 화면 구성, 화면 비율 설정, 첫 애니메이션, 저장과 새 프로젝트까지 따라 하며 배울 수 있고, 도움말 메뉴에서 다시 볼 수 있습니다.</span></li>
         <li><b>v24</b><span>시작 화면을 새로 꾸몄습니다. 사각형은 모서리가 각진 채로 만들어집니다.</span></li>
         <li><b>v23</b><span>레이어 가운데를 끌면 중심점이 아니라 레이어가 움직입니다. 입력 중에도 Esc로 창이 닫히고, 값 이름이 잘리지 않습니다.</span></li>
         <li><b>v22</b><span>이미 움직이는 레이어에서 값을 바꾸면 그 값에도 키프레임이 자동으로 들어갑니다. 휴대폰에서는 클립을 살짝 길게 눌러야 옮겨집니다.</span></li>
@@ -2866,7 +2891,7 @@ function numRow(L, key, o = {}) {
   CTRLS.push(upd); upd(); return row;
 }
 function colorRow(L, key, o = {}) {
-  const m = propMeta(L, key); const row = h('div', { class: 'prow' }); const kfb = kfButton(L, key);
+  const m = propMeta(L, key); const row = h('div', { class: 'prow', 'data-key': key }); const kfb = kfButton(L, key);
   const fill = h('i'); const ci = h('input', { type: 'color' }); const hex = h('input', { class: 'hex', maxlength: 9, spellcheck: 'false' });
   const set = v => { setValUI(L, key, v); invalidate(); dirtyInsp = true; };
   ci.addEventListener('input', () => set(ci.value)); ci.addEventListener('change', commit);
@@ -3705,7 +3730,7 @@ function menuItems(kind) {
     { l: ck(S.guides) + '가이드 표시', ic: 'grid', fn: toggleGuides }, { l: ck(S.snap) + '스냅', ic: 'magnet', fn: toggleSnap }, '-',
     { l: ck(S.dock === 'timeline') + '타임라인', ic: 'layers', fn: () => setDock('timeline') }, { l: ck(S.dock === 'graph') + '그래프 편집기', ic: 'graph', k: 'G', fn: () => setDock('graph') }, '-',
     ...modeItems()];
-  return [{ l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample }];
+  return [{ l: '튜토리얼', ic: 'wand', fn: startTutorial }, { l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample }];
 }
 function openMenu(b) {
   if (ctxClosed.owner === b && performance.now() - ctxClosed.t < 300) return;
@@ -3721,7 +3746,7 @@ function mainMenu(e) {
     { l: '그룹 만들기…', ic: 'folder', fn: groupSheet },
     '-', { l: '전체화면 미리보기', ic: 'present', fn: openPlayer }, { l: '프로젝트 설정', ic: 'settings', fn: projectSheet }, { l: S.dock === 'graph' ? '타임라인으로 돌아가기' : '그래프 편집기 열기', ic: S.dock === 'graph' ? 'layers' : 'graph', fn: () => setDock(S.dock === 'graph' ? 'timeline' : 'graph') },
     ...modeItems(),
-    '-', { l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }]);
+    '-', { l: '튜토리얼', ic: 'wand', fn: startTutorial }, { l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }]);
 }
 
 /* ================= PROJECT FILES ================= */
@@ -4396,8 +4421,152 @@ function closeIntro() {
 }
 function bindIntro() {
   const el = $('#intro'); if (!el) return;
-  $$('[data-start]', el).forEach(b => b.onclick = closeIntro);
+  $$('[data-start]', el).forEach(b => b.onclick = () => { closeIntro(); maybeTutorial(); });
   $$('[data-sample]', el).forEach(b => b.onclick = () => { closeIntro(); if (S.proj.layers.length) askSample(); else startProject(buildSample()); });
+}
+/* ================= TUTORIAL ================= */
+const TUT = { on: false, i: 0, lid: null, el: null, timer: 0, n0: 0, okAt: 0, pill: -1, col: null };
+function tutLayer() { return TUT.lid ? findL(TUT.lid) : null; }
+function tutVisible(el) { if (!el) return null; const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return null; if (r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth) return null; return r; }
+const tutSheet = () => { const t = $('#scrim:not([hidden]) .sheet-h h3'); return t ? t.textContent : null; };
+const tutFrows = () => $$('#scrim .sheet-body .frow');
+const tutFileBtn = () => S.mode === 'mobile' ? $('#bMenu') : $('#menus [data-menu="file"]');
+const TUT_STEPS = [
+  /* ---- 시작 ---- */
+  { ch: '시작', title: '트위니 모션 둘러보기', text: () => '화면 구성, 화면 비율 정하기, 첫 애니메이션, 저장과 새 프로젝트까지 차례로 알려 드릴게요. <b>3분</b>쯤 걸려요.<br>막히면 <b>대신 해 주기</b>를 누르면 돼요.', next: '시작하기', center: true },
+  { ch: '화면 구성', title: '캔버스', text: () => '가운데가 <b>캔버스</b>예요. 여기 보이는 그대로 영상이 만들어져요.<br>' + (S.mode === 'mobile' ? '두 손가락으로 벌리면 확대, 좁히면 축소돼요.' : '마우스 휠로 확대·축소하고, 아래 <b>맞춤</b> 버튼(F 키)을 누르면 화면에 딱 맞게 돌아와요.'),
+    target: () => $('.stagewrap'), enter: () => { if (S.playing) pause(); if (S.dock !== 'timeline') setDock('timeline'); if (S.mode === 'mobile') $('#inspector').classList.remove('open'); }, next: '다음' },
+  { ch: '화면 구성', title: '타임라인', text: () => '아래는 <b>타임라인</b>이에요. 레이어가 한 줄씩 쌓이고, 막대의 길이가 그 레이어가 화면에 나오는 구간이에요.<br>파란 세로선이 <b>플레이헤드</b>(지금 보고 있는 시간)예요.', target: () => $('#bottom'), next: '다음' },
+  { ch: '화면 구성', title: () => S.mode === 'mobile' ? '편집 메뉴' : '속성 패널',
+    text: () => S.mode === 'mobile' ? '맨 아래 버튼으로 <b>추가</b>하고, 레이어를 고른 뒤 <b>변형·스타일·이펙트</b>를 눌러 위치, 색, 효과를 바꿔요.' : '여기가 <b>속성 패널</b>이에요. 선택한 레이어의 위치·크기(변형), 색·글꼴(스타일), 이펙트, 마스크를 바꿔요. 아무것도 선택하지 않으면 프로젝트 정보가 보여요.',
+    target: () => S.mode === 'mobile' ? $('#mobilebar') : $('#inspector'), next: '다음' },
+  /* ---- 프로젝트 설정 ---- */
+  { ch: '화면 비율', title: '프로젝트 설정 열기', text: () => '위쪽의 <b>프로젝트 이름</b>을 누르면 화면 비율, 길이, 배경색을 정하는 설정 창이 열려요. 눌러 보세요.',
+    target: () => $('#projName'), sheetOk: true, done: () => tutSheet() === '프로젝트 설정', auto: () => projectSheet() },
+  { ch: '화면 비율', title: '화면 비율 고르기', text: () => '만들 영상에 맞는 크기를 골라요.<br><b>세로 9:16</b> 쇼츠·릴스·틱톡 / <b>가로 16:9</b> 유튜브 / <b>정사각 1:1</b>, <b>4:5</b> 인스타 피드<br>원하는 크기가 없으면 바로 아래 <b>직접 입력</b>에 가로·세로 픽셀을 넣으세요.',
+    target: () => $('#scrim .sheet-body .pills'), sheetOk: true, side: true,
+    enter: () => { TUT.pill = $$('#scrim .pills button').findIndex(b => b.classList.contains('on')); },
+    skipIf: () => tutSheet() !== '프로젝트 설정',
+    done: () => { const i = $$('#scrim .pills button').findIndex(b => b.classList.contains('on')); return i >= 0 && i !== TUT.pill; }, next: '다음' },
+  { ch: '화면 비율', title: '길이·프레임·배경색', text: () => '<b>프레임 속도</b>는 보통 30fps면 충분해요(부드럽게 하려면 60). <b>길이</b>는 영상 전체 초, <b>배경색</b>은 빈 곳의 색이에요.<br>다 정했으면 <b>적용</b>을 누르세요.',
+    target: () => { const f = tutFrows(); return [f[f.length - 3], f[f.length - 1], $('#scrim .sheet-f')]; }, sheetOk: true, side: true,
+    done: () => tutSheet() !== '프로젝트 설정', auto: () => { const b = $('#scrim .sheet-f .btn.primary'); if (b) b.click(); } },
+  /* ---- 첫 애니메이션 ---- */
+  { ch: '첫 애니메이션', title: '도형 추가하기',
+    text: () => (S.mode === 'mobile' ? '아래 <b>추가</b>를 누르고' : '위쪽 도구줄의 <b>도형</b>을 누르고') + ' <b>원</b>이나 <b>사각형</b>을 골라 보세요. 텍스트, 사진도 같은 곳에서 추가해요.',
+    target: () => S.mode === 'mobile' ? $('#mobilebar [data-mb="add"]') : $('#toolrail [data-add="shapes"]'),
+    enter: () => { if (S.playing) pause(); setTime(0); TUT.n0 = S.proj.layers.length; TUT.lid = null; },
+    done: () => { if (S.proj.layers.length > TUT.n0) { const L = selL(); if (L && L.type === 'shape') { TUT.lid = L.id; return true; } } return false; },
+    auto: () => { setTime(0); addPreset('ellipse'); } },
+  { ch: '첫 애니메이션', title: '색 바꾸기', text: () => `${S.mode === 'mobile' ? '아래 스타일 창' : '<b>스타일</b> 탭'}에서 <b>색</b> 칸을 누르거나 아래 색 견본을 골라 도형 색을 바꿔 보세요. 스포이드로 화면 속 색을 집을 수도 있어요.`,
+    target: () => { const c = $('#inspBody .prow[data-key="fill"]'); return c ? c.parentElement : null; },
+    enter: () => { const L = tutLayer(); if (!L) return; if (S.sel !== L.id) select(L.id); setTime(0); openTab('style'); TUT.col = pv(L.p.fill, 0); requestAnimationFrame(() => { const c = $('#inspBody .prow[data-key="fill"]'); if (c) c.parentElement.scrollIntoView({ block: S.mode === 'mobile' ? 'center' : 'nearest' }); }); },
+    done: () => { const L = tutLayer(); return !!L && pv(L.p.fill, 0) !== TUT.col; },
+    auto: () => { const L = tutLayer(); if (!L) return; setValUI(L, 'fill', TUT.col === '#ff6b5b' ? '#ffc53d' : '#ff6b5b'); commit(); invalidate(); updateCtrls(); } },
+  { ch: '첫 애니메이션', title: '시작 위치 기록하기',
+    text: () => `애니메이션은 <b>키프레임</b>(이 시간엔 이 값)을 두 개 찍으면 그 사이를 알아서 채워요.<br>플레이헤드가 <b>0초</b>에 있으니, ${S.mode === 'mobile' ? '변형 창에서' : '<b>변형</b> 탭에서'} <b>위치 X</b> 왼쪽의 <span class="tkf"></span> 버튼을 눌러 지금 위치를 기록하세요.`,
+    target: () => { const n = $('#n_x'); return n ? n.closest('.prow').querySelector('.kfb') : null; },
+    enter: () => { const L = tutLayer(); if (!L) return; if (S.sel !== L.id) select(L.id); setTime(0); openTab('transform'); requestAnimationFrame(() => { const n = $('#n_x'); if (n) n.closest('.prow').scrollIntoView({ block: 'nearest' }); }); },
+    done: () => { const L = tutLayer(); return !!L && (L.p.x.k.length > 0 || L.p.y.k.length > 0); },
+    auto: () => { const L = tutLayer(); if (!L) return; setTime(0); toggleKey(L, 'x'); commit(); invalidate(); updateCtrls(); } },
+  { ch: '첫 애니메이션', title: '시간 옮기기', text: () => '타임라인 위쪽 <b>눈금</b>에서 1초 근처를 눌러 플레이헤드를 옮기세요.' + (S.mode === 'pc' ? ' ← → 키로 한 프레임씩 옮길 수도 있어요.' : ''),
+    target: () => $('#tl'),
+    enter: () => { if (S.mode === 'mobile') { $('#inspector').classList.remove('open'); $$('#mobilebar button').forEach(b => b.classList.remove('on')); } if (S.dock !== 'timeline') setDock('timeline'); },
+    done: () => S.time >= 0.4, auto: () => { setTime(Math.min(1, S.proj.dur)); dirtyTL = true; } },
+  { ch: '첫 애니메이션', title: '도형 옮기기', text: () => '이제 캔버스의 도형을 다른 곳으로 끌어 보세요. 위치에 이미 키프레임이 있어서, 이 시간에 <b>키프레임이 자동으로</b> 하나 더 생겨요.',
+    target: () => $('#stage'), inside: true,
+    enter: () => { const L = tutLayer(); if (L && S.sel !== L.id) select(L.id); if (S.mode === 'mobile') $('#inspector').classList.remove('open'); },
+    done: () => { const L = tutLayer(); if (!L) return false; return ['x', 'y'].some(k => { const p = L.p[k]; return p.k.length >= 2 && Math.abs(p.k[p.k.length - 1].v - p.k[0].v) > 2; }); },
+    auto: () => { const L = tutLayer(); if (!L) return; if (S.time < 0.4) setTime(Math.min(1, S.proj.dur)); const x0 = pv(L.p.x, 0); setVal(L, 'x', x0 + S.proj.w * (x0 > S.proj.w * .55 ? -.3 : .3)); commit(); invalidate(); dirtyInsp = dirtyTL = true; } },
+  { ch: '첫 애니메이션', title: '재생해 보기', text: () => '<b>재생</b> 버튼을 눌러 보세요' + (S.mode === 'pc' ? ' (Space 키도 돼요)' : '') + '. 두 키프레임 사이의 움직임이 자동으로 채워져요.',
+    target: () => $('#bPlay'), enter: () => { setTime(0); }, done: () => S.playing, auto: () => { setTime(0); play(); } },
+  { ch: '첫 애니메이션', title: '키프레임 다루기', text: () => '타임라인의 <span class="tkf"></span>가 키프레임이에요. <b>누르면</b> 그 시간으로 이동하고, <b>끌면</b> 타이밍이 바뀌어요. 선택한 뒤 ' + (S.mode === 'pc' ? 'Delete 키나 ' : '') + '휴지통 버튼으로 지워요.<br>값을 바꾸면 항상 <b>플레이헤드가 있는 시간</b>에 키프레임이 생겨요.',
+    target: () => $('#tl'), next: '다음' },
+  { ch: '첫 애니메이션', title: '움직임 다듬기', text: () => '<b>그래프</b>를 열면 속도 변화(이징)를 바꿀 수 있어요. 천천히 멈추기, 바운스, 탄성 같은 느낌을 고르면 돼요. 눌러 보세요.',
+    target: () => $('#dockSeg [data-d="graph"]'), done: () => S.dock === 'graph', auto: () => setDock('graph'), next: '넘어가기' },
+  { ch: '첫 애니메이션', title: '이징 고르기', text: () => '<b>이징 프리셋</b>에서 원하는 느낌을 누르면 선택한 키프레임에 바로 적용되고, 캔버스에서 그 구간이 반복 재생돼요. 곡선의 손잡이를 끌어 직접 조절할 수도 있어요.<br>다 봤으면 <b>그래프 닫기</b>로 타임라인에 돌아가세요.',
+    target: () => $('#graphPanel'), skipIf: () => S.dock !== 'graph',
+    enter: () => { const L = tutLayer(); if (S.dock === 'graph' && L && L.p.x.k.length && !S.selK.length) { S.selK = [{ lid: L.id, key: 'x', k: L.p.x.k[0] }]; S.graphKey = { lid: L.id, key: 'x' }; refreshKfBar(); refreshGraphBar(); fitGraph(); dirtyGraph = dirtyTL = true; } },
+    done: () => S.dock === 'timeline', auto: () => setDock('timeline') },
+  /* ---- 더 해 보기 ---- */
+  { ch: '더 해 보기', title: '텍스트·사진·이펙트', text: () => '같은 방식으로 <b>텍스트</b>, <b>사진·영상</b>, <b>오디오</b>를 넣을 수 있어요.<br><b>이펙트</b>는 레이어를 고른 뒤 이펙트 탭에서 추가해요. 등장·퇴장, 흔들림, 글로우 같은 효과가 미리보기와 함께 나와요.',
+    target: () => S.mode === 'mobile' ? $('#mobilebar') : $('#toolrail'), enter: () => { if (S.playing) pause(); if (S.dock !== 'timeline') setDock('timeline'); if (S.mode === 'mobile') $('#inspector').classList.remove('open'); }, next: '다음' },
+  /* ---- 저장·새 프로젝트 ---- */
+  { ch: '저장·새 프로젝트', title: () => S.mode === 'mobile' ? '메뉴 열기' : '파일 메뉴 열기', text: () => '새 프로젝트 만들기와 저장은 ' + (S.mode === 'mobile' ? '오른쪽 위 <b>⋯</b> 메뉴' : '<b>파일</b> 메뉴') + '에 있어요. 눌러 보세요.',
+    target: tutFileBtn, menuOk: true, done: () => !!ctxEl, auto: () => { if (S.mode === 'mobile') mainMenu(); else openMenu(tutFileBtn()); } },
+  { ch: '저장·새 프로젝트', title: '새 프로젝트와 저장', text: () => '<b>새 프로젝트</b>: 빈 화면으로 새로 시작해요. 지금 작업은 지워지니 먼저 저장하세요.<br><b>프로젝트 파일로 저장</b>: .json 파일로 받아 두는 백업이에요.<br><b>프로젝트 파일 열기</b>: 저장한 파일을 다시 불러와요.<br>작업 중인 내용은 이 브라우저에 <b>자동 저장</b>돼서, 창을 닫았다 열어도 그대로예요.',
+    target: () => ctxEl, menuOk: true, side: true, next: '다음' },
+  { ch: '저장·새 프로젝트', title: '내보내기', text: () => '완성하면 <b>내보내기</b>를 누르세요. <b>MP4 동영상</b>(소리 포함), 지금 화면을 <b>PNG 이미지</b>로, 또는 프로젝트 파일로 저장할 수 있어요. 해상도와 화질도 고를 수 있어요.',
+    target: () => $('#bExport'), enter: () => closeCtx(), next: '다음' },
+  { ch: '끝', title: '준비 끝!', text: () => '이제 자유롭게 만들어 보세요.<br>이 안내는 ' + (S.mode === 'mobile' ? '오른쪽 위 <b>⋯</b> 메뉴' : '<b>도움말</b> 메뉴') + '의 <b>튜토리얼</b>에서 언제든 다시 볼 수 있어요.' + (S.mode === 'pc' ? ' 단축키는 <b>도움말 · 단축키</b>에 정리돼 있어요.' : ''),
+    center: true, next: '완료', last: true }
+];
+function startTutorial() {
+  if (INTRO.open) closeIntro(); closeCtx && closeCtx(); if (curSheet && !curSheet.modal) curSheet.close();
+  if (!TUT.el) {
+    TUT.el = h('div', { class: 'tut', hidden: true }, h('div', { class: 'tut-ring none' }), h('div', { class: 'tut-card' }));
+    document.body.append(TUT.el);
+  }
+  TUT.on = true; TUT.el.hidden = false; tutGo(0);
+  clearInterval(TUT.timer); TUT.timer = setInterval(tutTick, 120);
+}
+function endTutorial(done) {
+  TUT.on = false; clearInterval(TUT.timer); if (TUT.el) TUT.el.hidden = true;
+  try { localStorage.setItem('tm_tut', '1'); } catch (e) { }
+  if (!done) toast('튜토리얼은 ' + (S.mode === 'mobile' ? '메뉴' : '도움말 메뉴') + '에서 다시 볼 수 있어요');
+}
+function maybeTutorial() { let seen = false; try { seen = localStorage.getItem('tm_tut') === '1'; } catch (e) { } if (!seen) setTimeout(startTutorial, 380); }
+function tutGo(i) {
+  TUT.i = i; TUT.okAt = 0; const st = TUT_STEPS[i]; if (!st) { endTutorial(true); return; }
+  try { if (st.skipIf && st.skipIf()) { tutGo(i + 1); return; } } catch (e) { }
+  try { st.enter && st.enter(); } catch (e) { console.warn(e); }
+  tutRender(); tutPlace();
+}
+function tutRender(ok) {
+  const st = TUT_STEPS[TUT.i], card = TUT.el.querySelector('.tut-card'); card.innerHTML = ''; card.classList.toggle('ok', !!ok);
+  const bar = h('span', { class: 'tbar' }, h('i', { style: `width:${Math.round((TUT.i + 1) / TUT_STEPS.length * 100)}%` }));
+  card.append(h('div', { class: 'tstep' }, h('span', { class: 'tch' }, st.ch), bar, `${TUT.i + 1}/${TUT_STEPS.length}`, st.last ? null : h('button', { class: 'tx', onclick: () => endTutorial(false) }, '그만 보기')));
+  card.append(h('h4', null, typeof st.title === 'function' ? st.title() : st.title), h('p', { html: st.text() }));
+  const btns = h('div', { class: 'tbtns' });
+  if (ok) btns.append(h('span', { class: 'twait tok' }, '잘했어요!'));
+  else if (st.done && !st.next) btns.append(h('span', { class: 'twait' }, h('i'), '직접 해 보세요'));
+  if (!ok && st.auto) btns.append(h('button', { onclick: () => { try { st.auto(); } catch (e) { console.warn(e); } } }, '대신 해 주기'));
+  if (!ok && st.next) btns.append(h('button', { class: 'pri', onclick: () => st.last ? endTutorial(true) : tutGo(TUT.i + 1) }, st.next));
+  card.append(btns);
+}
+function tutPlace() {
+  if (!TUT.on || !TUT.el) return;
+  const st = TUT_STEPS[TUT.i], ring = TUT.el.querySelector('.tut-ring'), card = TUT.el.querySelector('.tut-card');
+  const blocked = INTRO.open || (!$('#scrim').hidden && !st.sheetOk) || !$('#player').hidden || (ctxEl && document.body.contains(ctxEl) && !st.menuOk);
+  TUT.el.style.visibility = blocked ? 'hidden' : '';
+  if (blocked) return;
+  const mob = S.mode === 'mobile'; TUT.el.classList.toggle('mob', mob);
+  let r = null; if (st.target && !st.center) { const t = st.target(); const rs = (Array.isArray(t) ? t : [t]).map(tutVisible).filter(Boolean); if (rs.length) { const l = Math.min(...rs.map(q => q.left)), tp = Math.min(...rs.map(q => q.top)), rr = Math.max(...rs.map(q => q.right)), bb = Math.max(...rs.map(q => q.bottom)); r = { left: l, top: tp, right: rr, bottom: bb, width: rr - l, height: bb - tp }; } }
+  const vw = innerWidth, vh = innerHeight, cw = mob ? vw - 24 : Math.min(300, vw - 24), ch = card.offsetHeight, gap = 12;
+  if (!r) {
+    ring.classList.add('none'); Object.assign(ring.style, { left: vw / 2 + 'px', top: vh / 2 + 'px', width: '0px', height: '0px' });
+    card.style.left = Math.round((vw - cw) / 2) + 'px'; card.style.top = Math.round((vh - ch) / 2) + 'px'; return;
+  }
+  const pad = st.inside ? -2 : 4;
+  ring.classList.remove('none'); Object.assign(ring.style, { left: r.left - pad + 'px', top: r.top - pad + 'px', width: r.width + pad * 2 + 'px', height: r.height + pad * 2 + 'px' });
+  let x, y; const box = st.side ? (st.sheetOk ? $('#scrim .sheet') : st.menuOk ? ctxEl : null) : null, br = box && box.getBoundingClientRect();
+  if (br && !mob && (br.right + gap + cw < vw - 8 || br.left - gap - cw > 8)) { x = br.right + gap + cw < vw - 8 ? br.right + gap : br.left - gap - cw; y = r.top + r.height / 2 - ch / 2; }
+  else if (mob && st.sheetOk && $('#scrim .sheet')) { const sh = $('#scrim .sheet').getBoundingClientRect(); x = 12; y = r.top > ch + 24 ? 8 : vh - ch - 8; }
+  else if (mob) { y = r.top + r.height / 2 > vh / 2 ? r.top - pad - gap - ch : r.bottom + pad + gap; x = (vw - cw) / 2; }
+  else if (r.bottom + gap + ch < vh - 8) { y = r.bottom + pad + gap; x = r.left + r.width / 2 - cw / 2; }
+  else if (r.top - gap - ch > 8) { y = r.top - pad - gap - ch; x = r.left + r.width / 2 - cw / 2; }
+  else if (r.left - gap - cw > 8) { x = r.left - pad - gap - cw; y = r.top + r.height / 2 - ch / 2; }
+  else { x = r.right + pad + gap; y = r.top + r.height / 2 - ch / 2; }
+  x = clamp(x, 12, vw - cw - 12); y = clamp(y, 8, vh - ch - 8);
+  card.style.left = Math.round(x) + 'px'; card.style.top = Math.round(y) + 'px';
+}
+function tutTick() {
+  if (!TUT.on) return;
+  const st = TUT_STEPS[TUT.i];
+  if (TUT.okAt) { if (performance.now() - TUT.okAt > 900) tutGo(TUT.i + 1); }
+  else if (st.skipIf && (() => { try { return st.skipIf(); } catch (e) { return false; } })()) { tutGo(TUT.i + 1); return; }
+  else if (st.done) { let d = false; try { d = st.done(); } catch (e) { } if (d) { TUT.okAt = performance.now(); tutRender(true); } }
+  tutPlace();
 }
 async function init() {
   try { S.modePref = localStorage.getItem('ml_mode') || 'auto'; } catch (e) { }
