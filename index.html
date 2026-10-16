@@ -677,6 +677,11 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 .tut-card .tbtns button.ghost{background:none;border-color:transparent;color:var(--fg2);padding:0 8px}
 .tut-card .tbtns button.pri{background:var(--acc);border-color:var(--acc);color:#fff}.tut-card .tbtns button.pri:hover{background:var(--acc2)}
 .tut-card.ok{border-color:var(--ok)}
+.tut-card .tsp2{flex:1}.tut-card .tmore{display:none;background:none;border:1px solid #555;color:var(--fg);font:inherit;font-size:12px;border-radius:14px;padding:2px 10px;cursor:pointer}
+.tut-card.compact .tmore.m1,.tut-card.expanded .tmore.m2{display:inline-block}
+.tut-card.compact{padding:10px 12px 10px}.tut-card.compact p,.tut-card.compact .ttip,.tut-card.compact .tbar{display:none}
+.tut-card.compact .tstep{margin-bottom:2px}.tut-card.compact h4{font-size:15.5px;margin:0}
+.tut-card.compact .tdo{margin-top:6px;padding:7px 10px;font-size:13.5px}.tut-card.compact .tbtns{margin-top:8px}.tut-card.compact .tbtns button{height:34px;font-size:13.5px}
 .app[data-mode=mobile]~.tut .tut-card,.tut.mob .tut-card{width:auto;left:12px!important;right:12px}
 </style>
 
@@ -736,6 +741,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v40.1</b><span>모양 연결의 자동 테두리 추출을 새로 만들었습니다. 사진 가장자리를 배경 견본으로 삼아 물체를 그래프 컷으로 가르고 테두리를 실제 경계선에 붙여서, 배경이 복잡하거나 두 가지 색인 사진도 물체만 정확히 잡습니다.</ 테두리 따기도 강해졌습니다: 출발점을 여러 개 시도해 가장 물체다운 결과를 고르고, 배경 색을 사진 바깥 전체에서 배우고, 색만 다른 경계도 잡습니다. 흐리거나 노이즈가 많은 사진에서 특히 좋아졌습니다.</span></li>
         <li><b>v40</b><span>새 이펙트: 모션 블러(자동)·에코·레벨·커브·프랙탈 노이즈·파티클(불꽃·폭죽·눈·비·반짝이·거품)·오디오 스펙트럼·퍼펫 핀. 글자 물결(텍스트 애니메이터), 도형 합치기·빼기·교차, 영상 거꾸로 재생·시간 리맵이 생겼습니다. 그룹에도 모든 이펙트를 쓸 수 있습니다.</span></li>
         <li><b>v39</b><span>튜토리얼을 새로 만들었습니다(할 일 상자·이전 버튼·편집 도구 안내). 휴대폰에서 위 막대·재생 막대·그래프 편집기가 잘리지 않게 정리했습니다. 테두리 따기는 다 그은 뒤 완료를 누르면 한꺼번에 분석하고, 클립과 화면 속 물체가 가까운 곳에 딱 붙습니다.</span></li>
         <li><b>v38</b><span>테두리 따기(대충 그으면 테두리에 맞춰 자동으로 잘라 줌), 다른 기기로 바로 보내기(번호·QR), 분할한 클립 사이 화면 전환 9가지(쉐이크 포함), 레이어 여러 개 선택(타임라인 이름 길게 누르기 · PC는 Ctrl+클릭)이 생겼습니다. 계정 저장은 10분마다·저장 버튼·창을 닫을 때 올라갑니다.</span></li>
@@ -4856,7 +4862,38 @@ function resampleClosed(pts, N) {
 }
 function smoothClosed(pts, r) { const n = pts.length; if (n < 12) return pts; return pts.map((_, i) => { let x = 0, y = 0; for (let k = -r; k <= r; k++) { const p = pts[(i + k + n) % n]; x += p[0]; y += p[1]; } return [x / (2 * r + 1), y / (2 * r + 1)]; }); }
 const polyArea = pts => { let a = 0; for (let i = 0; i < pts.length; i++) { const p = pts[i], q = pts[(i + 1) % pts.length]; a += p[0] * q[1] - q[0] * p[1]; } return a / 2; };
+/* 모양 연결의 자동 테두리: 사진 가장자리를 '배경 견본'으로 삼아 GrabCut(색 분포 + 경계 대비 + 그래프 컷)으로 물체를 가르고,
+   테두리를 실제 경계선에 붙인다. 투명 PNG는 투명도 그대로. 잘 안 되면 예전 방식(가장자리 색과의 거리)으로 */
+const AUTO_CACHE = new WeakMap();
 function traceImageContour(img, iw, ih, sens, multi) {
+  const key = sens + '|' + (multi ? 1 : 0); let cm = AUTO_CACHE.get(img); if (cm && cm.has(key)) return cm.get(key);
+  let r; try { r = autoSubject(img, iw, ih, sens, multi); } catch (e) { console.warn(e); r = null; }
+  if (!r || !r.pieces) r = traceImageContourOld(img, iw, ih, sens, multi);
+  if (!cm) { cm = new Map(); AUTO_CACHE.set(img, cm); } cm.set(key, r); return r;
+}
+function autoSubject(img, iw, ih, sens, multi) {
+  const g0 = outlineGrid(iw, ih), gk = Math.min(1, 380 / Math.max(iw, ih)), g = { k: gk, W: Math.max(8, Math.round(iw * gk)), H: Math.max(8, Math.round(ih * gk)) }, { W, H } = g, n = W * H; // 그래프 컷은 작게(빠르게), 테두리는 나중에 경계선에 붙여 정밀하게
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0, W, H); const d = x.getImageData(0, 0, W, H).data;
+  let transp = 0; for (let i = 3; i < d.length; i += 4) if (d[i] < 128) transp++;
+  if (transp > n * .02) return null; // 투명 PNG는 예전 방식(투명도)이 정확
+  const m = Math.max(2, Math.round(Math.min(W, H) * .03)), enc = new Uint8Array(n);
+  for (let y = m; y < H - m; y++) for (let X = m; X < W - m; X++) enc[y * W + X] = 1;
+  const k = g.k, loop = [[m / k, m / k], [(W - m) / k, m / k], [(W - m) / k, (H - m) / k], [m / k, (H - m) / k]];
+  const tol = 100 - sens, s0 = regionCut(img, iw, ih, densify(loop, 6 / k), 50); let seed = null;
+  if (s0) { seed = new Uint8Array(n); const f = g0.W / W; for (let y = 0; y < H; y++) for (let X = 0; X < W; X++) seed[y * W + X] = s0[Math.min(g0.H - 1, Math.round((y + .5) * f - .5)) * g0.W + Math.min(g0.W - 1, Math.round((X + .5) * f - .5))]; }
+  let fg = grabCut(img, g, enc, seed, tol, { single: true }); if (!fg) return null;
+  // 가장자리에 걸친 물체(아래가 잘린 사람 등)는 사진 끝까지 이어 줌
+  for (let y = 0; y < H; y++) for (let X = 0; X < W; X++) { const i = y * W + X; if (enc[i]) continue; const cx = clamp(X, m, W - m - 1), cy = clamp(y, m, H - m - 1); if (fg[cy * W + cx]) fg[i] = 1; }
+  let tot = 0, cr = 0, cg = 0, cb = 0; for (let i = 0; i < n; i++) if (fg[i]) { tot++; cr += d[i * 4]; cg += d[i * 4 + 1]; cb += d[i * 4 + 2]; }
+  if (tot < n * .003 || tot > n * .93) return null;
+  let polys = traceAllPieces(fg, g).filter(P => !P.hole); if (!polys.length) return null;
+  const big = Math.abs(polyArea(polys[0]));
+  polys = multi ? polys.filter((P, i) => !i || Math.abs(polyArea(P)) >= big * .006) : [polys[0]];
+  const E = edgeMap(img, iw, ih); polys = polys.map(P => { const f = snapToEdges(P.map(([a, b]) => [a * E.k, b * E.k]), E, Math.max(2, Math.round(3 * E.k))); return f ? f.map(([a, b]) => [a / E.k, b / E.k]) : P; });
+  polys = polys.map(P => smoothClosed(P, 1));
+  return { pieces: polys, col: rgbToHex(cr / tot, cg / tot, cb / tot), cover: tot / n };
+}
+function traceImageContourOld(img, iw, ih, sens, multi) {
   const sc = 360 / Math.max(iw, ih), w = Math.max(16, Math.round(iw * sc)), hh = Math.max(16, Math.round(ih * sc));
   const cv = document.createElement('canvas'); cv.width = w; cv.height = hh; const x = cv.getContext('2d', { willReadFrequently: true });
   x.drawImage(img, 0, 0, w, hh); const d = x.getImageData(0, 0, w, hh).data, n = w * hh;
@@ -4987,7 +5024,7 @@ function morphSheet() {
       const mk = L.mask, all = [mk.pts, ...(mk.extra || [])].filter(P => P && P.length >= 3).map(P => P.map(([x, y]) => [x + M.w / 2, y + M.h / 2]));
       const outer = all.filter((P, i) => all.filter((Q, j) => j !== i && ptIn(P[0], Q)).length % 2 === 0); // 구멍(다른 조각 안에 든 것)은 빼고
       sl.trace = outer.length ? { pieces: st.multi ? outer : [outer.reduce((a, b) => Math.abs(polyArea(b)) > Math.abs(polyArea(a)) ? b : a)] } : { err: '따 둔 테두리가 비어 있어요' };
-      if (sl.trace.pieces) { const t = traceImageContour(src, M.w, M.h, st.sens, false); sl.col = (t && t.col) || avgCol(src, M.w, M.h); } return;
+      if (sl.trace.pieces) { const t = traceImageContourOld(src, M.w, M.h, st.sens, false); sl.col = (t && t.col) || avgCol(src, M.w, M.h); } return;
     }
     sl.trace = traceImageContour(src, M.w, M.h, st.sens, st.multi); if (sl.trace.col) sl.col = sl.trace.col;
   };
@@ -4998,13 +5035,13 @@ function morphSheet() {
     box.hidden = false;
     box.append(h('div', { class: 'askq' }, sl.mode ? '테두리 추출' : '이 사진에서 테두리를 추출할까요?'),
       h('div', { class: 'btnrow' }, hasMask ? opt('mask', '따 둔 테두리 쓰기') : '', opt('trace', '네, 추출할게요'), opt('rect', '아니요, 사진 네모 그대로')),
-      hasMask ? '' : h('div', { class: 'hint', style: 'margin:0' }, '배경이 복잡한 사진은 먼저 ‘테두리 따기’로 물체를 따 두면 훨씬 정확해요. ', h('a', { href: '#', onclick: e => { e.preventDefault(); closeS(); select(L.id); startOutline(L); toast('물체를 따고 완료를 누른 뒤, 모양 연결에서 ‘따 둔 테두리 쓰기’를 고르세요'); } }, '테두리 따기 하러 가기')));
+      hasMask ? '' : h('div', { class: 'hint', style: 'margin:0' }, '자동으로 잘 안 잡히면 ‘테두리 따기’로 물체를 직접 따 두세요. ', h('a', { href: '#', onclick: e => { e.preventDefault(); closeS(); select(L.id); startOutline(L); toast('물체를 따고 완료를 누른 뒤, 모양 연결에서 ‘따 둔 테두리 쓰기’를 고르세요'); } }, '테두리 따기 하러 가기')));
   };
   const loadImg = async (key, f) => {
     ui[key].status.className = 'st'; ui[key].status.textContent = '불러오는 중…';
     const r = await decodeImage(f).catch(() => null);
     if (!r) { st[key] = null; ui[key].status.className = 'st err'; ui[key].status.textContent = '이 사진은 열 수 없어요 (JPG·PNG로 골라 주세요)'; refresh(); return; }
-    st[key] = { kind: 'img', img: r.el, iw: r.w, ih: r.h, name: f.name }; if (ui[key].sel) ui[key].sel.value = ''; askBox(key); retrace(key); refresh();
+    st[key] = { kind: 'img', img: r.el, iw: r.w, ih: r.h, name: f.name }; if (ui[key].sel) ui[key].sel.value = ''; askBox(key); ui[key].status.textContent = '테두리를 찾는 중…'; await sleep(30); retrace(key); refresh();
   };
   const retrace = key => { const sl = st[key]; if (sl && sl.kind === 'layerimg' && sl.mode === 'trace') { layerImgTrace(sl); return; } if (!sl || sl.kind !== 'img') return; sl.trace = traceImageContour(sl.img, sl.iw, sl.ih, st.sens, st.multi); if (sl.trace.col) sl.col = sl.trace.col; };
   const slotOk = sl => sl && (sl.kind === 'layer' ? !!findL(sl.lid) : sl.kind === 'layerimg' ? !!(findL(sl.lid) && sl.mode && sl.trace && sl.trace.pieces) : !!(sl.trace && sl.trace.pieces));
@@ -5074,8 +5111,8 @@ function morphSheet() {
   const fromRow = h('div', { class: 'frow', style: 'display:none' }, h('label', null, '생겨나는 방식'), fromS);
   const easeS = h('select', { class: 'sel' }); EASES.forEach((e, i) => easeS.append(h('option', { value: i }, e.n))); easeS.value = st.ease; easeS.onchange = () => st.ease = +easeS.value;
   const body = h('div', null,
-    h('div', { class: 'mnotice', html: icon('help') + '<span>테두리가 명확한 사진만 사용해주세요.</span>' }),
-    h('p', { class: 'hint', style: 'margin-top:0' }, '시작 사진과 끝 사진에서 도형의 윤곽을 따서, 한 모양이 다른 모양으로 바뀌는 애니메이션을 만듭니다. 떨어진 조각이 여러 개여도 함께 처리합니다. 단색 배경 위의 도형이나 배경이 투명한 PNG에서 가장 정확합니다.'),
+    h('div', { class: 'mnotice', html: icon('help') + '<span>물체가 또렷하게 찍힌 사진일수록 정확해요. 배경이 복잡해도 물체를 알아서 찾아요.</span>' }),
+    h('p', { class: 'hint', style: 'margin-top:0' }, '시작 사진과 끝 사진에서 도형의 윤곽을 따서, 한 모양이 다른 모양으로 바뀌는 애니메이션을 만듭니다. 떨어진 조각이 여러 개여도 함께 처리합니다. 배경이 투명한 PNG는 투명한 부분을 그대로 잘라 쓰고, 일반 사진은 가장자리를 배경으로 보고 물체만 골라냅니다.'),
     h('p', { class: 'hint', style: 'margin-top:-4px;color:var(--fg2)' }, '모양을 하나만 골라도 돼요. ‘끝’에만 고르면 무(無)에서 스르륵 생겨나고, ‘시작’에만 고르면 스르륵 사라집니다.'),
     h('div', { class: 'mslots' }, mkSlot('A', '시작'), mkSlot('B', '끝')),
     h('div', { class: 'addsec' }, '미리보기'), prev,
@@ -5558,13 +5595,16 @@ function drawOutlinePreview(x, m) {
 function edgeMap(src, iw, ih) {
   const k = Math.min(1, 1100 / Math.max(iw, ih)), W = Math.max(8, Math.round(iw * k)), H = Math.max(8, Math.round(ih * k));
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d', { willReadFrequently: true });
-  x.drawImage(src, 0, 0, W, H); const d = x.getImageData(0, 0, W, H).data, n = W * H, g = new Float32Array(n), b = new Float32Array(n), G = new Float32Array(n);
-  for (let i = 0; i < n; i++) { const a = d[i * 4 + 3] / 255; g[i] = (d[i * 4] * .299 + d[i * 4 + 1] * .587 + d[i * 4 + 2] * .114) * a + 255 * (1 - a) * 0 + a * 0; if (a < .5) g[i] = -80; }
-  for (let y = 1; y < H - 1; y++) for (let xx = 1; xx < W - 1; xx++) { let s = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) s += g[(y + dy) * W + xx + dx]; b[y * W + xx] = s / 9; }
+  x.drawImage(src, 0, 0, W, H); const d = x.getImageData(0, 0, W, H).data, n = W * H, G = new Float32Array(n);
+  // 밝기만이 아니라 R·G·B 각각의 경계를 봄 (밝기는 같은데 색만 다른 경계도 잡도록). 투명은 아주 어두운 색처럼
+  const ch = [new Float32Array(n), new Float32Array(n), new Float32Array(n)], b = [new Float32Array(n), new Float32Array(n), new Float32Array(n)];
+  for (let i = 0; i < n; i++) { const a = d[i * 4 + 3] / 255; for (let c = 0; c < 3; c++) ch[c][i] = a < .5 ? -80 : d[i * 4 + c] * a; }
+  for (let c = 0; c < 3; c++) { const s0 = ch[c], o = b[c]; for (let y = 1; y < H - 1; y++) for (let xx = 1; xx < W - 1; xx++) { let s = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) s += s0[(y + dy) * W + xx + dx]; o[y * W + xx] = s / 9; } }
   let mx = 1e-6;
   for (let y = 1; y < H - 1; y++) for (let xx = 1; xx < W - 1; xx++) {
-    const i = y * W + xx, gx = b[i - W + 1] + 2 * b[i + 1] + b[i + W + 1] - b[i - W - 1] - 2 * b[i - 1] - b[i + W - 1], gy = b[i + W - 1] + 2 * b[i + W] + b[i + W + 1] - b[i - W - 1] - 2 * b[i - W] - b[i - W + 1];
-    const v = Math.hypot(gx, gy); G[i] = v; if (v > mx) mx = v;
+    const i = y * W + xx; let v = 0;
+    for (let c = 0; c < 3; c++) { const B = b[c], gx = B[i - W + 1] + 2 * B[i + 1] + B[i + W + 1] - B[i - W - 1] - 2 * B[i - 1] - B[i + W - 1], gy = B[i + W - 1] + 2 * B[i + W] + B[i + W + 1] - B[i - W - 1] - 2 * B[i - W] - B[i - W + 1]; v += gx * gx + gy * gy; }
+    v = Math.sqrt(v); G[i] = v; if (v > mx) mx = v;
   }
   for (let i = 0; i < n; i++) G[i] = Math.sqrt(G[i] / mx);
   return { G, W, H, k };
@@ -5768,34 +5808,42 @@ function outlinePreview() {
   for (let i = 0; i < g.W * g.H; i++) { if (add && !add[i]) { D[i * 4 + 3] = 140; } else if (sub && sub[i]) { D[i * 4] = 255; D[i * 4 + 1] = 70; D[i * 4 + 2] = 70; D[i * 4 + 3] = 90; } }
   x.putImageData(im, 0, 0); O.prev = { cv, k: g.k };
 }
-/* GrabCut 방식: 색 분포(물체/배경) + 경계 대비를 함께 보고 그래프 컷으로 나눔. 3번 반복하며 색 분포를 다시 배움 */
-function grabCut(src, g, enc, seed, tol) {
-  const { W, H } = g, n = W * H;
-  const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const cx = cv.getContext('2d', { willReadFrequently: true }); cx.drawImage(src, 0, 0, W, H); const d = cx.getImageData(0, 0, W, H).data;
+/* GrabCut 방식: 색 분포(물체/배경) + 경계 대비를 함께 보고 그래프 컷으로 나눔.
+   ① 작은 해상도에서 출발점을 여러 개(색 번짐 결과·가운데·울타리 전체) 시도해 가장 '물체다운' 결과를 고르고
+   ② 그 결과를 원래 해상도에서 다시 다듬음. 배경 색은 울타리 바깥 전체에서 배움 */
+function gcImage(src, g) {
+  const { W, H } = g, n = W * H, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const cx = cv.getContext('2d', { willReadFrequently: true }); cx.drawImage(src, 0, 0, W, H); const d = cx.getImageData(0, 0, W, H).data;
   const bin = new Uint16Array(n), solid = new Uint8Array(n); for (let i = 0; i < n; i++) { bin[i] = ((d[i * 4] >> 3) << 10) | ((d[i * 4 + 1] >> 3) << 5) | (d[i * 4 + 2] >> 3); solid[i] = d[i * 4 + 3] > 40 ? 1 : 0; }
-  // the band of sure background just outside the fence teaches what background looks like
-  const band = new Uint8Array(n), dist = new Int16Array(n).fill(-1), q = new Int32Array(n); let qh = 0, qt = 0, R = Math.max(10, Math.round(Math.max(W, H) * .07));
+  return { d, bin, solid };
+}
+function resampleMask(m, W1, H1, W2, H2) { const o = new Uint8Array(W2 * H2), fx = W1 / W2, fy = H1 / H2; for (let y = 0; y < H2; y++) { const sy = Math.min(H1 - 1, Math.floor((y + .5) * fy)); for (let x = 0; x < W2; x++) o[y * W2 + x] = m[sy * W1 + Math.min(W1 - 1, Math.floor((x + .5) * fx))]; } return o; }
+function gcGeom(g, enc) {
+  const { W, H } = g, n = W * H, q = new Int32Array(n);
+  const dist = new Int16Array(n).fill(-1), R = Math.max(10, Math.round(Math.max(W, H) * .07)); let qh = 0, qt = 0;
   for (let i = 0; i < n; i++) if (enc[i]) { dist[i] = 0; q[qt++] = i; }
-  while (qh < qt) { const c = q[qh++], X = c % W; if (dist[c] >= R) continue; const go = nb => { if (dist[nb] < 0) { dist[nb] = dist[c] + 1; band[nb] = 1; q[qt++] = nb; } }; if (X > 0) go(c - 1); if (X < W - 1) go(c + 1); if (c >= W) go(c - W); if (c < n - W) go(c + W); }
-  let fg = new Uint8Array(n);
+  while (qh < qt) { const c = q[qh++], X = c % W; if (dist[c] >= 32000) continue; const go = nb => { if (dist[nb] < 0) { dist[nb] = dist[c] + 1; q[qt++] = nb; } }; if (X > 0) go(c - 1); if (X < W - 1) go(c + 1); if (c >= W) go(c - W); if (c < n - W) go(c + W); }
+  const din = new Int32Array(n).fill(-1); { let h0 = 0, t0 = 0; for (let i = 0; i < n; i++) { if (!enc[i]) continue; const X = i % W; if (X === 0 || X === W - 1 || i < W || i >= n - W || !enc[i - 1] || !enc[i + 1] || !enc[i - W] || !enc[i + W]) { din[i] = 0; q[t0++] = i; } } while (h0 < t0) { const c = q[h0++], X = c % W; const go = nb => { if (enc[nb] && din[nb] < 0) { din[nb] = din[c] + 1; q[t0++] = nb; } }; if (X > 0) go(c - 1); if (X < W - 1) go(c + 1); if (c >= W) go(c - W); if (c < n - W) go(c + W); } }
+  let encA = 0; for (let i = 0; i < n; i++) if (enc[i]) encA++;
+  return { dist, R, din, encA, Dm: Math.max(4, Math.sqrt(encA / Math.PI) * .45) };
+}
+function gcCore(im, g, enc, geo, init, tol, deepF, iters, trusted, o = {}) {
+  const { W, H } = g, n = W * H, { d, bin, solid } = im, { dist, R, din, encA, Dm } = geo;
   const idx = new Int32Array(n).fill(-1); let N = 0; for (let i = 0; i < n; i++) if (enc[i] && solid[i]) idx[i] = N++;
   if (N < 30) return null;
-  const pix = c => [d[c * 4], d[c * 4 + 1], d[c * 4 + 2]], d2 = (a, b) => { const r = d[a * 4] - d[b * 4], gg = d[a * 4 + 1] - d[b * 4 + 1], bb = d[a * 4 + 2] - d[b * 4 + 2]; return r * r + gg * gg + bb * bb; };
+  const d2 = (a, b) => { const r = d[a * 4] - d[b * 4], gg = d[a * 4 + 1] - d[b * 4 + 1], bb = d[a * 4 + 2] - d[b * 4 + 2]; return r * r + gg * gg + bb * bb; };
   let sum = 0, cnt = 0; for (let i = 0; i < n; i++) { if (idx[i] < 0) continue; const X = i % W; if (X < W - 1) { sum += d2(i, i + 1); cnt++; } if (i < n - W) { sum += d2(i, i + W); cnt++; } }
   const beta = 1 / (2 * Math.max(1, sum / Math.max(1, cnt))), gam = 50, bias = (tol - 50) * .045;
   const NB = [[1, 0, 1], [0, 1, 1], [1, 1, Math.SQRT1_2], [-1, 1, Math.SQRT1_2]];
   const NBIN = 32768, blur1 = (A, sh) => { const B = new Float32Array(NBIN); for (let i = 0; i < NBIN; i++) { const c = (i >> sh) & 31; B[i] = A[i] * .5 + (c > 0 ? A[i - (1 << sh)] : 0) * .25 + (c < 31 ? A[i + (1 << sh)] : 0) * .25; } return B; };
-  const hist = sel => { let h0 = new Float32Array(NBIN), t = 0; for (let i = 0; i < n; i++) if (sel(i)) { h0[bin[i]]++; t++; }
+  const hist = wf => { let h0 = new Float32Array(NBIN), t = 0; for (let i = 0; i < n; i++) { const w = wf(i); if (w > 0) { h0[bin[i]] += w; t += w; } }
     for (let rep = 0; rep < 2; rep++) h0 = blur1(blur1(blur1(h0, 0), 5), 10);
     const out = new Float32Array(NBIN), eps = t / NBIN * .05 + 1e-3; for (let i = 0; i < NBIN; i++) out[i] = -Math.log((h0[i] + eps) / (t + eps * NBIN)); return { L: out, t }; };
-  // where in the fenced area: deep inside is more likely the object, right next to the line more likely background
-  const din = new Int32Array(n).fill(-1); { let h0 = 0, t0 = 0; for (let i = 0; i < n; i++) { if (!enc[i]) continue; const X = i % W; if (X === 0 || X === W - 1 || i < W || i >= n - W || !enc[i - 1] || !enc[i + 1] || !enc[i - W] || !enc[i + W]) { din[i] = 0; q[t0++] = i; } } while (h0 < t0) { const c = q[h0++], X = c % W; const go = nb => { if (enc[nb] && din[nb] < 0) { din[nb] = din[c] + 1; q[t0++] = nb; } }; if (X > 0) go(c - 1); if (X < W - 1) go(c + 1); if (c >= W) go(c - W); if (c < n - W) go(c + W); } }
-  let encA = 0; for (let i = 0; i < n; i++) if (enc[i]) encA++; const Dm = Math.max(4, Math.sqrt(encA / Math.PI) * .45), prior = 1.6, ring = Math.max(2, Dm * .18);
-  // first guess: the colour-flood result if it found something, otherwise the middle of the fenced area
-  let sc = 0; if (seed) for (let i = 0; i < n; i++) if (seed[i] && enc[i]) sc++;
-  for (let i = 0; i < n; i++) fg[i] = enc[i] && solid[i] && (sc > encA * .01 ? seed[i] : din[i] > Dm * .35) ? 1 : 0;
-  for (let it = 0; it < 6; it++) {
-    const HF = hist(i => fg[i] === 1), HB = hist(i => solid[i] && (band[i] || (enc[i] && !fg[i]) || (it === 0 && enc[i] && din[i] <= ring)));
+  const prior = (o.prior ?? .5) * (trusted ? .5 : 1), ring = Math.max(2, Dm * .18);
+  let fg = new Uint8Array(n); for (let i = 0; i < n; i++) fg[i] = idx[i] >= 0 && (init ? init[i] : din[i] > Dm * deepF) ? 1 : 0;
+  // 배경 견본: 울타리 바로 바깥 띠는 1, 그 너머(사진 나머지)는 0.4 — 울타리 안에만 보이는 배경 색도 바깥 어딘가엔 있기 마련
+  const bgW = i => !solid[i] ? 0 : enc[i] ? 0 : dist[i] <= R ? 1 : .4;
+  for (let it = 0; it < iters; it++) {
+    const HF = hist(i => fg[i] ? (o.flatFg ? 1 : .25 + .75 * Math.min(1, Math.max(0, din[i]) / Dm)) : 0), HB = hist(i => enc[i] ? (solid[i] && (!fg[i] || (it === 0 && !trusted && din[i] <= ring)) ? 1 : 0) : bgW(i));
     if (HF.t < 10 || HB.t < 10) break;
     const G = new BKGraph(N, N * 8);
     for (let i = 0; i < n; i++) {
@@ -5811,7 +5859,24 @@ function grabCut(src, g, enc, seed, tol) {
     const nf = new Uint8Array(n); let changed = 0; for (let i = 0; i < n; i++) { const a = idx[i]; nf[i] = a >= 0 && G.isSource(a) ? 1 : 0; if (nf[i] !== fg[i]) changed++; }
     fg = nf; if (changed < n * .0005) break;
   }
-  // tidy: drop specks, fill small pinholes
+  return fg;
+}
+/* 얼마나 '물체다운' 결과인지: 안팎 색이 잘 갈리는지 × 경계에 실제 윤곽선이 있는지 × 가운데를 차지하는지 */
+function gcScore(im, g, enc, geo, fg) {
+  const { W, H } = g, n = W * H, { d, solid } = im, { dist, R, din, encA, Dm } = geo;
+  let fa = 0, deepN = 0, deepF = 0; for (let i = 0; i < n; i++) { if (!enc[i]) continue; if (fg[i]) fa++; if (din[i] > Dm * .5) { deepN++; if (fg[i]) deepF++; } }
+  if (fa < encA * .01 || fa > encA * .985) return -1;
+  const hf = new Float32Array(4096), hb = new Float32Array(4096); let tf = 0, tb = 0;
+  for (let i = 0; i < n; i++) { if (!solid[i]) continue; const b = ((d[i * 4] >> 4) << 8) | ((d[i * 4 + 1] >> 4) << 4) | (d[i * 4 + 2] >> 4); if (fg[i]) { hf[b]++; tf++; } else if (enc[i] || dist[i] <= R) { hb[b]++; tb++; } }
+  let bc = 0; for (let b = 0; b < 4096; b++) if (hf[b] && hb[b]) bc += Math.sqrt(hf[b] / tf * hb[b] / tb);
+  const cd = (a, b) => Math.sqrt((d[a * 4] - d[b * 4]) ** 2 + (d[a * 4 + 1] - d[b * 4 + 1]) ** 2 + (d[a * 4 + 2] - d[b * 4 + 2]) ** 2);
+  let bs = 0, bn = 0, ms = 0, mn = 0;
+  for (let i = 0; i < n; i++) { if (!enc[i]) continue; const X = i % W; for (const j of [X < W - 1 ? i + 1 : -1, i < n - W ? i + W : -1]) { if (j < 0) continue; const v = cd(i, j); ms += v; mn++; if (fg[i] !== fg[j]) { bs += v; bn++; } } }
+  const contrast = (bs / Math.max(1, bn)) / (ms / Math.max(1, mn) + 1), cover = deepN ? deepF / deepN : .5;
+  return (1 - bc) * Math.log(1 + contrast) * (.35 + .65 * cover);
+}
+function gcTidy(fg, g) {
+  const { W, H } = g, n = W * H, q = new Int32Array(n);
   const lab = new Int32Array(n), comps = []; let id = 0;
   for (let i = 0; i < n; i++) { if (!fg[i] || lab[i]) continue; id++; let h0 = 0, t0 = 0; q[t0++] = i; lab[i] = id; while (h0 < t0) { const c = q[h0++], X = c % W; const go = nb => { if (fg[nb] && !lab[nb]) { lab[nb] = id; q[t0++] = nb; } }; if (X > 0) go(c - 1); if (X < W - 1) go(c + 1); if (c >= W) go(c - W); if (c < n - W) go(c + W); } comps.push(t0); }
   const big = Math.max(...comps, 0), keep = comps.map(sz => sz >= Math.max(30, big * .03)); let total = 0;
@@ -5819,6 +5884,23 @@ function grabCut(src, g, enc, seed, tol) {
   if (!total) return null;
   const hl = new Uint8Array(n); for (let i = 0; i < n; i++) { if (fg[i] || hl[i]) continue; let h0 = 0, t0 = 0, edge = false; q[t0++] = i; hl[i] = 1; while (h0 < t0) { const c = q[h0++], X = c % W, Y = (c / W) | 0; if (X === 0 || Y === 0 || X === W - 1 || Y === H - 1) edge = true; const go = nb => { if (!fg[nb] && !hl[nb]) { hl[nb] = 1; q[t0++] = nb; } }; if (X > 0) go(c - 1); if (X < W - 1) go(c + 1); if (c >= W) go(c - W); if (c < n - W) go(c + W); } if (!edge && t0 < total * .015) for (let z = 0; z < t0; z++) fg[q[z]] = 1; }
   return fg;
+}
+function grabCut(src, g, enc, seed, tol, opt) {
+  if (opt && opt.single) { // 모양 연결 자동 추출: 사진 전체가 울타리라 한 번에(예전 방식) 
+    const im = gcImage(src, g), geo = gcGeom(g, enc); let sc = 0; if (seed) for (let i = 0; i < g.W * g.H; i++) if (seed[i] && enc[i]) sc++;
+    const r = gcCore(im, g, enc, geo, sc > geo.encA * .01 ? seed : null, tol, .35, 6, false, { prior: 1.6, flatFg: true }); return r && gcTidy(r, g);
+  }
+  const { W, H } = g, ck = Math.min(1, 400 / Math.max(W, H));
+  const gc = ck < .95 ? { k: g.k * ck, W: Math.max(8, Math.round(W * ck)), H: Math.max(8, Math.round(H * ck)) } : g;
+  const encC = gc === g ? enc : resampleMask(enc, W, H, gc.W, gc.H), imC = gcImage(src, gc), geoC = gcGeom(gc, encC);
+  let sc = 0; if (seed) for (let i = 0; i < W * H; i++) if (seed[i] && enc[i]) sc++;
+  const inits = []; if (seed && sc > geoC.encA * .01 * (W * H) / (gc.W * gc.H)) inits.push([gc === g ? seed : resampleMask(seed, W, H, gc.W, gc.H), 0]); [1, .35].forEach(f => inits.push([null, f]));
+  let best = null;
+  for (const [init, deepF] of inits) { const r = gcCore(imC, gc, encC, geoC, init, tol, deepF, 5, false); if (!r) continue; const s = gcScore(imC, gc, encC, geoC, r); if (!best || s > best.s) best = { r, s }; }
+  if (!best || best.s < 0) return null;
+  if (gc === g) return gcTidy(best.r, g);
+  const im = gcImage(src, g), geo = gcGeom(g, enc), init = resampleMask(best.r, gc.W, gc.H, W, H);
+  return gcTidy(gcCore(im, g, enc, geo, init, tol, 0, 3, true) || init, g);
 }
 async function outlineFinish() {
   const O = S.outline; if (!O || O.busy) return; if (!O.strokes.length) { endOutline(); return; }
@@ -6218,7 +6300,7 @@ function endTutorial(done) {
 }
 function maybeTutorial() { let seen = false; try { seen = localStorage.getItem('tm_tut') === '1'; } catch (e) { } if (!seen) setTimeout(startTutorial, 380); }
 function tutGo(i) {
-  TUT.i = i; TUT.okAt = 0; const st = TUT_STEPS[i]; if (!st) { endTutorial(true); return; }
+  TUT.i = i; TUT.okAt = 0; TUT.expand = false; const st = TUT_STEPS[i]; if (!st) { endTutorial(true); return; }
   try { if (st.skipIf && st.skipIf()) { tutGo(i + 1); return; } } catch (e) { }
   try { st.enter && st.enter(); } catch (e) { console.warn(e); }
   TUT.pre = false; try { TUT.pre = !!(st.done && st.done()); } catch (e) { }
@@ -6227,7 +6309,8 @@ function tutGo(i) {
 function tutRender(ok) {
   const st = TUT_STEPS[TUT.i], card = TUT.el.querySelector('.tut-card'); card.innerHTML = ''; card.classList.toggle('ok', !!ok);
   const n = TUT_STEPS.length, pct = Math.round(TUT.i / (n - 1) * 100);
-  card.append(h('div', { class: 'tstep' }, h('span', { class: 'tch' }, st.ch), h('span', { class: 'tnum' }, `${TUT.i + 1} / ${n}`), st.last ? '' : h('button', { class: 'tx', onclick: () => endTutorial(false) }, '그만 보기')),
+  card.append(h('div', { class: 'tstep' }, h('span', { class: 'tch' }, st.ch), h('span', { class: 'tnum' }, `${TUT.i + 1} / ${n}`), h('span', { class: 'tsp2' }),
+    h('button', { class: 'tmore m1', onclick: () => { TUT.expand = true; tutPlace(); } }, '설명 보기'), h('button', { class: 'tmore m2', onclick: () => { TUT.expand = false; tutPlace(); } }, '접기'), st.last ? '' : h('button', { class: 'tx', onclick: () => endTutorial(false) }, '그만 보기')),
     h('span', { class: 'tbar' }, h('i', { style: `width:${pct}%` })));
   card.append(h('h4', null, typeof st.title === 'function' ? st.title() : st.title), h('p', { html: st.text() }));
   const tip = st.tip && st.tip(); if (tip) card.append(h('div', { class: 'ttip', html: tip }));
@@ -6252,7 +6335,8 @@ function tutPlace() {
   if (blocked) return;
   const mob = S.mode === 'mobile'; TUT.el.classList.toggle('mob', mob);
   let r = null; if (st.target && !st.center) { const t = st.target(); const rs = (Array.isArray(t) ? t : [t]).map(tutVisible).filter(Boolean); if (rs.length) { const l = Math.min(...rs.map(q => q.left)), tp = Math.min(...rs.map(q => q.top)), rr = Math.max(...rs.map(q => q.right)), bb = Math.max(...rs.map(q => q.bottom)); r = { left: l, top: tp, right: rr, bottom: bb, width: rr - l, height: bb - tp }; } }
-  const vw = innerWidth, vh = innerHeight, cw = mob ? vw - 24 : Math.min(360, vw - 24), ch = card.offsetHeight, gap = 12;
+  card.classList.remove('compact', 'expanded'); card.style.maxHeight = '';
+  const vw = innerWidth, vh = innerHeight, cw = mob ? vw - 24 : Math.min(360, vw - 24), gap = 12; let ch = card.offsetHeight;
   if (!r) {
     ring.classList.add('none'); Object.assign(ring.style, { left: vw / 2 + 'px', top: vh / 2 + 'px', width: '0px', height: '0px' });
     card.style.left = Math.round((vw - cw) / 2) + 'px'; card.style.top = Math.round((vh - ch) / 2) + 'px'; return;
@@ -6262,7 +6346,18 @@ function tutPlace() {
   let x, y; const box = st.side ? (st.sheetOk ? $('#scrim .sheet') : st.menuOk ? ctxEl : null) : null, br = box && box.getBoundingClientRect();
   if (br && !mob && (br.right + gap + cw < vw - 8 || br.left - gap - cw > 8)) { x = br.right + gap + cw < vw - 8 ? br.right + gap : br.left - gap - cw; y = r.top + r.height / 2 - ch / 2; }
   else if (mob && st.sheetOk && $('#scrim .sheet')) { const sh = $('#scrim .sheet').getBoundingClientRect(); x = 12; y = r.top > ch + 24 ? 8 : vh - ch - 8; }
-  else if (mob) { y = r.top + r.height / 2 > vh / 2 ? r.top - pad - gap - ch : r.bottom + pad + gap; x = (vw - cw) / 2; }
+  else if (mob) {
+    /* 휴대폰: 가리키는 곳을 덮지 않게 위/아래 빈 곳에 둔다. 자리가 모자라면 설명을 접어 작게 */
+    const upY = r.top - pad - gap, dnY = r.bottom + pad + gap, upH = upY - 8, dnH = vh - 8 - dnY, preferUp = r.top + r.height / 2 > vh / 2;
+    const fit = hh => preferUp ? (hh <= upH ? 'up' : hh <= dnH ? 'dn' : null) : (hh <= dnH ? 'dn' : hh <= upH ? 'up' : null);
+    let w = fit(ch);
+    if (!w) {
+      if (TUT.expand) card.classList.add('expanded'); else { card.classList.add('compact'); ch = card.offsetHeight; w = fit(ch); }
+      if (!w && !TUT.expand) { w = upH >= dnH ? 'up' : 'dn'; const room = Math.max(upH, dnH); if (room >= 90) { card.style.maxHeight = room + 'px'; ch = Math.min(ch, room); } }
+    }
+    x = (vw - cw) / 2;
+    if (w === 'up') y = upY - ch; else if (w === 'dn') y = dnY; else y = preferUp ? 8 : vh - ch - 8;
+  }
   else if (r.bottom + gap + ch < vh - 8) { y = r.bottom + pad + gap; x = r.left + r.width / 2 - cw / 2; }
   else if (r.top - gap - ch > 8) { y = r.top - pad - gap - ch; x = r.left + r.width / 2 - cw / 2; }
   else if (r.left - gap - cw > 8) { x = r.left - pad - gap - cw; y = r.top + r.height / 2 - ch / 2; }
