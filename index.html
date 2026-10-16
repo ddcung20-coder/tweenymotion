@@ -508,6 +508,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .mslots{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .mslot{border:1px solid var(--line2);border-radius:3px;padding:8px;background:var(--bg2);display:flex;flex-direction:column;gap:6px;min-width:0}
 .mslot b{font-size:12px}
+.askbox{border:1px solid var(--accline);background:var(--accbg);border-radius:4px;padding:8px;display:flex;flex-direction:column;gap:6px}.askbox[hidden]{display:none}.askq{font-size:13px;font-weight:600;color:var(--fg)}.askbox .btnrow{display:flex;flex-wrap:wrap;gap:6px}
 .mslot canvas{width:100%;aspect-ratio:16/11;height:auto;background:#151515;border-radius:2px;display:block}
 .mslot .btn{justify-content:center}
 .mslot .st{font-size:11px;color:var(--fg3);line-height:1.4}
@@ -4599,6 +4600,7 @@ const polysBox = polys => { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; polys.
 function morphSlotPolys(sl, fit) {
   const pr = S.proj;
   if (!sl) return null;
+  if (sl.kind === 'layerimg') { const L = findL(sl.lid); if (!L || !sl.trace || !sl.trace.pieces) return null; const M = layerMatrix(L, S.time); return sl.trace.pieces.map(P => P.map(([x, y]) => { const q = M.transformPoint(new DOMPoint(x - sl.iw / 2, y - sl.ih / 2)); return [q.x, q.y]; })); }
   if (sl.kind === 'layer') { const L = findL(sl.lid); if (!L) return null; const out = shapeOutline(L, S.time); if (!out) return null; const M = layerMatrix(L, S.time); return out.map(P => P.map(([x, y]) => { const q = M.transformPoint(new DOMPoint(x, y)); return [q.x, q.y]; })); }
   if (!sl.trace || !sl.trace.pieces) return null; const PS = sl.trace.pieces;
   if (fit) { const b = polysBox(PS), k = Math.min(pr.w, pr.h) * .5 / Math.max(1e-6, b.w, b.h); return PS.map(P => P.map(([x, y]) => [pr.w / 2 + (x - b.cx) * k, pr.h / 2 + (y - b.cy) * k])); }
@@ -4646,21 +4648,45 @@ let morphPick = null;
 function morphSheet() {
   const st = { A: null, B: null, sens: 50, fit: true, multi: true, dur: 1.5, ease: 1, color: true, built: null, from: 'center' };
   const ui = {}; let makeBtn = null, raf = 0;
-  const shapes = S.proj.layers.filter(morphable).reverse();
+  const shapes = S.proj.layers.filter(morphable).reverse(), pics = S.proj.layers.filter(L => (L.type === 'image' || L.type === 'video') && MEDIA.get(L.media) && MEDIA.get(L.media).ready).reverse();
+  const ptIn = (pt, P) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const a = P[i], b = P[j]; if ((a[1] > pt[1]) !== (b[1] > pt[1]) && pt[0] < (b[0] - a[0]) * (pt[1] - a[1]) / (b[1] - a[1] || 1e-9) + a[0]) c = !c; } return c; };
+  const avgCol = (img, iw, ih) => { try { const c = document.createElement('canvas'); c.width = c.height = 8; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0, 8, 8); const d = x.getImageData(0, 0, 8, 8).data; let r = 0, g = 0, b = 0, n = 0; for (let i = 0; i < 256; i += 4) if (d[i + 3] > 100) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; } return n ? rgbToHex(r / n, g / n, b / n) : '#888888'; } catch (e) { return '#888888'; } };
+  /* 타임라인의 사진·영상 레이어: 테두리를 추출할지 물어보고 그 답대로 모양을 만듦 */
+  const layerImgTrace = sl => {
+    const L = findL(sl.lid), M = L && MEDIA.get(L.media); if (!M) { sl.trace = { err: '레이어를 찾지 못했어요' }; return; }
+    const src = L.type === 'video' ? videoFor(L, M) : M.el; sl.img = src; sl.iw = M.w; sl.ih = M.h;
+    if (sl.mode === 'rect') { const iw = M.w, ih = M.h; sl.trace = { pieces: [[[0, 0], [iw, 0], [iw, ih], [0, ih]]] }; sl.col = avgCol(src, iw, ih); return; }
+    if (sl.mode === 'mask') {
+      const mk = L.mask, all = [mk.pts, ...(mk.extra || [])].filter(P => P && P.length >= 3).map(P => P.map(([x, y]) => [x + M.w / 2, y + M.h / 2]));
+      const outer = all.filter((P, i) => all.filter((Q, j) => j !== i && ptIn(P[0], Q)).length % 2 === 0); // 구멍(다른 조각 안에 든 것)은 빼고
+      sl.trace = outer.length ? { pieces: st.multi ? outer : [outer.reduce((a, b) => Math.abs(polyArea(b)) > Math.abs(polyArea(a)) ? b : a)] } : { err: '따 둔 테두리가 비어 있어요' };
+      if (sl.trace.pieces) { const t = traceImageContour(src, M.w, M.h, st.sens, false); sl.col = (t && t.col) || avgCol(src, M.w, M.h); } return;
+    }
+    sl.trace = traceImageContour(src, M.w, M.h, st.sens, st.multi); if (sl.trace.col) sl.col = sl.trace.col;
+  };
+  const askBox = key => {
+    const sl = st[key], box = ui[key].ask; box.innerHTML = ''; if (!sl || sl.kind !== 'layerimg') { box.hidden = true; return; }
+    const L = findL(sl.lid), hasMask = L && L.mask.on && L.mask.kind === 'path' && L.mask.pts && L.mask.pts.length > 2;
+    const opt = (mode, l) => h('button', { class: 'btn sm' + (sl.mode === mode ? ' primary' : ''), onclick: () => { sl.mode = mode; layerImgTrace(sl); askBox(key); refresh(); } }, l);
+    box.hidden = false;
+    box.append(h('div', { class: 'askq' }, sl.mode ? '테두리 추출' : '이 사진에서 테두리를 추출할까요?'),
+      h('div', { class: 'btnrow' }, hasMask ? opt('mask', '따 둔 테두리 쓰기') : '', opt('trace', '네, 추출할게요'), opt('rect', '아니요, 사진 네모 그대로')),
+      hasMask ? '' : h('div', { class: 'hint', style: 'margin:0' }, '배경이 복잡한 사진은 먼저 ‘테두리 따기’로 물체를 따 두면 훨씬 정확해요. ', h('a', { href: '#', onclick: e => { e.preventDefault(); closeS(); select(L.id); startOutline(L); toast('물체를 따고 완료를 누른 뒤, 모양 연결에서 ‘따 둔 테두리 쓰기’를 고르세요'); } }, '테두리 따기 하러 가기')));
+  };
   const loadImg = async (key, f) => {
     ui[key].status.className = 'st'; ui[key].status.textContent = '불러오는 중…';
     const r = await decodeImage(f).catch(() => null);
     if (!r) { st[key] = null; ui[key].status.className = 'st err'; ui[key].status.textContent = '이 사진은 열 수 없어요 (JPG·PNG로 골라 주세요)'; refresh(); return; }
-    st[key] = { kind: 'img', img: r.el, iw: r.w, ih: r.h, name: f.name }; if (ui[key].sel) ui[key].sel.value = ''; retrace(key); refresh();
+    st[key] = { kind: 'img', img: r.el, iw: r.w, ih: r.h, name: f.name }; if (ui[key].sel) ui[key].sel.value = ''; askBox(key); retrace(key); refresh();
   };
-  const retrace = key => { const sl = st[key]; if (!sl || sl.kind !== 'img') return; sl.trace = traceImageContour(sl.img, sl.iw, sl.ih, st.sens, st.multi); if (sl.trace.col) sl.col = sl.trace.col; };
-  const slotOk = sl => sl && (sl.kind === 'layer' ? !!findL(sl.lid) : !!(sl.trace && sl.trace.pieces));
+  const retrace = key => { const sl = st[key]; if (sl && sl.kind === 'layerimg' && sl.mode === 'trace') { layerImgTrace(sl); return; } if (!sl || sl.kind !== 'img') return; sl.trace = traceImageContour(sl.img, sl.iw, sl.ih, st.sens, st.multi); if (sl.trace.col) sl.col = sl.trace.col; };
+  const slotOk = sl => sl && (sl.kind === 'layer' ? !!findL(sl.lid) : sl.kind === 'layerimg' ? !!(findL(sl.lid) && sl.mode && sl.trace && sl.trace.pieces) : !!(sl.trace && sl.trace.pieces));
   const pathOf = (x, polys, map) => { x.beginPath(); polys.forEach(P => { P.forEach((p, i) => { const [X, Y] = map(p); i ? x.lineTo(X, Y) : x.moveTo(X, Y); }); x.closePath(); }); };
   const drawThumb = key => {
     const cv = ui[key].cv, x = cv.getContext('2d'), W = cv.width, H = cv.height, sl = st[key]; x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = '#151515'; x.fillRect(0, 0, W, H);
     if (!sl) { x.fillStyle = '#5e5e5e'; x.font = '600 22px "IBM Plex Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(key === 'A' ? '시작 모양' : '끝 모양', W / 2, H / 2 - 14); x.font = '500 16px "IBM Plex Sans KR", sans-serif'; x.fillText('비워 두면 ' + (key === 'A' ? '무(無)에서 생겨나요' : '스르륵 사라져요'), W / 2, H / 2 + 16); return; }
-    if (sl.kind === 'img') {
-      const k = Math.min(W / sl.iw, H / sl.ih) * .92, ox = (W - sl.iw * k) / 2, oy = (H - sl.ih * k) / 2; x.drawImage(sl.img, ox, oy, sl.iw * k, sl.ih * k);
+    if (sl.kind === 'img' || sl.kind === 'layerimg') {
+      if (!sl.img) return; const k = Math.min(W / sl.iw, H / sl.ih) * .92, ox = (W - sl.iw * k) / 2, oy = (H - sl.ih * k) / 2; x.drawImage(sl.img, ox, oy, sl.iw * k, sl.ih * k);
       if (sl.trace && sl.trace.pieces) { x.fillStyle = 'rgba(0,0,0,.35)'; x.fillRect(0, 0, W, H); pathOf(x, sl.trace.pieces, ([px, py]) => [ox + px * k, oy + py * k]); x.fillStyle = 'rgba(61,155,255,.2)'; x.fill(); x.lineWidth = 3; x.strokeStyle = '#3d9bff'; x.stroke(); }
       return;
     }
@@ -4672,26 +4698,35 @@ function morphSheet() {
       drawThumb(key); const sl = st[key], s_ = ui[key].status;
       if (!sl) { if (s_.className !== 'st err') { s_.className = 'st'; s_.textContent = '아직 고르지 않았어요'; } return; }
       if (sl.kind === 'layer') { s_.className = 'st ok'; s_.textContent = `도형 레이어 ‘${sl.name}’`; return; }
+      if (sl.kind === 'layerimg' && !sl.mode) { s_.className = 'st'; s_.textContent = `사진 레이어 ‘${sl.name}’ — 위에서 골라 주세요`; return; }
+      if (sl.kind === 'layerimg' && sl.mode === 'rect') { s_.className = 'st ok'; s_.textContent = `‘${sl.name}’ 사진의 네모 모양 그대로`; return; }
+      if (sl.kind === 'layerimg' && sl.mode === 'mask' && sl.trace && sl.trace.pieces) { s_.className = 'st ok'; s_.textContent = `‘${sl.name}’에서 따 둔 테두리 (조각 ${sl.trace.pieces.length}개)`; return; }
       if (sl.trace && sl.trace.err) { s_.className = 'st err'; s_.textContent = sl.trace.err + ' — 테두리가 명확한 사진을 골라 주세요'; }
       else if (sl.trace) { const n = sl.trace.pieces.length; s_.className = 'st ok'; s_.textContent = n > 1 ? `윤곽을 찾았어요. 조각 ${n}개` : '윤곽을 찾았어요. 파란 선이 따낸 모양입니다'; }
     });
     const okA = slotOk(st.A), okB = slotOk(st.B); st.single = okA !== okB ? (okB ? 'in' : 'out') : null;
     st.built = okA && okB ? buildMorph(morphSlotPolys(st.A, st.fit), morphSlotPolys(st.B, st.fit)) : st.single ? buildSingle(morphSlotPolys(okB ? st.B : st.A, st.fit), st.from, okB) : null;
     if (fromRow) fromRow.style.display = st.single ? '' : 'none';
-    if (makeBtn) makeBtn.disabled = !st.built;
+    if (makeBtn) makeBtn.disabled = !st.built || ['A', 'B'].some(k => st[k] && st[k].kind === 'layerimg' && !st[k].mode);
   };
   const mkSlot = (key, title) => {
     const cv = h('canvas', { width: 320, height: 220 }), status = h('div', { class: 'st' });
     const pick = h('button', { class: 'btn sm', html: icon('image') + '갤러리에서 고르기', onclick: () => pickImage(f => loadImg(key, f)) });
-    ui[key] = { cv, status };
+    const ask = h('div', { class: 'askbox', hidden: true });
+    ui[key] = { cv, status, ask };
     const kids = [h('b', null, title), cv, pick];
-    if (shapes.length) {
-      const sel = h('select', { class: 'sel', style: 'flex:none;width:100%' }); sel.append(h('option', { value: '' }, '또는 도형 레이어에서 고르기…'));
-      shapes.forEach(L => sel.append(h('option', { value: L.id }, L.name)));
-      sel.onchange = () => { if (!sel.value) return; const L = findL(sel.value); st[key] = { kind: 'layer', lid: L.id, name: L.name, col: layerFillCol(L) }; refresh(); };
+    if (shapes.length || pics.length) {
+      const sel = h('select', { class: 'sel', style: 'flex:none;width:100%' }); sel.append(h('option', { value: '' }, '또는 타임라인의 레이어에서 고르기…'));
+      if (shapes.length) { const g = h('optgroup', { label: '도형' }); shapes.forEach(L => g.append(h('option', { value: L.id }, L.name))); sel.append(g); }
+      if (pics.length) { const g = h('optgroup', { label: '사진·영상' }); pics.forEach(L => g.append(h('option', { value: L.id }, L.name))); sel.append(g); }
+      sel.onchange = () => {
+        if (!sel.value) return; const L = findL(sel.value);
+        if (L.type === 'image' || L.type === 'video') { const M = MEDIA.get(L.media); st[key] = { kind: 'layerimg', lid: L.id, name: L.name, mode: null, img: L.type === 'video' ? videoFor(L, M) : M.el, iw: M.w, ih: M.h, col: '#3d9bff' }; askBox(key); refresh(); return; }
+        st[key] = { kind: 'layer', lid: L.id, name: L.name, col: layerFillCol(L) }; askBox(key); refresh();
+      };
       ui[key].sel = sel; kids.push(sel);
     }
-    kids.push(status); return h('div', { class: 'mslot' }, ...kids);
+    kids.push(ask, status); return h('div', { class: 'mslot' }, ...kids);
   };
   const prev = h('canvas', { class: 'mprev', width: 640, height: 300 });
   const drawPrev = () => {
@@ -4718,7 +4753,7 @@ function morphSheet() {
     h('div', { class: 'mslots' }, mkSlot('A', '시작'), mkSlot('B', '끝')),
     h('div', { class: 'addsec' }, '미리보기'), prev,
     h('div', { class: 'addsec' }, '설정'),
-    h('div', { class: 'frow' }, h('label', null, '떨어진 조각도'), tog(st.multi, v => { st.multi = v; retrace('A'); retrace('B'); refresh(); }), h('span', { class: 'hint', style: 'margin:0' }, '섬·영토처럼 떨어진 부분까지 함께 연결')),
+    h('div', { class: 'frow' }, h('label', null, '떨어진 조각도'), tog(st.multi, v => { st.multi = v; ['A', 'B'].forEach(k => { const sl = st[k]; if (sl && sl.kind === 'layerimg' && sl.mode) layerImgTrace(sl); else retrace(k); }); refresh(); }), h('span', { class: 'hint', style: 'margin:0' }, '섬·영토처럼 떨어진 부분까지 함께 연결')),
     h('div', { class: 'frow' }, h('label', null, '테두리 감도'), sens),
     h('p', { class: 'hint', style: 'margin:-4px 0 6px 102px' }, '테두리가 덜 잡히면 올리고, 배경까지 잡히면 내려 보세요.'),
     h('div', { class: 'frow' }, h('label', null, '크기 맞추기'), tog(st.fit, v => { st.fit = v; refresh(); }), h('span', { class: 'hint', style: 'margin:0' }, '끄면 사진 속 크기·위치 그대로')),
@@ -4737,7 +4772,7 @@ function morphSheet() {
     const e = deep(EASES[st.ease].e); upsertKey(L.p.mp, t0, 0).e = e; upsertKey(L.p.mp, t1, 100);
     if (ca !== cb) { upsertKey(L.p.fill, t0, ca).e = deep(e); upsertKey(L.p.fill, t1, cb); }
     if (st.single) L.name = st.single === 'in' ? '모양 나타나기' : '모양 사라지기';
-    let hid = 0; ['A', 'B'].forEach(k => { const sl = st[k]; if (sl && sl.kind === 'layer') { const o = findL(sl.lid); if (o && o.visible) { o.visible = false; hid++; } } });
+    let hid = 0; ['A', 'B'].forEach(k => { const sl = st[k]; if (sl && (sl.kind === 'layer' || sl.kind === 'layerimg')) { const o = findL(sl.lid); if (o && o.visible) { o.visible = false; hid++; } } });
     closeS(); addLayer(L); setTime(t0); openTab('style');
     toast(hid ? '모양 연결 레이어를 만들었어요 (원래 도형은 숨겼어요)' : '모양 연결 레이어를 만들었어요');
   };
