@@ -5380,7 +5380,7 @@ function enclosedFrom(strokes, g) {
     x.strokeStyle = '#fff'; x.lineCap = 'round'; x.lineJoin = 'round'; x.lineWidth = Math.max(3, Math.min(g.W, g.H) * .012);
     const ends = [];
     strokes.forEach((st, si) => {
-      const P = st.pts.map(([a, b]) => [a * g.k, b * g.k]); if (P.length < 2) return;
+      const P = st.pts.map(([a, b]) => [clamp(a * g.k, 0, g.W - 1), clamp(b * g.k, 0, g.H - 1)]); if (P.length < 2) return;
       const len = polyLen(P, false), gap = Math.hypot(P[0][0] - P[P.length - 1][0], P[0][1] - P[P.length - 1][1]);
       x.beginPath(); P.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); if (closeAll || gap < len * .3) x.closePath(); x.stroke();
       ends.push([P[0], si], [P[P.length - 1], si]);
@@ -5415,7 +5415,7 @@ function grabCut(src, g, enc, seed, tol) {
   const band = new Uint8Array(n), dist = new Int16Array(n).fill(-1), q = new Int32Array(n); let qh = 0, qt = 0, R = Math.max(10, Math.round(Math.max(W, H) * .07));
   for (let i = 0; i < n; i++) if (enc[i]) { dist[i] = 0; q[qt++] = i; }
   while (qh < qt) { const c = q[qh++], X = c % W; if (dist[c] >= R) continue; const go = nb => { if (dist[nb] < 0) { dist[nb] = dist[c] + 1; band[nb] = 1; q[qt++] = nb; } }; if (X > 0) go(c - 1); if (X < W - 1) go(c + 1); if (c >= W) go(c - W); if (c < n - W) go(c + W); }
-  let fg = new Uint8Array(n); for (let i = 0; i < n; i++) fg[i] = enc[i] && solid[i] && (seed ? seed[i] : 1) ? 1 : 0;
+  let fg = new Uint8Array(n);
   const idx = new Int32Array(n).fill(-1); let N = 0; for (let i = 0; i < n; i++) if (enc[i] && solid[i]) idx[i] = N++;
   if (N < 30) return null;
   const pix = c => [d[c * 4], d[c * 4 + 1], d[c * 4 + 2]], d2 = (a, b) => { const r = d[a * 4] - d[b * 4], gg = d[a * 4 + 1] - d[b * 4 + 1], bb = d[a * 4 + 2] - d[b * 4 + 2]; return r * r + gg * gg + bb * bb; };
@@ -5428,9 +5428,12 @@ function grabCut(src, g, enc, seed, tol) {
     const out = new Float32Array(NBIN), eps = t / NBIN * .05 + 1e-3; for (let i = 0; i < NBIN; i++) out[i] = -Math.log((h0[i] + eps) / (t + eps * NBIN)); return { L: out, t }; };
   // where in the fenced area: deep inside is more likely the object, right next to the line more likely background
   const din = new Int32Array(n).fill(-1); { let h0 = 0, t0 = 0; for (let i = 0; i < n; i++) { if (!enc[i]) continue; const X = i % W; if (X === 0 || X === W - 1 || i < W || i >= n - W || !enc[i - 1] || !enc[i + 1] || !enc[i - W] || !enc[i + W]) { din[i] = 0; q[t0++] = i; } } while (h0 < t0) { const c = q[h0++], X = c % W; const go = nb => { if (enc[nb] && din[nb] < 0) { din[nb] = din[c] + 1; q[t0++] = nb; } }; if (X > 0) go(c - 1); if (X < W - 1) go(c + 1); if (c >= W) go(c - W); if (c < n - W) go(c + W); } }
-  let encA = 0; for (let i = 0; i < n; i++) if (enc[i]) encA++; const Dm = Math.max(4, Math.sqrt(encA / Math.PI) * .45), prior = 1.6;
+  let encA = 0; for (let i = 0; i < n; i++) if (enc[i]) encA++; const Dm = Math.max(4, Math.sqrt(encA / Math.PI) * .45), prior = 1.6, ring = Math.max(2, Dm * .18);
+  // first guess: the colour-flood result if it found something, otherwise the middle of the fenced area
+  let sc = 0; if (seed) for (let i = 0; i < n; i++) if (seed[i] && enc[i]) sc++;
+  for (let i = 0; i < n; i++) fg[i] = enc[i] && solid[i] && (sc > encA * .01 ? seed[i] : din[i] > Dm * .35) ? 1 : 0;
   for (let it = 0; it < 6; it++) {
-    const HF = hist(i => fg[i] === 1), HB = hist(i => solid[i] && (band[i] || (enc[i] && !fg[i])));
+    const HF = hist(i => fg[i] === 1), HB = hist(i => solid[i] && (band[i] || (enc[i] && !fg[i]) || (it === 0 && enc[i] && din[i] <= ring)));
     if (HF.t < 10 || HB.t < 10) break;
     const G = new BKGraph(N, N * 8);
     for (let i = 0; i < n; i++) {
