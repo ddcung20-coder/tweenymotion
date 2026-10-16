@@ -146,6 +146,24 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .authbtn{height:44px;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid transparent}
 .authbtn.google{background:#fff;color:#1f1f1f;border-color:#dadce0}.authbtn.google:hover{background:#f4f6f9}.authbtn.google:disabled{opacity:.6}
 .authbtn.guest{background:var(--bg3);color:var(--fg);border-color:var(--line2)}.authbtn.guest:hover{background:var(--bg4)}
+.authlink{background:none;border:0;color:var(--acc2);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:2px;align-self:center}
+.savebtn{font-weight:600}.savebtn.dirty{border-color:var(--warn);color:#ffd77a}.savebtn.dirty::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--warn);margin-left:2px}.savebtn.busy{opacity:.6}.savebtn.saved{border-color:var(--ok);color:#9be3bf}
+.app[data-mode=mobile] .savebtn span{display:none}.app[data-mode=mobile] .savebtn{padding:0 8px}
+.xfer{display:flex;flex-direction:column;gap:12px}.xrow{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.xlab{font-size:12px;color:var(--fg3);margin-bottom:2px}.xcode{font:700 40px/1.1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;color:#fff}
+.xqr{width:150px;height:150px;background:#fff;border-radius:6px;padding:4px;flex:none}.xqr:empty{background:var(--bg2)}.xqr svg{width:100%;height:100%;display:block}
+.xst{margin:0;font-size:13px;color:var(--fg)}.xst.err{color:#ff9a92}.xst.ok{color:#9be3bf;font-weight:600}
+.xbar{height:8px;border-radius:4px;background:var(--bg0);overflow:hidden}.xbar i{display:block;height:100%;width:0;background:var(--acc);transition:width .15s}
+.xinrow{display:flex;gap:8px}.xin{flex:1;min-width:0;height:48px;font:700 28px 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.08em;text-align:center;background:var(--bg0);color:#fff;border:1px solid var(--line2);border-radius:6px}.xinrow .btn{height:48px;padding:0 18px;font-size:14px}
+.trgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.trbtn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:6px;border:1px solid var(--line2);background:var(--bg2);color:var(--fg2);font-size:12px;cursor:pointer}.trbtn.on{border-color:var(--acc);color:var(--fg);background:var(--accbg)}
+.trico{width:64px;height:36px;border-radius:3px;position:relative;overflow:hidden;background:#5aaaf7}
+.trico::before{content:"";position:absolute;inset:0;background:#ff6fb1;animation:trA 1.6s ease-in-out infinite}
+.tr-fade::before{animation-name:trFade}.tr-zoom::before{animation-name:trZoom}.tr-slide::before{animation-name:trSlide}.tr-wipe::before{animation-name:trWipe}.tr-sweep::before{animation-name:trFade}.tr-blur::before{animation-name:trBlur}.tr-spin::before{animation-name:trSpin}.tr-pop::before{animation-name:trPop}
+@keyframes trFade{0%,30%{opacity:1}50%{opacity:0}70%,100%{opacity:0}}@keyframes trZoom{0%,30%{transform:scale(1);opacity:1}55%,100%{transform:scale(2);opacity:0}}
+@keyframes trSlide{0%,30%{transform:translateX(0)}60%,100%{transform:translateX(-100%)}}@keyframes trWipe{0%,30%{clip-path:inset(0 0 0 0)}60%,100%{clip-path:inset(0 0 0 100%)}}
+@keyframes trBlur{0%,30%{filter:blur(0);opacity:1}55%,100%{filter:blur(6px);opacity:0}}@keyframes trSpin{0%,30%{transform:rotate(0) scale(1);opacity:1}60%,100%{transform:rotate(180deg) scale(0);opacity:0}}@keyframes trPop{0%,30%{transform:scale(1)}40%{transform:scale(1.15)}60%,100%{transform:scale(0)}}
+@media (prefers-reduced-motion:reduce){.trico::before{animation:none}}
 .authbox .hint{margin:4px 0 0;font-size:12px;line-height:1.6}
 .toolbar .tool.on{color:var(--fg);background:var(--accbg)}
 .modebadge{background:var(--kf)!important;color:#211700!important;border-color:transparent!important;font-weight:600}
@@ -446,8 +464,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .app[data-mode=mobile] .gbar .btn.keep span{display:inline}
 .gbar #gClose{position:sticky;right:0;z-index:1;box-shadow:-8px 0 8px var(--bg1)}
 .app[data-mode=mobile] .gbar .btn{height:32px}
-.mbtools{display:none}
-.app[data-mode=mobile] .mbtools{display:inline-grid}
+.mbtools{display:inline-grid}
 .toast.act{pointer-events:auto;display:flex;align-items:center;gap:10px}
 .toast button{color:var(--acc2);font-weight:600;padding:2px 4px;border-radius:2px}
 .toast button:hover{background:rgba(255,255,255,.08)}
@@ -612,7 +629,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v37</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v38</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -667,6 +684,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v38</b><span>테두리 따기(대충 그으면 테두리에 맞춰 자동으로 잘라 줌), 다른 기기로 바로 보내기(번호·QR), 분할한 클립 사이 화면 전환 8가지가 생겼습니다. 계정 저장은 10분마다·저장 버튼·창을 닫을 때 올라갑니다.</span></li>
         <li><b>v37</b><span>스윕 등장·스윕 퇴장 이펙트가 생겼습니다. 모양 연결에서 사진(모양)을 하나만 골라도 무에서 스르륵 생겨나거나 사라지게 만들 수 있습니다.</span></li>
         <li><b>v36</b><span>선택한 레이어는 선택 상자 안 어디를 끌어도 움직입니다. 잠긴 레이어를 누르면 잠겨 있다고 알려 줍니다. 모바일에서 살짝 흔들린 탭도 빈 곳 누르기로 인식해 선택이 풀립니다.</span></li>
         <li><b>v35</b><span>도형과 선은 실제로 그려진 부분을 눌러야 선택되고, 그 주변 빈 곳을 누르면 선택이 풀립니다. 내 프로젝트에 백업 안내와 파일 저장 버튼을 넣었습니다.</span></li>
@@ -714,6 +732,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
       <button data-m="auto">자동</button><button data-m="pc">PC</button><button data-m="mobile">모바일</button>
     </div>
     <button class="ib mobonly" id="bMenu" data-ic="more" title="메뉴"></button>
+    <button class="btn savebtn" id="bSave" title="저장 (Ctrl+S)"><svg class="i" data-ic2="save"></svg><span>저장</span></button>
     <button class="acct" id="bAcct" title="계정"></button>
     <button class="btn" id="bFull" title="전체화면 미리보기 (Shift+F)"><svg class="i" data-ic2="present"></svg><span>전체화면</span></button>
     <button class="btn primary" id="bExport"><svg class="i" data-ic2="export"></svg><span>내보내기</span></button>
@@ -923,6 +942,11 @@ const IC = {
   fit: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
   loop: '<path d="M17 3l3 3-3 3"/><path d="M4 12V9a3 3 0 013-3h13"/><path d="M7 21l-3-3 3-3"/><path d="M20 12v3a3 3 0 01-3 3H4"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  save: '<path d="M5 4.5h11l3.5 3.5v11.5H5z"/><path d="M8 4.5v5h7v-5M8 19.5v-6h8v6"/>',
+  send: '<path d="M4 12l16-7-6 16-3-6.5z"/><path d="M11 14.5L20 5"/>',
+  receive: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19.5h14"/>',
+  scissors: '<circle cx="6.5" cy="7" r="2.5"/><circle cx="6.5" cy="17" r="2.5"/><path d="M8.6 8.4L19 17M8.6 15.6L19 7"/>',
+  trans: '<rect x="3.5" y="6" width="7" height="12" rx="1"/><rect x="13.5" y="6" width="7" height="12" rx="1"/><path d="M10.5 12h3"/>',
   up: '<path d="M12 19V5M6 11l6-6 6 6"/>', down: '<path d="M12 5v14M6 13l6 6 6-6"/>',
   split: '<circle cx="6" cy="6.5" r="2.5"/><circle cx="6" cy="17.5" r="2.5"/><path d="M8 8l12 10M8 16L20 6"/>',
   help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 0c0 1.7-2.5 2-2.5 4"/><circle cx="12" cy="17" r=".9" fill="currentColor"/>',
@@ -1892,7 +1916,7 @@ function drawOverlay(x, m) {
       x.restore();
     }
     if (layerActive(L, t) && L.type !== 'adjust' && !S.pen && S.anchorEdit) drawAnchorEdit(x, m, L);
-    else if (layerActive(L, t) && L.type !== 'adjust' && !S.pen && !S.brush) {
+    else if (layerActive(L, t) && L.type !== 'adjust' && !S.pen && !S.brush && !S.outline) {
       const g = gizmo(L, m); const hs = mob ? 7 : 4.5;
       x.save(); x.strokeStyle = HCOL; x.lineWidth = 1.5;
       x.beginPath(); g.c.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath(); x.stroke();
@@ -1909,6 +1933,7 @@ function drawOverlay(x, m) {
     if (L.mask.on && (S.maskEdit || S.tab === 'mask') && layerActive(L, t)) drawMaskOverlay(x, m, L);
   }
   if (S.brush) drawBrushPreview(x, m);
+  if (S.outline) drawOutlinePreview(x, m);
   if (S.pen) {
     const pts = S.pen.pts; x.save(); x.strokeStyle = '#ff6fb1'; x.fillStyle = 'rgba(255,111,177,.12)'; x.lineWidth = 2;
     x.beginPath(); pts.forEach((p, i) => { const [a, b] = toScr(m, p[0], p[1]); i ? x.lineTo(a, b) : x.moveTo(a, b); });
@@ -1998,6 +2023,7 @@ view.addEventListener('pointerdown', e => {
   if (S.pick) { const c = pickSample(cx, cy); if (c) endPick(c); else toast('컴포지션 안쪽을 누르세요'); return; }
   if (S.pen) { penClick(cx, cy, m); return; }
   if (S.brush) { drag = { mode: 'brush', pts: [[cx, cy]], t0: performance.now(), last: [sx, sy] }; S.brush.cur = drag.pts; dirtyView = true; return; }
+  if (S.outline) { drag = { mode: 'outline', pts: [[cx, cy]], last: [sx, sy] }; S.outline.cur = drag.pts; dirtyView = true; return; }
   const L = selL(); const hr = mob ? 22 : 9;
   if (S.anchorEdit && L && !L.locked && L.type !== 'adjust' && L.type !== 'audio' && layerActive(L, t)) { drag = { mode: 'anchorEdit', L }; anchorTo(L, cx, cy, m); invalidate(); dirtyInsp = true; return; }
   if (L && S.maskEdit && L.mask.on) {
@@ -2042,7 +2068,7 @@ view.addEventListener('pointermove', e => {
     else if (S.mode === 'pc') { const L = hitLayer(cx, cy); const id = L ? L.id : null; if (id !== S.hover) { S.hover = id; dirtyView = true; } view.style.cursor = L ? 'move' : 'default'; }
     return;
   }
-  if (drag.mode === 'brush') { const ev = e.getCoalescedEvents ? e.getCoalescedEvents() : [e]; (ev.length ? ev : [e]).forEach(q => { const [qx, qy] = stageXY(q); if (Math.hypot(qx - drag.last[0], qy - drag.last[1]) >= 1.5) { drag.last = [qx, qy]; drag.pts.push(toComp(m, qx, qy)); } }); dirtyView = true; return; }
+  if (drag.mode === 'brush' || drag.mode === 'outline') { const ev = e.getCoalescedEvents ? e.getCoalescedEvents() : [e]; (ev.length ? ev : [e]).forEach(q => { const [qx, qy] = stageXY(q); if (Math.hypot(qx - drag.last[0], qy - drag.last[1]) >= 1.5) { drag.last = [qx, qy]; drag.pts.push(toComp(m, qx, qy)); } }); dirtyView = true; return; }
   const L = drag.L;
   switch (drag.mode) {
     case 'pan': if (drag.noop) return; if (Math.hypot(sx - drag.sx, sy - drag.sy) > (S.mode === 'mobile' ? 10 : 4)) drag.tapDesel = false; S.view.px = drag.px + sx - drag.sx; S.view.py = drag.py + sy - drag.sy; dirtyView = true; break;
@@ -2097,6 +2123,7 @@ function endPtr(e) {
   ptrs.delete(e.pointerId);
   if (pinch) { if (ptrs.size < 2) { const was = pinch; pinch = null; if (was.layer) commit(); } return; }
   if (drag) {
+    if (drag.mode === 'outline') { const d = drag; drag = null; outlineStroke(d); return; }
     if (drag.mode === 'brush') { const d = drag; d.dt = performance.now() - d.t0; drag = null; brushStroke(d); updateHud(); return; }
     if (drag.mode === 'pan' && drag.tapDesel) select(null);
     if (['move', 'rot', 'scale', 'anchor', 'anchorEdit', 'mask'].includes(drag.mode) && (drag.mode !== 'move' || drag.moved)) commit();
@@ -2236,6 +2263,7 @@ function updateHud() {
   if (S.pick) {
     hud.append(...[h('span', { class: 'chip modebadge' }, '스포이드'), h('span', { class: 'chip pickchip' }, h('i', { id: 'pickSw' }), h('span', { id: 'pickHex' }, '화면에서 색을 누르세요')),
       window.EyeDropper && S.mode === 'pc' ? h('button', { class: 'chip', onclick: screenPick }, '화면 밖 색 고르기') : null, h('button', { class: 'chip', onclick: () => endPick(null) }, '취소')].filter(Boolean));
+  } else if (S.outline) { outlineHud(hud);
   } else if (S.brush) { brushHud(hud);
   } else if (S.pen) {
     hud.append(h('span', { class: 'chip modebadge' }, S.pen.target === 'mask' ? '마스크 그리기' : '펜 그리기'),
@@ -3093,7 +3121,7 @@ function transformPanel(L) {
       h('span', { class: 'hint', style: 'margin:0' }, '왼쪽 칸을 누르면 그 위치로 바로 옮겨져요'))),
     numRow(L, 'ax', { onSet: v => setAnchor(L, v, pv(L.p.ay, S.time)) }), numRow(L, 'ay', { onSet: v => setAnchor(L, pv(L.p.ax, S.time), v) })));
   out.push(sec('고급 변형', numRow(L, 'skx'), numRow(L, 'sky')));
-  out.push(sec('타이밍', ...timingRows(L)));
+  out.push(sec('타이밍', ...timingRows(L))); const trs = transitionRows(L); if (trs) out.push(trs);
   const parents = [['', '없음'], ...S.proj.layers.filter(o => o !== L && o.type !== 'audio' && !isDescendant(o, L)).map(o => [o.id, o.name])];
   out.push(sec('레이어', isGroup(L) ? null : selRow('블렌드', L.blend, BLENDS, v => { L.blend = v; commit(); invalidate(); }),
     selRow('부모', L.parent || '', parents, v => setParent(L, v || null)),
@@ -3189,7 +3217,8 @@ function stylePanel(L) {
     out.push(sec('미디어', h('p', { class: 'hint', style: 'color:var(--fg2)' }, M ? `${M.name}${M.w ? ` · ${M.w}×${M.h}` : ''}${M.dur ? ` · ${M.dur.toFixed(1)}초` : ''}` : '미디어를 찾을 수 없어요. 다시 불러와 주세요.'),
       h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('image') + '미디어 교체', onclick: () => { S.replaceTarget = L.id; (L.type === 'audio' ? $('#audioIn') : $('#replIn')).click(); } }),
         L.type !== 'audio' ? h('button', { class: 'btn sm', html: icon('fit') + '화면 맞춤', onclick: () => fitLayer(L, false) }) : null,
-        L.type !== 'audio' ? h('button', { class: 'btn sm', html: icon('fit') + '꽉 채우기', onclick: () => fitLayer(L, true) }) : null)));
+        L.type !== 'audio' ? h('button', { class: 'btn sm', html: icon('fit') + '꽉 채우기', onclick: () => fitLayer(L, true) }) : null,
+        L.type !== 'audio' ? h('button', { class: 'btn sm', html: icon('scissors') + '테두리 따기', onclick: () => startOutline(L) }) : null)));
     if (L.type !== 'image') { out.push(sec('재생 속도', selRow('재생 속도', String(L.speed || 1), [['0.25', '0.25×'], ['0.5', '0.5×'], ['1', '1×'], ['1.5', '1.5×'], ['2', '2×'], ['4', '4×']], v => { L.speed = parseFloat(v); commit(); invalidate(); }))); out.push(soundSection(L, () => refreshInspector())); }
     if (L.type !== 'audio') out.push(sec('빠른 보정', h('p', { class: 'hint' }, '사진·영상 색감은 이펙트 탭의 색 보정, 크로마키, 듀오톤 등으로 바꿀 수 있어요.'), h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('fx') + '색 보정 추가', onclick: () => addFx(L, 'color') }), h('button', { class: 'btn sm', html: icon('drop') + '크로마키 (배경색 지우기)', onclick: () => chromaQuick(L) }))));
   }
@@ -3231,6 +3260,7 @@ function maskPanel(L) {
   const mk = L.mask, rf = () => { commit(); invalidate(); refreshInspector(); }; const out = [];
   if (L.type === 'audio') return [h('div', { class: 'empty' }, '오디오 레이어에는 마스크가 없어요.')];
   if (isGroup(L)) return [h('div', { class: 'empty' }, '그룹에는 마스크를 쓸 수 없어요. 안의 레이어마다 마스크를 넣거나 트랙 매트를 쓰세요.')];
+  if (L.type === 'image' || L.type === 'video') out.push(sec('테두리 따기', h('div', { class: 'hint', style: 'margin-bottom:8px' }, '물체 둘레를 손가락이나 마우스로 대충 한 바퀴 그으면, 배경을 지우고 물체 테두리에 맞춰 잘라 줘요.'), h('button', { class: 'btn primary', style: 'width:100%', html: icon('scissors') + '테두리 따기 (자동)', onclick: () => startOutline(L) })));
   const g = [togRow('마스크 사용', mk.on, v => { mk.on = v; if (v && mk.kind !== 'path' && !mk.inited) { const b = layerBounds(L, S.time); mk.p.mw.v = Math.round(b.w * .6); mk.p.mh.v = Math.round(b.h * .6); mk.p.mx.v = Math.round(b.x + b.w / 2); mk.p.my.v = Math.round(b.y + b.h / 2); mk.inited = true; } if (!v) S.maskEdit = false; updateHud(); rf(); }, '마스크 안쪽만 보이게 합니다')];
   if (mk.on) {
     g.push(pillsRow('모양', [{ v: 'rect', l: '사각형', ic: 'rect' }, { v: 'ellipse', l: '원', ic: 'ellipse' }, { v: 'path', l: '자유형', ic: 'pen' }], mk.kind, v => { mk.kind = v; if (v === 'path' && mk.pts.length < 3) { startPen('mask'); } rf(); }));
@@ -3412,8 +3442,14 @@ function splitLayer(L) {
   const fps = S.proj.fps, t = Math.round(S.time * fps) / fps;
   if (t <= L.start + 1e-6 || t >= L.end - 1e-6) { toast('플레이헤드가 레이어 구간 안에 있어야 분할할 수 있어요'); return; }
   const B_ = deep(L); B_.id = uid(); B_.name = L.name + ' (2)'; B_.fx.forEach(f => f.id = uid()); B_.start = t;
+  // entrances stay with the first part, exits move to the second part; an existing transition follows its side
+  const isIn = f => IN_FX.includes(f.type) || (f.tr && f.tr.id.endsWith('>' + L.id)), isOut = f => OUT_FX.includes(f.type) || (f.tr && f.tr.id.startsWith(L.id + '>'));
+  B_.fx = B_.fx.filter(f => !isIn(f)).map(f => { if (f.tr) f.tr.id = f.tr.id.replace(L.id + '>', B_.id + '>'); if (f.type === 'fadeinout') { f.type = 'fadeout'; } return f; });
+  S.proj.layers.forEach(o => { if (o !== L) o.fx.forEach(f => { if (f.tr && f.tr.id === L.id + '>' + o.id) f.tr.id = B_.id + '>' + o.id; }); });
+  L.fx = L.fx.filter(f => !isOut(f)).map(f => { if (f.type === 'fadeinout') f.type = 'fadein'; return f; });
   if (B_.type === 'video' || B_.type === 'audio') B_.trimIn = (L.trimIn || 0) + (t - L.start) * (L.speed || 1);
-  L.end = t; const Ls = S.proj.layers; Ls.splice(Ls.indexOf(L) + 1, 0, B_); select(B_.id); commit(); invalidate(); toast('분할했어요');
+  L.end = t; const Ls = S.proj.layers; Ls.splice(Ls.indexOf(L) + 1, 0, B_); select(B_.id); commit(); invalidate(); dirtyTL = true;
+  toast(`${fmtTC(t, fps)}에서 둘로 나눴어요`, { l: '사이에 전환 넣기', fn: () => transitionSheet(L, B_) });
 }
 function moveLayer(L, dir) {
   const g = groupOf(L), disp = [...S.proj.layers].reverse(), sib = disp.filter(o => groupOf(o) === g && o !== g), i = sib.indexOf(L), j = i - dir; if (j < 0 || j >= sib.length) return;
@@ -3869,11 +3905,11 @@ function cloudErr(err) {
   else if (c === 'resource-exhausted') cloudWarn('quota', '오늘은 계정 저장 한도를 넘었어요. 이 기기에는 저장돼 있어요');
   else cloudWarn('net', '계정에 저장하지 못했어요. 인터넷 연결을 확인해 주세요 (이 기기에는 저장됨)');
 }
-/* account saves are batched (20s after the last change, at most once a minute while editing; right away on switching projects or leaving the page) to stay well inside the free daily write quota */
-function cloudQueue(id, js, e) { const now = Date.now(); if (!LIB.pending.size) LIB.firstPend = now; LIB.pending.set(id, { js, e: { ...e } }); clearTimeout(LIB.cloudT); LIB.cloudT = setTimeout(cloudFlush, Math.max(0, Math.min(20000, LIB.firstPend + 60000 - now))); }
+/* account saves: every 10 minutes while editing, when the save button is pressed, on switching projects, and when the page is hidden or closed — to stay far inside the free daily write quota. The device copy is saved every second. */
+function cloudQueue(id, js, e) { LIB.pending.set(id, { js, e: { ...e } }); if (!LIB.iv) LIB.iv = setInterval(() => { if (LIB.pending.size) cloudFlush(); }, 10 * 60 * 1000); updSaveBtn(); }
 async function cloudSizes() { if (!LIB.sizes) { LIB.sizes = new Map(); await cloudList(); } return LIB.sizes; }
 async function cloudFlush() {
-  if (!LIB.pending.size || !AUTH.user) return; const jobs = [...LIB.pending.entries()]; LIB.pending.clear();
+  if (!LIB.pending.size || !AUTH.user) { updSaveBtn(); return; } const jobs = [...LIB.pending.entries()]; LIB.pending.clear();
   const fs = await fsInit(); if (!fs) return; const sizes = await cloudSizes();
   for (const [id, { js, e }] of jobs) {
     const ix = await libIndex(), le = ix.find(q => q.id === id) || {};
@@ -3886,8 +3922,9 @@ async function cloudFlush() {
       const u = userRef(); await u.collection('projects').doc(id).set(z ? { z: firebase.firestore.Blob.fromUint8Array(z), updated: e.updated } : { data: js, updated: e.updated });
       await u.collection('meta').doc(id).set(meta); sizes.set(id, size);
       if (le.id) { le.cloud = e.updated; le.cloudBytes = size; le.cloudSkip = null; libPutIndex(); }
-    } catch (err) { cloudErr(err); }
+    } catch (err) { cloudErr(err); LIB.pending.set(id, { js, e }); }
   }
+  LIB.lastCloud = Date.now(); updSaveBtn();
 }
 async function cloudList() {
   const fs = await fsInit(); if (!fs) return null;
@@ -3896,6 +3933,14 @@ async function cloudList() {
 async function cloudLoad(id) { const fs = await fsInit(); if (!fs) return null; try { const d = await userRef().collection('projects').doc(id).get(); if (!d.exists) return null; const v = d.data(); return v.z ? await gunzipStr(v.z.toUint8Array()) : v.data; } catch (err) { cloudErr(err); return null; } }
 async function cloudDelete(id) { const fs = await fsInit(); if (!fs) return; try { const u = userRef(); await u.collection('projects').doc(id).delete(); await u.collection('meta').doc(id).delete(); if (LIB.sizes) LIB.sizes.delete(id); } catch (err) { cloudErr(err); } }
 document.addEventListener('visibilitychange', () => { if (document.hidden) { if (saveT) saveNow(); cloudFlush(); } });
+window.addEventListener('pagehide', () => { if (saveT) saveNow(); cloudFlush(); });
+function updSaveBtn() { const b = $('#bSave'); if (!b) return; const pend = !!(AUTH.user && LIB.pending.size); b.classList.toggle('dirty', pend); b.title = pend ? '저장 (Ctrl+S) · 계정에 아직 안 올라간 변경이 있어요 (10분마다 자동으로 올라가요)' : '저장 (Ctrl+S)'; }
+async function saveButton() {
+  const b = $('#bSave'); b.classList.add('busy'); await saveNow();
+  if (AUTH.user) { await cloudFlush(); toast(LIB.pending.size ? '이 기기에 저장했어요. 계정에는 올리지 못했어요' : '저장했어요. 계정에도 올라갔어요'); }
+  else toast('이 기기에 저장했어요', { l: '.json 파일로도 저장', fn: saveProjectFile });
+  b.classList.remove('busy'); b.classList.add('saved'); setTimeout(() => b.classList.remove('saved'), 1400); updSaveBtn();
+}
 /* ---------- opening, copying, deleting ---------- */
 async function loadProjectMedia(pr) {
   let missing = 0;
@@ -3950,7 +3995,9 @@ async function libSheet() {
     : h('div', { class: 'libwhere' }, h('span', { html: icon('folder') + '<span>게스트: 이 컴퓨터(브라우저)에만 저장돼요. 브라우저 데이터를 지우면 함께 사라져요.</span>' }), h('button', { class: 'btn sm', onclick: async () => { const ok = await googleLogin(); if (ok) { closeSheet(); setTimeout(libSheet, 300); } } }, '구글로 로그인'));
   const tools = h('div', { class: 'btnrow libtools' },
     h('button', { class: 'btn primary sm', html: icon('plus') + '새 프로젝트', onclick: async () => { closeSheet(); await saveNow(); startProject(newProject({ name: nextProjName() })); toast('새 프로젝트를 만들었어요'); } }),
-    h('button', { class: 'btn sm', html: icon('folder') + '파일에서 열기 (.json)', onclick: () => { closeSheet(); $('#projIn').click(); } }));
+    h('button', { class: 'btn sm', html: icon('folder') + '파일에서 열기 (.json)', onclick: () => { closeSheet(); $('#projIn').click(); } }),
+    h('button', { class: 'btn sm', html: icon('send') + '다른 기기로 보내기', onclick: () => { closeSheet(); sendSheet(); } }),
+    h('button', { class: 'btn sm', html: icon('receive') + '다른 기기에서 받기', onclick: () => { closeSheet(); recvSheet(); } }));
   const usage = h('div', { class: 'libusage' });
   const warn = h('div', { class: 'libwarn' }, h('div', { class: 'lw-t' }, h('b', null, '⚠ 꼭 백업하세요'), h('span', null, AUTH.user ? '기기에 있는 사진이나 동영상은 다른 기기에서 불러와지지 않습니다. 정확한 저장을 원하시면 프로젝트 저장(.json)으로 해 주십시오. 브라우저 데이터(쿠키 및 사이트 데이터)를 지우면 이 기기의 사진·영상·소리도 사라져요.' : '브라우저 데이터(쿠키 및 사이트 데이터)를 지우면 이 기기에 저장된 프로젝트와 사진·영상·소리가 모두 사라져요. 중요한 작업은 ‘프로젝트 파일로 저장 (.json)’으로 꼭 내려받아 두세요. 이 파일에는 사진·영상까지 모두 들어가요.')), h('button', { class: 'btn sm', html: icon('export') + '지금 프로젝트 파일로 저장 (.json)', onclick: () => saveProjectFile() }));
   body.append(where, warn, usage, tools, info, grid);
@@ -4144,7 +4191,7 @@ const ck = on => on ? '✓ ' : '';
 function modeItems() { return [{ cap: '화면 모드' }, ...[['auto', '자동 감지'], ['pc', 'PC 모드'], ['mobile', '모바일 모드']].map(([m, l]) => ({ l: ck(S.modePref === m) + l, ic: m === 'mobile' ? 'video' : 'grid', fn: () => setModePref(m) }))]; }
 function menuItems(kind) {
   if (kind === 'file') return [
-    { l: '내 프로젝트…', ic: 'folder', k: 'Ctrl+O', fn: libSheet }, { l: '새 프로젝트', ic: 'newdoc', fn: askNew }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample },
+    { l: '내 프로젝트…', ic: 'folder', k: 'Ctrl+O', fn: libSheet }, { l: '새 프로젝트', ic: 'newdoc', fn: askNew }, { l: '다른 기기로 보내기…', ic: 'send', fn: sendSheet }, { l: '다른 기기에서 받기…', ic: 'receive', fn: () => recvSheet() }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample },
     { l: '프로젝트 파일 열기 (.json)', ic: 'folder', fn: () => $('#projIn').click() }, { l: '프로젝트 파일로 저장', ic: 'export', fn: saveProjectFile }, '-',
     { l: '사진·동영상 가져오기', ic: 'image', fn: () => $('#fileIn').click() }, { l: '오디오 가져오기', ic: 'music', fn: () => $('#audioIn').click() }, { l: '글꼴 파일 가져오기', ic: 'font', fn: () => $('#fontIn').click() }, '-',
     { l: '내보내기', ic: 'export', k: 'Ctrl+E', fn: exportSheet }, { l: '프로젝트 설정', ic: 'settings', fn: projectSheet }];
@@ -4176,7 +4223,7 @@ function openMenu(b) {
 function mainMenu(e) {
   const r = $('#bMenu').getBoundingClientRect();
   openCtx(r.right - 220, r.bottom + 6, [
-    { l: '내 프로젝트', ic: 'folder', fn: libSheet }, { l: '새 프로젝트', ic: 'newdoc', fn: askNew }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample },
+    { l: '내 프로젝트', ic: 'folder', fn: libSheet }, { l: '새 프로젝트', ic: 'newdoc', fn: askNew }, { l: '다른 기기로 보내기', ic: 'send', fn: sendSheet }, { l: '다른 기기에서 받기', ic: 'receive', fn: () => recvSheet() }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample },
     { l: '프로젝트 파일 열기 (.json)', ic: 'folder', fn: () => $('#projIn').click() },
     { l: '프로젝트 파일로 저장', ic: 'export', fn: saveProjectFile },
     '-', { l: '사진·동영상 가져오기', ic: 'image', fn: () => $('#fileIn').click() }, { l: '오디오 가져오기', ic: 'music', fn: () => $('#audioIn').click() }, { l: '모양 연결 (사진 모핑)…', ic: 'morph', fn: morphSheet },
@@ -4707,7 +4754,7 @@ document.addEventListener('keydown', e => {
   if (mod && (k === 'g' || k === 'G')) { e.preventDefault(); if (e.shiftKey) { const G = isGroup(L) ? L : groupOf(L); if (G) ungroup(G); else toast('선택한 레이어가 그룹이 아니에요'); } else groupSheet(); return; }
   if (mod && (k === 'c' || k === 'C')) { if (L) { S.layerClip = deep(L); toast('레이어를 복사했어요'); } return; }
   if (mod && (k === 'v' || k === 'V')) { if (S.layerClip) { const C = deep(S.layerClip); C.id = uid(); C.name += ' 복사'; C.fx.forEach(f => f.id = uid()); addLayer(C); } return; }
-  if (mod && (k === 's' || k === 'S')) { e.preventDefault(); saveNow(); toast(AUTH.user ? '저장했어요. 계정에도 곧 올라가요' : '저장했어요 (이 컴퓨터에 자동 저장돼요)'); return; }
+  if (mod && (k === 's' || k === 'S')) { e.preventDefault(); saveButton(); return; }
   if (mod && (k === 'o' || k === 'O')) { e.preventDefault(); libSheet(); return; }
   if (mod && (k === 'e' || k === 'E')) { e.preventDefault(); exportSheet(); return; }
   if (mod) return;
@@ -4718,7 +4765,7 @@ document.addEventListener('keydown', e => {
     case 'Home': setTime(0); followPlayhead(); break;
     case 'End': setTime(S.proj.dur); followPlayhead(); break;
     case 'Delete': case 'Backspace': e.preventDefault(); deleteSelection(); break;
-    case 'Escape': if (S.brush) endBrush(); else if (S.pick) endPick(null); else if (S.pen) { S.pen = null; updateHud(); dirtyView = true; } else if (S.anchorEdit) setAnchorEdit(false); else if (S.maskEdit) { S.maskEdit = false; updateHud(); refreshInspector(); dirtyView = true; } else if (S.selK.length) { S.selK = []; dirtyTL = dirtyGraph = true; } else if (S.dock === 'graph') setDock('timeline'); else select(null); break;
+    case 'Escape': if (S.outline) endOutline(); else if (S.brush) endBrush(); else if (S.pick) endPick(null); else if (S.pen) { S.pen = null; updateHud(); dirtyView = true; } else if (S.anchorEdit) setAnchorEdit(false); else if (S.maskEdit) { S.maskEdit = false; updateHud(); refreshInspector(); dirtyView = true; } else if (S.selK.length) { S.selK = []; dirtyTL = dirtyGraph = true; } else if (S.dock === 'graph') setDock('timeline'); else select(null); break;
     case 'Enter': if (S.pen) finishPen(); else if (S.brush) endBrush(); break;
     case 'k': case 'K': addTransformKeys(); break;
     case '[': if (L && S.time < L.end) { if (L.type === 'video' || L.type === 'audio') L.trimIn = Math.max(0, (L.trimIn || 0) + (S.time - L.start) * (L.speed || 1)); L.start = S.time; commit(); invalidate(); updateCtrls(); } break;
@@ -4773,7 +4820,7 @@ function bind() {
   $('#bAuto').onclick = toggleAutoKey;
   $('#bSplit').onclick = () => { const L = selL(); if (L) splitLayer(L); else toast('분할할 레이어를 선택하세요'); };
   $('#bDel').onclick = deleteSelection; bindPlayer();
-  $('#bLib').onclick = libSheet; $('#bAcct').onclick = acctMenu; updAcct(); if (authMode() === 'google') authInit(); $('#bExport').onclick = exportSheet; $('#bMenu').onclick = mainMenu; $('#projName').onclick = projectSheet;
+  $('#bLib').onclick = libSheet; $('#bSave').onclick = saveButton; $('#bAcct').onclick = acctMenu; updAcct(); if (authMode() === 'google') authInit(); $('#bExport').onclick = exportSheet; $('#bMenu').onclick = mainMenu; $('#projName').onclick = projectSheet;
   $('#bFit').onclick = fitView; $('#qualSel').onchange = e => { S.quality = e.target.value; invalidate(true); };
   $('#bSnap').classList.toggle('on', S.snap); $('#bSnap').onclick = toggleSnap; $('#bGuides').onclick = toggleGuides;
   $$('#menus [data-menu]').forEach(b => { b.onclick = () => openMenu(b); b.onpointerenter = () => { if (ctxEl && ctxEl._owner && ctxEl._owner !== b) { closeCtx(); openMenu(b); } }; });
@@ -5022,8 +5069,280 @@ function askAuthThen(next) {
     h('p', { class: 'authlead' }, '어떻게 시작할까요?'),
     gBtn,
     h('button', { class: 'authbtn guest', onclick: () => go('guest') }, '게스트로 사용하기'),
+    h('button', { class: 'authlink', onclick: () => { go('guest'); setTimeout(() => recvSheet(), 120); } }, '다른 기기에서 보낸 작업을 번호로 받기'),
     h('p', { class: 'hint' }, '게스트는 로그인 없이 바로 쓸 수 있고, 작업은 이 브라우저에 저장돼요. 로그인은 나중에 오른쪽 위 계정 버튼에서 언제든 할 수 있어요.'));
   const close = openSheet('트위니 모션 시작하기', body, { narrow: true, modal: true, onClose: () => go('guest') });
+}
+/* ================= OUTLINE CUT-OUT (테두리 따기): rough loop → snapped to the real edge → path mask ================= */
+const OUTL = { range: 32, tol: 50 };
+function startOutline(L) {
+  L = L || selL();
+  if (!L || (L.type !== 'image' && L.type !== 'video')) { toast('테두리를 딸 사진이나 영상 레이어를 먼저 선택하세요'); return; }
+  const M = MEDIA.get(L.media); if (!M || !M.ready || !M.el) { toast('사진이 아직 불러와지지 않았어요'); return; }
+  if (S.brush) endBrush(); if (S.playing) pause(); S.pen = null; S.anchorEdit = false; S.maskEdit = false; closeCtx();
+  S.outline = { lid: L.id, cur: null };
+  if (S.mode === 'mobile') { $('#inspector').classList.remove('open'); $$('#mobilebar button').forEach(b => b.classList.remove('on')); }
+  updateHud(); dirtyView = true;
+}
+function endOutline() { S.outline = null; updateHud(); dirtyView = true; }
+function outlineHud(hud) {
+  const v = h('span', { class: 'mono' }, String(OUTL.tol));
+  hud.append(h('span', { class: 'chip modebadge' }, '테두리 따기'),
+    h('span', { class: 'chip hint2' }, S.mode === 'mobile' ? '물체 둘레를 손가락으로 대충 한 바퀴 그으세요' : '물체 둘레를 넉넉하게 한 바퀴 그으세요. 배경은 지우고 물체만 남겨요'),
+    h('span', { class: 'chip', title: '높이면 비슷한 색도 배경으로 보고 더 많이 지워요. 물체까지 지워지면 낮추세요' }, '배경 지우는 정도', h('input', { type: 'range', class: 'hudrange', min: 0, max: 100, step: 1, value: OUTL.tol, oninput: e => { OUTL.tol = +e.target.value; v.textContent = OUTL.tol; } }), v),
+    h('button', { class: 'chip', onclick: endOutline }, '취소'));
+}
+function drawOutlinePreview(x, m) {
+  const c = S.outline && S.outline.cur; if (!c || c.length < 2) return;
+  x.save(); x.lineWidth = 2; x.setLineDash([6, 5]); x.strokeStyle = '#ffbf47'; x.beginPath();
+  c.forEach((p, i) => { const [a, b] = toScr(m, p[0], p[1]); i ? x.lineTo(a, b) : x.moveTo(a, b); }); x.stroke(); x.restore();
+}
+function edgeMap(src, iw, ih) {
+  const k = Math.min(1, 1100 / Math.max(iw, ih)), W = Math.max(8, Math.round(iw * k)), H = Math.max(8, Math.round(ih * k));
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d', { willReadFrequently: true });
+  x.drawImage(src, 0, 0, W, H); const d = x.getImageData(0, 0, W, H).data, n = W * H, g = new Float32Array(n), b = new Float32Array(n), G = new Float32Array(n);
+  for (let i = 0; i < n; i++) { const a = d[i * 4 + 3] / 255; g[i] = (d[i * 4] * .299 + d[i * 4 + 1] * .587 + d[i * 4 + 2] * .114) * a + 255 * (1 - a) * 0 + a * 0; if (a < .5) g[i] = -80; }
+  for (let y = 1; y < H - 1; y++) for (let xx = 1; xx < W - 1; xx++) { let s = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) s += g[(y + dy) * W + xx + dx]; b[y * W + xx] = s / 9; }
+  let mx = 1e-6;
+  for (let y = 1; y < H - 1; y++) for (let xx = 1; xx < W - 1; xx++) {
+    const i = y * W + xx, gx = b[i - W + 1] + 2 * b[i + 1] + b[i + W + 1] - b[i - W - 1] - 2 * b[i - 1] - b[i + W - 1], gy = b[i + W - 1] + 2 * b[i + W] + b[i + W + 1] - b[i - W - 1] - 2 * b[i - W] - b[i - W + 1];
+    const v = Math.hypot(gx, gy); G[i] = v; if (v > mx) mx = v;
+  }
+  for (let i = 0; i < n; i++) G[i] = Math.sqrt(G[i] / mx);
+  return { G, W, H, k };
+}
+/* region cut: the background is whatever touches the rough loop and flows inward through similar colours without crossing an edge;
+   what is left inside the loop is the object. Works well on photos where the loop is drawn generously. */
+function regionCut(src, iw, ih, loop, tol) {
+  const k = Math.min(1, 640 / Math.max(iw, ih)), W = Math.max(8, Math.round(iw * k)), H = Math.max(8, Math.round(ih * k)), n = W * H;
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d', { willReadFrequently: true });
+  x.drawImage(src, 0, 0, W, H); const d = x.getImageData(0, 0, W, H).data;
+  x.clearRect(0, 0, W, H); x.fillStyle = '#fff'; x.beginPath(); loop.forEach(([px, py], i) => i ? x.lineTo(px * k, py * k) : x.moveTo(px * k, py * k)); x.closePath(); x.fill();
+  const ins = x.getImageData(0, 0, W, H).data, inside = new Uint8Array(n); let area = 0; for (let i = 0; i < n; i++) if (ins[i * 4 + 3] > 127) { inside[i] = 1; area++; }
+  if (area < 60) return null;
+  const tl = 10 + tol * .3, tg = 30 + tol * .9, bg = new Uint8Array(n), org = new Int32Array(n).fill(-1), q = new Int32Array(n); let qh = 0, qt = 0;
+  const cd = (a, b) => { const dr = d[a * 4] - d[b * 4], dg = d[a * 4 + 1] - d[b * 4 + 1], db = d[a * 4 + 2] - d[b * 4 + 2]; return Math.sqrt(dr * dr + dg * dg + db * db) + Math.abs(d[a * 4 + 3] - d[b * 4 + 3]); };
+  // what the loop runs through: long stretches / common colours are background, short stretches of a different colour are the object poking out
+  const ring = resampleClosed(loop.map(([px, py]) => [px * k, py * k]), 240) || [], cx = ring.reduce((a, p) => a + p[0], 0) / Math.max(1, ring.length), cy = ring.reduce((a, p) => a + p[1], 0) / Math.max(1, ring.length);
+  const col = ring.map(([px, py]) => { const l = Math.hypot(cx - px, cy - py) || 1, sx = clamp(Math.round(px + (cx - px) / l * 2), 0, W - 1), sy = clamp(Math.round(py + (cy - py) / l * 2), 0, H - 1), o = (sy * W + sx) * 4; return [d[o], d[o + 1], d[o + 2], d[o + 3]]; });
+  const cdc = (a, b) => Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2) + Math.abs(a[3] - b[3]);
+  const N = ring.length, runOf = new Int32Array(N), runs = [], locC = [];
+  if (N) {
+    let st = 0; for (let i = 1; i < N; i++) if (cdc(col[i], col[i - 1]) > tg * .6) st = i; // find a break so runs don't wrap
+    for (let j = 0; j < N; j++) { const i = (st + j) % N; if (!runs.length || cdc(col[i], col[(i - 1 + N) % N]) > tg * .6) runs.push({ n: 0, c: [0, 0, 0, 0] }); const r = runs[runs.length - 1]; r.n++; for (let z = 0; z < 4; z++) r.c[z] += col[i][z]; runOf[i] = runs.length - 1; }
+    runs.forEach(r => { r.c = r.c.map(v => v / r.n); });
+    runs.forEach(r => { const grp = runs.reduce((a, o) => a + (cdc(o.c, r.c) < tg * .7 ? o.n : 0), 0); r.bg = r.n >= N * .12 || grp >= N * .2; });
+    if (runs.reduce((a, r) => a + (r.bg ? 0 : r.n), 0) > N * .5) runs.forEach(r => { r.bg = true; });
+    // local, de-noised reference colour per sample (stays within its run, so gradients are followed)
+    for (let j = 0; j < N; j++) { const c = [0, 0, 0, 0]; let m = 0; for (let o = -5; o <= 5; o++) { const t = (j + o + N) % N; if (runOf[t] !== runOf[j]) continue; for (let z = 0; z < 4; z++) c[z] += col[t][z]; m++; } locC[j] = c.map(v => v / m); }
+  }
+  for (let i = 0; i < n; i++) {
+    if (!inside[i]) continue; const X = i % W, Y = (i / W) | 0;
+    if (!(X === 0 || Y === 0 || X === W - 1 || Y === H - 1 || !inside[i - 1] || !inside[i + 1] || !inside[i - W] || !inside[i + W])) continue;
+    let ref = -1; if (N) { let bj = 0, bd = 1e18; for (let j = 0; j < N; j++) { const dd = (ring[j][0] - X) ** 2 + (ring[j][1] - Y) ** 2; if (dd < bd) { bd = dd; bj = j; } } if (!runs[runOf[bj]].bg) continue; ref = bj; }
+    bg[i] = 1; org[i] = ref; q[qt++] = i;
+  }
+  while (qh < qt) {
+    const c = q[qh++], X = c % W, Y = (c / W) | 0;
+    const tryN = nb => { if (!inside[nb] || bg[nb]) return; if (cd(nb, c) < tl && (org[c] < 0 || cdc([d[nb * 4], d[nb * 4 + 1], d[nb * 4 + 2], d[nb * 4 + 3]], locC[org[c]]) < tg)) { bg[nb] = 1; org[nb] = org[c]; q[qt++] = nb; } };
+    if (X > 0) tryN(c - 1); if (X < W - 1) tryN(c + 1); if (Y > 0) tryN(c - W); if (Y < H - 1) tryN(c + W);
+  }
+  const fg = new Uint8Array(n); let fa = 0; for (let i = 0; i < n; i++) if (inside[i] && !bg[i]) { fg[i] = 1; fa++; }
+  if (fa < area * .02 || fa > area * .97) return null;
+  // open (erode, then grow back) to drop hairlines left along soft colour seams
+  const morph = (src0, grow) => { const o = new Uint8Array(n); for (let y = 0; y < H; y++) for (let X = 0; X < W; X++) { let v = grow ? 0 : 1; for (let dy = -1; dy <= 1 && v === (grow ? 0 : 1); dy++) for (let dx = -1; dx <= 1; dx++) { const yy = y + dy, xx = X + dx; const s0 = yy < 0 || yy >= H || xx < 0 || xx >= W ? 0 : src0[yy * W + xx]; if (grow ? s0 : !s0) { v = grow ? 1 : 0; break; } } o[y * W + X] = v; } return o; };
+  { let m2 = morph(morph(fg, false), false); m2 = morph(morph(m2, true), true); for (let i = 0; i < n; i++) fg[i] = m2[i] & inside[i]; }
+  // largest 4-connected piece
+  const lab = new Int32Array(n); let bestId = 0, bestSz = 0;
+  for (let i = 0, id = 0; i < n; i++) { if (!fg[i] || lab[i]) continue; id++; let h0 = 0, t0 = 0, sz = 0; q[t0++] = i; lab[i] = id; while (h0 < t0) { const c = q[h0++]; sz++; const X = c % W, Y = (c / W) | 0; const go = nb => { if (fg[nb] && !lab[nb]) { lab[nb] = id; q[t0++] = nb; } }; if (X > 0) go(c - 1); if (X < W - 1) go(c + 1); if (Y > 0) go(c - W); if (Y < H - 1) go(c + W); } if (sz > bestSz) { bestSz = sz; bestId = id; } }
+  if (bestSz < area * .02) return null;
+  const W2 = W + 2, H2 = H + 2, m = new Uint8Array(W2 * H2); for (let i = 0; i < n; i++) if (lab[i] === bestId) m[((i / W) | 0) * W2 + W2 + (i % W) + 1] = 1;
+  const raw = mooreTrace(m, W2, H2); if (!raw || raw.length < 8) return null;
+  return smoothClosed(raw.map(([px, py]) => [(px - .5) / k, (py - .5) / k]), raw.length > 60 ? 2 : 1);
+}
+function snapToEdges(pts, E, R) {
+  const { G, W, H } = E; const at = (x, y) => { const xi = Math.round(x), yi = Math.round(y); return xi < 1 || yi < 1 || xi >= W - 1 || yi >= H - 1 ? 0 : G[yi * W + xi]; };
+  // resample the loop evenly
+  let per = 0; for (let i = 0; i < pts.length; i++) { const p = pts[i], q = pts[(i + 1) % pts.length]; per += Math.hypot(q[0] - p[0], q[1] - p[1]); }
+  const N = Math.round(clamp(per / 3, 40, 700)), P = resampleClosed(pts, N); if (!P) return null;
+  const nrm = P.map((p, i) => { const a = P[(i - 2 + N) % N], c = P[(i + 2) % N]; let tx = c[0] - a[0], ty = c[1] - a[1]; const l = Math.hypot(tx, ty) || 1; return [-ty / l, tx / l]; });
+  const S_ = 2 * R + 1, cost = new Float32Array(N * S_), back = new Int16Array(N * S_), acc = new Float32Array(S_), nxt = new Float32Array(S_), smooth = .06;
+  for (let i = 0; i < N; i++) for (let s = 0; s < S_; s++) { const d = s - R, p = P[i], n = nrm[i]; cost[i * S_ + s] = -at(p[0] + n[0] * d, p[1] + n[1] * d) + .004 * Math.abs(d); }
+  for (let s = 0; s < S_; s++) acc[s] = cost[s];
+  for (let i = 1; i < N; i++) {
+    for (let s = 0; s < S_; s++) { let best = 1e9, bi = s; for (let t = Math.max(0, s - 4); t <= Math.min(S_ - 1, s + 4); t++) { const v = acc[t] + smooth * Math.abs(s - t); if (v < best) { best = v; bi = t; } } nxt[s] = best + cost[i * S_ + s]; back[i * S_ + s] = bi; }
+    acc.set(nxt);
+  }
+  let s = 0, bv = 1e9; for (let t = 0; t < S_; t++) if (acc[t] < bv) { bv = acc[t]; s = t; }
+  const off = new Array(N); for (let i = N - 1; i >= 0; i--) { off[i] = s - R; s = back[i * S_ + s]; }
+  const sm = off.map((_, i) => { let a = 0; for (let j = -2; j <= 2; j++) a += off[(i + j + N) % N]; return a / 5; });
+  return P.map((p, i) => [p[0] + nrm[i][0] * sm[i], p[1] + nrm[i][1] * sm[i]]);
+}
+function outlineStroke(d) {
+  const O = S.outline; if (!O) return; O.cur = null; dirtyView = true;
+  const L = findL(O.lid); if (!L) { endOutline(); return; } const M = MEDIA.get(L.media);
+  if (d.pts.length < 8 || polyLen(d.pts, true) * VM().z < 60) { toast('물체 둘레를 한 바퀴 크게 그어 주세요'); return; }
+  try {
+    const src = L.type === 'video' ? videoFor(L, M) : M.el, iw = M.w, ih = M.h, E = edgeMap(src, iw, ih);
+    const inv = layerMatrix(L, S.time).inverse(), m = VM();
+    const loc = d.pts.map(([x, y]) => { const q = inv.transformPoint(new DOMPoint(x, y)); return [(q.x + iw / 2) * E.k, (q.y + ih / 2) * E.k]; });
+    const sc = Math.hypot(inv.a, inv.b) * E.k / m.z, R = Math.round(clamp(OUTL.range * sc, 4, 140));
+    const loopImg = loc.map(([x, y]) => [x / E.k, y / E.k]); let cut = regionCut(src, iw, ih, loopImg, OUTL.tol), snapped;
+    if (cut) { const fine = snapToEdges(cut.map(([x, y]) => [x * E.k, y * E.k]), E, Math.max(2, Math.round(4 * E.k))); snapped = fine || cut.map(([x, y]) => [x * E.k, y * E.k]); }
+    else snapped = snapToEdges(loc, E, R);
+    if (!snapped) throw new Error('snap');
+    const pts = rdpSimplify(snapped.concat([snapped[0]]), .6).slice(0, -1).map(([x, y]) => [+(x / E.k - iw / 2).toFixed(1), +(y / E.k - ih / 2).toFixed(1)]);
+    if (pts.length < 3) throw new Error('few');
+    const mk = L.mask; mk.kind = 'path'; mk.pts = pts; mk.on = true; mk.smooth = true; mk.invert = false; if (mk.p.feather.v < 1 && !mk.p.feather.k.length) mk.p.feather.v = 1.5;
+    endOutline(); select(L.id); commit(); invalidate(); refreshInspector();
+    toast('테두리를 땄어요. 바깥이 지워졌어요', { l: '다시 긋기', fn: () => { undo(); startOutline(findL(L.id)); } });
+  } catch (e) { console.warn(e); toast('테두리를 찾지 못했어요. 물체 둘레를 조금 더 가깝게 그어 보세요'); }
+}
+
+/* ================= SEND TO ANOTHER DEVICE (기기끼리 직접, 서버 저장 없음) ================= */
+const XFER = { peer: null, conn: null, CH: 16000 };
+const XPRE = 'tweenymotion-x-';
+async function loadPeer() { if (!window.Peer && !(window.peerjs && window.peerjs.Peer)) await loadScript('https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'); return window.Peer || window.peerjs.Peer; }
+async function loadQR() { if (!window.qrcode) await loadScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'); return window.qrcode; }
+function xferStop() { try { XFER.conn && XFER.conn.close(); } catch (e) { } try { XFER.peer && XFER.peer.destroy(); } catch (e) { } XFER.conn = XFER.peer = null; }
+function xferBar() { const i = h('i'); const el = h('div', { class: 'xbar' }, i); el.set = f => { i.style.width = (clamp(f, 0, 1) * 100).toFixed(1) + '%'; }; return el; }
+async function sendSheet() {
+  await saveNow(); xferStop();
+  const pr = S.proj, files = Object.keys(pr.media || {}).map(id => MEDIA.get(id)).filter(M => M && M.blob), total = files.reduce((a, M) => a + M.blob.size, 0);
+  const codeEl = h('div', { class: 'xcode' }, '······'), qr = h('div', { class: 'xqr' }), st = h('p', { class: 'xst' }, '번호를 만드는 중…'), bar = xferBar(); bar.hidden = true;
+  const body = h('div', { class: 'xfer' },
+    h('p', { class: 'hint', style: 'margin:0' }, '받을 기기에서 tweenymotion.com을 열고 ‘다른 기기에서 받기’에 이 번호를 넣거나 QR 코드를 찍으세요.'),
+    h('div', { class: 'xrow' }, h('div', null, h('div', { class: 'xlab' }, '보내기 번호'), codeEl), qr),
+    h('p', { class: 'hint', style: 'margin:0' }, `보낼 내용: ‘${pr.name}’ · 레이어 ${pr.layers.length}개` + (files.length ? ` · 사진·영상·소리 ${files.length}개 (${fmtBytes(total)})` : '')),
+    st, bar,
+    h('p', { class: 'hint', style: 'margin:0' }, '서버에 저장하지 않고 두 기기를 바로 연결해서 보내요. 다 보낼 때까지 이 창을 닫지 마세요. 회사·학교 같은 일부 네트워크에서는 연결이 안 될 수 있어요.'));
+  const close = openSheet('다른 기기로 보내기', body, { narrow: true, onClose: xferStop });
+  let Peer; try { Peer = await loadPeer(); } catch (e) { st.textContent = '연결 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요'; st.className = 'xst err'; return; }
+  const open = tries => {
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    const peer = new Peer(XPRE + code, { debug: 0 }); XFER.peer = peer;
+    peer.on('open', async () => {
+      codeEl.textContent = code.slice(0, 3) + ' ' + code.slice(3); st.textContent = '받을 기기를 기다리는 중…'; st.className = 'xst';
+      try { const QR = await loadQR(), q = QR(0, 'M'); q.addData('https://tweenymotion.com/#recv=' + code); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) { qr.textContent = ''; }
+    });
+    peer.on('error', e => { if (e && e.type === 'unavailable-id' && tries < 4) { try { peer.destroy(); } catch (x) { } open(tries + 1); return; } st.textContent = '연결에 문제가 생겼어요' + (e && e.type ? ` (${e.type})` : '') + '. 창을 닫았다가 다시 열어 주세요'; st.className = 'xst err'; });
+    peer.on('connection', conn => {
+      if (XFER.conn) { conn.on('open', () => { conn.send({ t: 'busy' }); setTimeout(() => conn.close(), 300); }); return; }
+      XFER.conn = conn; conn.on('open', () => sendProjectTo(conn, st, bar, files, total)); conn.on('close', () => { if (!st.dataset.done) { st.textContent = '연결이 끊어졌어요'; st.className = 'xst err'; } });
+      conn.on('data', m => { if (m && m.t === 'ok') { st.dataset.done = 1; st.textContent = '다 보냈어요! 받은 기기에서 프로젝트가 열렸어요'; st.className = 'xst ok'; bar.set(1); } });
+    });
+  };
+  open(0);
+}
+async function sendProjectTo(conn, st, bar, files, total) {
+  try {
+    const pr = deep(S.proj); delete pr.embedded;
+    st.textContent = '연결됐어요. 보내는 중…'; st.className = 'xst'; bar.hidden = false; bar.set(0);
+    conn.send({ t: 'hello', v: 1, proj: JSON.stringify(pr), files: files.map(M => ({ id: M.id, name: M.name, type: M.type, mime: M.blob.type, size: M.blob.size })) });
+    let sent = 0;
+    for (const M of files) {
+      const buf = await M.blob.arrayBuffer();
+      for (let o = 0; o < buf.byteLength; o += XFER.CH) {
+        while (conn.dataChannel && conn.dataChannel.bufferedAmount > 4 * 1048576) await sleep(25);
+        if (!conn.open) throw new Error('closed');
+        conn.send({ t: 'c', id: M.id, o, d: buf.slice(o, o + XFER.CH) }); sent += Math.min(XFER.CH, buf.byteLength - o);
+        if ((o / XFER.CH) % 16 === 0) { bar.set(total ? sent / total : 1); st.textContent = `보내는 중… ${fmtBytes(sent)} / ${fmtBytes(total)}`; await sleep(0); }
+      }
+    }
+    conn.send({ t: 'done' }); bar.set(1); st.textContent = '거의 다 됐어요. 받는 기기에서 여는 중…';
+  } catch (e) { console.warn(e); st.textContent = '보내다가 끊어졌어요. 다시 시도해 주세요'; st.className = 'xst err'; }
+}
+function recvSheet(prefill) {
+  xferStop();
+  const inp = h('input', { class: 'xin', inputmode: 'numeric', maxlength: 7, placeholder: '000 000', value: prefill ? prefill.slice(0, 3) + ' ' + prefill.slice(3) : '', 'aria-label': '보내기 번호' });
+  const st = h('p', { class: 'xst' }, '보내는 기기 화면에 나온 6자리 번호를 넣으세요.'), bar = xferBar(); bar.hidden = true;
+  const go = h('button', { class: 'btn primary', onclick: () => start() }, '받기');
+  inp.oninput = () => { const v = inp.value.replace(/\D/g, '').slice(0, 6); inp.value = v.length > 3 ? v.slice(0, 3) + ' ' + v.slice(3) : v; if (v.length === 6) start(); };
+  const body = h('div', { class: 'xfer' }, h('div', { class: 'xlab' }, '보내기 번호'), h('div', { class: 'xinrow' }, inp, go), st, bar,
+    h('p', { class: 'hint', style: 'margin:0' }, '받은 작업은 이 기기의 ‘내 프로젝트’에 새 프로젝트로 저장돼요.'));
+  const close = openSheet('다른 기기에서 받기', body, { narrow: true, onClose: xferStop });
+  let busy = false;
+  const fail = msg => { busy = false; st.textContent = msg; st.className = 'xst err'; go.disabled = false; xferStop(); };
+  async function start() {
+    const code = inp.value.replace(/\D/g, ''); if (code.length !== 6) { st.textContent = '번호 6자리를 모두 넣어 주세요'; st.className = 'xst err'; return; }
+    if (busy) return; busy = true; go.disabled = true; st.textContent = '보내는 기기를 찾는 중…'; st.className = 'xst';
+    let Peer; try { Peer = await loadPeer(); } catch (e) { fail('연결 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요'); return; }
+    const peer = new Peer(undefined, { debug: 0 }); XFER.peer = peer; let got = false;
+    const to = setTimeout(() => { if (!got) fail('보내는 기기를 찾지 못했어요. 번호가 맞는지, 보내는 기기의 창이 열려 있는지 확인해 주세요'); }, 20000);
+    peer.on('error', e => { clearTimeout(to); fail(e && e.type === 'peer-unavailable' ? '이 번호의 기기를 찾을 수 없어요. 보내는 기기에서 창이 열려 있는지 확인해 주세요' : '연결에 문제가 생겼어요' + (e && e.type ? ` (${e.type})` : '')); });
+    peer.on('open', () => {
+      const conn = peer.connect(XPRE + code, { reliable: true }); XFER.conn = conn;
+      receiveInto(conn, st, bar, () => { got = true; clearTimeout(to); }, ok => { if (ok) setTimeout(() => close(), 900); else fail('받다가 끊어졌어요. 다시 시도해 주세요'); });
+    });
+  }
+  if (prefill && prefill.length === 6) setTimeout(start, 200);
+}
+function receiveInto(conn, st, bar, onFirst, onEnd) {
+  let meta = null, bufs = {}, got = 0, total = 0, finished = false;
+  conn.on('open', () => { st.textContent = '연결됐어요. 받는 중…'; });
+  conn.on('close', () => { if (!finished) onEnd(false); });
+  conn.on('data', async m => {
+    if (!m || !m.t) return;
+    if (m.t === 'busy') { st.textContent = '보내는 기기가 이미 다른 기기와 연결돼 있어요'; st.className = 'xst err'; return; }
+    if (m.t === 'hello') { onFirst(); meta = m; total = m.files.reduce((a, f) => a + f.size, 0); m.files.forEach(f => bufs[f.id] = new Uint8Array(f.size)); bar.hidden = false; bar.set(total ? 0 : .5); st.textContent = total ? `받는 중… 0 / ${fmtBytes(total)}` : '받는 중…'; return; }
+    if (m.t === 'c' && meta && bufs[m.id]) { const d = new Uint8Array(m.d); bufs[m.id].set(d, m.o); got += d.byteLength; if (Math.random() < .08 || got === total) { bar.set(got / total); st.textContent = `받는 중… ${fmtBytes(got)} / ${fmtBytes(total)}`; } return; }
+    if (m.t === 'done' && meta) {
+      finished = true; st.textContent = '여는 중…'; bar.set(1);
+      try {
+        for (const f of meta.files) { if (MEDIA.get(f.id)) continue; const blob = new Blob([bufs[f.id]], { type: f.mime || '' }); await loadMedia(blob, f.type, f.id, f.name); }
+        const pr = Object.assign(newProject(), JSON.parse(meta.proj)); delete pr.id; pr.name = pr.name || '받은 프로젝트';
+        await saveNow(); const miss = await loadProjectMedia(pr); startProject(pr); fitView(); tlFit(); await saveNow();
+        try { conn.send({ t: 'ok' }); } catch (e) { }
+        st.textContent = '다 받았어요!'; st.className = 'xst ok'; toast(`‘${pr.name}’을 받았어요. 내 프로젝트에도 저장됐어요` + (miss ? ` (못 받은 파일 ${miss}개)` : ''));
+        onEnd(true);
+      } catch (e) { console.warn(e); onEnd(false); }
+    }
+  });
+}
+
+/* ================= TRANSITIONS between two clips that meet (a split, or any back-to-back pair) ================= */
+const TRANS = [
+  { v: 'fade', l: '페이드 (검은 화면)', a: 'fadeout', b: 'fadein' },
+  { v: 'zoom', l: '줌', a: 'zoomout', b: 'zoomin', ap: { to: 180 }, bp: { from: 40 } },
+  { v: 'slide', l: '밀어내기', a: 'slideout', b: 'slidein', ao: { dir: 'left' }, bo: { dir: 'right' }, wide: true },
+  { v: 'wipe', l: '와이프', a: 'wipeout', b: 'wipein', ao: { dir: 'left' }, bo: { dir: 'left' } },
+  { v: 'sweep', l: '스윕 (시계 방향)', a: 'sweepout', b: 'sweepin' },
+  { v: 'blur', l: '흐려지며', a: 'blurout', b: 'blurin' },
+  { v: 'spin', l: '회전', a: 'rotout', b: 'rotin' },
+  { v: 'pop', l: '팝', a: 'popout', b: 'popin' },
+];
+const IN_FX = ['fadein', 'slidein', 'zoomin', 'popin', 'rotin', 'dropin', 'spiralin', 'stretchin', 'flipin', 'blurin', 'pixelin', 'wipein', 'sweepin'];
+const OUT_FX = ['fadeout', 'slideout', 'zoomout', 'popout', 'rotout', 'blurout', 'wipeout', 'sweepout'];
+function cutNeighbors(L) {
+  const fd = frameDur() * .6, Ls = S.proj.layers.filter(o => o !== L && o.type !== 'group' && o.type !== 'audio' && o.type !== 'adjust' && o.parent === L.parent);
+  return { next: Ls.find(o => Math.abs(o.start - L.end) < fd) || null, prev: Ls.find(o => Math.abs(o.end - L.start) < fd) || null };
+}
+const trOf = (A, B) => { const id = A.id + '>' + B.id, f = A.fx.find(q => q.tr && q.tr.id === id); return f ? { kind: f.tr.k, dur: f.tr.d } : null; };
+function setTransition(A, B, kind, dur) {
+  const id = A.id + '>' + B.id; A.fx = A.fx.filter(f => !(f.tr && f.tr.id === id)); B.fx = B.fx.filter(f => !(f.tr && f.tr.id === id));
+  const T = TRANS.find(t => t.v === kind); if (T) {
+    const half = Math.max(frameDur(), dur / 2), mk = (type, p, o) => { const f = makeFx(type); f.p.dur.v = half; Object.entries(p || {}).forEach(([k, v]) => { if (f.p[k]) f.p[k].v = v; }); Object.assign(f.o, o || {}); f.tr = { id, k: kind, d: dur }; f.open = false; return f; };
+    const fa = mk(T.a, T.ap, T.ao), fb = mk(T.b, T.bp, T.bo); if (T.wide) { fa.p.dist.v = S.proj.w; fb.p.dist.v = S.proj.w; fa.o.fade = false; fb.o.fade = false; }
+    A.fx.push(fa); B.fx.push(fb);
+  }
+  commit(); invalidate(); refreshInspector(); dirtyTL = true;
+}
+function transitionSheet(A, B) {
+  if (!A || !B) return; const cur = trOf(A, B); let kind = cur ? cur.kind : 'fade', dur = cur ? cur.dur : .6;
+  const grid = h('div', { class: 'trgrid' }), dv = h('span', { class: 'audv' }, dur.toFixed(1) + '초');
+  const mkBtn = T => h('button', { class: 'trbtn' + (T.v === kind ? ' on' : ''), onclick: e => { kind = T.v; $$('.trbtn', grid).forEach(b => b.classList.remove('on')); e.currentTarget.classList.add('on'); apply(); } }, h('i', { class: 'trico tr-' + T.v }), T.l);
+  TRANS.forEach(T => grid.append(mkBtn(T)));
+  const sl = h('input', { type: 'range', class: 'slider', min: .2, max: 2, step: .1, value: dur, oninput: e => { dur = +e.target.value; dv.textContent = dur.toFixed(1) + '초'; }, onchange: () => apply() });
+  const apply = () => { setTransition(A, B, kind, dur); setTime(Math.max(0, A.end - dur / 2 - .4)); toast('전환을 넣었어요. 재생해서 확인해 보세요'); };
+  const body = h('div', null, h('p', { class: 'hint', style: 'margin-top:0' }, `‘${A.name}’ 이 끝나고 ‘${B.name}’ 이 시작되는 ${fmtTC(A.end, S.proj.fps)} 지점에 넣어요.`), grid,
+    h('div', { class: 'prow', style: 'margin-top:10px' }, h('span', { class: 'kfb none' }), h('div', { class: 'plabel static' }, '전환 길이'), sl, dv));
+  openSheet('화면 전환', body, { narrow: true, foot: close => [h('button', { class: 'btn ghost', onclick: () => { setTransition(A, B, null, 0); close(); toast('전환을 뺐어요'); } }, '전환 없애기'), h('button', { class: 'btn primary', onclick: () => { if (!trOf(A, B)) apply(); close(); setTime(Math.max(0, A.end - dur / 2 - .4)); play(); } }, '적용하고 재생')] });
+}
+function transitionRows(L) {
+  const { next, prev } = cutNeighbors(L), rows = [];
+  if (prev) { const t = trOf(prev, L); rows.push(h('div', { class: 'prow' }, h('span', { class: 'kfb none' }), h('div', { class: 'plabel static', style: 'flex:1;width:auto' }, `앞 클립 ‘${prev.name}’과`, h('div', { class: 'hint', style: 'margin:0' }, t ? `${(TRANS.find(x => x.v === t.kind) || {}).l} · ${t.dur.toFixed(1)}초` : '전환 없음')), h('button', { class: 'btn sm', onclick: () => transitionSheet(prev, L) }, t ? '바꾸기' : '전환 넣기'))); }
+  if (next) { const t = trOf(L, next); rows.push(h('div', { class: 'prow' }, h('span', { class: 'kfb none' }), h('div', { class: 'plabel static', style: 'flex:1;width:auto' }, `뒤 클립 ‘${next.name}’과`, h('div', { class: 'hint', style: 'margin:0' }, t ? `${(TRANS.find(x => x.v === t.kind) || {}).l} · ${t.dur.toFixed(1)}초` : '전환 없음')), h('button', { class: 'btn sm', onclick: () => transitionSheet(L, next) }, t ? '바꾸기' : '전환 넣기'))); }
+  return rows.length ? sec('화면 전환', ...rows) : null;
 }
 /* ================= TUTORIAL ================= */
 const TUT = { on: false, i: 0, lid: null, el: null, timer: 0, n0: 0, okAt: 0, pill: -1, col: null };
@@ -5181,6 +5500,7 @@ async function init() {
   normalizeGroups();
   if (INTRO.open) introLast();
   requestAnimationFrame(loop);
+  const rm = /[#&]recv=(\d{6})/.exec(location.hash || ''); if (rm) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } closeIntro(); if (!authMode()) setAuthMode('guest'); try { localStorage.setItem('tm_tut', '1'); } catch (e) { } setTimeout(() => recvSheet(rm[1]), 300); }
 }
 init();
 </script>
