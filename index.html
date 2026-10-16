@@ -697,7 +697,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
       <h2>업데이트 기록</h2>
       <ul class="log">
-        <li><b>v38</b><span>테두리 따기(대충 그으면 테두리에 맞춰 자동으로 잘라 줌), 다른 기기로 바로 보내기(번호·QR), 분할한 클립 사이 화면 전환 9가지(쉐이크 포함)가 생겼습니다. 계정 저장은 10분마다·저장 버튼·창을 닫을 때 올라갑니다.</span></li>
+        <li><b>v38</b><span>테두리 따기(대충 그으면 테두리에 맞춰 자동으로 잘라 줌), 다른 기기로 바로 보내기(번호·QR), 분할한 클립 사이 화면 전환 9가지(쉐이크 포함), 레이어 여러 개 선택(타임라인 이름 길게 누르기 · PC는 Ctrl+클릭)이 생겼습니다. 계정 저장은 10분마다·저장 버튼·창을 닫을 때 올라갑니다.</span></li>
         <li><b>v37</b><span>스윕 등장·스윕 퇴장 이펙트가 생겼습니다. 모양 연결에서 사진(모양)을 하나만 골라도 무에서 스르륵 생겨나거나 사라지게 만들 수 있습니다.</span></li>
         <li><b>v36</b><span>선택한 레이어는 선택 상자 안 어디를 끌어도 움직입니다. 잠긴 레이어를 누르면 잠겨 있다고 알려 줍니다. 모바일에서 살짝 흔들린 탭도 빈 곳 누르기로 인식해 선택이 풀립니다.</span></li>
         <li><b>v35</b><span>도형과 선은 실제로 그려진 부분을 눌러야 선택되고, 그 주변 빈 곳을 누르면 선택이 풀립니다. 내 프로젝트에 백업 안내와 파일 저장 버튼을 넣었습니다.</span></li>
@@ -1950,6 +1950,7 @@ function drawOverlay(x, m) {
   }
   if (S.brush) drawBrushPreview(x, m);
   if (S.outline) drawOutlinePreview(x, m);
+  drawMsOutlines(x, m);
   if (S.pen) {
     const pts = S.pen.pts; x.save(); x.strokeStyle = '#ff6fb1'; x.fillStyle = 'rgba(255,111,177,.12)'; x.lineWidth = 2;
     x.beginPath(); pts.forEach((p, i) => { const [a, b] = toScr(m, p[0], p[1]); i ? x.lineTo(a, b) : x.moveTo(a, b); });
@@ -2066,6 +2067,13 @@ view.addEventListener('pointerdown', e => {
     if (hit.id === S.sel && now - lastTap < 320 && hit.type === 'group') { const inner = hitLayer(cx, cy, true); if (inner) { groupChain(inner).forEach(G => G.open = true); select(inner.id); dirtyTL = true; lastTap = 0; drag = { mode: 'move', L: inner, start: [cx, cy], x0: pv(inner.p.x, t), y0: pv(inner.p.y, t), pinv: parentInv(inner, t), moved: false }; return; } }
     if (hit.id === S.sel && now - lastTap < 320 && hit.type === 'text') { openTab('style'); setTimeout(() => { const ta = $('#txtContent'); if (ta) { ta.focus(); ta.select(); } }, 60); }
     lastTap = now;
+    if (MS.on || ((e.ctrlKey || e.metaKey) && !mob)) { // 여러 개 선택: 누르면 체크, 끌면 체크한 것 모두 이동
+      const was = MS.on && MS.ids.has(hit.id);
+      if (!was) { if (!MS.on) msEnter(hit.id); else { MS.ids.add(hit.id); msSync(hit.id); } } else if (S.sel !== hit.id) { MS.lock = true; select(hit.id, true); MS.lock = false; }
+      const roots = msRoots().filter(o => o !== hit && !o.locked && o.type !== 'audio' && !isDescendant(hit, o) && !isDescendant(o, hit));
+      drag = { mode: 'move', L: hit, start: [cx, cy], x0: pv(hit.p.x, t), y0: pv(hit.p.y, t), pinv: parentInv(hit, t), moved: false, msTap: was ? hit.id : null, others: roots.map(o => ({ L: o, x0: pv(o.p.x, t), y0: pv(o.p.y, t), pinv: parentInv(o, t) })) };
+      return;
+    }
     if (hit.id !== S.sel) select(hit.id);
     drag = { mode: 'move', L: hit, start: [cx, cy], x0: pv(hit.p.x, t), y0: pv(hit.p.y, t), pinv: parentInv(hit, t), moved: false };
     return;
@@ -2110,7 +2118,9 @@ view.addEventListener('pointermove', e => {
         S.snapLines = lines.length ? lines : null;
       }
       const a = drag.pinv.transformPoint(new DOMPoint(drag.start[0], drag.start[1])), b2 = drag.pinv.transformPoint(new DOMPoint(drag.start[0] + dx, drag.start[1] + dy));
-      setVal(L, 'x', drag.x0 + b2.x - a.x); setVal(L, 'y', drag.y0 + b2.y - a.y); invalidate(); dirtyInsp = true; break;
+      setVal(L, 'x', drag.x0 + b2.x - a.x); setVal(L, 'y', drag.y0 + b2.y - a.y);
+      if (drag.others) drag.others.forEach(o => { const a1 = o.pinv.transformPoint(new DOMPoint(drag.start[0], drag.start[1])), b1 = o.pinv.transformPoint(new DOMPoint(drag.start[0] + dx, drag.start[1] + dy)); setVal(o.L, 'x', o.x0 + b1.x - a1.x); setVal(o.L, 'y', o.y0 + b1.y - a1.y); });
+      invalidate(); dirtyInsp = true; break;
     }
     case 'rot': { const a = Math.atan2(cy - drag.ap[1], cx - drag.ap[0]); let r = drag.r0 + (a - drag.a0) / D2R; if (e.shiftKey) r = Math.round(r / 15) * 15; setVal(L, 'rot', r); invalidate(); dirtyInsp = true; break; }
     case 'scale': {
@@ -2142,6 +2152,7 @@ function endPtr(e) {
     if (drag.mode === 'outline') { const d = drag; drag = null; outlineStroke(d); return; }
     if (drag.mode === 'brush') { const d = drag; d.dt = performance.now() - d.t0; drag = null; brushStroke(d); updateHud(); return; }
     if (drag.mode === 'pan' && drag.tapDesel) select(null);
+    if (drag.mode === 'move' && !drag.moved && drag.msTap) msToggle(drag.msTap);
     if (['move', 'rot', 'scale', 'anchor', 'anchorEdit', 'mask'].includes(drag.mode) && (drag.mode !== 'move' || drag.moved)) commit();
     drag = null; S.snapLines = null; dirtyView = true;
   }
@@ -2287,6 +2298,7 @@ function updateHud() {
       h('button', { class: 'chip', onclick: finishPen }, '완료'), h('button', { class: 'chip', onclick: () => { S.pen = null; updateHud(); dirtyView = true; } }, '취소'));
   } else if (S.anchorEdit) {
     hud.append(h('span', { class: 'chip modebadge' }, '중심점 이동'), h('span', { class: 'chip' }, '화면을 끌어 중심점을 옮깁니다. 모서리와 가운데에 스냅됩니다'), h('button', { class: 'chip', onclick: () => setAnchorEdit(false) }, '완료'));
+  } else if (MS.on) { msHud(hud);
   } else if (S.maskEdit) {
     hud.append(h('span', { class: 'chip modebadge' }, '마스크 편집'), h('span', { class: 'chip' }, '핸들을 끌어 모양을 바꾸세요'), h('button', { class: 'chip', onclick: () => { S.maskEdit = false; updateHud(); dirtyView = true; refreshInspector(); } }, '완료'));
   }
@@ -2315,7 +2327,9 @@ function kfShape(x, cx, cy, r, e, fill, stroke) {
 const TYPE_GLYPH = { shape: '◆', text: 'T', image: '▣', video: '▶', audio: '♪', adjust: 'fx', path: '✎', group: '' };
 /* The timeline body is drawn into a cache; while playing only the playhead moves, so the cache is reused and refreshed every ~15 frames. */
 const tlCache = document.createElement('canvas'), tcx = tlCache.getContext('2d'); let tlCacheKey = '', tlCacheAge = 0;
-const tlKey = () => [tlc.width, tlc.height, TL.t0, TL.pps, TL.sy, Hist.idx, S.sel, S.selK.length, S.graphKey ? S.graphKey.lid + S.graphKey.key : '', S.mode, S.proj.layers.length, S.proj.layers.filter(l => l.open).length].join('|');
+const MS = { on: false, ids: new Set(), lock: false }; // 여러 레이어 선택 상태 (프로젝트에는 저장 안 함)
+const msHas = id => MS.on && MS.ids.has(id);
+const tlKey = () => [MS.on ? 'ms:' + [...MS.ids].join(',') : '', tlc.width, tlc.height, TL.t0, TL.pps, TL.sy, Hist.idx, S.sel, S.selK.length, S.graphKey ? S.graphKey.lid + S.graphKey.key : '', S.mode, S.proj.layers.length, S.proj.layers.filter(l => l.open).length].join('|');
 function drawTL() {
   const d = tlDims(), W = tlc.width / DPR, H = tlc.height / DPR, mob = S.mode === 'mobile';
   if (mob) TL.t0 = S.time - (W - d.LW) / 2 / TL.pps;
@@ -2345,7 +2359,7 @@ function drawTLBase() {
   rows.forEach(r => {
     if (r.y + r.h < d.RUL || r.y > H) return;
     const L = r.L, col = LCOL[L.type] || '#888', sel = L.id === S.sel;
-    x.fillStyle = r.t === 'L' ? (sel ? 'rgba(45,140,235,.10)' : 'transparent') : 'rgba(0,0,0,.18)'; x.fillRect(d.LW, r.y, W - d.LW, r.h);
+    x.fillStyle = r.t === 'L' ? (msHas(L.id) ? 'rgba(45,140,235,.16)' : sel ? 'rgba(45,140,235,.10)' : 'transparent') : 'rgba(0,0,0,.18)'; x.fillRect(d.LW, r.y, W - d.LW, r.h);
     x.fillStyle = 'rgba(255,255,255,.035)'; x.fillRect(d.LW, r.y + r.h - 1, W - d.LW, 1);
     if (r.t === 'L') {
       const bx0 = tX(L.start, d), bx1 = tX(L.end, d), by = r.y + 4, bh = r.h - 8;
@@ -2386,8 +2400,14 @@ function drawTLBase() {
       x.fillStyle = col; x.fillRect(0, r.y + 3, 3, r.h - 6);
       for (let k = 0; k < (r.dep || 0); k++) { x.fillStyle = 'rgba(154,166,184,.35)'; x.fillRect(12 + k * 14, r.y, 1, r.h); }
       const hasK = grp || animatedKeys(L).length > 0;
+      if (MS.on) { // 여러 개 선택: 체크 상자
+        const on = MS.ids.has(L.id), bx = ind + 6, bs = mob ? 16 : 14;
+        if (on) { x.fillStyle = 'rgba(45,140,235,.28)'; x.fillRect(0, r.y, d.LW, r.h); }
+        x.beginPath(); x.roundRect(bx, cy - bs / 2, bs, bs, 3); if (on) { x.fillStyle = '#3d9bff'; x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 2; x.beginPath(); x.moveTo(bx + bs * .24, cy); x.lineTo(bx + bs * .43, cy + bs * .2); x.lineTo(bx + bs * .78, cy - bs * .24); x.stroke(); } else { x.strokeStyle = '#8a8a8a'; x.lineWidth = 1.5; x.stroke(); }
+      } else {
       x.fillStyle = hasK ? (grp ? '#c8ced8' : '#a0a0a0') : 'rgba(160,160,160,.25)'; x.beginPath();
       if (L.open) { x.moveTo(ind + 9, cy - 2); x.lineTo(ind + 17, cy - 2); x.lineTo(ind + 13, cy + 3); } else { x.moveTo(ind + 11, cy - 4); x.lineTo(ind + 16, cy); x.lineTo(ind + 11, cy + 4); } x.fill();
+      }
       if (grp) { x.fillStyle = col; x.beginPath(); x.moveTo(ind + 22, cy - 4); x.lineTo(ind + 26, cy - 4); x.lineTo(ind + 27.5, cy - 2.5); x.lineTo(ind + 34, cy - 2.5); x.lineTo(ind + 34, cy + 5); x.lineTo(ind + 22, cy + 5); x.closePath(); x.fill(); }
       else { x.fillStyle = col; x.font = `600 ${mob ? 13 : 12}px "IBM Plex Sans KR", sans-serif`; x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillText(TYPE_GLYPH[L.type] || '•', ind + 28, cy + 1); x.textAlign = 'left'; }
       const iconsW = mob ? 30 : 52;
@@ -2460,6 +2480,8 @@ tlc.addEventListener('pointerdown', e => {
     const L = r.L; const ex = d.LW - (mob ? 18 : 40);
     if (r.t === 'L' && Math.abs(x - ex) < (mob ? 16 : 9)) { L.visible = !L.visible; commit(); invalidate(); return; }
     if (r.t === 'L' && !mob && Math.abs(x - (d.LW - 16)) < 8) { L.locked = !L.locked; commit(); invalidate(); refreshInspector(); return; }
+    if (r.t === 'L' && (MS.on || e.ctrlKey || e.metaKey || e.shiftKey) && S.mode === 'pc' && e.button === 0) { msToggle(L.id); return; }
+    if (r.t === 'L' && MS.on) { tld = { mode: 'label', r, y0: y, x0: x, moved: false, sy0: TL.sy, msTap: true }; lpTimer = setTimeout(() => { if (tld && !tld.moved && tld.r === r) { tld.reorder = true; tld.drop = y; tld.cx = e.clientX; tld.cy = e.clientY; dirtyTL = true; } }, 420); return; }
     if (r.t === 'L' && x < 20 + (r.dep || 0) * 14) { if (isGroup(L) || animatedKeys(L).length) { L.open = !L.open; dirtyTL = true; tlCacheKey = ''; dirtyView = true; } return; }
     if (r.t === 'P') { select(L.id, true); S.graphKey = { lid: L.id, key: r.k }; dirtyTL = dirtyGraph = true; if (S.dock === 'graph') fitGraph(); }
     else if (L.id !== S.sel) select(L.id);
@@ -2494,14 +2516,16 @@ tlc.addEventListener('pointerdown', e => {
     }
     if (r.t === 'L') {
       const L = r.L, bx0 = tX(L.start, d), bx1 = tX(L.end, d), eg = mob ? 30 : 7, egIn = mob ? Math.min(18, (bx1 - bx0) / 3) : 7;
-      const canEdit = !L.locked && (!mob || L.id === S.sel);
+      const canEdit = !L.locked && (!mob || L.id === S.sel || msHas(L.id));
+      if (!mob && (e.ctrlKey || e.metaKey) && e.button === 0 && !L.locked && x >= bx0 && x <= bx1) { msToggle(L.id); return; }
       if (canEdit && x >= bx0 - eg && x <= bx1 + eg) {
-        if (L.id !== S.sel) select(L.id);
+        if (L.id !== S.sel) { if (msHas(L.id)) { MS.lock = true; select(L.id, true); MS.lock = false; } else select(L.id); }
         let mode = 'barmove';
         if (mob) { if (x <= bx0 + egIn) mode = 'trimS'; else if (x >= bx1 - egIn) mode = 'trimE'; } // 손가락용: 끝 손잡이를 넉넉하게 (바깥 30px, 안쪽 18px)
         else if (Math.abs(x - bx0) <= eg) mode = 'trimS'; else if (Math.abs(x - bx1) <= eg) mode = 'trimE';
         const bar = { mode, L, x0: x, s0: L.start, e0: L.end, ti0: L.trimIn || 0, applied: 0, moved: false, snap: durSnap(L), kids: isGroup(L) && mode === 'barmove' ? groupDesc(L).map(k => ({ L: k, s0: k.start, e0: k.end })) : [] };
-        if (mob && mode === 'barmove') { tld = { mode: 'scroll', x, y, t0: S.time, sy0: TL.sy, tapSel: L.id }; const mine = tld; lpTimer = setTimeout(() => { if (tld === mine && !mine.moved) { tld = bar; try { navigator.vibrate && navigator.vibrate(12); } catch (er) { } toast('클립을 통째로 옮겨요 (키프레임도 함께). 길이만 바꾸려면 양 끝 흰 손잡이를 끄세요'); } }, 380); return; }
+        if (mode === 'barmove' && msHas(L.id) && MS.ids.size > 1) { const own = new Set([L.id, ...bar.kids.map(k => k.L.id)]), add = new Map(); msLayers().forEach(o => [o, ...(isGroup(o) ? groupDesc(o) : [])].forEach(q => { if (!own.has(q.id) && !q.locked) add.set(q.id, q); })); bar.kids.push(...[...add.values()].map(q => ({ L: q, s0: q.start, e0: q.end }))); }
+        if (mob && mode === 'barmove' && !msHas(L.id)) { tld = { mode: 'scroll', x, y, t0: S.time, sy0: TL.sy, tapSel: L.id }; const mine = tld; lpTimer = setTimeout(() => { if (tld === mine && !mine.moved) { tld = bar; try { navigator.vibrate && navigator.vibrate(12); } catch (er) { } toast('클립을 통째로 옮겨요 (키프레임도 함께). 길이만 바꾸려면 양 끝 흰 손잡이를 끄세요'); } }, 380); return; }
         tld = bar;
         if (e.button === 2) { layerMenu(L, e.clientX, e.clientY); tld = null; }
         return;
@@ -2606,9 +2630,11 @@ function tlEnd(e) {
   tptrs.delete(e.pointerId); clearTimeout(lpTimer);
   if (tpinch) { if (tptrs.size < 2) tpinch = null; return; }
   if (!tld) return; const d = tlDims();
-  if (tld.mode === 'scroll' && !tld.moved && tld.tapSel) select(tld.tapSel);
+  if (tld.mode === 'scroll' && !tld.moved && tld.tapSel) { if (MS.on) msToggle(tld.tapSel); else select(tld.tapSel); }
   else if (tld.mode === 'scroll' && !tld.moved && tld.empty && (S.sel || S.selK.length)) { S.selK = []; select(null); }
-  if (tld.mode === 'label' && tld.reorder && !tld.dragged) layerMenu(tld.r.L, tld.cx, tld.cy);
+  if (tld.mode === 'label' && tld.msTap && !tld.moved && !tld.dragged && !tld.reorder) msToggle(tld.r.L.id);
+  else if (tld.mode === 'label' && tld.reorder && !tld.dragged && tld.r.t === 'L') { if (MS.on) msToggle(tld.r.L.id); else msEnter(tld.r.L.id); }
+  else if (tld.mode === 'label' && tld.reorder && !tld.dragged) layerMenu(tld.r.L, tld.cx, tld.cy);
   else if (tld.mode === 'label' && tld.drop != null && tld.r.t === 'L' && (S.mode === 'pc' || tld.reorder)) {
     const di = dropIndex(tld.drop), rows = di.rows, idx = di.idx; const L = tld.r.L;
     if (dropLayer(L, rows, idx)) { commit(); invalidate(); refreshInspector(); }
@@ -2687,7 +2713,7 @@ function deleteSelKeys() {
   S.selK.forEach(s => { const L = findL(s.lid), p = L && getProp(L, s.key); if (!p) return; const i = p.k.indexOf(s.k); if (i >= 0) { const v = pv(p, S.time); p.k.splice(i, 1); if (!p.k.length) p.v = v; } });
   const n = S.selK.length; S.selK = []; commit(); invalidate(); refreshInspector(); if (n) toast(`키프레임 ${n}개를 삭제했어요`, { l: '실행 취소', fn: undo });
 }
-function deleteSelection() { if (S.selK.length) deleteSelKeys(); else { const L = selL(); if (L) deleteLayer(L); else toast('삭제할 레이어나 키프레임을 먼저 선택하세요'); } }
+function deleteSelection() { if (MS.on && MS.ids.size && !S.selK.length) { msDelete(); return; } if (S.selK.length) deleteSelKeys(); else { const L = selL(); if (L) deleteLayer(L); else toast('삭제할 레이어나 키프레임을 먼저 선택하세요'); } }
 /* ================= GRAPH EDITOR ================= */
 const gc = $('#gc'), gx = gc.getContext('2d');
 const G = { loopSeg: true, pvT: null, pvU: null, mode: 'speed', t0: 0, pps: 120, vMin: 0, vMax: 100, anim: 0 };
@@ -3434,6 +3460,7 @@ function updUndo() { $('#bUndo').disabled = Hist.idx <= 0; $('#bRedo').disabled 
 function resetHistory() { Hist.stack = []; Hist.idx = -1; commit(); }
 
 function select(id, keepKeys) {
+  if (MS.on && !MS.lock && !(id && MS.ids.has(id))) msExit();
   if (S.sel !== id) { S.sel = id; if (!keepKeys) S.selK = []; S.maskEdit = false; S.anchorEdit = false; updateHud(); if (id) { const L = findL(id); if (L && L.type === 'audio' && (S.tab === 'mask')) S.tab = 'transform'; } }
   refreshInspector(); ensureGraphKey(); refreshGraphBar(); dirtyView = dirtyTL = dirtyGraph = true; refreshKfBar();
 }
@@ -4787,10 +4814,11 @@ document.addEventListener('keydown', e => {
   }
   if (!$('#scrim').hidden) { if (k === 'Escape' && curSheet && !curSheet.modal) curSheet.close(); return; }
   if (k === 'Escape' && ctxEl) { closeCtx(); return; }
+  if (k === 'Escape' && MS.on) { msExit(); return; }
   if (mod && (k === 'z' || k === 'Z')) { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
   if (mod && (k === 'y' || k === 'Y')) { e.preventDefault(); redo(); return; }
   if (mod && (k === 'd' || k === 'D')) { e.preventDefault(); if (L) duplicateLayer(L); return; }
-  if (mod && (k === 'g' || k === 'G')) { e.preventDefault(); if (e.shiftKey) { const G = isGroup(L) ? L : groupOf(L); if (G) ungroup(G); else toast('선택한 레이어가 그룹이 아니에요'); } else groupSheet(); return; }
+  if (mod && (k === 'g' || k === 'G')) { e.preventDefault(); if (e.shiftKey) { const G = isGroup(L) ? L : groupOf(L); if (G) ungroup(G); else toast('선택한 레이어가 그룹이 아니에요'); } else if (MS.on && MS.ids.size) msGroup(); else groupSheet(); return; }
   if (mod && (k === 'c' || k === 'C')) { if (L) { S.layerClip = deep(L); toast('레이어를 복사했어요'); } return; }
   if (mod && (k === 'v' || k === 'V')) { if (S.layerClip) { const C = deep(S.layerClip); C.id = uid(); C.name += ' 복사'; C.fx.forEach(f => f.id = uid()); addLayer(C); } return; }
   if (mod && (k === 's' || k === 'S')) { e.preventDefault(); saveButton(); return; }
@@ -5384,6 +5412,54 @@ function transitionRows(L) {
   if (next) { const t = trOf(L, next); rows.push(h('div', { class: 'prow' }, h('span', { class: 'kfb none' }), h('div', { class: 'plabel static', style: 'flex:1;width:auto' }, `뒤 클립 ‘${next.name}’과`, h('div', { class: 'hint', style: 'margin:0' }, t ? `${(TRANS.find(x => x.v === t.kind) || {}).l} · ${t.dur.toFixed(1)}초` : '전환 없음')), h('button', { class: 'btn sm', onclick: () => transitionSheet(L, next) }, t ? '바꾸기' : '전환 넣기'))); }
   return rows.length ? sec('화면 전환', ...rows) : null;
 }
+/* ================= MULTI-SELECT (여러 레이어 한꺼번에) ================= */
+function msEnter(id) { MS.on = true; MS.ids = new Set(); if (S.sel && S.sel !== id && findL(S.sel)) MS.ids.add(S.sel); if (id) MS.ids.add(id); try { navigator.vibrate && navigator.vibrate(12); } catch (e) { } msSync(id); }
+function msToggle(id) { if (!MS.on) { msEnter(id); return; } if (MS.ids.has(id)) MS.ids.delete(id); else MS.ids.add(id); if (!MS.ids.size) { msExit(); return; } msSync(MS.ids.has(id) ? id : [...MS.ids].pop()); }
+function msSync(primary) {
+  [...MS.ids].forEach(i => { if (!findL(i)) MS.ids.delete(i); });
+  if (primary && findL(primary) && S.sel !== primary) { MS.lock = true; select(primary, true); MS.lock = false; }
+  updateHud(); tlCacheKey = ''; dirtyTL = dirtyView = true;
+}
+function msExit() { if (!MS.on) return; MS.on = false; MS.ids.clear(); updateHud(); tlCacheKey = ''; dirtyTL = dirtyView = true; }
+const msLayers = () => S.proj.layers.filter(L => MS.ids.has(L.id));
+const msRoots = () => { const m = msLayers(); return m.filter(o => !m.some(p => p !== o && isDescendant(o, p))); };
+function msAll() { MS.on = true; S.proj.layers.forEach(L => { if (!L.locked && !groupOf(L)) MS.ids.add(L.id); }); msSync(); }
+function msKeys() {
+  const out = [], seen = new Set(); msLayers().forEach(o => [o, ...(isGroup(o) ? groupDesc(o) : [])].forEach(L => { if (seen.has(L.id)) return; seen.add(L.id); allPropKeys(L).forEach(key => { const p = getProp(L, key); if (p && p.k) p.k.forEach(kf => out.push({ lid: L.id, key, k: kf })); }); }));
+  if (!out.length) { toast('고른 레이어에 키프레임이 없어요'); return; }
+  S.selK = out; refreshKfBar(); tlCacheKey = ''; dirtyTL = dirtyGraph = true;
+  toast(`키프레임 ${out.length}개를 모두 골랐어요. 아무 키프레임이나 끌면 다 같이 움직여요`);
+}
+function msGroup() { const ids = msRoots().map(L => L.id); if (ids.length < 1) return; msExit(); const G = makeGroup(ids); if (G) toast(`${ids.length}개를 ‘${G.name}’ 그룹으로 묶었어요`); }
+function msDelete() {
+  const roots = msRoots(); if (!roots.length) return; const Ls = S.proj.layers; let n = 0;
+  roots.forEach(L => { const gone = [L, ...(isGroup(L) ? groupDesc(L) : [])]; gone.forEach(o => { const j = Ls.indexOf(o); if (j < 0) return; Ls.splice(j, 1); n++; const v = VEL.get(o.id); if (v) { v.pause(); VEL.delete(o.id); } const a = AEL.get(o.id); if (a) { a.pause(); AEL.delete(o.id); } stopAudioNode(o.id); }); Ls.forEach(o => { if (gone.some(g => g.id === o.parent)) o.parent = null; }); });
+  msExit(); S.selK = []; select(null); commit(); invalidate(); toast(`레이어 ${n}개를 삭제했어요`, { l: '실행 취소', fn: undo });
+}
+function msDup() {
+  const roots = msRoots(); if (!roots.length) return; const before = new Set(S.proj.layers.map(L => L.id));
+  MS.lock = true; try { roots.forEach(L => duplicateLayer(L)); } finally { MS.lock = false; }
+  const fresh = S.proj.layers.filter(L => !before.has(L.id) && !(groupOf(L) && !before.has(groupOf(L).id))); MS.on = true; MS.ids = new Set(fresh.map(L => L.id)); if (!MS.ids.size) { msExit(); return; } msSync(fresh[0] && fresh[0].id);
+  toast(`${roots.length}개를 복제했어요. 복제본이 선택돼 있어요`);
+}
+function msHud(hud) {
+  const n = MS.ids.size, mob = S.mode === 'mobile';
+  hud.append(...[h('span', { class: 'chip modebadge' }, `${n}개 선택`),
+    mob ? null : h('span', { class: 'chip hint2' }, '레이어를 눌러 더 고르고, 끌면 다 같이 움직여요'),
+    h('button', { class: 'chip', onclick: msAll }, '전체'),
+    h('button', { class: 'chip', onclick: msKeys }, '키프레임 모두'),
+    h('button', { class: 'chip', onclick: msGroup, disabled: n < 1 }, '그룹으로 묶기'),
+    typeof duplicateLayer === 'function' ? h('button', { class: 'chip', onclick: msDup }, '복제') : null,
+    h('button', { class: 'chip', onclick: msDelete }, '삭제'),
+    h('button', { class: 'chip', onclick: msExit }, '완료')].filter(Boolean));
+}
+function drawMsOutlines(x, m) {
+  if (!MS.on) return; const t = S.time;
+  x.save(); x.setLineDash([5, 4]); x.lineWidth = 1.5; x.strokeStyle = '#3d9bff';
+  msLayers().forEach(L => { if (L.id === S.sel || L.type === 'audio' || !layerActive(L, t)) return; try { const c = layerCorners(L, t, m); x.beginPath(); c.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.closePath(); x.stroke(); } catch (e) { } });
+  x.restore();
+}
+
 /* ================= TUTORIAL ================= */
 const TUT = { on: false, i: 0, lid: null, el: null, timer: 0, n0: 0, okAt: 0, pill: -1, col: null };
 function tutLayer() { return TUT.lid ? findL(TUT.lid) : null; }
