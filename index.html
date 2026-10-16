@@ -686,7 +686,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v41.3</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v41.4</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -741,6 +741,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v41.4</b><span>내보내기 안정화: 긴 영상·원본 고화질로 내보낼 때 메모리를 두 배로 쓰지 않도록 조각으로 모아 저장하고, 작업용 캔버스 메모리를 줄였습니다. 24fps처럼 프로젝트와 프레임 수가 다른 동영상도 미리보기와 똑같은 프레임으로 끊김 없이 저장하고, 하드웨어 인코더가 프레임 순서를 섞으면 자동으로 다른 인코더로 다시 저장합니다.</span></li>
         <li><b>v41.3</b><span>사진 채우기: ‘화면에서 사진 움직이기’로 도형 안의 사진을 직접 끌어 옮기고(휠·두 손가락으로 크기), ‘키프레임 넣기’로 사진이 도형 안에서 움직이는 애니메이션을 만들 수 있습니다. 도형 밖으로 나간 사진 부분도 흐리게 보여 줍니다.</span></li>
         <li><b>v41.2</b><span>다른 기기로 보내기를 한 번에 4갈래로 나눠 동시에 보내도록 바꿔 훨씬 빨라졌습니다. 직접 연결이 잘 되도록 연결 경로 찾기도 늘렸고, 중계 서버를 거쳐 느릴 때는 화면에 알려 줍니다(같은 와이파이에 연결하면 가장 빨라요).</span></li>
         <li><b>v41.1</b><span>내보내기 속도를 한 번 더 올렸습니다. 동영상이 든 프로젝트는 매 프레임 찾아가기 대신 재생하면서 프레임을 받아 3배 이상 빠르고, 잔상(에코)·프랙탈 노이즈 같은 무거운 효과도 훨씬 가볍게 계산합니다. 내보내는 중에 어디서 시간이 드는지(그리기·영상·인코더) 보여 줍니다.</span></li>
@@ -1616,9 +1617,11 @@ function layerWindow(L, t) {
   for (const ti of times) { const b = deviceBox(layerMatrix(L, ti, 0, preFx(L, ti)), bnd, 6 + reach * RS, RS); if (b.w < 1 || b.h < 1) continue; x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.w); y1 = Math.max(y1, b.y + b.h); }
   return x1 <= x0 ? { empty: true } : { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 }
+function freePool(P) { (P || []).forEach(o => { if (o && o.c) { o.c.width = o.c.height = 0; } }); }
+function freeAllPools() { POOLS.forEach(freePool); POOLS.clear(); }
 function renderWindowed(L, t, win) {
-  const bw = Math.min(RW, Math.ceil(win.w / 128) * 128), bh = Math.min(RH, Math.ceil(win.h / 128) * 128), key = bw + 'x' + bh;
-  let P = POOLS.get(key); if (!P) { P = []; POOLS.set(key, P); if (POOLS.size > 8) POOLS.delete(POOLS.keys().next().value); }
+  const bw = Math.min(RW, Math.ceil(win.w / 256) * 256), bh = Math.min(RH, Math.ceil(win.h / 256) * 256), key = bw + 'x' + bh;
+  let P = POOLS.get(key); if (P) { POOLS.delete(key); POOLS.set(key, P); } else { P = []; POOLS.set(key, P); if (POOLS.size > 3) { const k0 = POOLS.keys().next().value; freePool(POOLS.get(k0)); POOLS.delete(k0); } } // 메모리 아끼기: 크기별 작업 캔버스는 3벌까지만
   const keep = [RW, RH, POOL, WX, WY]; RW = bw; RH = bh; POOL = P; WX = Math.min(win.x, keep[0] - bw); WY = Math.min(win.y, keep[1] - bh);
   const ox = WX, oy = WY;
   try { return { r: renderLayerPool(L, t, 0), ox, oy }; } finally { [RW, RH, POOL, WX, WY] = keep; }
@@ -4753,7 +4756,7 @@ class VidPump {
   constructor(M, rate) {
     const v = this.v = document.createElement('video'); v.muted = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto'; v.src = M.url;
     Object.assign(v.style, { position: 'fixed', left: '0', top: '0', width: '2px', height: '2px', opacity: '0.01', pointerEvents: 'none', zIndex: '-1' }); document.body.append(v);
-    this.rate = rate; this.q = []; this.cur = null; this.ended = false; this.wake = null; this.started = false; this.dead = false;
+    this.rate = rate; this.q = []; this.cur = null; this.ended = false; this.wake = null; this.started = false; this.dead = false; this.dt = Infinity; this.lastT = -1;
     v.addEventListener('ended', () => { this.ended = true; this._wake(); });
   }
   _wake() { const w = this.wake; this.wake = null; if (w) w(); }
@@ -4762,7 +4765,7 @@ class VidPump {
     this.v.requestVideoFrameCallback((now, meta) => {
       if (this.dead) return; let f = null;
       try { f = window.VideoFrame ? new VideoFrame(this.v, { timestamp: Math.round(meta.mediaTime * 1e6) }) : null; } catch (e) { f = null; }
-      if (f) { this.q.push({ t: meta.mediaTime, f }); if (this.q.length >= 10) this.v.pause(); this._wake(); }
+      if (f) { const g = meta.mediaTime - this.lastT; if (this.lastT >= 0 && g > 1e-4 && g < this.dt) this.dt = g; this.lastT = meta.mediaTime; this.q.push({ t: meta.mediaTime, f }); if (this.q.length >= 10) this.v.pause(); this._wake(); }
       this._grab();
     });
   }
@@ -4776,8 +4779,9 @@ class VidPump {
     for (;;) {
       while (this.q.length && this.q[0].t <= mt + tol) { if (this.cur) this.cur.f.close(); this.cur = this.q.shift(); }
       if (this.q.length < 5 && this.v.paused && !this.ended) this.v.play().catch(() => { });
-      // 재생 중 화면에 못 나온(건너뛴) 프레임이면 miss → 그 프레임만 정확히 찾아가서 씀
-      if (this.cur && (this.q.length || this.ended)) return this.cur.t < mt - tol * 1.6 && !this.ended ? 'miss' : this.cur.f;
+      // 그 시간에 보여야 할 프레임 = 시간이 같거나 바로 앞인 프레임 (미리보기와 같은 규칙).
+      // 재생 중 건너뛴 프레임이 바로 그것이었다면 miss → 그 프레임만 정확히 찾아가서 씀
+      if (this.cur && (this.q.length || this.ended)) { const dt = this.dt; if (this.q.length && isFinite(dt) && this.q[0].t - this.cur.t > dt * 1.5 && this.cur.t + dt <= mt + tol) return 'miss'; return this.cur.f; }
       if (!this.cur && this.q.length) return 'miss';
       if (this.ended) return this.cur ? this.cur.f : null;
       if (performance.now() - t0 > 5000) throw new Error('video pump stalled');
@@ -4798,7 +4802,7 @@ async function prepVideosFast(t, pumps, fps) {
     if (!layerActive(L, t)) { if (P && P.started) { VFR.delete(L.id); } continue; }
     if (!P || P.failed) { slow.push(L); VFR.delete(L.id); continue; }
     try {
-      const f = await P.frameAt(mediaTime(L, t), .5 / fps * (L.speed || 1)); P.n = (P.n || 0) + 1;
+      const f = await P.frameAt(mediaTime(L, t), .0015); P.n = (P.n || 0) + 1;
       if (f === 'miss') { P.miss = (P.miss || 0) + 1; VFR.delete(L.id); slow.push(L); if (P.n > 30 && P.miss > P.n * .3) { P.failed = true; P.close(); } }
       else if (f) VFR.set(L.id, f); else VFR.delete(L.id);
     }
@@ -4844,23 +4848,40 @@ function frameKey(t) {
 }
 const sameKey = (a, b) => { if (!a || !b || a.length !== b.length) return false; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false; return true; };
 const yieldNow = (() => { const ch = new MessageChannel(), q = []; ch.port1.onmessage = () => { const f = q.shift(); f && f(); }; return () => new Promise(r => { q.push(r); ch.port2.postMessage(0); }); })();
-async function exportMP4(st, prog, cancelled) {
+/* 큰 영상도 메모리를 두 배로 쓰지 않도록 조각으로 받아 모음 (안 되면 예전 방식) */
+function partsTarget() {
+  if (!window.Mp4Muxer || !Mp4Muxer.StreamTarget) return null;
+  const parts = []; let end = 0;
+  const onData = (data, pos) => {
+    const d = new Uint8Array(data); if (pos === end) { parts.push({ pos, d }); end += d.length; return; }
+    let p = pos, src = 0; // 앞부분 고쳐 쓰기(파일 머리의 크기 정보 등)
+    for (const part of parts) { if (src >= d.length) break; const a = part.pos, b = a + part.d.length; if (p >= a && p < b) { const n = Math.min(b - p, d.length - src); part.d.set(d.subarray(src, src + n), p - a); src += n; p += n; } }
+    if (src < d.length) { if (p !== end) throw new Error('mp4 write gap'); const rest = d.slice(src); parts.push({ pos: p, d: rest }); end += rest.length; }
+  };
+  let T; try { T = new Mp4Muxer.StreamTarget({ onData, chunked: true, chunkSize: 8 << 20 }); } catch (e) { try { T = new Mp4Muxer.StreamTarget(onData); } catch (e2) { return null; } }
+  T._blob = mime => new Blob(parts.map(x => x.d), { type: mime }); T._size = () => end; return T;
+}
+async function exportMP4(st, prog, cancelled, hwPrefs) {
   const pr = S.proj, W = even(pr.w * st.scale), H = even(pr.h * st.scale), fps = st.fps, N = Math.max(1, Math.round(pr.dur * fps));
   const bitrate = clamp(W * H * fps * st.bpp, 1e6, 80e6);
   const codecs = ['avc1.640034', 'avc1.640033', 'avc1.64002a', 'avc1.640028', 'avc1.4d0034', 'avc1.4d0028', 'avc1.42e034', 'avc1.42e01f'];
   let cfg = null;
-  for (const hw of ['prefer-hardware', 'no-preference']) { for (const c of codecs) { const cand = { codec: c, width: W, height: H, bitrate, framerate: fps, avc: { format: 'avc' }, hardwareAcceleration: hw }; try { const s = await VideoEncoder.isConfigSupported(cand); if (s.supported) { cfg = cand; break; } } catch (e) { } } if (cfg) break; }
+  for (const hw of (hwPrefs || ['prefer-hardware', 'no-preference'])) { for (const c of codecs) { const cand = { codec: c, width: W, height: H, bitrate, framerate: fps, avc: { format: 'avc' }, hardwareAcceleration: hw }; try { const s = await VideoEncoder.isConfigSupported(cand); if (s.supported) { cfg = cand; break; } } catch (e) { } } if (cfg) break; }
   if (!cfg) throw new Error('이 해상도로는 MP4 인코딩을 할 수 없어요. 해상도를 낮춰 보세요.');
   prog.label('소리 준비 중…');
   const abuf = await renderAudioMix().catch(() => null);
   let acfg = null;
   if (abuf && window.AudioEncoder) for (const c of ['mp4a.40.2', 'opus']) { const cand = { codec: c, sampleRate: 48000, numberOfChannels: 2, bitrate: 192000 }; try { const s = await AudioEncoder.isConfigSupported(cand); if (s.supported) { acfg = cand; break; } } catch (e) { } }
-  const muxer = new Mp4Muxer.Muxer({ target: new Mp4Muxer.ArrayBufferTarget(), video: { codec: 'avc', width: W, height: H }, audio: acfg ? { codec: acfg.codec === 'opus' ? 'opus' : 'aac', numberOfChannels: 2, sampleRate: 48000 } : undefined, fastStart: 'in-memory', firstTimestampBehavior: 'offset' });
-  let err = null; const enc = new VideoEncoder({ output: (c, m) => muxer.addVideoChunk(c, m), error: e => err = e }); enc.configure(cfg);
+  const muxOpts = { video: { codec: 'avc', width: W, height: H }, audio: acfg ? { codec: acfg.codec === 'opus' ? 'opus' : 'aac', numberOfChannels: 2, sampleRate: 48000 } : undefined, firstTimestampBehavior: 'offset' };
+  let muxer = null, streamT = partsTarget();
+  if (streamT) { try { muxer = new Mp4Muxer.Muxer({ ...muxOpts, target: streamT, fastStart: false }); } catch (e) { console.warn(e); muxer = null; streamT = null; } }
+  if (!muxer) muxer = new Mp4Muxer.Muxer({ ...muxOpts, target: new Mp4Muxer.ArrayBufferTarget(), fastStart: 'in-memory' });
+  let err = null, lastTs = -1, reorder = false;
+  const enc = new VideoEncoder({ output: (c, m) => { if (c.timestamp < lastTs) reorder = true; lastTs = Math.max(lastTs, c.timestamp); muxer.addVideoChunk(c, m); }, error: e => err = e }); enc.configure(cfg);
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d');
   let prevKey = null, lastYield = performance.now(), skipped = 0, tVid = 0, tDraw = 0, tEnc = 0; const t0 = performance.now(); const pumps = makePumps(fps);
   try {
-  const drained = () => new Promise(r => { const f = () => { if (enc.encodeQueueSize <= 12) { enc.removeEventListener('dequeue', f); r(); } }; enc.addEventListener('dequeue', f); f(); });
+  const drained = () => new Promise(r => { const f = () => { if (enc.encodeQueueSize <= 4) { enc.removeEventListener('dequeue', f); r(); } }; enc.addEventListener('dequeue', f); f(); });
   for (let i = 0; i < N; i++) {
     if (cancelled() || err) break; const t = i / fps;
     const key = frameKey(t);
@@ -4868,11 +4889,12 @@ async function exportMP4(st, prog, cancelled) {
     else { const a = performance.now(); await prepVideosFast(t, pumps, fps); const b = performance.now(); renderFrame(cv, x, t, W / pr.w); tVid += b - a; tDraw += performance.now() - b; }
     prevKey = key;
     const vf = new VideoFrame(cv, { timestamp: Math.round(i * 1e6 / fps), duration: Math.round(1e6 / fps) }); enc.encode(vf, { keyFrame: i % (fps * 2) === 0 }); vf.close();
-    if (enc.encodeQueueSize > 12) { const a = performance.now(); await drained(); tEnc += performance.now() - a; }
+    if (enc.encodeQueueSize > 6) { const a = performance.now(); await drained(); tEnc += performance.now() - a; }
+    if (reorder && cfg.hardwareAcceleration !== 'prefer-software') { try { enc.close(); } catch (e) { } throw Object.assign(new Error('reorder'), { reorder: true }); } // 하드웨어 인코더가 프레임 순서를 섞으면 소프트웨어로 다시
     const now = performance.now();
     if (now - lastYield > 40) { const sp = (i + 1) / ((now - t0) / 1000); prog.set((i + 1) / N, `프레임 ${i + 1} / ${N} · 초당 ${sp.toFixed(0)}프레임`, cv); const k = 1 / (i + 1); prog.label(`프레임당 그리기 ${(tDraw * k).toFixed(0)}ms` + (tVid > 1 ? ` · 영상 ${(tVid * k).toFixed(0)}ms` : '') + (tEnc > 1 ? ` · 인코더 대기 ${(tEnc * k).toFixed(0)}ms` : '') + (skipped ? ` · 같은 화면 ${skipped}장 재사용` : '')); lastYield = now; await yieldNow(); }
   }
-  } finally { pumps.forEach(P => P.close()); VFR.clear(); }
+  } finally { pumps.forEach(P => P.close()); VFR.clear(); freeAllPools(); }
   prog.set(1, `프레임 ${N} / ${N}`, cv); if (window.EXPORT_STATS) window.EXPORT_STATS = { ms: performance.now() - t0, N, skipped, hw: cfg.hardwareAcceleration, tDraw, tVid, tEnc };
   if (cancelled()) { try { enc.close(); } catch (e) { } return null; }
   await enc.flush(); if (err) throw err;
@@ -4883,7 +4905,9 @@ async function exportMP4(st, prog, cancelled) {
     for (let off = 0; off < abuf.length; off += CH) { const n = Math.min(CH, abuf.length - off); const data = new Float32Array(n * 2); data.set(L0.subarray(off, off + n), 0); data.set(L1.subarray(off, off + n), n); const ad = new AudioData({ format: 'f32-planar', sampleRate: 48000, numberOfFrames: n, numberOfChannels: 2, timestamp: Math.round(off / 48000 * 1e6), data }); aenc.encode(ad); ad.close(); if (off % (CH * 64) === 0) await sleep(0); }
     await aenc.flush();
   }
-  muxer.finalize(); return new Blob([muxer.target.buffer], { type: 'video/mp4' });
+  muxer.finalize();
+  if (streamT) { const b = streamT._blob('video/mp4'); try { const h = new Uint8Array(await b.slice(4, 8).arrayBuffer()); if (String.fromCharCode(...h) === 'ftyp' && b.size > 1000) return b; } catch (e) { } console.warn('stream target output looked wrong'); if (!muxer.target || !muxer.target.buffer) return b; }
+  return new Blob([muxer.target.buffer], { type: 'video/mp4' });
 }
 async function exportRecorder(st, prog, cancelled) {
   const types = st.fmt === 'mp4' ? ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'] : ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
@@ -4943,7 +4967,7 @@ async function runExport(st) {
   const prog = progressSheet(); exporting = true; VEL.forEach(v => v.pause());
   try {
     let blob = null, ext = 'mp4';
-    if (st.fmt === 'mp4' && window.VideoEncoder && window.Mp4Muxer && window.Mp4Muxer.Muxer) { try { blob = await exportMP4(st, prog, prog.cancelled); } catch (e) { console.warn('mp4 encoder failed, falling back', e); if (prog.cancelled()) throw e; prog.label('다른 방식으로 다시 시도하는 중…'); blob = await exportRecorder(st, prog, prog.cancelled); if (blob) ext = blob.type.includes('mp4') ? 'mp4' : 'webm'; } }
+    if (st.fmt === 'mp4' && window.VideoEncoder && window.Mp4Muxer && window.Mp4Muxer.Muxer) { try { try { blob = await exportMP4(st, prog, prog.cancelled); } catch (e0) { if (!e0 || !e0.reorder) throw e0; prog.label('화질을 지키려고 다른 인코더로 다시 저장하는 중…'); blob = await exportMP4(st, prog, prog.cancelled, ['prefer-software', 'no-preference']); } } catch (e) { console.warn('mp4 encoder failed, falling back', e); if (prog.cancelled()) throw e; prog.label('다른 방식으로 다시 시도하는 중…'); blob = await exportRecorder(st, prog, prog.cancelled); if (blob) ext = blob.type.includes('mp4') ? 'mp4' : 'webm'; } }
     else { blob = await exportRecorder(st, prog, prog.cancelled); if (blob) ext = blob.type.includes('mp4') ? 'mp4' : 'webm'; }
     prog.close(); if (blob) resultSheet(blob, ext); else toast('내보내기를 취소했어요');
   } catch (e) { console.error(e); prog.close(); toast('내보내기 실패: ' + (e && e.message ? e.message : e)); }
