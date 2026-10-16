@@ -686,7 +686,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v41.1</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v41.3</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -741,6 +741,8 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v41.3</b><span>사진 채우기: ‘화면에서 사진 움직이기’로 도형 안의 사진을 직접 끌어 옮기고(휠·두 손가락으로 크기), ‘키프레임 넣기’로 사진이 도형 안에서 움직이는 애니메이션을 만들 수 있습니다. 도형 밖으로 나간 사진 부분도 흐리게 보여 줍니다.</span></li>
+        <li><b>v41.2</b><span>다른 기기로 보내기를 한 번에 4갈래로 나눠 동시에 보내도록 바꿔 훨씬 빨라졌습니다. 직접 연결이 잘 되도록 연결 경로 찾기도 늘렸고, 중계 서버를 거쳐 느릴 때는 화면에 알려 줍니다(같은 와이파이에 연결하면 가장 빨라요).</span></li>
         <li><b>v41.1</b><span>내보내기 속도를 한 번 더 올렸습니다. 동영상이 든 프로젝트는 매 프레임 찾아가기 대신 재생하면서 프레임을 받아 3배 이상 빠르고, 잔상(에코)·프랙탈 노이즈 같은 무거운 효과도 훨씬 가볍게 계산합니다. 내보내는 중에 어디서 시간이 드는지(그리기·영상·인코더) 보여 줍니다.</span></li>
         <li><b>v41</b><span>내보내기가 빨라졌습니다: 효과가 걸린 레이어는 효과가 닿는 범위만 계산하고, 앞 프레임과 똑같은 프레임은 다시 그리지 않으며, 가능하면 기기의 하드웨어 인코더를 씁니다. 다른 기기로 보내기는 데이터를 큰 조각으로 그대로 흘려보내고 프로젝트 내용을 압축해서 훨씬 빨라졌고, 보내는 속도(초당 용량)가 보입니다.</span></li>
         <li><b>v40.1</b><span>모양 연결의 자동 테두리 추출을 새로 만들었습니다. 사진 가장자리를 배경 견본으로 삼아 물체를 그래프 컷으로 가르고 테두리를 실제 경계선에 붙여서, 배경이 복잡하거나 두 가지 색인 사진도 물체만 정확히 잡습니다.</ 테두리 따기도 강해졌습니다: 출발점을 여러 개 시도해 가장 물체다운 결과를 고르고, 배경 색을 사진 바깥 전체에서 배우고, 색만 다른 경계도 잡습니다. 흐리거나 노이즈가 많은 사진에서 특히 좋아졌습니다.</span></li>
@@ -2237,7 +2239,8 @@ function drawOverlay(x, m) {
       kts.forEach(tt => { let wx = pv(px, tt), wy = pv(py, tt); if (par) { const pp = layerMatrix(par, tt).transformPoint(new DOMPoint(wx, wy)); wx = pp.x; wy = pp.y; } const [sx, sy] = toScr(m, wx, wy); x.fillStyle = '#ffbf47'; x.beginPath(); x.moveTo(sx, sy - 5); x.lineTo(sx + 5, sy); x.lineTo(sx, sy + 5); x.lineTo(sx - 5, sy); x.closePath(); x.fill(); });
       x.restore();
     }
-    if (layerActive(L, t) && L.type !== 'adjust' && !S.pen && S.anchorEdit) drawAnchorEdit(x, m, L);
+    if (layerActive(L, t) && S.fillEdit && fillPhoto(L)) drawFillEdit(x, m, L);
+    else if (layerActive(L, t) && L.type !== 'adjust' && !S.pen && S.anchorEdit) drawAnchorEdit(x, m, L);
     else if (layerActive(L, t) && L.type !== 'adjust' && !S.pen && !S.brush && !S.outline) {
       const g = gizmo(L, m); const hs = mob ? 7 : 4.5;
       x.save(); x.strokeStyle = HCOL; x.lineWidth = 1.5;
@@ -2350,6 +2353,7 @@ view.addEventListener('pointerdown', e => {
   if (S.puppet && puppetDown(e, cx, cy, sx, sy, m, mob)) return;
   if (S.outline) { drag = { mode: 'outline', pts: [[cx, cy]], last: [sx, sy] }; S.outline.cur = drag.pts; dirtyView = true; return; }
   const L = selL(); const hr = mob ? 22 : 9;
+  if (S.fillEdit && fillPhoto(L) && !L.locked && layerActive(L, t)) { const LM = layerMatrix(L, t); drag = { mode: 'fillEdit', L, inv: LM.inverse(), start: [cx, cy], fx0: pv(L.p.fix, t), fy0: pv(L.p.fiy, t) }; return; }
   if (S.anchorEdit && L && !L.locked && L.type !== 'adjust' && L.type !== 'audio' && layerActive(L, t)) { drag = { mode: 'anchorEdit', L }; anchorTo(L, cx, cy, m); invalidate(); dirtyInsp = true; return; }
   if (L && S.maskEdit && L.mask.on) {
     const M = layerMatrix(L, t);
@@ -2450,6 +2454,10 @@ view.addEventListener('pointermove', e => {
     case 'anchor': case 'anchorEdit': {
       anchorTo(L, cx, cy, m); invalidate(); dirtyInsp = true; break;
     }
+    case 'fillEdit': {
+      const a = drag.inv.transformPoint(new DOMPoint(cx, cy)), b = drag.inv.transformPoint(new DOMPoint(drag.start[0], drag.start[1]));
+      setVal(drag.L, 'fix', +(drag.fx0 + a.x - b.x).toFixed(1)); setVal(drag.L, 'fiy', +(drag.fy0 + a.y - b.y).toFixed(1)); invalidate(); dirtyInsp = true; break;
+    }
     case 'mask': {
       const lp = drag.inv.transformPoint(new DOMPoint(cx, cy)), l0 = drag.inv.transformPoint(new DOMPoint(drag.start[0], drag.start[1]));
       const dx = lp.x - l0.x, dy = lp.y - l0.y, hd = drag.hd;
@@ -2462,14 +2470,14 @@ view.addEventListener('pointermove', e => {
 });
 function endPtr(e) {
   ptrs.delete(e.pointerId);
-  if (pinch) { if (ptrs.size < 2) { const was = pinch; pinch = null; if (was.layer) commit(); } return; }
+  if (pinch) { if (ptrs.size < 2) { const was = pinch; pinch = null; if (was.layer || was.fill) commit(); } return; }
   if (drag) {
     if (drag.mode === 'outline') { const d = drag; drag = null; outlineStroke(d); return; }
     if (drag.mode === 'brush') { const d = drag; d.dt = performance.now() - d.t0; drag = null; brushStroke(d); updateHud(); return; }
     if (drag.mode === 'pan' && drag.tapDesel) select(null);
     if (drag.mode === 'move' && !drag.moved && drag.msTap) msToggle(drag.msTap);
     if (drag.mode === 'pin') { clearTimeout(drag.lp); if (drag.moved || drag.fresh) commit(); refreshInspector(); }
-    if (['move', 'rot', 'scale', 'anchor', 'anchorEdit', 'mask'].includes(drag.mode) && (drag.mode !== 'move' || drag.moved)) commit();
+    if (['move', 'rot', 'scale', 'anchor', 'anchorEdit', 'mask', 'fillEdit'].includes(drag.mode) && (drag.mode !== 'move' || drag.moved)) commit();
     drag = null; S.snapLines = null; dirtyView = true;
   }
 }
@@ -2478,7 +2486,9 @@ view.addEventListener('pointerleave', () => { if (S.hover && !drag) { S.hover = 
 view.addEventListener('dblclick', e => { if (S.pen) { finishPen(); } });
 view.addEventListener('contextmenu', e => e.preventDefault());
 view.addEventListener('wheel', e => {
-  e.preventDefault(); const [sx, sy] = stageXY(e); materializeZoom();
+  e.preventDefault();
+  if (S.fillEdit && fillPhoto(selL()) && !e.ctrlKey && !e.metaKey) { const L = selL(); setVal(L, 'fis', +clamp(pv(L.p.fis, S.time) * Math.exp(-e.deltaY * .0015), 1, 5000).toFixed(1)); invalidate(); dirtyInsp = true; clearTimeout(view._fwT); view._fwT = setTimeout(commit, 300); return; }
+  const [sx, sy] = stageXY(e); materializeZoom();
   if (e.ctrlKey || e.metaKey || !e.shiftKey && Math.abs(e.deltaX) < 1 && !(e.deltaMode === 0 && Math.abs(e.deltaY) < 40 && !Number.isInteger(e.deltaY))) zoomAt(sx, sy, Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)));
   else { S.view.px -= e.deltaX; S.view.py -= e.deltaY; }
   dirtyView = true;
@@ -2496,6 +2506,7 @@ let pinch = null;
 function startPinch() {
   const [a, b] = [...ptrs.values()]; drag = null; const m = VM(); const L = selL(), t = S.time;
   const base = { d0: Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, a0: Math.atan2(b[1] - a[1], b[0] - a[0]), c0: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] };
+  if (S.fillEdit && fillPhoto(L) && layerActive(L, t)) { pinch = { ...base, fill: L, s0: pv(L.p.fis, t) }; return; }
   if (L && !L.locked && L.type !== 'adjust' && L.type !== 'audio' && layerActive(L, t) && S.mode === 'mobile' && !S.pen && !S.brush && !S.maskEdit) {
     pinch = { ...base, layer: L, x0: pv(L.p.x, t), y0: pv(L.p.y, t), sx0: pv(L.p.sx, t), sy0: pv(L.p.sy, t), r0: pv(L.p.rot, t), pinv: parentInv(L, t), z: m.z };
   } else { materializeZoom(); pinch = { ...base, zoom0: S.view.zoom, px0: S.view.px, py0: S.view.py }; }
@@ -2504,6 +2515,7 @@ function doPinch() {
   const [a, b] = [...ptrs.values()]; if (!a || !b) return;
   const d = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, ang = Math.atan2(b[1] - a[1], b[0] - a[0]), c = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
   const P_ = pinch;
+  if (P_.fill) { setVal(P_.fill, 'fis', +clamp(P_.s0 * d / P_.d0, 1, 5000).toFixed(1)); invalidate(); dirtyInsp = true; return; }
   if (P_.layer) {
     const L = P_.layer, f = d / P_.d0; let r = P_.r0 + (ang - P_.a0) / D2R;
     if (Math.abs(((r % 90) + 90) % 90) < 3 || Math.abs(((r % 90) + 90) % 90) > 87) r = Math.round(r / 90) * 90;
@@ -2526,7 +2538,7 @@ function pickColor(cb, ctx = {}) {
   let off = null;
   if (ctx.L && ctx.key && ctx.key.startsWith('fx:')) { const fid = ctx.key.split(':')[1], f = ctx.L.fx.find(o => o.id === fid); if (f && f.on) { off = f; f.on = false; } }
   try { renderOffscreen(pr, PICK.cv, PICK.x, S.time, PICK.store); } finally { if (off) off.on = true; }
-  if (S.playing) pause(); S.pen = null; S.anchorEdit = false; S.maskEdit = false;
+  if (S.playing) pause(); S.pen = null; S.anchorEdit = false; S.fillEdit = false; S.maskEdit = false;
   S.pick = { cb, k, reopen: S.mode === 'mobile' && $('#inspector').classList.contains('open') };
   if (S.mode === 'mobile') $('#inspector').classList.remove('open');
   view.style.cursor = 'crosshair'; updateHud(); dirtyView = true;
@@ -2568,6 +2580,20 @@ function anchorTo(L, cx, cy, m) {
   if (best) { ax = best.px; ay = best.py; } setAnchor(L, +ax.toFixed(1), +ay.toFixed(1));
 }
 function setAnchorEdit(on) { S.anchorEdit = !!on && !!selL(); if (S.anchorEdit && S.mode === 'mobile') $('#inspector').classList.remove('open'); updateHud(); dirtyView = true; refreshInspector(); }
+/* 사진 채우기: 화면에서 사진을 직접 끌어 위치를, 휠·두 손가락으로 크기를 — 키프레임이 있으면 그 시간에 키프레임으로 */
+const fillPhoto = L => !!(L && (L.type === 'shape' || L.type === 'path') && L.shape && L.shape.fillType === 'image' && MEDIA.get(L.shape.fillMedia) && L.p.fis);
+function fillRect(L, t) { const M = MEDIA.get(L.shape.fillMedia), g = shapeGeom(L, t), bb = g.bb; const cover = L.shape.fillFit !== 'contain', k0 = cover ? Math.max(bb.w / M.w, bb.h / M.h) : Math.min(bb.w / M.w, bb.h / M.h), k = k0 * pv(L.p.fis, t) / 100; return { M, cx: bb.x + bb.w / 2 + pv(L.p.fix, t), cy: bb.y + bb.h / 2 + pv(L.p.fiy, t), w: M.w * k, h: M.h * k }; }
+function setFillEdit(on) { S.fillEdit = !!on && fillPhoto(selL()); if (S.fillEdit) { S.anchorEdit = false; S.maskEdit = false; if (S.mode === 'mobile') $('#inspector').classList.remove('open'); } updateHud(); dirtyView = true; refreshInspector(); }
+function drawFillEdit(x, m, L) {
+  const t = S.time, r = fillRect(L, t), LM = layerMatrix(L, t);
+  x.save(); x.transform(m.z, 0, 0, m.z, m.ox, m.oy); x.transform(LM.a, LM.b, LM.c, LM.d, LM.e, LM.f);
+  const sc = Math.sqrt(Math.abs(LM.a * LM.d - LM.b * LM.c)) * m.z || 1;
+  x.globalAlpha = .38; try { x.drawImage(r.M.el, r.cx - r.w / 2, r.cy - r.h / 2, r.w, r.h); } catch (e) { } x.globalAlpha = 1;
+  x.strokeStyle = '#ffbf47'; x.lineWidth = 2 / sc; x.setLineDash([6 / sc, 4 / sc]); x.strokeRect(r.cx - r.w / 2, r.cy - r.h / 2, r.w, r.h); x.setLineDash([]);
+  const g = shapeGeom(L, t); x.lineWidth = 2 / sc; x.strokeStyle = 'rgba(255,255,255,.9)'; x.stroke(g.path);
+  const a = 14 / sc; x.lineWidth = 5 / sc; x.strokeStyle = '#000'; x.beginPath(); x.moveTo(r.cx - a, r.cy); x.lineTo(r.cx + a, r.cy); x.moveTo(r.cx, r.cy - a); x.lineTo(r.cx, r.cy + a); x.stroke();
+  x.lineWidth = 2.2 / sc; x.strokeStyle = '#ffbf47'; x.stroke(); x.restore();
+}
 function drawAnchorEdit(x, m, L) {
   const t = S.time, M = layerMatrix(L, t), b = layerBounds(L, t), sp = (lx, ly) => { const q = M.transformPoint(new DOMPoint(lx, ly)); return toScr(m, q.x, q.y); };
   const c = [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]].map(([a, d]) => sp(a, d));
@@ -2612,6 +2638,11 @@ function updateHud() {
     hud.append(h('span', { class: 'chip modebadge' }, S.pen.target === 'mask' ? '마스크 그리기' : '펜 그리기'),
       h('span', { class: 'chip' }, `점 ${S.pen.pts.length}개. 첫 점을 누르면 닫힙니다`),
       h('button', { class: 'chip', onclick: finishPen }, '완료'), h('button', { class: 'chip', onclick: () => { S.pen = null; updateHud(); dirtyView = true; } }, '취소'));
+  } else if (S.fillEdit) {
+    const L = selL(), anim = L && ['fix', 'fiy', 'fis'].some(k => L.p[k] && L.p[k].k.length);
+    hud.append(h('span', { class: 'chip modebadge' }, '사진 위치 조절'), h('span', { class: 'chip' }, (S.mode === 'mobile' ? '끌어서 위치 · 두 손가락으로 크기' : '끌어서 위치 · 휠로 크기') + (anim || S.autoKey ? ' · 지금 시간에 키프레임' : '')),
+      h('button', { class: 'chip', onclick: () => { const L = selL(); if (!L) return; ['fix', 'fiy', 'fis'].forEach(k => upsertKey(L.p[k], S.time, pv(L.p[k], S.time))); L.open = true; commit(); dirtyTL = true; refreshInspector(); updateHud(); toast('사진 위치·크기 키프레임을 넣었어요. 시간을 옮긴 뒤 다시 끌면 움직임이 돼요'); } }, '◆ 키프레임'),
+      h('button', { class: 'chip', onclick: () => setFillEdit(false) }, '완료'));
   } else if (S.anchorEdit) {
     hud.append(h('span', { class: 'chip modebadge' }, '중심점 이동'), h('span', { class: 'chip' }, '화면을 끌어 중심점을 옮깁니다. 모서리와 가운데에 스냅됩니다'), h('button', { class: 'chip', onclick: () => setAnchorEdit(false) }, '완료'));
   } else if (S.puppet) { puppetHud(hud);
@@ -3566,8 +3597,11 @@ function stylePanel(L) {
         f.push(h('p', { class: 'hint', style: 'color:var(--fg2)' }, M ? `${M.name}` : '사진을 찾을 수 없어요. 다시 골라 주세요.'),
           h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('image') + '사진 바꾸기', onclick: pickFill })),
           pillsRow('맞춤', [{ v: 'cover', l: '꽉 채우기' }, { v: 'contain', l: '전체 보이기' }], s.fillFit === 'contain' ? 'contain' : 'cover', v => { s.fillFit = v; commit(); invalidate(); }),
-          numRow(L, 'fis'), numRow(L, 'fix'), numRow(L, 'fiy'),
-          h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('center') + '가운데로', onclick: () => { L.p.fix.k = []; L.p.fix.v = 0; L.p.fiy.k = []; L.p.fiy.v = 0; L.p.fis.k = []; L.p.fis.v = 100; rf(); } })));
+          h('div', { class: 'btnrow' }, h('button', { class: 'btn sm' + (S.fillEdit ? ' primary' : ''), html: icon('move') + (S.fillEdit ? '조절 끝내기' : '화면에서 사진 움직이기'), onclick: () => setFillEdit(!S.fillEdit) }),
+            h('button', { class: 'btn sm', html: icon('kf') + '키프레임 넣기', onclick: () => { ['fix', 'fiy', 'fis'].forEach(k => upsertKey(L.p[k], S.time, pv(L.p[k], S.time))); L.open = true; commit(); dirtyTL = true; rf(); toast('지금 시간에 사진 위치·크기 키프레임을 넣었어요'); } })),
+          numRow(L, 'fis'), numRow(L, 'fix', { min: -1500, max: 1500 }), numRow(L, 'fiy', { min: -1500, max: 1500 }),
+          h('p', { class: 'hint' }, '사진이 도형 안에서 움직이게 하려면: ‘키프레임 넣기’ → 시간을 옮기고 → 사진을 끌어 옮기세요. 그 사이는 알아서 이어져요.'),
+          h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('center') + '가운데로', onclick: () => { setValUI(L, 'fix', 0); setValUI(L, 'fiy', 0); setValUI(L, 'fis', 100); commit(); rf(); } }), h('button', { class: 'btn sm', html: icon('close') + '움직임 지우기', onclick: () => { ['fix', 'fiy', 'fis'].forEach(k => { const q = L.p[k]; q.v = pv(q, S.time); q.k = []; }); commit(); dirtyTL = true; rf(); } })));
       }
       else if (s.fillType !== 'none') f.push(colorRow(L, 'fill', { palette: true, label: s.fillType === 'solid' ? '색' : '색 1' }));
       if (s.fillType !== 'none') f.push(numRow(L, 'fop'));
@@ -3801,7 +3835,7 @@ function resetHistory() { Hist.stack = []; Hist.idx = -1; commit(); }
 function select(id, keepKeys) {
   if (S.puppet && id !== S.puppet.lid) endPuppet(true);
   if (MS.on && !MS.lock && !(id && MS.ids.has(id))) msExit();
-  if (S.sel !== id) { S.sel = id; if (!keepKeys) S.selK = []; S.maskEdit = false; S.anchorEdit = false; updateHud(); if (id) { const L = findL(id); if (L && L.type === 'audio' && (S.tab === 'mask')) S.tab = 'transform'; } }
+  if (S.sel !== id) { S.sel = id; if (!keepKeys) S.selK = []; S.maskEdit = false; S.anchorEdit = false; S.fillEdit = false; updateHud(); if (id) { const L = findL(id); if (L && L.type === 'audio' && (S.tab === 'mask')) S.tab = 'transform'; } }
   refreshInspector(); ensureGraphKey(); refreshGraphBar(); dirtyView = dirtyTL = dirtyGraph = true; refreshKfBar();
 }
 function refreshKfBar() { dirtyInsp = true; $('#bKf').classList.toggle('on', S.selK.length > 0); const b = $('#bDel'); b.disabled = !S.selK.length && !selL(); b.title = S.selK.length ? `선택한 키프레임 ${S.selK.length}개 삭제 (Delete)` : '선택한 레이어 삭제 (Delete)'; refreshBezInputs(); }
@@ -5526,7 +5560,7 @@ try { const b = JSON.parse(localStorage.getItem('tm_brush') || 'null'); if (b) O
 function saveBrush() { try { localStorage.setItem('tm_brush', JSON.stringify(BRUSH)); } catch (e) { } }
 function startBrush() {
   if (S.brush) { endBrush(); return; }
-  if (S.playing) pause(); closeCtx(); S.pen = null; S.pick = null; S.anchorEdit = false; S.maskEdit = false;
+  if (S.playing) pause(); closeCtx(); S.pen = null; S.pick = null; S.anchorEdit = false; S.fillEdit = false; S.maskEdit = false;
   S.brush = { ids: [], cur: null, t0: S.time };
   if (S.mode === 'mobile') { $('#inspector').classList.remove('open'); $$('#mobilebar button').forEach(b => b.classList.remove('on')); }
   const tb = $('#brushTool'); if (tb) tb.classList.add('on');
@@ -5673,7 +5707,7 @@ function startOutline(L) {
   L = L || selL();
   if (!L || (L.type !== 'image' && L.type !== 'video')) { toast('테두리를 딸 사진이나 영상 레이어를 먼저 선택하세요'); return; }
   const M = MEDIA.get(L.media); if (!M || !M.ready || !M.el) { toast('사진이 아직 불러와지지 않았어요'); return; }
-  if (S.brush) endBrush(); if (S.playing) pause(); S.pen = null; S.anchorEdit = false; S.maskEdit = false; closeCtx();
+  if (S.brush) endBrush(); if (S.playing) pause(); S.pen = null; S.anchorEdit = false; S.fillEdit = false; S.maskEdit = false; closeCtx();
   S.outline = { lid: L.id, cur: null, strokes: [], prev: null, busy: false }; OUTL.sub = false;
   if (S.mode === 'mobile') { $('#inspector').classList.remove('open'); $$('#mobilebar button').forEach(b => b.classList.remove('on')); }
   updateHud(); dirtyView = true;
@@ -6066,7 +6100,24 @@ const XFER = { peer: null, conn: null, CH: 16000 };
 const XPRE = 'tweenymotion-x-';
 async function loadPeer() { if (!window.Peer && !(window.peerjs && window.peerjs.Peer)) await loadScript('https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'); return window.Peer || window.peerjs.Peer; }
 async function loadQR() { if (!window.qrcode) await loadScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'); return window.qrcode; }
-function xferStop() { try { XFER.conn && XFER.conn.close(); } catch (e) { } try { XFER.peer && XFER.peer.destroy(); } catch (e) { } XFER.conn = XFER.peer = null; }
+function xferStop() { (XFER.lanes || []).forEach(c => { try { c && c.close(); } catch (e) { } }); try { XFER.conn && XFER.conn.close(); } catch (e) { } try { XFER.peer && XFER.peer.destroy(); } catch (e) { } XFER.conn = XFER.peer = null; XFER.lanes = null; XFER.sid = null; XFER.started = false; }
+/* 직접 연결이 잘 되도록 STUN 서버를 여러 개 (안 되면 PeerJS 기본 중계 서버로) */
+function xferPeerOpts() {
+  const P = window.peerjs || {}, base = (P.util && P.util.defaultConfig) || { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: ['turn:eu-0.turn.peerjs.com:3478', 'turn:us-0.turn.peerjs.com:3478'], username: 'peerjs', credential: 'peerjsp' }] };
+  const extra = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }, { urls: 'stun:stun.cloudflare.com:3478' }];
+  return { debug: 0, config: Object.assign({}, base, { iceServers: extra.concat((base.iceServers || []).filter(s => String(s.urls).indexOf('turn') >= 0)) }) };
+}
+/* 연결 방식 알아내기: 직접(같은 와이파이·인터넷 직통) / 중계 서버 경유 */
+async function linkKind(conn) {
+  try { const pc = conn.peerConnection; if (!pc) return ''; const rep = await pc.getStats(); let pair = null, loc = {};
+    rep.forEach(r => { if (r.type === 'transport' && r.selectedCandidatePairId) pair = rep.get(r.selectedCandidatePairId); if (r.type === 'local-candidate' || r.type === 'remote-candidate') loc[r.id] = r; });
+    if (!pair) rep.forEach(r => { if (r.type === 'candidate-pair' && r.nominated && r.state === 'succeeded') pair = r; });
+    if (!pair) return ''; const a = loc[pair.localCandidateId], b = loc[pair.remoteCandidateId];
+    if ((a && a.candidateType === 'relay') || (b && b.candidateType === 'relay')) return 'relay';
+    return (a && a.candidateType === 'host' && b && b.candidateType === 'host') ? 'lan' : 'direct';
+  } catch (e) { return ''; }
+}
+const KIND_TXT = { relay: ' · 중계 서버를 거쳐서 느려요 (두 기기를 같은 와이파이에 연결하면 훨씬 빨라요)', lan: ' · 같은 와이파이로 직접 연결', direct: ' · 직접 연결' };
 function xferBar() { const i = h('i'); const el = h('div', { class: 'xbar' }, i); el.set = f => { i.style.width = (clamp(f, 0, 1) * 100).toFixed(1) + '%'; }; return el; }
 async function sendSheet() {
   await saveNow(); xferStop();
@@ -6082,17 +6133,26 @@ async function sendSheet() {
   let Peer; try { Peer = await loadPeer(); } catch (e) { st.textContent = '연결 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요'; st.className = 'xst err'; return; }
   const open = tries => {
     const code = String(Math.floor(100000 + Math.random() * 900000));
-    const peer = new Peer(XPRE + code, { debug: 0 }); XFER.peer = peer;
+    const peer = new Peer(XPRE + code, xferPeerOpts()); XFER.peer = peer;
     peer.on('open', async () => {
       codeEl.textContent = code.slice(0, 3) + ' ' + code.slice(3); st.textContent = '받을 기기를 기다리는 중…'; st.className = 'xst';
       try { const QR = await loadQR(), q = QR(0, 'M'); q.addData('https://tweenymotion.com/#recv=' + code); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) { qr.textContent = ''; }
     });
     peer.on('error', e => { if (e && e.type === 'unavailable-id' && tries < 4) { try { peer.destroy(); } catch (x) { } open(tries + 1); return; } st.textContent = '연결에 문제가 생겼어요' + (e && e.type ? ` (${e.type})` : '') + '. 창을 닫았다가 다시 열어 주세요'; st.className = 'xst err'; });
     peer.on('connection', conn => {
-      const raw = conn.serialization === 'raw', pack = m => raw ? JSON.stringify(m) : m;
+      const raw = conn.serialization === 'raw', pack = m => raw ? JSON.stringify(m) : m, md = conn.metadata || {};
+      if (md.x === 'tm3') { // 여러 갈래(동시에 여러 연결)로 나눠 보내기
+        if (XFER.sid && XFER.sid !== md.sid) { conn.on('open', () => { conn.send(pack({ t: 'busy' })); setTimeout(() => conn.close(), 300); }); return; }
+        XFER.sid = md.sid; XFER.lanes = XFER.lanes || []; XFER.lanes[md.lane] = conn; const want = md.n || 1;
+        const go = () => { if (XFER.started) return; const open = XFER.lanes.filter(c => c && c.open); if (!open.length) return; XFER.started = true; sendProjectFast(open, st, bar, files, total); };
+        conn.on('open', () => { const open = XFER.lanes.filter(c => c && c.open).length; if (open >= want) go(); else if (open === 1) setTimeout(go, 2500); });
+        conn.on('close', () => { if (!st.dataset.done && XFER.started) { st.textContent = '연결이 끊어졌어요'; st.className = 'xst err'; } });
+        conn.on('data', m => { if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { return; } } if (m && m.t === 'ok') { st.dataset.done = 1; st.textContent = '다 보냈어요! 받은 기기에서 프로젝트가 열렸어요'; st.className = 'xst ok'; bar.set(1); } if (m && m.t === 'ready' && XFER.onReady) XFER.onReady(); });
+        return;
+      }
       if (XFER.conn) { conn.on('open', () => { conn.send(pack({ t: 'busy' })); setTimeout(() => conn.close(), 300); }); return; }
       XFER.conn = conn; conn.on('open', () => raw ? sendProjectFast(conn, st, bar, files, total) : sendProjectTo(conn, st, bar, files, total)); conn.on('close', () => { if (!st.dataset.done) { st.textContent = '연결이 끊어졌어요'; st.className = 'xst err'; } });
-      conn.on('data', m => { if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { return; } } if (m && m.t === 'ok') { st.dataset.done = 1; st.textContent = '다 보냈어요! 받은 기기에서 프로젝트가 열렸어요'; st.className = 'xst ok'; bar.set(1); } });
+      conn.on('data', m => { if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { return; } } if (m && m.t === 'ok') { st.dataset.done = 1; st.textContent = '다 보냈어요! 받은 기기에서 프로젝트가 열렸어요'; st.className = 'xst ok'; bar.set(1); } if (m && m.t === 'ready' && XFER.onReady) XFER.onReady(); });
     });
   };
   open(0);
@@ -6100,32 +6160,38 @@ async function sendSheet() {
 /* 빠른 전송: 객체 포장 없이 바이트를 그대로, 큰 조각(최대 256KB)으로 쉬지 않고 흘려보냄. 프로젝트 내용은 gzip으로 압축 */
 async function gzipBytes(u8) { return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()); }
 async function gunzipBytes(u8) { return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()); }
-async function sendProjectFast(conn, st, bar, files, total) {
+async function sendProjectFast(lanes, st, bar, files, total) {
+  if (!Array.isArray(lanes)) lanes = [lanes];
   try {
-    const dc = conn.dataChannel, pc = conn.peerConnection; dc.binaryType = 'arraybuffer';
-    const maxMsg = (pc && pc.sctp && pc.sctp.maxMessageSize) || 65536, CH = Math.max(16384, Math.min(262144, maxMsg)) - 16, HIGH = 12 << 20;
-    dc.bufferedAmountLowThreshold = 4 << 20;
-    const waitLow = () => new Promise((res, rej) => { if (dc.bufferedAmount <= dc.bufferedAmountLowThreshold) return res(); const f = () => { dc.removeEventListener('bufferedamountlow', f); dc.removeEventListener('close', g); res(); }, g = () => { dc.removeEventListener('bufferedamountlow', f); rej(new Error('closed')); }; dc.addEventListener('bufferedamountlow', f); dc.addEventListener('close', g); });
+    const L = lanes.map(conn => { const dc = conn.dataChannel, pc = conn.peerConnection; dc.binaryType = 'arraybuffer'; dc.bufferedAmountLowThreshold = 2 << 20; return { conn, dc, max: (pc && pc.sctp && pc.sctp.maxMessageSize) || 65536 }; });
+    const CH = Math.max(16384, Math.min(262144, ...L.map(l => l.max))) - 16, HIGH = 8 << 20, ctl = L[0].dc;
+    const waitAny = () => new Promise((res, rej) => { const fs = []; const done = ok => { fs.forEach(([dc, f, g]) => { dc.removeEventListener('bufferedamountlow', f); dc.removeEventListener('close', g); }); ok ? res() : rej(new Error('closed')); };
+      L.forEach(({ dc }) => { const f = () => done(true), g = () => done(false); fs.push([dc, f, g]); dc.addEventListener('bufferedamountlow', f); dc.addEventListener('close', g); });
+      if (L.some(({ dc }) => dc.bufferedAmount <= dc.bufferedAmountLowThreshold)) done(true); });
+    const pick = () => { let best = null; for (const l of L) { if (l.dc.readyState !== 'open') throw new Error('closed'); if (!best || l.dc.bufferedAmount < best.dc.bufferedAmount) best = l; } return best; };
     const pr = deep(S.proj); delete pr.embedded;
     let proj = new TextEncoder().encode(JSON.stringify(pr)), gz = false;
     if (window.CompressionStream) { try { proj = await gzipBytes(proj); gz = true; } catch (e) { } }
-    st.textContent = '연결됐어요. 보내는 중…'; st.className = 'xst'; bar.hidden = false; bar.set(0);
-    dc.send(JSON.stringify({ t: 'hello2', gz, projSize: proj.byteLength, files: files.map(M => ({ id: M.id, name: M.name, type: M.type, mime: M.blob.type, size: M.blob.size })) }));
-    const parts = [proj, ...files.map(M => M.blob)], grand = proj.byteLength + total, t0 = performance.now(); let sent = 0, lastUi = 0;
+    const kind = await linkKind(lanes[0]);
+    st.textContent = '연결됐어요. 보내는 중…' + (KIND_TXT[kind] || ''); st.className = 'xst'; bar.hidden = false; bar.set(0);
+    const grand = proj.byteLength + total;
+    const ready = new Promise(r => { XFER.onReady = r; setTimeout(r, 4000); });
+    ctl.send(JSON.stringify({ t: 'hello2', v: 3, lanes: L.length, gz, projSize: proj.byteLength, total: grand, files: files.map(M => ({ id: M.id, name: M.name, type: M.type, mime: M.blob.type, size: M.blob.size })) }));
+    await ready; XFER.onReady = null;
+    const parts = [proj, ...files.map(M => M.blob)], t0 = performance.now(); let sent = 0, lastUi = 0;
     for (let k = 0; k < parts.length; k++) {
       const part = parts[k], size = part.byteLength ?? part.size, SLAB = 8 << 20;
       for (let base = 0; base < size; base += SLAB) {
         const slab = part instanceof Uint8Array ? part.subarray(base, base + SLAB) : new Uint8Array(await part.slice(base, base + SLAB).arrayBuffer());
         for (let o = 0; o < slab.byteLength; o += CH) {
-          if (dc.bufferedAmount > HIGH) await waitLow();
-          if (dc.readyState !== 'open') throw new Error('closed');
+          let l = pick(); if (l.dc.bufferedAmount > HIGH) { await waitAny(); l = pick(); }
           const n = Math.min(CH, slab.byteLength - o), msg = new Uint8Array(12 + n), dv = new DataView(msg.buffer);
-          dv.setUint32(0, k); dv.setFloat64(4, base + o); msg.set(slab.subarray(o, o + n), 12); dc.send(msg.buffer); sent += n;
-          const now = performance.now(); if (now - lastUi > 150) { lastUi = now; bar.set(grand ? sent / grand : 1); st.textContent = `보내는 중… ${fmtBytes(sent)} / ${fmtBytes(grand)} · ${fmtBytes(sent / Math.max(.05, (now - t0) / 1000))}/초`; }
+          dv.setUint32(0, k); dv.setFloat64(4, base + o); msg.set(slab.subarray(o, o + n), 12); l.dc.send(msg.buffer); sent += n;
+          const now = performance.now(); if (now - lastUi > 200) { lastUi = now; bar.set(grand ? sent / grand : 1); st.textContent = `보내는 중… ${fmtBytes(sent)} / ${fmtBytes(grand)} · ${fmtBytes(sent / Math.max(.05, (now - t0) / 1000))}/초` + (kind === 'relay' ? ' · 중계 서버 경유' : '') + (L.length > 1 ? ` · ${L.length}갈래` : ''); }
         }
       }
     }
-    dc.send(JSON.stringify({ t: 'done' })); bar.set(1); st.textContent = '거의 다 됐어요. 받는 기기에서 여는 중…';
+    ctl.send(JSON.stringify({ t: 'done', total: grand })); bar.set(1); st.textContent = '거의 다 됐어요. 받는 기기에서 여는 중…';
   } catch (e) { console.warn(e); st.textContent = '보내다가 끊어졌어요. 다시 시도해 주세요'; st.className = 'xst err'; }
 }
 async function sendProjectTo(conn, st, bar, files, total) {
@@ -6161,50 +6227,61 @@ function recvSheet(prefill) {
     const code = inp.value.replace(/\D/g, ''); if (code.length !== 6) { st.textContent = '번호 6자리를 모두 넣어 주세요'; st.className = 'xst err'; return; }
     if (busy) return; busy = true; go.disabled = true; st.textContent = '보내는 기기를 찾는 중…'; st.className = 'xst';
     let Peer; try { Peer = await loadPeer(); } catch (e) { fail('연결 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요'); return; }
-    const peer = new Peer(undefined, { debug: 0 }); XFER.peer = peer; let got = false;
+    const peer = new Peer(undefined, xferPeerOpts()); XFER.peer = peer; let got = false;
     const to = setTimeout(() => { if (!got) fail('보내는 기기를 찾지 못했어요. 번호가 맞는지, 보내는 기기의 창이 열려 있는지 확인해 주세요'); }, 20000);
     peer.on('error', e => { clearTimeout(to); fail(e && e.type === 'peer-unavailable' ? '이 번호의 기기를 찾을 수 없어요. 보내는 기기에서 창이 열려 있는지 확인해 주세요' : '연결에 문제가 생겼어요' + (e && e.type ? ` (${e.type})` : '')); });
     peer.on('open', () => {
-      const conn = peer.connect(XPRE + code, { reliable: true, serialization: 'raw' }); XFER.conn = conn;
-      receiveInto(conn, st, bar, () => { got = true; clearTimeout(to); }, ok => { if (ok) setTimeout(() => close(), 900); else fail('받다가 끊어졌어요. 다시 시도해 주세요'); });
+      const sid = Math.random().toString(36).slice(2), K = 4, conns = [];
+      for (let i = 0; i < K; i++) conns.push(peer.connect(XPRE + code, { reliable: true, serialization: 'raw', metadata: { x: 'tm3', lane: i, n: K, sid } }));
+      XFER.lanes = conns; XFER.conn = conns[0];
+      receiveInto(conns, st, bar, () => { got = true; clearTimeout(to); }, ok => { if (ok) setTimeout(() => close(), 900); else fail('받다가 끊어졌어요. 다시 시도해 주세요'); });
     });
   }
   if (prefill && prefill.length === 6) setTimeout(start, 200);
 }
-function receiveInto(conn, st, bar, onFirst, onEnd) {
-  let meta = null, bufs = {}, got = 0, total = 0, finished = false;
-  conn.on('open', () => { st.textContent = '연결됐어요. 받는 중…'; });
-  conn.on('close', () => { if (!finished) onEnd(false); });
-  let fast = null, lastUi = 0, t0 = 0; // 빠른 전송(바이트 그대로)
-  conn.on('data', async m => {
-    if (m instanceof ArrayBuffer || ArrayBuffer.isView(m)) {
-      if (!fast) return; const ab = m instanceof ArrayBuffer ? m : m.buffer.slice(m.byteOffset, m.byteOffset + m.byteLength), dv = new DataView(ab), k = dv.getUint32(0), off = dv.getFloat64(4), n = ab.byteLength - 12;
-      if (fast.bufs[k]) fast.bufs[k].set(new Uint8Array(ab, 12), off); fast.got += n;
-      const now = performance.now(); if (now - lastUi > 150 || fast.got === fast.total) { lastUi = now; bar.set(fast.total ? fast.got / fast.total : 1); st.textContent = `받는 중… ${fmtBytes(fast.got)} / ${fmtBytes(fast.total)} · ${fmtBytes(fast.got / Math.max(.05, (now - t0) / 1000))}/초`; }
-      return;
-    }
-    if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { return; } }
-    if (m && m.t === 'hello2') { onFirst(); t0 = performance.now(); fast = { gz: m.gz, files: m.files, bufs: [new Uint8Array(m.projSize), ...m.files.map(f => new Uint8Array(f.size))], got: 0, total: m.projSize + m.files.reduce((a, f) => a + f.size, 0) }; bar.hidden = false; bar.set(0); st.textContent = `받는 중… 0 / ${fmtBytes(fast.total)}`; return; }
-    if (m && m.t === 'done' && fast) {
-      try { let pj = fast.bufs[0]; if (fast.gz) pj = await gunzipBytes(pj); meta = { proj: new TextDecoder().decode(pj), files: fast.files }; fast.files.forEach((f, i) => bufs[f.id] = fast.bufs[i + 1]); }
-      catch (e) { console.warn(e); onEnd(false); return; }
-      const send0 = conn.send.bind(conn); conn.send = o => send0(JSON.stringify(o)); // 답장도 바이트 방식으로
-    }
-    if (!m || !m.t) return;
-    if (m.t === 'busy') { st.textContent = '보내는 기기가 이미 다른 기기와 연결돼 있어요'; st.className = 'xst err'; return; }
-    if (m.t === 'hello') { onFirst(); meta = m; total = m.files.reduce((a, f) => a + f.size, 0); m.files.forEach(f => bufs[f.id] = new Uint8Array(f.size)); bar.hidden = false; bar.set(total ? 0 : .5); st.textContent = total ? `받는 중… 0 / ${fmtBytes(total)}` : '받는 중…'; return; }
-    if (m.t === 'c' && meta && bufs[m.id]) { const d = new Uint8Array(m.d); bufs[m.id].set(d, m.o); got += d.byteLength; if (Math.random() < .08 || got === total) { bar.set(got / total); st.textContent = `받는 중… ${fmtBytes(got)} / ${fmtBytes(total)}`; } return; }
-    if (m.t === 'done' && meta) {
-      finished = true; st.textContent = '여는 중…'; bar.set(1);
-      try {
-        for (const f of meta.files) { if (MEDIA.get(f.id)) continue; const blob = new Blob([bufs[f.id]], { type: f.mime || '' }); await loadMedia(blob, f.type, f.id, f.name); }
-        const pr = Object.assign(newProject(), JSON.parse(meta.proj)); delete pr.id; pr.name = pr.name || '받은 프로젝트';
-        await saveNow(); const miss = await loadProjectMedia(pr); startProject(pr); fitView(); tlFit(); await saveNow();
-        try { conn.send({ t: 'ok' }); } catch (e) { }
-        st.textContent = '다 받았어요!'; st.className = 'xst ok'; toast(`‘${pr.name}’을 받았어요. 내 프로젝트에도 저장됐어요` + (miss ? ` (못 받은 파일 ${miss}개)` : ''));
-        onEnd(true);
-      } catch (e) { console.warn(e); onEnd(false); }
-    }
+function receiveInto(connIn, st, bar, onFirst, onEnd) {
+  const conns = Array.isArray(connIn) ? connIn : [connIn];
+  let meta = null, bufs = {}, got = 0, total = 0, finished = false, ctl = conns[0];
+  let fast = null, lastUi = 0, t0 = 0, doneMsg = null, kind = ''; // 빠른 전송(바이트 그대로, 여러 갈래)
+  const reply = (c, o) => { try { c.send(c.serialization === 'raw' ? JSON.stringify(o) : o); } catch (e) { } };
+  const finish = async () => {
+    if (finished) return; finished = true; st.textContent = '여는 중…'; st.className = 'xst'; bar.set(1);
+    try {
+      for (const f of meta.files) { if (MEDIA.get(f.id)) continue; const blob = new Blob([bufs[f.id]], { type: f.mime || '' }); await loadMedia(blob, f.type, f.id, f.name); }
+      const pr = Object.assign(newProject(), JSON.parse(meta.proj)); delete pr.id; pr.name = pr.name || '받은 프로젝트';
+      const miss = await loadProjectMedia(pr); startProject(pr); fitView(); tlFit(); await saveNow();
+      reply(ctl, { t: 'ok' });
+      st.textContent = '다 받았어요!'; st.className = 'xst ok'; toast(`‘${pr.name}’을 받았어요. 내 프로젝트에도 저장됐어요` + (miss ? ` (못 받은 파일 ${miss}개)` : ''));
+      onEnd(true);
+    } catch (e) { console.warn(e); onEnd(false); }
+  };
+  const fastComplete = async () => {
+    if (!fast || !doneMsg || fast.got < fast.total || finished) return;
+    try { let pj = fast.bufs[0]; if (fast.gz) pj = await gunzipBytes(pj); meta = { proj: new TextDecoder().decode(pj), files: fast.files }; fast.files.forEach((f, i) => bufs[f.id] = fast.bufs[i + 1]); }
+    catch (e) { console.warn(e); onEnd(false); return; }
+    finish();
+  };
+  conns.forEach((conn, li) => {
+    conn.on('open', () => { conn._wasOpen = true; if (!fast && !meta) st.textContent = '연결됐어요. 받는 중…'; if (li === 0) linkKind(conn).then(k => { kind = k; }); });
+    conn.on('close', () => { if (finished) return; if (conn === ctl || conn._wasOpen || conns.every(c => !c.open)) onEnd(false); }); // 한 번도 안 열린 갈래는 무시
+    conn.on('data', async m => {
+      if (m instanceof ArrayBuffer || ArrayBuffer.isView(m)) {
+        if (!fast) return; const ab = m instanceof ArrayBuffer ? m : m.buffer.slice(m.byteOffset, m.byteOffset + m.byteLength), dv = new DataView(ab), k = dv.getUint32(0), off = dv.getFloat64(4), n = ab.byteLength - 12;
+        if (fast.bufs[k]) fast.bufs[k].set(new Uint8Array(ab, 12), off); fast.got += n;
+        const now = performance.now(); if (now - lastUi > 200 || fast.got >= fast.total) { lastUi = now; bar.set(fast.total ? fast.got / fast.total : 1); st.textContent = `받는 중… ${fmtBytes(fast.got)} / ${fmtBytes(fast.total)} · ${fmtBytes(fast.got / Math.max(.05, (now - t0) / 1000))}/초` + (KIND_TXT[kind] || ''); }
+        if (fast.got >= fast.total) fastComplete();
+        return;
+      }
+      if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { return; } }
+      if (!m || !m.t) return;
+      if (m.t === 'hello2') { onFirst(); ctl = conn; t0 = performance.now(); fast = { gz: m.gz, files: m.files, bufs: [new Uint8Array(m.projSize), ...m.files.map(f => new Uint8Array(f.size))], got: 0, total: m.projSize + m.files.reduce((a, f) => a + f.size, 0) }; bar.hidden = false; bar.set(0); st.textContent = `받는 중… 0 / ${fmtBytes(fast.total)}`; reply(conn, { t: 'ready' }); return; }
+      if (m.t === 'done' && fast) { doneMsg = m; fastComplete(); return; }
+      if (m.t === 'busy') { if (li === 0) { st.textContent = '보내는 기기가 이미 다른 기기와 연결돼 있어요'; st.className = 'xst err'; } return; }
+      // 예전 방식 (객체로 포장한 16KB 조각)
+      if (m.t === 'hello') { onFirst(); meta = m; total = m.files.reduce((a, f) => a + f.size, 0); m.files.forEach(f => bufs[f.id] = new Uint8Array(f.size)); bar.hidden = false; bar.set(total ? 0 : .5); st.textContent = total ? `받는 중… 0 / ${fmtBytes(total)}` : '받는 중…'; return; }
+      if (m.t === 'c' && meta && bufs[m.id]) { const d = new Uint8Array(m.d); bufs[m.id].set(d, m.o); got += d.byteLength; if (Math.random() < .08 || got === total) { bar.set(got / total); st.textContent = `받는 중… ${fmtBytes(got)} / ${fmtBytes(total)}`; } return; }
+      if (m.t === 'done' && meta) { ctl = conn; finish(); }
+    });
   });
 }
 
@@ -6300,7 +6377,7 @@ function mergeSheet(Ls) {
 /* ================= PUPPET PIN EDITING (퍼펫 핀 꽂기·끌기) ================= */
 function puppetCtx() { const P_ = S.puppet; if (!P_) return null; const L = findL(P_.lid), f = L && L.fx.find(q => q.id === P_.fid); return L && f ? { L, f } : null; }
 function startPuppet(L, f) {
-  if (S.brush) endBrush(); if (S.outline) endOutline(); S.pen = null; S.maskEdit = false; S.anchorEdit = false; if (S.playing) pause();
+  if (S.brush) endBrush(); if (S.outline) endOutline(); S.pen = null; S.maskEdit = false; S.anchorEdit = false; S.fillEdit = false; if (S.playing) pause();
   S.puppet = { lid: L.id, fid: f.id }; if (S.mode === 'mobile') $('#inspector').classList.remove('open');
   updateHud(); refreshInspector(); dirtyView = true; toast(puppetPins(f).length ? '핀을 끌어 휘게 하세요. 시간을 옮기고 다시 끌면 애니메이션이 돼요' : '레이어 위를 눌러 핀을 2개 이상 꽂아 보세요');
 }
