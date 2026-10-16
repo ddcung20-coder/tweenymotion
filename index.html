@@ -2627,7 +2627,7 @@ function autoScrollTL(y, d) { const H = tlc.height / DPR; if (y < d.RUL + 18) TL
 function autoScrollTLX(x, d) { if (S.mode === 'mobile') return; const W = tlc.width / DPR; if (x > W - 24) TL.t0 += 12 / TL.pps; else if (x < d.LW + 12 && TL.t0 > -1) TL.t0 -= 12 / TL.pps; }
 /* Project length follows the layers: when a layer is stretched past the end, the project grows with it.
    Layers that already ran to the old end (backgrounds etc., not video/audio) keep running to the new end. */
-function durSnap(ex) { const pr = S.proj; return { dur: pr.dur, follow: pr.layers.filter(L => L !== ex && L.type !== 'video' && L.type !== 'audio' && Math.abs(L.end - pr.dur) < 1e-3) }; }
+function durSnap(ex) { return { dur: S.proj.dur, follow: [] }; } // 프로젝트만 늘리고, 다른 레이어 길이는 그대로 둠
 function applyDurSnap(sn) {
   if (!sn) return false; const pr = S.proj, fps = pr.fps; let m = sn.dur;
   pr.layers.forEach(L => { if (!sn.follow.includes(L) && L.end > m) m = L.end; });
