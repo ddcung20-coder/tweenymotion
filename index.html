@@ -686,7 +686,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v41</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v41.1</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -741,6 +741,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v41.1</b><span>내보내기 속도를 한 번 더 올렸습니다. 동영상이 든 프로젝트는 매 프레임 찾아가기 대신 재생하면서 프레임을 받아 3배 이상 빠르고, 잔상(에코)·프랙탈 노이즈 같은 무거운 효과도 훨씬 가볍게 계산합니다. 내보내는 중에 어디서 시간이 드는지(그리기·영상·인코더) 보여 줍니다.</span></li>
         <li><b>v41</b><span>내보내기가 빨라졌습니다: 효과가 걸린 레이어는 효과가 닿는 범위만 계산하고, 앞 프레임과 똑같은 프레임은 다시 그리지 않으며, 가능하면 기기의 하드웨어 인코더를 씁니다. 다른 기기로 보내기는 데이터를 큰 조각으로 그대로 흘려보내고 프로젝트 내용을 압축해서 훨씬 빨라졌고, 보내는 속도(초당 용량)가 보입니다.</span></li>
         <li><b>v40.1</b><span>모양 연결의 자동 테두리 추출을 새로 만들었습니다. 사진 가장자리를 배경 견본으로 삼아 물체를 그래프 컷으로 가르고 테두리를 실제 경계선에 붙여서, 배경이 복잡하거나 두 가지 색인 사진도 물체만 정확히 잡습니다.</ 테두리 따기도 강해졌습니다: 출발점을 여러 개 시도해 가장 물체다운 결과를 고르고, 배경 색을 사진 바깥 전체에서 배우고, 색만 다른 경계도 잡습니다. 흐리거나 노이즈가 많은 사진에서 특히 좋아졌습니다.</span></li>
         <li><b>v40</b><span>새 이펙트: 모션 블러(자동)·에코·레벨·커브·프랙탈 노이즈·파티클(불꽃·폭죽·눈·비·반짝이·거품)·오디오 스펙트럼·퍼펫 핀. 글자 물결(텍스트 애니메이터), 도형 합치기·빼기·교차, 영상 거꾸로 재생·시간 리맵이 생겼습니다. 그룹에도 모든 이펙트를 쓸 수 있습니다.</span></li>
@@ -1317,7 +1318,7 @@ function rst(x) {
   x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.globalCompositeOperation = 'source-over';
   if (FILTER_OK && x.filter !== 'none') x.filter = 'none';
   x.shadowColor = 'rgba(0,0,0,0)'; x.shadowBlur = 0; x.shadowOffsetX = 0; x.shadowOffsetY = 0; x.imageSmoothingEnabled = true;
-  x.setLineDash([]); x.lineDashOffset = 0;
+  x.setLineDash([]); x.lineDashOffset = 0; if (x.imageSmoothingQuality !== 'low') x.imageSmoothingQuality = 'low';
 }
 function clr(o) { rst(o.x); o.x.clearRect(0, 0, o.c.width, o.c.height); }
 function copyTo(src, dst) { clr(dst); dst.x.drawImage(src.c, 0, 0); }
@@ -1546,7 +1547,7 @@ function drawContent(x, L, t) {
   } else if (L.type === 'text') drawText(x, L, t);
   else if (L.type === 'image' || L.type === 'video') {
     const M = MEDIA.get(L.media);
-    if (M && M.ready && M.el) { try { x.drawImage(M.type === 'video' ? videoFor(L, M) : M.el, -M.w / 2, -M.h / 2, M.w, M.h); } catch (e) { } }
+    if (M && M.ready && M.el) { try { x.drawImage(M.type === 'video' ? (VFR.get(L.id) || videoFor(L, M)) : M.el, -M.w / 2, -M.h / 2, M.w, M.h); } catch (e) { } }
     else { const w = M ? M.w : 400, hh = M ? M.h : 300; x.fillStyle = '#2a2e3a'; x.fillRect(-w / 2, -hh / 2, w, hh); x.strokeStyle = '#555b6e'; x.lineWidth = 4; x.strokeRect(-w / 2, -hh / 2, w, hh); x.fillStyle = '#8a90a3'; x.font = '600 36px "IBM Plex Sans KR", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(M ? '불러오는 중…' : '미디어 없음', 0, 0); }
   }
 }
@@ -1602,10 +1603,16 @@ const FX_REACH = {
   chroma: p => p.amt + 2, rgbshake: p => p.amt * 1.6 + 2, glitch: p => p.amt + p.rgb * 1.5 + 2, pixelate: p => p.size, halftone: p => p.size, noise: () => 0, sweep: () => 0,
 };
 function layerWindow(L, t) {
-  let reach = 0;
-  for (const f of L.fx) { if (!f.on) continue; const d = FX[f.type]; if (!d || !d.post) continue; const R = FX_REACH[f.type]; if (!R) return null; const p = {}; for (const k in f.p) p[k] = pv(f.p[k], t); const v = R(p); if (!(v >= 0) || !isFinite(v)) return null; reach += v; }
-  const pr = preFx(L, t), m = layerMatrix(L, t, 0, pr), b = deviceBox(m, layerBounds(L, t), 6 + reach * RS, RS);
-  return b.w < 1 || b.h < 1 ? { empty: true } : b;
+  let reach = 0; const times = [t];
+  for (const f of L.fx) {
+    if (!f.on) continue; const d = FX[f.type]; if (!d || !d.post) continue; const p = {}; for (const k in f.p) p[k] = pv(f.p[k], t);
+    if (f.type === 'echo') { const n = Math.round(p.count), dl = Math.max(.001, p.delay); for (let i = 1; i <= n; i++) times.push(t - i * dl); continue; } // 잔상: 지나간 위치들을 모두 포함
+    if (f.type === 'mblur') { const ex = p.shut / 360 / (S.proj.fps || 30); for (let i = 0; i <= 4; i++) times.push(t + (i / 4 - .5) * ex); continue; }
+    const R = FX_REACH[f.type]; if (!R) return null; const v = R(p); if (!(v >= 0) || !isFinite(v)) return null; reach += v;
+  }
+  const bnd = layerBounds(L, t); let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  for (const ti of times) { const b = deviceBox(layerMatrix(L, ti, 0, preFx(L, ti)), bnd, 6 + reach * RS, RS); if (b.w < 1 || b.h < 1) continue; x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.w); y1 = Math.max(y1, b.y + b.h); }
+  return x1 <= x0 ? { empty: true } : { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 }
 function renderWindowed(L, t, win) {
   const bw = Math.min(RW, Math.ceil(win.w / 128) * 128), bh = Math.min(RH, Math.ceil(win.h / 128) * 128), key = bw + 'x' + bh;
@@ -2005,8 +2012,9 @@ function vhash(x, y, z, s) { let h = (x * 374761393 + y * 668265263 + z * 127412
 function vnoise3(x, y, z, s) {
   const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z), xf = x - xi, yf = y - yi, zf = z - zi;
   const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
-  const c = (a, b, c_) => vhash(xi + a, yi + b, zi + c_, s);
-  const x00 = c(0, 0, 0) + (c(1, 0, 0) - c(0, 0, 0)) * u, x10 = c(0, 1, 0) + (c(1, 1, 0) - c(0, 1, 0)) * u, x01 = c(0, 0, 1) + (c(1, 0, 1) - c(0, 0, 1)) * u, x11 = c(0, 1, 1) + (c(1, 1, 1) - c(0, 1, 1)) * u;
+  const c000 = vhash(xi, yi, zi, s), c100 = vhash(xi + 1, yi, zi, s), c010 = vhash(xi, yi + 1, zi, s), c110 = vhash(xi + 1, yi + 1, zi, s);
+  const c001 = vhash(xi, yi, zi + 1, s), c101 = vhash(xi + 1, yi, zi + 1, s), c011 = vhash(xi, yi + 1, zi + 1, s), c111 = vhash(xi + 1, yi + 1, zi + 1, s);
+  const x00 = c000 + (c100 - c000) * u, x10 = c010 + (c110 - c010) * u, x01 = c001 + (c101 - c001) * u, x11 = c011 + (c111 - c011) * u;
   const y0 = x00 + (x10 - x00) * v, y1 = x01 + (x11 - x01) * v; return y0 + (y1 - y0) * w;
 }
 const NOISE_CV = document.createElement('canvas');
@@ -2022,7 +2030,7 @@ def('fractal', '프랙탈 노이즈', 'gen', '구름·연기·불·물결 같은
       a = clamp((a - .5) * con + .5 + bri, 0, 1); const i = (y * w + x) * 4;
       d[i] = c1[0] + (c2[0] - c1[0]) * a; d[i + 1] = c1[1] + (c2[1] - c1[1]) * a; d[i + 2] = c1[2] + (c2[2] - c1[2]) * a; d[i + 3] = 255;
     }
-    nx.putImageData(id, 0, 0); const X = E.x; X.imageSmoothingEnabled = true; X.imageSmoothingQuality = 'high';
+    nx.putImageData(id, 0, 0); const X = E.x; X.imageSmoothingEnabled = true; X.imageSmoothingQuality = 'low'; // 부드러운 무늬라 일반 확대로 충분 (고품질 확대는 매우 느림)
     X.globalCompositeOperation = E.o.mode === 'atop' ? 'source-atop' : E.o.mode === 'mul' ? 'multiply' : E.o.mode === 'add' ? 'lighter' : 'source-over';
     if (E.o.mode === 'mul' || E.o.mode === 'add') { clr(E.A); E.A.x.imageSmoothingEnabled = true; E.A.x.drawImage(NOISE_CV, b.x, b.y, b.w, b.h); E.A.x.globalCompositeOperation = 'destination-in'; E.A.x.drawImage(E.c, 0, 0); rst(E.A.x); X.drawImage(E.A.c, 0, 0); }
     else X.drawImage(NOISE_CV, b.x, b.y, b.w, b.h);
@@ -4704,6 +4712,66 @@ function seekVideo(v, time) {
     v.addEventListener('seeked', fin); try { v.currentTime = time; } catch (e) { fin(); } setTimeout(fin, 2500);
   });
 }
+/* 내보낼 때 영상: 매 프레임 '그 시간으로 찾아가기(seek)'는 아주 느려서(키프레임부터 다시 풀어야 함),
+   보이지 않는 플레이어로 빠르게 재생하면서 나오는 프레임을 받아 쓴다 */
+const VFR = new Map();
+class VidPump {
+  constructor(M, rate) {
+    const v = this.v = document.createElement('video'); v.muted = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto'; v.src = M.url;
+    Object.assign(v.style, { position: 'fixed', left: '0', top: '0', width: '2px', height: '2px', opacity: '0.01', pointerEvents: 'none', zIndex: '-1' }); document.body.append(v);
+    this.rate = rate; this.q = []; this.cur = null; this.ended = false; this.wake = null; this.started = false; this.dead = false;
+    v.addEventListener('ended', () => { this.ended = true; this._wake(); });
+  }
+  _wake() { const w = this.wake; this.wake = null; if (w) w(); }
+  _grab() {
+    if (this.dead) return;
+    this.v.requestVideoFrameCallback((now, meta) => {
+      if (this.dead) return; let f = null;
+      try { f = window.VideoFrame ? new VideoFrame(this.v, { timestamp: Math.round(meta.mediaTime * 1e6) }) : null; } catch (e) { f = null; }
+      if (f) { this.q.push({ t: meta.mediaTime, f }); if (this.q.length >= 10) this.v.pause(); this._wake(); }
+      this._grab();
+    });
+  }
+  async start(mt) {
+    const v = this.v; if (v.readyState < 1) await new Promise(r => { v.addEventListener('loadedmetadata', r, { once: true }); setTimeout(r, 4000); });
+    await seekVideo(v, Math.max(0, mt - .15)); v.playbackRate = this.rate; this._grab(); this.started = true; await v.play();
+  }
+  async frameAt(mt, tol) {
+    if (!this.started) await this.start(mt);
+    const t0 = performance.now();
+    for (;;) {
+      while (this.q.length && this.q[0].t <= mt + tol) { if (this.cur) this.cur.f.close(); this.cur = this.q.shift(); }
+      if (this.q.length < 5 && this.v.paused && !this.ended) this.v.play().catch(() => { });
+      // 재생 중 화면에 못 나온(건너뛴) 프레임이면 miss → 그 프레임만 정확히 찾아가서 씀
+      if (this.cur && (this.q.length || this.ended)) return this.cur.t < mt - tol * 1.6 && !this.ended ? 'miss' : this.cur.f;
+      if (!this.cur && this.q.length) return 'miss';
+      if (this.ended) return this.cur ? this.cur.f : null;
+      if (performance.now() - t0 > 5000) throw new Error('video pump stalled');
+      await new Promise(r => { this.wake = r; setTimeout(r, 300); });
+    }
+  }
+  close() { this.dead = true; this.q.forEach(o => o.f.close()); if (this.cur) this.cur.f.close(); this.q = []; this.cur = null; try { this.v.pause(); this.v.removeAttribute('src'); this.v.load(); } catch (e) { } this.v.remove(); }
+}
+function makePumps(fps) {
+  const pumps = new Map(); if (!window.VideoFrame || !('requestVideoFrameCallback' in HTMLVideoElement.prototype)) return pumps;
+  S.proj.layers.forEach(L => { if (L.type !== 'video' || !L.visible || seekDriven(L)) return; const M = MEDIA.get(L.media); if (!M || !M.ready || !M.url) return; pumps.set(L.id, new VidPump(M, clamp(L.speed || 1, .25, 4))); });
+  return pumps;
+}
+async function prepVideosFast(t, pumps, fps) {
+  const slow = [];
+  for (const L of S.proj.layers) {
+    if (L.type !== 'video' || !L.visible) continue; const P = pumps.get(L.id);
+    if (!layerActive(L, t)) { if (P && P.started) { VFR.delete(L.id); } continue; }
+    if (!P || P.failed) { slow.push(L); VFR.delete(L.id); continue; }
+    try {
+      const f = await P.frameAt(mediaTime(L, t), .5 / fps * (L.speed || 1)); P.n = (P.n || 0) + 1;
+      if (f === 'miss') { P.miss = (P.miss || 0) + 1; VFR.delete(L.id); slow.push(L); if (P.n > 30 && P.miss > P.n * .3) { P.failed = true; P.close(); } }
+      else if (f) VFR.set(L.id, f); else VFR.delete(L.id);
+    }
+    catch (e) { console.warn(e); P.failed = true; VFR.delete(L.id); slow.push(L); }
+  }
+  if (slow.length) await Promise.all(slow.map(L => { const M = MEDIA.get(L.media); if (!M || !M.ready) return null; const v = videoFor(L, M); if (!v.paused) v.pause(); return seekVideo(v, clamp(mediaTime(L, t), 0, Math.max(0, (M.dur || 1) - .03))); }));
+}
 async function prepVideos(t) {
   const jobs = [];
   S.proj.layers.forEach(L => { if (L.type !== 'video' || !L.visible || !layerActive(L, t)) return; const M = MEDIA.get(L.media); if (!M || !M.ready) return; const v = videoFor(L, M); if (!v.paused) v.pause(); jobs.push(seekVideo(v, clamp(mediaTime(L, t), 0, Math.max(0, (M.dur || 1) - .03)))); });
@@ -4756,20 +4824,22 @@ async function exportMP4(st, prog, cancelled) {
   const muxer = new Mp4Muxer.Muxer({ target: new Mp4Muxer.ArrayBufferTarget(), video: { codec: 'avc', width: W, height: H }, audio: acfg ? { codec: acfg.codec === 'opus' ? 'opus' : 'aac', numberOfChannels: 2, sampleRate: 48000 } : undefined, fastStart: 'in-memory', firstTimestampBehavior: 'offset' });
   let err = null; const enc = new VideoEncoder({ output: (c, m) => muxer.addVideoChunk(c, m), error: e => err = e }); enc.configure(cfg);
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d');
-  let prevKey = null, lastYield = performance.now(), skipped = 0; const t0 = performance.now();
+  let prevKey = null, lastYield = performance.now(), skipped = 0, tVid = 0, tDraw = 0, tEnc = 0; const t0 = performance.now(); const pumps = makePumps(fps);
+  try {
   const drained = () => new Promise(r => { const f = () => { if (enc.encodeQueueSize <= 12) { enc.removeEventListener('dequeue', f); r(); } }; enc.addEventListener('dequeue', f); f(); });
   for (let i = 0; i < N; i++) {
     if (cancelled() || err) break; const t = i / fps;
     const key = frameKey(t);
     if (i && sameKey(key, prevKey)) skipped++; // 앞 프레임과 똑같으면 그대로 다시 씀
-    else { await prepVideos(t); renderFrame(cv, x, t, W / pr.w); }
+    else { const a = performance.now(); await prepVideosFast(t, pumps, fps); const b = performance.now(); renderFrame(cv, x, t, W / pr.w); tVid += b - a; tDraw += performance.now() - b; }
     prevKey = key;
     const vf = new VideoFrame(cv, { timestamp: Math.round(i * 1e6 / fps), duration: Math.round(1e6 / fps) }); enc.encode(vf, { keyFrame: i % (fps * 2) === 0 }); vf.close();
-    if (enc.encodeQueueSize > 12) await drained();
+    if (enc.encodeQueueSize > 12) { const a = performance.now(); await drained(); tEnc += performance.now() - a; }
     const now = performance.now();
-    if (now - lastYield > 40) { const sp = (i + 1) / ((now - t0) / 1000); prog.set((i + 1) / N, `프레임 ${i + 1} / ${N} · 초당 ${sp.toFixed(0)}프레임`, cv); lastYield = now; await yieldNow(); }
+    if (now - lastYield > 40) { const sp = (i + 1) / ((now - t0) / 1000); prog.set((i + 1) / N, `프레임 ${i + 1} / ${N} · 초당 ${sp.toFixed(0)}프레임`, cv); const k = 1 / (i + 1); prog.label(`프레임당 그리기 ${(tDraw * k).toFixed(0)}ms` + (tVid > 1 ? ` · 영상 ${(tVid * k).toFixed(0)}ms` : '') + (tEnc > 1 ? ` · 인코더 대기 ${(tEnc * k).toFixed(0)}ms` : '') + (skipped ? ` · 같은 화면 ${skipped}장 재사용` : '')); lastYield = now; await yieldNow(); }
   }
-  prog.set(1, `프레임 ${N} / ${N}`, cv); if (window.EXPORT_STATS) window.EXPORT_STATS = { ms: performance.now() - t0, N, skipped, hw: cfg.hardwareAcceleration };
+  } finally { pumps.forEach(P => P.close()); VFR.clear(); }
+  prog.set(1, `프레임 ${N} / ${N}`, cv); if (window.EXPORT_STATS) window.EXPORT_STATS = { ms: performance.now() - t0, N, skipped, hw: cfg.hardwareAcceleration, tDraw, tVid, tEnc };
   if (cancelled()) { try { enc.close(); } catch (e) { } return null; }
   await enc.flush(); if (err) throw err;
   if (acfg && abuf) {
