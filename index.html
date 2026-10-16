@@ -478,6 +478,34 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .app[data-mode=mobile] .gbar .btn.keep span{display:inline}
 .gbar #gClose{position:sticky;right:0;z-index:1;box-shadow:-8px 0 8px var(--bg1)}
 .app[data-mode=mobile] .gbar .btn{height:32px}
+/* ---- 모바일 맞춤 (좁은 화면에서 잘리지 않게) ---- */
+.app[data-mode=mobile] #bFull,.app[data-mode=mobile] #bAcct{display:none!important}
+.app[data-mode=mobile] .topbar{gap:2px}
+.app[data-mode=mobile] .topbar .spacer{flex:0 0 0}
+.app[data-mode=mobile] .projname{flex:1 1 auto;min-width:36px;max-width:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;font-size:13px}
+.app[data-mode=mobile] .plabel{white-space:normal;line-height:1.25;overflow-wrap:anywhere}
+.app[data-mode=mobile].graphmode .bottom{height:min(68vh,640px)}
+.app[data-mode=mobile] .gcanvas{min-height:190px}
+.app[data-mode=mobile] .gbar{flex-wrap:wrap!important;overflow:visible!important;row-gap:6px;padding:6px 8px}
+.app[data-mode=mobile] .gbar .spacer{display:none}
+.app[data-mode=mobile] .gbar .sel{max-width:44vw}
+.app[data-mode=mobile] .gbar #gClose{margin-left:auto}
+.app[data-mode=mobile] .gside{flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important;max-height:40%!important;padding:8px 10px;gap:8px}
+.app[data-mode=mobile] .gside:has(.easeparams:not(:empty)){max-height:42%!important}
+.app[data-mode=mobile] .gside>*{flex:none;max-width:100%}
+.app[data-mode=mobile] .gside .easeparams{min-width:0!important;width:100%;order:-1;max-height:none;overflow:visible;padding-right:0}
+.app[data-mode=mobile] .easegrid{width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;padding-bottom:4px}
+.app[data-mode=mobile] ~ .scrim .mslots{grid-template-columns:1fr}
+.app[data-mode=mobile] ~ .scrim .pconly{display:none!important}
+@media (max-width:420px){
+  .app[data-mode=mobile] #bPrevF,.app[data-mode=mobile] #bNextF,.app[data-mode=mobile] #bDel{display:none}
+  .app[data-mode=mobile] .tc{min-width:62px;font-size:12px;padding:0 2px}
+  .app[data-mode=mobile] .transport .ib{width:32px}
+  .app[data-mode=mobile] #dockSeg button{padding:0 8px}
+  .app[data-mode=mobile] .tabs button{padding:0 9px}
+  .app[data-mode=mobile] #bExport{padding:0 10px}
+}
+@media (max-width:350px){ .app[data-mode=mobile] #bExport span{display:none} }
 .mbtools{display:inline-grid}
 .toast.act{pointer-events:auto;display:flex;align-items:center;gap:10px}
 .toast button{color:var(--acc2);font-weight:600;padding:2px 4px;border-radius:2px}
@@ -618,33 +646,39 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 @media (max-width:400px){#intro .ibar .ver{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 /* ---- tutorial ---- */
-.tut{position:fixed;inset:0;z-index:110;pointer-events:none}
+.tut{position:fixed;inset:0;z-index:260;pointer-events:none}
+body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 .tut[hidden]{display:none}
-.tut-ring{position:fixed;border:2px solid var(--kf);border-radius:6px;box-shadow:0 0 0 9999px rgba(0,0,0,.42);transition:left .25s ease,top .25s ease,width .25s ease,height .25s ease,opacity .2s;pointer-events:none}
+.tut-ring{position:fixed;border:3px solid var(--kf);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.55),0 0 18px rgba(255,191,71,.55);transition:left .25s ease,top .25s ease,width .25s ease,height .25s ease,opacity .2s;pointer-events:none}
 .tut-ring::after{content:"";position:absolute;inset:-6px;border:2px solid var(--kf);border-radius:9px;opacity:0;animation:tut-pulse 1.6s ease-out infinite}
 @keyframes tut-pulse{0%{opacity:.7;transform:scale(.97)}100%{opacity:0;transform:scale(1.08)}}
 .tut-ring.none{border-color:transparent}.tut-ring.none::after{display:none}
-.tut-card{position:fixed;width:300px;max-width:calc(100vw - 24px);background:#2b2b2b;border:1px solid #4a4a4a;border-radius:6px;box-shadow:0 18px 48px rgba(0,0,0,.6);padding:14px 14px 12px;color:var(--fg);font-size:13px;line-height:1.6;pointer-events:auto;word-break:keep-all;transition:left .25s ease,top .25s ease}
-.tut-card .tstep{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--fg3);margin-bottom:6px}
-.tut-card .tch{color:var(--kf);font-weight:600;white-space:nowrap}
-.tut-card .tbar{flex:1;max-width:90px;height:3px;border-radius:2px;background:#4a4a4a;overflow:hidden}.tut-card .tbar i{display:block;height:100%;background:var(--kf);transition:width .3s}
-.tut-card .tx{margin-left:auto;background:none;border:0;color:var(--fg3);font:inherit;font-size:11px;cursor:pointer;padding:2px 4px}.tut-card .tx:hover{color:var(--fg)}
-.tut-card h4{margin:0 0 4px;font-size:15px;font-weight:700;color:#fff}
-.tut-card p{margin:0;color:var(--fg2)}.tut-card p b{color:var(--fg);font-weight:600}
-.tut-card .tkf{display:inline-block;width:9px;height:9px;background:var(--kf);transform:rotate(45deg);margin:0 3px 1px}
-.tut-card .tbtns{display:flex;gap:6px;justify-content:flex-end;margin-top:12px}
-.tut-card .tbtns button{font:inherit;font-size:12.5px;border-radius:3px;padding:6px 12px;cursor:pointer;border:1px solid #4a4a4a;background:#363636;color:var(--fg)}
+.tut-card{position:fixed;width:360px;max-width:calc(100vw - 24px);background:#262626;border:1px solid #505050;border-radius:12px;box-shadow:0 22px 60px rgba(0,0,0,.7);padding:16px 16px 14px;color:var(--fg);font-size:14.5px;line-height:1.6;pointer-events:auto;word-break:keep-all;transition:left .25s ease,top .25s ease;max-height:calc(100vh - 16px);overflow-y:auto}
+.tut-card .tstep{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--fg3);margin-bottom:6px}
+.tut-card .tch{color:#211700;background:var(--kf);font-weight:700;white-space:nowrap;border-radius:20px;padding:2px 9px;font-size:11.5px}
+.tut-card .tnum{font-variant-numeric:tabular-nums}
+.tut-card .tbar{display:block;height:4px;border-radius:2px;background:#444;overflow:hidden;margin:0 0 12px}.tut-card .tbar i{display:block;height:100%;background:var(--kf);transition:width .35s}
+.tut-card .tx{margin-left:auto;background:none;border:0;color:var(--fg2);font:inherit;font-size:12.5px;cursor:pointer;padding:4px 6px;border-radius:4px}.tut-card .tx:hover{color:var(--fg);background:#333}
+.tut-card h4{margin:0 0 6px;font-size:18px;font-weight:800;color:#fff;letter-spacing:-.01em}
+.tut-card p{margin:0;color:#d4d4d4}.tut-card p b{color:#fff;font-weight:700}
+.tut-card .ttip{margin-top:8px;font-size:13px;color:var(--fg2);padding-left:10px;border-left:2px solid #555}
+.tut-card .tdo{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:10px 12px;border-radius:8px;background:rgba(255,191,71,.12);border:1px solid rgba(255,191,71,.45);color:#fff;font-weight:600}
+.tut-card .tdo b{color:var(--kf)}.tut-card .tdo.live{animation:tut-glow 1.6s ease-in-out infinite}
+.tut-card .tdo.good{background:rgba(60,207,145,.14);border-color:rgba(60,207,145,.6)}
+.tut-card .tdo-ic{flex:none;font-size:16px;line-height:1.4}
+@keyframes tut-glow{0%,100%{box-shadow:0 0 0 0 rgba(255,191,71,0)}50%{box-shadow:0 0 0 4px rgba(255,191,71,.18)}}
+.tut-card .tkf{display:inline-block;width:10px;height:10px;background:var(--kf);transform:rotate(45deg);margin:0 3px 1px}
+.tut-card .tbtns{display:flex;gap:8px;align-items:center;margin-top:14px}.tut-card .tsp{flex:1}
+.tut-card .tbtns button{font:inherit;font-size:14px;font-weight:600;border-radius:8px;padding:0 16px;height:40px;cursor:pointer;border:1px solid #555;background:#363636;color:var(--fg)}
 .tut-card .tbtns button:hover{background:#404040}
+.tut-card .tbtns button.ghost{background:none;border-color:transparent;color:var(--fg2);padding:0 8px}
 .tut-card .tbtns button.pri{background:var(--acc);border-color:var(--acc);color:#fff}.tut-card .tbtns button.pri:hover{background:var(--acc2)}
-.tut-card .twait{margin-right:auto;align-self:center;font-size:11.5px;color:var(--fg3);display:flex;align-items:center;gap:6px}
-.tut-card .twait i{width:6px;height:6px;border-radius:50%;background:var(--kf);animation:tut-blink 1s ease-in-out infinite}
-@keyframes tut-blink{50%{opacity:.25}}
-.tut-card.ok{border-color:var(--ok)}.tut-card .tok{color:var(--ok);font-weight:600}
+.tut-card.ok{border-color:var(--ok)}
 .app[data-mode=mobile]~.tut .tut-card,.tut.mob .tut-card{width:auto;left:12px!important;right:12px}
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v38</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v39</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -699,6 +733,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v39</b><span>튜토리얼을 새로 만들었습니다(할 일 상자·이전 버튼·편집 도구 안내). 휴대폰에서 위 막대·재생 막대·그래프 편집기가 잘리지 않게 정리했습니다. 테두리 따기는 다 그은 뒤 완료를 누르면 한꺼번에 분석하고, 클립과 화면 속 물체가 가까운 곳에 딱 붙습니다.</span></li>
         <li><b>v38</b><span>테두리 따기(대충 그으면 테두리에 맞춰 자동으로 잘라 줌), 다른 기기로 바로 보내기(번호·QR), 분할한 클립 사이 화면 전환 9가지(쉐이크 포함), 레이어 여러 개 선택(타임라인 이름 길게 누르기 · PC는 Ctrl+클릭)이 생겼습니다. 계정 저장은 10분마다·저장 버튼·창을 닫을 때 올라갑니다.</span></li>
         <li><b>v37</b><span>스윕 등장·스윕 퇴장 이펙트가 생겼습니다. 모양 연결에서 사진(모양)을 하나만 골라도 무에서 스르륵 생겨나거나 사라지게 만들 수 있습니다.</span></li>
         <li><b>v36</b><span>선택한 레이어는 선택 상자 안 어디를 끌어도 움직입니다. 잠긴 레이어를 누르면 잠겨 있다고 알려 줍니다. 모바일에서 살짝 흔들린 탭도 빈 곳 누르기로 인식해 선택이 풀립니다.</span></li>
@@ -2127,12 +2162,18 @@ view.addEventListener('pointermove', e => {
         const off = [pc.x - p0.x, pc.y - p0.y];
         const xs = [Math.min(...cs.map(p => p.x)), (Math.min(...cs.map(p => p.x)) + Math.max(...cs.map(p => p.x))) / 2, Math.max(...cs.map(p => p.x))].map(v => v - off[0] + dx);
         const ys = [Math.min(...cs.map(p => p.y)), (Math.min(...cs.map(p => p.y)) + Math.max(...cs.map(p => p.y))) / 2, Math.max(...cs.map(p => p.y))].map(v => v - off[1] + dy);
-        const th = 7 / m.z; const lines = [];
-        const tx = [0, S.proj.w / 2, S.proj.w], ty = [0, S.proj.h / 2, S.proj.h];
+        const th = (S.mode === 'mobile' ? 12 : 8) / m.z; const lines = [];
+        if (!drag.tg) { // 다른 레이어의 가장자리·가운데에도 붙음 (한 번만 계산)
+          const tx0 = [0, S.proj.w / 2, S.proj.w], ty0 = [0, S.proj.h / 2, S.proj.h], skip = new Set([L.id, ...(drag.others || []).map(o => o.L.id)]);
+          S.proj.layers.forEach(o => { if (skip.has(o.id) || o.type === 'audio' || o.type === 'group' || o.type === 'adjust' || !o.visible || !layerActive(o, t) || isDescendant(o, L) || isDescendant(L, o)) return;
+            try { const bb = layerBounds(o, t), MM = layerMatrix(o, t), pp = [[bb.x, bb.y], [bb.x + bb.w, bb.y], [bb.x + bb.w, bb.y + bb.h], [bb.x, bb.y + bb.h]].map(([a, c]) => MM.transformPoint(new DOMPoint(a, c))); const X0 = Math.min(...pp.map(p => p.x)), X1 = Math.max(...pp.map(p => p.x)), Y0 = Math.min(...pp.map(p => p.y)), Y1 = Math.max(...pp.map(p => p.y)); if (isFinite(X0)) { tx0.push(X0, (X0 + X1) / 2, X1); ty0.push(Y0, (Y0 + Y1) / 2, Y1); } } catch (er) { } });
+          drag.tg = { tx: tx0, ty: ty0 };
+        }
+        const tx = drag.tg.tx, ty = drag.tg.ty;
         let bx = null; xs.forEach(v => tx.forEach(g => { if (Math.abs(v - g) < th && (bx == null || Math.abs(v - g) < Math.abs(bx.d))) bx = { d: g - v, g }; }));
         let by = null; ys.forEach(v => ty.forEach(g => { if (Math.abs(v - g) < th && (by == null || Math.abs(v - g) < Math.abs(by.d))) by = { d: g - v, g }; }));
         if (bx) { dx += bx.d; lines.push({ v: bx.g }); } if (by) { dy += by.d; lines.push({ h: by.g }); }
-        S.snapLines = lines.length ? lines : null;
+        S.snapLines = lines.length ? lines : null; { const key = (bx ? bx.g : '') + '|' + (by ? by.g : ''); if (lines.length && key !== drag.snapKey) { try { navigator.vibrate && navigator.vibrate(8); } catch (er) { } } drag.snapKey = lines.length ? key : null; }
       }
       const a = drag.pinv.transformPoint(new DOMPoint(drag.start[0], drag.start[1])), b2 = drag.pinv.transformPoint(new DOMPoint(drag.start[0] + dx, drag.start[1] + dy));
       setVal(L, 'x', drag.x0 + b2.x - a.x); setVal(L, 'y', drag.y0 + b2.y - a.y);
@@ -2361,6 +2402,7 @@ function drawTL() {
     x.fillStyle = '#3d9bff'; x.beginPath(); x.moveTo(px - 6, 2); x.lineTo(px + 6, 2); x.lineTo(px + 6, d.RUL - 10); x.lineTo(px, d.RUL - 3); x.lineTo(px - 6, d.RUL - 10); x.closePath(); x.fill();
   }
   if (tld && tld.mode === 'label' && tld.drop != null && tld.r.t === 'L' && (S.mode === 'pc' || tld.reorder)) drawDropMarker(x, d, W, H);
+  if (tld && TL.snapX != null && ['barmove', 'trimS', 'trimE', 'kf'].includes(tld.mode)) { const sx = tX(TL.snapX, d); if (sx >= d.LW && sx <= W) { x.save(); x.strokeStyle = '#ffbf47'; x.lineWidth = 1.5; x.setLineDash([4, 3]); x.beginPath(); x.moveTo(sx, d.RUL); x.lineTo(sx, H); x.stroke(); x.restore(); } }
 }
 function drawTLBase() {
   const d = tlDims(), W = tlc.width / DPR, H = tlc.height / DPR, x = tcx, pr = S.proj, mob = S.mode === 'mobile';
@@ -2472,11 +2514,17 @@ function drawTLBase() {
 let tld = null; const tptrs = new Map(); let tpinch = null, lpTimer = null;
 function tlXY(e) { const r = tlc.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
 function rowAt(y) { return rowLayout().find(r => y >= r.y && y < r.y + r.h); }
-function snapT(t, exclude) {
-  t = Math.round(t * S.proj.fps) / S.proj.fps; if (!S.snap) return t;
-  const th = 7 / TL.pps; const cands = [S.time, 0, S.proj.dur]; S.proj.layers.forEach(L => { if (L !== exclude) cands.push(L.start, L.end); });
-  for (const c of cands) if (Math.abs(c - t) < th) return c; return t;
+/* 자석: 가까운 클립 끝·시작, 플레이헤드, 처음·끝, 다른 레이어 키프레임에 딱 붙음 */
+function snapNear(t, exclude, opt) {
+  const fps = S.proj.fps, raw = t; t = Math.round(t * fps) / fps; if (!S.snap) return { v: t, hit: false, dist: 1e9 };
+  const ex = exclude instanceof Set ? exclude : new Set(exclude ? [exclude] : []), th = (S.mode === 'mobile' ? 16 : 10) / TL.pps;
+  const cands = [0, S.proj.dur]; if (!(opt && opt.noPlayhead)) cands.push(S.time);
+  S.proj.layers.forEach(L => { if (ex.has(L)) return; cands.push(L.start, L.end); if (opt && opt.keys) animatedKeys(L).forEach(k => getProp(L, k).k.forEach(kf => cands.push(kf.t))); });
+  let best = null, bd = th; for (const c of cands) { const dd = Math.abs(c - raw); if (dd < bd) { bd = dd; best = c; } }
+  return best == null ? { v: t, hit: false, dist: 1e9 } : { v: best, hit: true, dist: bd };
 }
+function snapFeedback(v) { TL.snapX = v; if (v != null && v !== TL.lastSnap) { try { navigator.vibrate && navigator.vibrate(8); } catch (e) { } } TL.lastSnap = v; }
+function snapT(t, exclude, opt) { const r = snapNear(t, exclude, opt); snapFeedback(r.hit ? r.v : null); return r.v; }
 function kfHit(r, x, d) {
   const L = r.L;
   if (r.t === 'P') { const p = getProp(L, r.k); if (!p) return null; let best = null; p.k.forEach(kf => { const dx = Math.abs(tX(kf.t, d) - x); if (dx <= d.KR + 4 && (!best || dx < best.dx)) best = { dx, items: [{ lid: L.id, key: r.k, k: kf }] }; }); return best && best.items; }
@@ -2491,7 +2539,7 @@ tlc.addEventListener('pointerdown', e => {
   if (tptrs.size === 2) { const [a, b] = [...tptrs.values()]; tpinch = { d0: Math.abs(b[0] - a[0]) || 1, pps0: TL.pps, c: (a[0] + b[0]) / 2 }; tld = null; clearTimeout(lpTimer); return; }
   const d = tlDims(), mob = S.mode === 'mobile', W = tlc.width / DPR;
   if (S.playing && !mob) pause();
-  if (y < d.RUL) { if (mob) { tld = { mode: 'scroll', x, y, t0: S.time, sy0: TL.sy }; } else { tld = { mode: 'scrub' }; setTime(snapT(xT(x, d))); } return; }
+  if (y < d.RUL) { if (mob) { tld = { mode: 'scroll', x, y, t0: S.time, sy0: TL.sy }; } else { tld = { mode: 'scrub' }; setTime(snapT(xT(x, d), null, { noPlayhead: true })); } return; }
   if (x >= d.LW && TL.junc) { const j = TL.junc.find(o => Math.hypot(x - o.x, y - o.y) <= o.r); if (j && findL(j.A.id) && findL(j.B.id)) { tld = null; transitionSheet(j.A, j.B); return; } }
   const r = rowAt(y);
   if (x < d.LW) {
@@ -2562,7 +2610,7 @@ tlc.addEventListener('pointermove', e => {
   if (!tld) { if (S.mode === 'pc') { if (x < d.LW && y > d.RUL) { const r = rowAt(y); tlc.style.cursor = r && r.t === 'L' && x > 20 && x < d.LW - 50 ? 'grab' : 'default'; return; } const r = y > d.RUL && x > d.LW ? rowAt(y) : null; let c = 'default'; if (r && r.t === 'L') { const L = r.L, bx0 = tX(L.start, d), bx1 = tX(L.end, d); if (Math.abs(x - bx0) < 7 || Math.abs(x - bx1) < 7) c = 'ew-resize'; else if (x > bx0 && x < bx1) c = 'grab'; } tlc.style.cursor = c; } return; }
   const dx = x - (tld.x0 ?? x);
   switch (tld.mode) {
-    case 'scrub': setTime(snapT(clamp(xT(x, d), 0, S.proj.dur))); break;
+    case 'scrub': setTime(snapT(clamp(xT(x, d), 0, S.proj.dur), null, { noPlayhead: true })); break;
     case 'scroll': {
       const ddx = x - tld.x, ddy = y - tld.y; if (Math.hypot(ddx, ddy) > 5) { tld.moved = true; clearTimeout(lpTimer); }
       if (!tld.axis && tld.moved) tld.axis = tld.vOnly ? 'v' : (Math.abs(ddx) > Math.abs(ddy) ? 'h' : 'v');
@@ -2579,7 +2627,7 @@ tlc.addEventListener('pointermove', e => {
     }
     case 'kf': {
       if (Math.abs(dx) > 3) { tld.moved = true; clearTimeout(lpTimer); } if (!tld.moved) return;
-      let dt = dx / TL.pps; const first = tld.orig[0]; const nt = snapT(first + dt); dt = nt - first;
+      let dt = dx / TL.pps; const first = tld.orig[0]; const nt = snapT(first + dt, null, { keys: false }); dt = nt - first;
       const minO = Math.min(...tld.orig); if (minO + dt < 0) dt = -minO;
       if (S.selK.length && new Set(tld.orig).size === 1) { S.time = Math.round((tld.orig[0] + dt) * S.proj.fps) / S.proj.fps; updateTC(); }
       S.selK.forEach((s, i) => { s.k.t = Math.round((tld.orig[i] + dt) * S.proj.fps) / S.proj.fps; });
@@ -2588,12 +2636,13 @@ tlc.addEventListener('pointermove', e => {
     }
     case 'barmove': {
       if (Math.abs(dx) > 3) tld.moved = true; if (!tld.moved) return; const L = tld.L;
-      let ns = tld.s0 + dx / TL.pps; const len = tld.e0 - tld.s0; const sn = snapT(ns, L), se = snapT(ns + len, L);
-      ns = Math.abs(sn - ns) <= Math.abs(se - (ns + len)) ? sn : se - len; ns = Math.round(ns * S.proj.fps) / S.proj.fps;
+      let ns = tld.s0 + dx / TL.pps; const len = tld.e0 - tld.s0, exS = new Set([L, ...tld.kids.map(k => k.L)]);
+      const sa = snapNear(ns, exS, { keys: true }), sb = snapNear(ns + len, exS, { keys: true });
+      if (sa.hit && (!sb.hit || sa.dist <= sb.dist)) { ns = sa.v; snapFeedback(sa.v); } else if (sb.hit) { ns = sb.v - len; snapFeedback(sb.v); } else { ns = Math.round(ns * S.proj.fps) / S.proj.fps; snapFeedback(null); }
       const delta = ns - tld.s0; shiftLayerKeys(L, delta - tld.applied); tld.kids.forEach(k => { shiftLayerKeys(k.L, delta - tld.applied); k.L.start = k.s0 + delta; k.L.end = k.e0 + delta; }); tld.applied = delta; L.start = ns; L.end = ns + len; applyDurSnap(tld.snap); autoScrollTLX(x, d); invalidate(); dirtyInsp = true; break;
     }
-    case 'trimS': { const L = tld.L; let ns = snapT(tld.s0 + dx / TL.pps, L); ns = Math.min(ns, L.end - frameDur()); if (L.type === 'video' || L.type === 'audio') { const ti = tld.ti0 + (ns - tld.s0) * (L.speed || 1); if (ti < 0) ns = tld.s0 - tld.ti0 / (L.speed || 1); L.trimIn = Math.max(0, tld.ti0 + (ns - tld.s0) * (L.speed || 1)); } L.start = ns; invalidate(); dirtyInsp = true; break; }
-    case 'trimE': { if (Math.abs(dx) > 1) tld.moved = true; const L = tld.L; let ne = snapT(tld.e0 + dx / TL.pps, L); ne = Math.max(ne, L.start + frameDur()); L.end = ne; applyDurSnap(tld.snap); autoScrollTLX(x, d); invalidate(); dirtyInsp = true; break; }
+    case 'trimS': { const L = tld.L; let ns = snapT(tld.s0 + dx / TL.pps, L, { keys: true }); ns = Math.min(ns, L.end - frameDur()); if (L.type === 'video' || L.type === 'audio') { const ti = tld.ti0 + (ns - tld.s0) * (L.speed || 1); if (ti < 0) ns = tld.s0 - tld.ti0 / (L.speed || 1); L.trimIn = Math.max(0, tld.ti0 + (ns - tld.s0) * (L.speed || 1)); } L.start = ns; invalidate(); dirtyInsp = true; break; }
+    case 'trimE': { if (Math.abs(dx) > 1) tld.moved = true; const L = tld.L; let ne = snapT(tld.e0 + dx / TL.pps, L, { keys: true }); ne = Math.max(ne, L.start + frameDur()); L.end = ne; applyDurSnap(tld.snap); autoScrollTLX(x, d); invalidate(); dirtyInsp = true; break; }
     case 'marq': {
       TL.marq.x1 = x; TL.marq.y1 = y; const m = TL.marq; const t0 = xT(Math.min(m.x0, m.x1), d), t1 = xT(Math.max(m.x0, m.x1), d), y0 = Math.min(m.y0, m.y1), y1 = Math.max(m.y0, m.y1);
       const sel = [...tld.base];
@@ -2646,7 +2695,7 @@ function drawDropMarker(x, d, W, H) {
   x.fillStyle = '#fff'; x.font = `600 ${mob ? 12.5 : 12}px "IBM Plex Sans KR", sans-serif`; x.textBaseline = 'middle'; x.textAlign = 'left'; x.fillText('↕ ' + L.name, 10, gy + d.RH / 2, d.LW - 16);
 }
 function tlEnd(e) {
-  tptrs.delete(e.pointerId); clearTimeout(lpTimer);
+  tptrs.delete(e.pointerId); clearTimeout(lpTimer); TL.snapX = null; TL.lastSnap = null;
   if (tpinch) { if (tptrs.size < 2) tpinch = null; return; }
   if (!tld) return; const d = tlDims();
   if (tld.mode === 'scroll' && !tld.moved && tld.tapSel) { if (MS.on) msToggle(tld.tapSel); else select(tld.tapSel); }
@@ -4308,6 +4357,7 @@ function openMenu(b) {
 function mainMenu(e) {
   const r = $('#bMenu').getBoundingClientRect();
   openCtx(r.right - 220, r.bottom + 6, [
+    { l: AUTH.user ? `계정 · ${AUTH.user.email || AUTH.user.name || '로그인됨'}` : '계정 · 게스트 (구글로 로그인)', ic: 'user', fn: acctMenu }, '-',
     { l: '내 프로젝트', ic: 'folder', fn: libSheet }, { l: '새 프로젝트', ic: 'newdoc', fn: askNew }, { l: '다른 기기로 보내기', ic: 'send', fn: sendSheet }, { l: '다른 기기에서 받기', ic: 'receive', fn: () => recvSheet() }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample },
     { l: '프로젝트 파일 열기 (.json)', ic: 'folder', fn: () => $('#projIn').click() },
     { l: '프로젝트 파일로 저장', ic: 'export', fn: saveProjectFile },
@@ -5174,7 +5224,7 @@ function updAcct() {
 }
 function acctMenu() {
   authInit();
-  const r = $('#bAcct').getBoundingClientRect(), u = AUTH.user;
+  const r = ($('#bAcct').offsetParent ? $('#bAcct') : $('#bMenu')).getBoundingClientRect(), u = AUTH.user;
   const items = u ? [{ cap: u.email || u.name }, { l: '로그아웃', ic: 'close', fn: authLogout }]
     : [{ cap: '게스트로 사용 중 · 작업은 이 브라우저에 저장돼요' }, { l: '구글로 로그인', ic: 'user', fn: googleLogin }];
   openCtx(Math.max(8, r.right - 240), r.bottom + 6, items);
@@ -5757,75 +5807,66 @@ function tutVisible(el) { if (!el) return null; const r = el.getBoundingClientRe
 const tutSheet = () => { const t = $('#scrim:not([hidden]) .sheet-h h3'); return t ? t.textContent : null; };
 const tutFrows = () => $$('#scrim .sheet-body .frow');
 const tutFileBtn = () => S.mode === 'mobile' ? $('#bMenu') : $('#menus [data-menu="file"]');
+const M_ = () => S.mode === 'mobile';
+const tutCloseUI = () => { if (S.playing) pause(); if (S.dock !== 'timeline') setDock('timeline'); if (M_()) { $('#inspector').classList.remove('open'); $$('#mobilebar button').forEach(b => b.classList.remove('on')); } };
 const TUT_STEPS = [
   /* ---- 시작 ---- */
-  { ch: '시작', title: '트위니 모션 둘러보기', text: () => '화면 구성, 화면 비율 정하기, 첫 애니메이션, 저장과 새 프로젝트까지 차례로 알려 드릴게요. <b>3분</b>쯤 걸려요.<br>막히면 <b>대신 해 주기</b>를 누르면 돼요.', next: '시작하기', center: true },
-  { ch: '화면 구성', title: '캔버스', text: () => '가운데가 <b>캔버스</b>예요. 여기 보이는 그대로 영상이 만들어져요.<br>' + (S.mode === 'mobile' ? '두 손가락으로 벌리면 확대, 좁히면 축소돼요.' : '마우스 휠로 확대·축소하고, 아래 <b>맞춤</b> 버튼(F 키)을 누르면 화면에 딱 맞게 돌아와요.'),
-    target: () => $('.stagewrap'), enter: () => { if (S.playing) pause(); if (S.dock !== 'timeline') setDock('timeline'); if (S.mode === 'mobile') $('#inspector').classList.remove('open'); }, next: '다음' },
-  { ch: '화면 구성', title: '타임라인', text: () => '아래는 <b>타임라인</b>이에요. 레이어가 한 줄씩 쌓이고, 막대의 길이가 그 레이어가 화면에 나오는 구간이에요.<br>파란 세로선이 <b>플레이헤드</b>(지금 보고 있는 시간)예요.', target: () => $('#bottom'), next: '다음' },
-  { ch: '화면 구성', title: () => S.mode === 'mobile' ? '편집 메뉴' : '속성 패널',
-    text: () => S.mode === 'mobile' ? '맨 아래 버튼으로 <b>추가</b>하고, 레이어를 고른 뒤 <b>변형·스타일·이펙트</b>를 눌러 위치, 색, 효과를 바꿔요.' : '여기가 <b>속성 패널</b>이에요. 선택한 레이어의 위치·크기(변형), 색·글꼴(스타일), 이펙트, 마스크를 바꿔요. 아무것도 선택하지 않으면 프로젝트 정보가 보여요.',
-    target: () => S.mode === 'mobile' ? $('#mobilebar') : $('#inspector'), next: '다음' },
-  /* ---- 프로젝트 설정 ---- */
-  { ch: '화면 비율', title: '프로젝트 설정 열기', text: () => '위쪽의 <b>프로젝트 이름</b>을 누르면 화면 비율, 길이, 배경색을 정하는 설정 창이 열려요. 눌러 보세요.',
+  { ch: '시작', title: '트위니 모션에 오신 걸 환영해요', text: () => '2~3분이면 <b>첫 애니메이션</b>을 만들고 <b>영상으로 저장</b>하는 법까지 익힐 수 있어요.<br>노란 테두리가 가리키는 곳을 따라 해 보세요. 막히면 <b>대신 해 주기</b>를 누르면 돼요.', next: '시작하기', center: true, skip: true },
+  /* ---- 화면 구성 ---- */
+  { ch: '화면 구성', title: '① 캔버스', text: () => '여기 보이는 그대로 영상이 만들어져요.', tip: () => M_() ? '두 손가락으로 벌리면 확대, 오므리면 축소돼요.' : '마우스 휠로 확대·축소, F 키로 화면에 맞춰요.',
+    target: () => $('.stagewrap'), enter: tutCloseUI, next: '다음' },
+  { ch: '화면 구성', title: '② 타임라인', text: () => '레이어가 한 줄씩 쌓여요. <b>막대</b>는 그 레이어가 화면에 나오는 시간이고, <b>파란 세로선</b>은 지금 보고 있는 시간(플레이헤드)이에요.', target: () => $('#bottom'), next: '다음' },
+  { ch: '화면 구성', title: () => M_() ? '③ 아래 버튼들' : '③ 도구줄과 속성 패널',
+    text: () => M_() ? '<b>추가</b>로 텍스트·도형·사진을 넣고, 레이어를 고른 뒤 <b>변형·스타일·이펙트·마스크·애니</b>로 바꿔요.' : '위 <b>도구줄</b>로 텍스트·도형·사진을 넣고, 오른쪽 <b>속성 패널</b>에서 위치·색·이펙트를 바꿔요.',
+    target: () => M_() ? $('#mobilebar') : [$('#toolrail'), $('#inspector')], next: '다음' },
+  /* ---- 화면 비율 ---- */
+  { ch: '화면 비율', title: '영상 크기 정하기', text: () => '먼저 만들 영상의 비율을 정해요.', do: () => '위쪽 <b>프로젝트 이름</b>을 눌러 설정을 여세요.',
     target: () => $('#projName'), sheetOk: true, done: () => tutSheet() === '프로젝트 설정', auto: () => projectSheet() },
-  { ch: '화면 비율', title: '화면 비율 고르기', text: () => '만들 영상에 맞는 크기를 골라요.<br><b>세로 9:16</b> 쇼츠·릴스·틱톡 / <b>가로 16:9</b> 유튜브 / <b>정사각 1:1</b>, <b>4:5</b> 인스타 피드<br>원하는 크기가 없으면 바로 아래 <b>직접 입력</b>에 가로·세로 픽셀을 넣으세요.',
-    target: () => $('#scrim .sheet-body .pills'), sheetOk: true, side: true,
-    enter: () => { TUT.pill = $$('#scrim .pills button').findIndex(b => b.classList.contains('on')); },
-    skipIf: () => tutSheet() !== '프로젝트 설정',
-    done: () => { const i = $$('#scrim .pills button').findIndex(b => b.classList.contains('on')); return i >= 0 && i !== TUT.pill; }, next: '다음' },
-  { ch: '화면 비율', title: '길이·프레임·배경색', text: () => '<b>프레임 속도</b>는 보통 30fps면 충분해요(부드럽게 하려면 60). <b>길이</b>는 영상 전체 초, <b>배경색</b>은 빈 곳의 색이에요.<br>다 정했으면 <b>적용</b>을 누르세요.',
+  { ch: '화면 비율', title: '비율 고르기', text: () => '<b>세로 9:16</b> 쇼츠·릴스·틱톡<br><b>가로 16:9</b> 유튜브 · <b>1:1 / 4:5</b> 인스타 피드', tip: () => '원하는 크기가 없으면 아래 직접 입력에 픽셀을 넣어요.',
+    target: () => $('#scrim .sheet-body .pills'), sheetOk: true, side: true, skipIf: () => tutSheet() !== '프로젝트 설정', next: '다음' },
+  { ch: '화면 비율', title: '길이 정하고 적용', text: () => '<b>길이</b>는 영상 전체 초, <b>배경색</b>은 빈 곳의 색이에요. 프레임 속도는 30이면 충분해요.', do: () => '다 정했으면 <b>적용</b>을 누르세요.',
     target: () => { const f = tutFrows(); return [f[f.length - 3], f[f.length - 1], $('#scrim .sheet-f')]; }, sheetOk: true, side: true,
     done: () => tutSheet() !== '프로젝트 설정', auto: () => { const b = $('#scrim .sheet-f .btn.primary'); if (b) b.click(); } },
   /* ---- 첫 애니메이션 ---- */
-  { ch: '첫 애니메이션', title: '도형 추가하기',
-    text: () => (S.mode === 'mobile' ? '아래 <b>추가</b>를 누르고' : '위쪽 도구줄의 <b>도형</b>을 누르고') + ' <b>원</b>이나 <b>사각형</b>을 골라 보세요. 텍스트, 사진도 같은 곳에서 추가해요.',
-    target: () => S.mode === 'mobile' ? $('#mobilebar [data-mb="add"]') : $('#toolrail [data-add="shapes"]'),
-    enter: () => { if (S.playing) pause(); setTime(0); TUT.n0 = S.proj.layers.length; TUT.lid = null; },
+  { ch: '첫 애니메이션', title: '1. 도형 넣기', text: () => '텍스트·사진도 같은 곳에서 넣어요.', do: () => M_() ? '아래 <b>추가</b> → <b>원</b>을 누르세요.' : '도구줄의 <b>도형</b> → <b>원</b>을 누르세요.',
+    target: () => M_() ? $('#mobilebar [data-mb="add"]') : $('#toolrail [data-add="shapes"]'),
+    enter: () => { tutCloseUI(); setTime(0); TUT.n0 = S.proj.layers.length; TUT.lid = null; },
     done: () => { if (S.proj.layers.length > TUT.n0) { const L = selL(); if (L && L.type === 'shape') { TUT.lid = L.id; return true; } } return false; },
-    auto: () => { setTime(0); addPreset('ellipse'); } },
-  { ch: '첫 애니메이션', title: '색 바꾸기', text: () => `${S.mode === 'mobile' ? '아래 스타일 창' : '<b>스타일</b> 탭'}에서 <b>색</b> 칸을 누르거나 아래 색 견본을 골라 도형 색을 바꿔 보세요. 스포이드로 화면 속 색을 집을 수도 있어요.`,
-    target: () => { const c = $('#inspBody .prow[data-key="fill"]'); return c ? c.parentElement : null; },
-    enter: () => { const L = tutLayer(); if (!L) return; if (S.sel !== L.id) select(L.id); setTime(0); openTab('style'); TUT.col = pv(L.p.fill, 0); requestAnimationFrame(() => { const c = $('#inspBody .prow[data-key="fill"]'); if (c) c.parentElement.scrollIntoView({ block: S.mode === 'mobile' ? 'center' : 'nearest' }); }); },
-    done: () => { const L = tutLayer(); return !!L && pv(L.p.fill, 0) !== TUT.col; },
-    auto: () => { const L = tutLayer(); if (!L) return; setValUI(L, 'fill', TUT.col === '#ff6b5b' ? '#ffc53d' : '#ff6b5b'); commit(); invalidate(); updateCtrls(); } },
-  { ch: '첫 애니메이션', title: '시작 위치 기록하기',
-    text: () => `애니메이션은 <b>키프레임</b>(이 시간엔 이 값)을 두 개 찍으면 그 사이를 알아서 채워요.<br>플레이헤드가 <b>0초</b>에 있으니, ${S.mode === 'mobile' ? '변형 창에서' : '<b>변형</b> 탭에서'} <b>위치 X</b> 왼쪽의 <span class="tkf"></span> 버튼을 눌러 지금 위치를 기록하세요.`,
+    auto: () => { if (curSheet) curSheet.close(); setTime(0); addPreset('ellipse'); } },
+  { ch: '첫 애니메이션', title: '2. 시작 위치 찍기', text: () => '애니메이션은 <b>키프레임</b> 두 개로 만들어요. 시작 값과 끝 값만 정하면 그 사이는 알아서 채워져요.', do: () => '<b>위치 X</b> 왼쪽의 <span class="tkf"></span> 를 누르세요.',
     target: () => { const n = $('#n_x'); return n ? n.closest('.prow').querySelector('.kfb') : null; },
-    enter: () => { const L = tutLayer(); if (!L) return; if (S.sel !== L.id) select(L.id); setTime(0); openTab('transform'); requestAnimationFrame(() => { const n = $('#n_x'); if (n) n.closest('.prow').scrollIntoView({ block: 'nearest' }); }); },
+    enter: () => { if (curSheet) curSheet.close(); const L = tutLayer(); if (!L) return; if (S.sel !== L.id) select(L.id); setTime(0); openTab('transform'); requestAnimationFrame(() => { const n = $('#n_x'); if (n) n.closest('.prow').scrollIntoView({ block: 'nearest' }); }); },
     done: () => { const L = tutLayer(); return !!L && (L.p.x.k.length > 0 || L.p.y.k.length > 0); },
     auto: () => { const L = tutLayer(); if (!L) return; setTime(0); toggleKey(L, 'x'); commit(); invalidate(); updateCtrls(); } },
-  { ch: '첫 애니메이션', title: '시간 옮기기', text: () => '타임라인 위쪽 <b>눈금</b>에서 1초 근처를 눌러 플레이헤드를 옮기세요.' + (S.mode === 'pc' ? ' ← → 키로 한 프레임씩 옮길 수도 있어요.' : ''),
-    target: () => $('#tl'),
-    enter: () => { if (S.mode === 'mobile') { $('#inspector').classList.remove('open'); $$('#mobilebar button').forEach(b => b.classList.remove('on')); } if (S.dock !== 'timeline') setDock('timeline'); },
-    done: () => S.time >= 0.4, auto: () => { setTime(Math.min(1, S.proj.dur)); dirtyTL = true; } },
-  { ch: '첫 애니메이션', title: '도형 옮기기', text: () => '이제 캔버스의 도형을 다른 곳으로 끌어 보세요. 위치에 이미 키프레임이 있어서, 이 시간에 <b>키프레임이 자동으로</b> 하나 더 생겨요.',
+  { ch: '첫 애니메이션', title: '3. 시간 옮기기', text: () => '끝 값을 정할 시간으로 가요.', do: () => M_() ? '타임라인을 <b>왼쪽으로 밀어서</b> 1초쯤으로 가세요.' : '타임라인 위 <b>눈금</b>의 1초 근처를 누르세요.',
+    target: () => $('#tl'), enter: tutCloseUI, done: () => S.time >= 0.4, auto: () => { setTime(Math.min(1, S.proj.dur)); dirtyTL = true; } },
+  { ch: '첫 애니메이션', title: '4. 도형 옮기기', text: () => '위치에 키프레임이 있어서, 지금 시간에 <b>키프레임이 자동으로</b> 하나 더 생겨요.', do: () => '캔버스의 도형을 <b>다른 곳으로 끄세요.</b>',
     target: () => $('#stage'), inside: true,
-    enter: () => { const L = tutLayer(); if (L && S.sel !== L.id) select(L.id); if (S.mode === 'mobile') $('#inspector').classList.remove('open'); },
+    enter: () => { const L = tutLayer(); if (L && S.sel !== L.id) select(L.id); if (M_()) $('#inspector').classList.remove('open'); },
     done: () => { const L = tutLayer(); if (!L) return false; return ['x', 'y'].some(k => { const p = L.p[k]; return p.k.length >= 2 && Math.abs(p.k[p.k.length - 1].v - p.k[0].v) > 2; }); },
     auto: () => { const L = tutLayer(); if (!L) return; if (S.time < 0.4) setTime(Math.min(1, S.proj.dur)); const x0 = pv(L.p.x, 0); setVal(L, 'x', x0 + S.proj.w * (x0 > S.proj.w * .55 ? -.3 : .3)); commit(); invalidate(); dirtyInsp = dirtyTL = true; } },
-  { ch: '첫 애니메이션', title: '재생해 보기', text: () => '<b>재생</b> 버튼을 눌러 보세요' + (S.mode === 'pc' ? ' (Space 키도 돼요)' : '') + '. 두 키프레임 사이의 움직임이 자동으로 채워져요.',
+  { ch: '첫 애니메이션', title: '5. 재생하기', text: () => '두 키프레임 사이가 부드럽게 이어져요.', do: () => '<b>재생</b> 버튼을 누르세요' + (M_() ? '.' : ' (Space 키).'),
     target: () => $('#bPlay'), enter: () => { setTime(0); }, done: () => S.playing, auto: () => { setTime(0); play(); } },
-  { ch: '첫 애니메이션', title: '키프레임 다루기', text: () => '타임라인의 <span class="tkf"></span>가 키프레임이에요. <b>누르면</b> 그 시간으로 이동하고, <b>끌면</b> 타이밍이 바뀌어요. 선택한 뒤 ' + (S.mode === 'pc' ? 'Delete 키나 ' : '') + '휴지통 버튼으로 지워요.<br>값을 바꾸면 항상 <b>플레이헤드가 있는 시간</b>에 키프레임이 생겨요.',
-    target: () => $('#tl'), next: '다음' },
-  { ch: '첫 애니메이션', title: '움직임 다듬기', text: () => '<b>그래프</b>를 열면 속도 변화(이징)를 바꿀 수 있어요. 천천히 멈추기, 바운스, 탄성 같은 느낌을 고르면 돼요. 눌러 보세요.',
-    target: () => $('#dockSeg [data-d="graph"]'), done: () => S.dock === 'graph', auto: () => setDock('graph'), next: '넘어가기' },
-  { ch: '첫 애니메이션', title: '이징 고르기', text: () => '<b>이징 프리셋</b>에서 원하는 느낌을 누르면 선택한 키프레임에 바로 적용되고, 캔버스에서 그 구간이 반복 재생돼요. 곡선의 손잡이를 끌어 직접 조절할 수도 있어요.<br>다 봤으면 <b>그래프 닫기</b>로 타임라인에 돌아가세요.',
+  { ch: '첫 애니메이션', title: '6. 움직임 느낌 바꾸기', text: () => '<b>그래프</b>에서 천천히 멈추기, 통통 튀기(바운스), 탄성 같은 느낌을 골라요.', do: () => '오른쪽의 <b>그래프</b> 버튼을 누르세요.',
+    target: () => $('#dockSeg [data-d="graph"]'), done: () => S.dock === 'graph', auto: () => setDock('graph'), next: '건너뛰기', nextGhost: true },
+  { ch: '첫 애니메이션', title: '이징 고르기', text: () => '아래 목록에서 느낌을 누르면 바로 적용되고, 그 구간이 반복 재생돼요. 곡선의 점을 끌어 직접 다듬을 수도 있어요.', do: () => '다 봤으면 <b>그래프 닫기</b>를 누르세요.',
     target: () => $('#graphPanel'), skipIf: () => S.dock !== 'graph',
-    enter: () => { const L = tutLayer(); if (S.dock === 'graph' && L && L.p.x.k.length && !S.selK.length) { S.selK = [{ lid: L.id, key: 'x', k: L.p.x.k[0] }]; S.graphKey = { lid: L.id, key: 'x' }; refreshKfBar(); refreshGraphBar(); fitGraph(); dirtyGraph = dirtyTL = true; } },
+    enter: () => { if (S.playing) pause(); const L = tutLayer(); if (S.dock === 'graph' && L && L.p.x.k.length && !S.selK.length) { S.selK = [{ lid: L.id, key: 'x', k: L.p.x.k[0] }]; S.graphKey = { lid: L.id, key: 'x' }; refreshKfBar(); refreshGraphBar(); fitGraph(); dirtyGraph = dirtyTL = true; } },
     done: () => S.dock === 'timeline', auto: () => setDock('timeline') },
-  /* ---- 더 해 보기 ---- */
-  { ch: '더 해 보기', title: '텍스트·사진·이펙트', text: () => '같은 방식으로 <b>텍스트</b>, <b>사진·영상</b>, <b>오디오</b>를 넣을 수 있어요. <b>선 긋기</b>로 손으로 그린 선을 넣으면 그은 순서대로 그려지는 효과도 자동으로 들어가요.<br><b>이펙트</b>는 레이어를 고른 뒤 이펙트 탭에서 추가해요. 등장·퇴장, 흔들림, 글로우 같은 효과가 미리보기와 함께 나와요.',
-    target: () => S.mode === 'mobile' ? $('#mobilebar') : $('#toolrail'), enter: () => { if (S.playing) pause(); if (S.dock !== 'timeline') setDock('timeline'); if (S.mode === 'mobile') $('#inspector').classList.remove('open'); }, next: '다음' },
-  /* ---- 저장·새 프로젝트 ---- */
-  { ch: '저장·새 프로젝트', title: () => S.mode === 'mobile' ? '메뉴 열기' : '파일 메뉴 열기', text: () => '새 프로젝트 만들기와 저장은 ' + (S.mode === 'mobile' ? '오른쪽 위 <b>⋯</b> 메뉴' : '<b>파일</b> 메뉴') + '에 있어요. 눌러 보세요.',
-    target: tutFileBtn, menuOk: true, done: () => !!ctxEl, auto: () => { if (S.mode === 'mobile') mainMenu(); else openMenu(tutFileBtn()); } },
-  { ch: '저장·새 프로젝트', title: '새 프로젝트와 저장', text: () => '<b>새 프로젝트</b>: 빈 화면으로 새로 시작해요. 지금 작업은 지워지니 먼저 저장하세요.<br><b>프로젝트 파일로 저장</b>: .json 파일로 받아 두는 백업이에요.<br><b>프로젝트 파일 열기</b>: 저장한 파일을 다시 불러와요.<br>작업 중인 내용은 이 브라우저에 <b>자동 저장</b>돼서, 창을 닫았다 열어도 그대로예요.',
+  /* ---- 편집 도구 ---- */
+  { ch: '편집 도구', title: '클립 다루기', text: () => '<b>막대를 끌면</b> 시간 이동, <b>양 끝 손잡이</b>로 길이 조절. 다른 클립 끝에 가까이 가면 <b>딱 붙어요</b>.<br><b>가위</b>로 플레이헤드 위치에서 자르고, 붙은 두 클립 사이 <b>⋈</b>로 화면 전환을 넣어요.',
+    tip: () => M_() ? '막대를 통째로 옮길 땐 살짝 꾹 누른 뒤 끄세요.' : '', target: () => $('#tl'), enter: tutCloseUI, next: '다음' },
+  { ch: '편집 도구', title: '여러 개 한꺼번에', text: () => (M_() ? '레이어 이름을 <b>꾹 누르면</b>' : '레이어를 <b>Ctrl+클릭</b>하면') + ' 체크 상자가 나와요. 여러 개 골라 함께 옮기고, <b>그룹으로 묶기</b>도 돼요.', target: () => $('#tl'), next: '다음' },
+  { ch: '편집 도구', title: '이펙트 · 사진 배경 지우기', text: () => '레이어를 고르고 <b>이펙트</b>에서 등장·흔들림·글로우 등 80여 가지 효과를 넣어요.<br>사진은 <b>마스크 → 테두리 따기</b>로 물체 둘레를 그어 배경을 지울 수 있어요.',
+    target: () => M_() ? [$('#mobilebar [data-mb="fx"]'), $('#mobilebar [data-mb="mask"]')] : $('#inspector .tabs'), next: '다음' },
+  /* ---- 저장·내보내기 ---- */
+  { ch: '저장·내보내기', title: '저장', text: () => '작업은 이 기기에 <b>자동 저장</b>돼요. <b>저장</b> 버튼을 누르면 바로 저장되고, 구글로 로그인하면 계정에도 올라가요.', tip: () => '중요한 작업은 메뉴의 ‘프로젝트 파일로 저장(.json)’으로 꼭 백업하세요.', target: () => $('#bSave'), next: '다음' },
+  { ch: '저장·내보내기', title: () => M_() ? '메뉴' : '파일 메뉴', text: () => '새 프로젝트, 내 프로젝트, 파일 저장·열기, 다른 기기로 보내기가 여기 있어요.', do: () => (M_() ? '오른쪽 위 <b>⋯</b>' : '<b>파일</b>') + ' 을 눌러 보세요.',
+    target: tutFileBtn, menuOk: true, done: () => !!ctxEl, auto: () => { if (M_()) mainMenu(); else openMenu(tutFileBtn()); } },
+  { ch: '저장·내보내기', title: '메뉴 둘러보기', text: () => '<b>내 프로젝트</b> 만든 작업 모음 · <b>새 프로젝트</b> 빈 화면으로 시작<br><b>프로젝트 파일로 저장</b> 백업 파일 받기 · <b>다른 기기로 보내기</b> 번호로 바로 전송',
     target: () => ctxEl, menuOk: true, side: true, next: '다음' },
-  { ch: '저장·새 프로젝트', title: '내보내기', text: () => '완성하면 <b>내보내기</b>를 누르세요. <b>MP4 동영상</b>(소리 포함), 지금 화면을 <b>PNG 이미지</b>로, 또는 프로젝트 파일로 저장할 수 있어요. 해상도와 화질도 고를 수 있어요.',
-    target: () => $('#bExport'), enter: () => closeCtx(), next: '다음' },
-  { ch: '끝', title: '준비 끝!', text: () => '이제 자유롭게 만들어 보세요.<br>이 안내는 ' + (S.mode === 'mobile' ? '오른쪽 위 <b>⋯</b> 메뉴' : '<b>도움말</b> 메뉴') + '의 <b>튜토리얼</b>에서 언제든 다시 볼 수 있어요.' + (S.mode === 'pc' ? ' 단축키는 <b>도움말 · 단축키</b>에 정리돼 있어요.' : ''),
-    center: true, next: '완료', last: true }
+  { ch: '저장·내보내기', title: '영상으로 내보내기', text: () => '완성하면 <b>내보내기</b>로 <b>MP4</b>(소리 포함), PNG 이미지 등으로 저장해요. 해상도와 화질도 고를 수 있어요.', target: () => $('#bExport'), enter: () => closeCtx(), next: '다음' },
+  { ch: '끝', title: '준비 끝! 🎉', text: () => '이제 자유롭게 만들어 보세요.', tip: () => '이 안내는 ' + (M_() ? '오른쪽 위 ⋯ 메뉴' : '도움말 메뉴') + '의 ‘튜토리얼’에서 언제든 다시 볼 수 있어요.', center: true, next: '완료', last: true }
 ];
 function startTutorial() {
   if (INTRO.open) closeIntro(); closeCtx && closeCtx(); if (curSheet && !curSheet.modal) curSheet.close();
@@ -5846,20 +5887,29 @@ function tutGo(i) {
   TUT.i = i; TUT.okAt = 0; const st = TUT_STEPS[i]; if (!st) { endTutorial(true); return; }
   try { if (st.skipIf && st.skipIf()) { tutGo(i + 1); return; } } catch (e) { }
   try { st.enter && st.enter(); } catch (e) { console.warn(e); }
+  TUT.pre = false; try { TUT.pre = !!(st.done && st.done()); } catch (e) { }
   tutRender(); tutPlace();
 }
 function tutRender(ok) {
   const st = TUT_STEPS[TUT.i], card = TUT.el.querySelector('.tut-card'); card.innerHTML = ''; card.classList.toggle('ok', !!ok);
-  const bar = h('span', { class: 'tbar' }, h('i', { style: `width:${Math.round((TUT.i + 1) / TUT_STEPS.length * 100)}%` }));
-  card.append(h('div', { class: 'tstep' }, h('span', { class: 'tch' }, st.ch), bar, `${TUT.i + 1}/${TUT_STEPS.length}`, st.last ? null : h('button', { class: 'tx', onclick: () => endTutorial(false) }, '그만 보기')));
+  const n = TUT_STEPS.length, pct = Math.round(TUT.i / (n - 1) * 100);
+  card.append(h('div', { class: 'tstep' }, h('span', { class: 'tch' }, st.ch), h('span', { class: 'tnum' }, `${TUT.i + 1} / ${n}`), st.last ? '' : h('button', { class: 'tx', onclick: () => endTutorial(false) }, '그만 보기')),
+    h('span', { class: 'tbar' }, h('i', { style: `width:${pct}%` })));
   card.append(h('h4', null, typeof st.title === 'function' ? st.title() : st.title), h('p', { html: st.text() }));
+  const tip = st.tip && st.tip(); if (tip) card.append(h('div', { class: 'ttip', html: tip }));
+  const needAct = st.done && !TUT.pre;
+  if (st.do && !ok) card.append(h('div', { class: 'tdo' + (needAct ? ' live' : '') }, h('span', { class: 'tdo-ic' }, needAct ? '👆' : '✓'), h('span', { html: st.do() })));
+  if (ok) card.append(h('div', { class: 'tdo good' }, h('span', { class: 'tdo-ic' }, '✓'), h('span', null, '잘했어요!')));
   const btns = h('div', { class: 'tbtns' });
-  if (ok) btns.append(h('span', { class: 'twait tok' }, '잘했어요!'));
-  else if (st.done && !st.next) btns.append(h('span', { class: 'twait' }, h('i'), '직접 해 보세요'));
-  if (!ok && st.auto) btns.append(h('button', { onclick: () => { try { st.auto(); } catch (e) { console.warn(e); } } }, '대신 해 주기'));
-  if (!ok && st.next) btns.append(h('button', { class: 'pri', onclick: () => st.last ? endTutorial(true) : tutGo(TUT.i + 1) }, st.next));
+  if (TUT.i > 0 && !ok && !st.last) btns.append(h('button', { class: 'ghost', onclick: () => tutGo(tutPrev(TUT.i)) }, '이전'));
+  btns.append(h('span', { class: 'tsp' }));
+  if (!ok && needAct && st.auto) btns.append(h('button', { onclick: () => { try { st.auto(); } catch (e) { console.warn(e); } } }, '대신 해 주기'));
+  if (!ok && (st.next || !needAct)) btns.append(h('button', { class: st.nextGhost && needAct ? '' : 'pri', onclick: () => st.last ? endTutorial(true) : tutGo(TUT.i + 1) }, st.next || '다음'));
+  if (st.skip && !ok) btns.insertBefore(h('button', { class: 'ghost', onclick: () => endTutorial(false) }, '건너뛰기'), btns.firstChild);
   card.append(btns);
 }
+/* 이전으로 갈 때는 '보기만 하는' 단계로 (이미 해 둔 단계로 가면 바로 넘어가 버리니까) */
+function tutPrev(i) { for (let j = i - 1; j > 0; j--) { const s_ = TUT_STEPS[j]; let sk = false; try { sk = s_.skipIf && s_.skipIf(); } catch (e) { } if (!sk && !s_.sheetOk && !s_.menuOk) return j; } return 0; }
 function tutPlace() {
   if (!TUT.on || !TUT.el) return;
   const st = TUT_STEPS[TUT.i], ring = TUT.el.querySelector('.tut-ring'), card = TUT.el.querySelector('.tut-card');
@@ -5868,7 +5918,7 @@ function tutPlace() {
   if (blocked) return;
   const mob = S.mode === 'mobile'; TUT.el.classList.toggle('mob', mob);
   let r = null; if (st.target && !st.center) { const t = st.target(); const rs = (Array.isArray(t) ? t : [t]).map(tutVisible).filter(Boolean); if (rs.length) { const l = Math.min(...rs.map(q => q.left)), tp = Math.min(...rs.map(q => q.top)), rr = Math.max(...rs.map(q => q.right)), bb = Math.max(...rs.map(q => q.bottom)); r = { left: l, top: tp, right: rr, bottom: bb, width: rr - l, height: bb - tp }; } }
-  const vw = innerWidth, vh = innerHeight, cw = mob ? vw - 24 : Math.min(300, vw - 24), ch = card.offsetHeight, gap = 12;
+  const vw = innerWidth, vh = innerHeight, cw = mob ? vw - 24 : Math.min(360, vw - 24), ch = card.offsetHeight, gap = 12;
   if (!r) {
     ring.classList.add('none'); Object.assign(ring.style, { left: vw / 2 + 'px', top: vh / 2 + 'px', width: '0px', height: '0px' });
     card.style.left = Math.round((vw - cw) / 2) + 'px'; card.style.top = Math.round((vh - ch) / 2) + 'px'; return;
@@ -5891,7 +5941,7 @@ function tutTick() {
   const st = TUT_STEPS[TUT.i];
   if (TUT.okAt) { if (performance.now() - TUT.okAt > 900) tutGo(TUT.i + 1); }
   else if (st.skipIf && (() => { try { return st.skipIf(); } catch (e) { return false; } })()) { tutGo(TUT.i + 1); return; }
-  else if (st.done) { let d = false; try { d = st.done(); } catch (e) { } if (d) { TUT.okAt = performance.now(); tutRender(true); } }
+  else if (st.done && !TUT.pre) { let d = false; try { d = st.done(); } catch (e) { } if (d) { TUT.okAt = performance.now(); tutRender(true); } }
   tutPlace();
 }
 async function init() {
