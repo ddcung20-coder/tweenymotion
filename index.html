@@ -536,6 +536,9 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .mslots{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .mslot{border:1px solid var(--line2);border-radius:3px;padding:8px;background:var(--bg2);display:flex;flex-direction:column;gap:6px;min-width:0}
 .mslot b{font-size:12px}
+.mergegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mergebtn{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border-radius:8px;border:1px solid var(--line2);background:var(--bg2);color:var(--fg);cursor:pointer;text-align:left;font:inherit}.mergebtn:hover{border-color:var(--acc)}.mergebtn b{font-size:14px}.mergebtn span{font-size:12px;color:var(--fg3);line-height:1.4}
+.mg{width:46px;height:30px;position:relative;display:block}.mg::before,.mg::after{content:'';position:absolute;top:3px;width:24px;height:24px;border-radius:5px}.mg::before{left:4px}.mg::after{left:18px;border-radius:50%}
+.mg-union::before,.mg-union::after{background:#5aaaf7}.mg-subtract::before{background:#5aaaf7}.mg-subtract::after{background:var(--bg2);border:1.5px dashed #777}.mg-intersect::before{border:1.5px dashed #777}.mg-intersect::after{border:1.5px dashed #777;background:radial-gradient(circle at 0 50%,#5aaaf7 60%,transparent 61%)}.mg-xor::before,.mg-xor::after{background:#5aaaf7;mix-blend-mode:difference}
 .askbox{border:1px solid var(--accline);background:var(--accbg);border-radius:4px;padding:8px;display:flex;flex-direction:column;gap:6px}.askbox[hidden]{display:none}.askq{font-size:13px;font-weight:600;color:var(--fg)}.askbox .btnrow{display:flex;flex-wrap:wrap;gap:6px}
 .mslot canvas{width:100%;aspect-ratio:16/11;height:auto;background:#151515;border-radius:2px;display:block}
 .mslot .btn{justify-content:center}
@@ -678,7 +681,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v39</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v40</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -733,6 +736,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v40</b><span>새 이펙트: 모션 블러(자동)·에코·레벨·커브·프랙탈 노이즈·파티클(불꽃·폭죽·눈·비·반짝이·거품)·오디오 스펙트럼·퍼펫 핀. 글자 물결(텍스트 애니메이터), 도형 합치기·빼기·교차, 영상 거꾸로 재생·시간 리맵이 생겼습니다. 그룹에도 모든 이펙트를 쓸 수 있습니다.</span></li>
         <li><b>v39</b><span>튜토리얼을 새로 만들었습니다(할 일 상자·이전 버튼·편집 도구 안내). 휴대폰에서 위 막대·재생 막대·그래프 편집기가 잘리지 않게 정리했습니다. 테두리 따기는 다 그은 뒤 완료를 누르면 한꺼번에 분석하고, 클립과 화면 속 물체가 가까운 곳에 딱 붙습니다.</span></li>
         <li><b>v38</b><span>테두리 따기(대충 그으면 테두리에 맞춰 자동으로 잘라 줌), 다른 기기로 바로 보내기(번호·QR), 분할한 클립 사이 화면 전환 9가지(쉐이크 포함), 레이어 여러 개 선택(타임라인 이름 길게 누르기 · PC는 Ctrl+클릭)이 생겼습니다. 계정 저장은 10분마다·저장 버튼·창을 닫을 때 올라갑니다.</span></li>
         <li><b>v37</b><span>스윕 등장·스윕 퇴장 이펙트가 생겼습니다. 모양 연결에서 사진(모양)을 하나만 골라도 무에서 스르륵 생겨나거나 사라지게 만들 수 있습니다.</span></li>
@@ -1108,6 +1112,8 @@ const PM = {
   trimO: { l: '트림 오프셋', st: 1, u: '%', min: -100, max: 100 },
   size: { l: '글자 크기', st: 1, u: 'px', min: 4, max: 400, hard: [1, 9999] }, ls: { l: '자간', st: .5, u: 'px', min: -20, max: 100 },
   lh: { l: '행간', st: .05, u: '×', min: .6, max: 3, hard: [.3, 10] }, reveal: { l: '글자 등장', st: 1, u: '%', min: 0, max: 100, hard: [0, 100] },
+  remap: { l: '원본 시간 (리맵)', st: .01, u: 's', min: 0, max: 600, hard: [0, 36000] },
+  tam: { l: '물결 세기', st: 1, u: '%', min: 0, max: 300, hard: [0, 2000] }, tac: { l: '물결 색', c: 1 },
   tbg: { l: '배경색', c: 1 }, tpad: { l: '배경 여백', st: 1, u: 'px', min: 0, max: 120, hard: [0, 999] },
   vol: { l: '볼륨', st: 1, u: '%', min: 0, max: 200, hard: [0, 400] },
   mx: { l: '마스크 X', st: 1, u: 'px' }, my: { l: '마스크 Y', st: 1, u: 'px' },
@@ -1162,7 +1168,8 @@ const selL = () => S.sel ? findL(S.sel) : null;
 function upgradeLayer(L) {
   const q = L.p; if (!q) return; if (!q.sky) q.sky = P(0);
   if (L.type === 'shape' || L.type === 'path' || L.type === 'text') { if (!q.fop) q.fop = P(100); if (!q.sop) q.sop = P(100); }
-  if (L.type === 'text') { if (!q.tbo) q.tbo = P(100); if (!q.wt) q.wt = P(L.text.weight || 700); if (!q.txt) q.txt = P(String(L.text.content ?? '')); }
+  if (L.type === 'text') { if (!q.tam) q.tam = P(100); if (!q.tac) q.tac = P('#ff6fb1'); if (!L.text.anim) L.text.anim = { mode: 'none', freq: 1, stag: 10, order: 'ltr' };
+    if (!q.tbo) q.tbo = P(100); if (!q.wt) q.wt = P(L.text.weight || 700); if (!q.txt) q.txt = P(String(L.text.content ?? '')); }
 }
 const isGroup = L => !!L && L.type === 'group';
 function groupOf(L) { const g = L && L.parent ? findL(L.parent) : null; return isGroup(g) ? g : null; }
@@ -1196,6 +1203,7 @@ function getProp(L, key) {
   return L.p[key];
 }
 function propMeta(L, key) {
+  { const pm = /^fx:([^:]+):pin(.+)([xy])$/.exec(key); if (pm) { const f = L.fx.find(x => x.id === pm[1]); const n = f && f.pins ? f.pins.findIndex(p => p.id === pm[2]) + 1 : 0; return { l: `퍼펫 핀 ${n} ${pm[3] === 'x' ? '가로' : '세로'} 이동`, short: `핀 ${n} ${pm[3].toUpperCase()}`, st: 1, u: 'px' }; } }
   if (key.startsWith('fx:')) { const [, fid, k] = key.split(':'); const f = L.fx.find(x => x.id === fid); const d = f && FX[f.type]; const pp = d && [...d.params, ...COMMON].find(q => q.k === k); return pp ? { l: `${d.name} · ${pp.l}`, short: pp.l, st: pp.st || 1, u: pp.u || '', min: pp.min, max: pp.max, c: pp.t === 'c', hard: pp.hard } : { l: k }; }
   if (key.startsWith('m:')) return PM[key.slice(2)] || { l: key };
   if (L.type === 'text' && key === 'fill') return { l: '글자 색', c: 1 };
@@ -1380,7 +1388,7 @@ function shapeGeom(L, t) {
   else if (kind === 'line') { path.moveTo(-w / 2, 0); path.lineTo(w / 2, 0); len = w; closed = false; bb = { x: -w / 2, y: -10, w, h: 20 }; }
   else if (kind === 'arrow') { const hd = Math.min(hh / 2, w / 2); path.moveTo(-w / 2, 0); path.lineTo(w / 2, 0); path.moveTo(w / 2 - hd, -hd); path.lineTo(w / 2, 0); path.lineTo(w / 2 - hd, hd); len = w + hd * 2.83; closed = false; bb = { x: -w / 2, y: -hd, w, h: hd * 2 }; }
   else if (kind === 'path') {
-    const polys = s.morph ? morphPieces(L, t) : [s.pts]; closed = s.closed !== false;
+    const polys = s.morph ? morphPieces(L, t) : s.polys && s.polys.length ? s.polys : [s.pts]; closed = s.closed !== false;
     const sc = [pv(p.w, t) / 100, pv(p.h, t) / 100]; let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9, any = false;
     polys.forEach(pts => {
       if (!pts || pts.length < 2) return; any = true; const q = pts.map(a => [a[0] * sc[0], a[1] * sc[1]]);
@@ -1390,7 +1398,7 @@ function shapeGeom(L, t) {
     });
     bb = any ? { x: x0, y: y0, w: x1 - x0, h: y1 - y0 } : { x: -10, y: -10, w: 20, h: 20 };
   }
-  return { path, len, closed, bb, kind };
+  return { path, len, closed, bb, kind, rule: kind === 'path' && s.polys && s.polys.length > 1 ? 'evenodd' : 'nonzero' };
 }
 function fillStyleFor(x, L, t, bb) {
   const s = L.shape, c1 = pv(L.p.fill, t);
@@ -1432,6 +1440,7 @@ function drawText(x, L, t) {
   const spread = mode === 'type' ? 1 : 4; const prog = rv * (total + spread);
   let idx = 0; const baseA = x.globalAlpha, fop = L.p.fop ? clamp(pv(L.p.fop, t), 0, 100) / 100 : 1, sop = L.p.sop ? clamp(pv(L.p.sop, t), 0, 100) / 100 : 1;
   x.lineJoin = 'round'; x.miterLimit = 2;
+  const TA = T.anim && T.anim.mode !== 'none' ? T.anim : null, tamt = TA ? Math.max(0, pv(L.p.tam, t)) / 100 : 0, tcol = TA && L.p.tac ? pv(L.p.tac, t) : '#ffffff', lt = t - L.start, mid = (total - 1) / 2;
   lines.forEach((ln, li) => {
     let cx = T.align === 'left' ? -maxW / 2 : T.align === 'right' ? maxW / 2 - ln.lw : -ln.lw / 2;
     const cy = -totH / 2 + (li + 0.5) * lineH;
@@ -1441,7 +1450,21 @@ function drawText(x, L, t) {
       if (mode === 'type') f = prog - idx >= 1 ? 1 : 0;
       idx++;
       if (f <= 0 || ch === ' ') { cx += w + ls; return; }
-      const e = easeOut3(f); let dy = 0, sc = 1, rot = 0, a = 1;
+      const e = easeOut3(f); let dy = 0, dx = 0, sc = 1, rot = 0, a = 1, fillC = fill;
+      if (TA && tamt > 0) { // 글자 물결 (텍스트 애니메이터): 글자마다 시차를 두고 움직임
+        const i0 = idx - 1, oi = TA.order === 'rtl' ? total - 1 - i0 : TA.order === 'center' ? Math.abs(i0 - mid) : TA.order === 'random' ? (hash1(i0, 7) + 1) * total / 2 : i0;
+        const ph = TAU * (TA.freq * lt - oi * TA.stag / 100), sn = Math.sin(ph);
+        switch (TA.mode) {
+          case 'wave': dy += sn * size * .25 * tamt; break;
+          case 'bounce': dy -= Math.abs(sn) * size * .35 * tamt; break;
+          case 'swing': rot += sn * 18 * tamt; break;
+          case 'pulse': sc *= 1 + .3 * tamt * Math.max(0, sn); break;
+          case 'color': fillC = lerpColor(fill, tcol, clamp((sn + 1) / 2 * Math.min(1, tamt), 0, 1)); break;
+          case 'rainbow': fillC = `hsl(${((oi * TA.stag * 3.6 + lt * TA.freq * 360) % 360 + 360) % 360},90%,${62 - 10 * Math.max(0, Math.min(1, tamt) - 1)}%)`; break;
+          case 'jitter': { const R = mulberry(i0 * 977 + Math.floor(lt * TA.freq * 12) * 131 + 7); dx += (R() - .5) * size * .16 * tamt; dy += (R() - .5) * size * .16 * tamt; rot += (R() - .5) * 16 * tamt; break; }
+          case 'drop': { const u = clamp((lt - oi * TA.stag / 100 * .5) / .7, 0, 1), bo = u < 1 / 2.75 ? 7.5625 * u * u : u < 2 / 2.75 ? 7.5625 * (u - 1.5 / 2.75) ** 2 + .75 : u < 2.5 / 2.75 ? 7.5625 * (u - 2.25 / 2.75) ** 2 + .9375 : 7.5625 * (u - 2.625 / 2.75) ** 2 + .984375; dy -= (1 - bo) * size * 1.2 * tamt; a *= Math.min(1, u * 4); break; }
+        }
+      }
       if (mode === 'fade') a = e;
       else if (mode === 'up') { a = e; dy = (1 - e) * size * 0.6; }
       else if (mode === 'down') { a = e; dy = -(1 - e) * size * 0.6; }
@@ -1449,9 +1472,9 @@ function drawText(x, L, t) {
       else if (mode === 'rotate') { a = e; rot = (1 - e) * -40; dy = (1 - e) * size * .3; }
       else if (mode === 'blur') { a = e * e; sc = 1 + (1 - e) * .6; }
       x.globalAlpha = baseA * a;
-      const ca = baseA * a;
-      if (sc !== 1 || rot) { x.save(); x.translate(cx + w / 2, cy + dy); x.rotate(rot * D2R); x.scale(sc, sc); if (sw > 0 && sop > 0) { x.globalAlpha = ca * sop; x.strokeStyle = scol; x.lineWidth = sw * 2; x.strokeText(ch, -w / 2, 0); } if (fop > 0) { x.globalAlpha = ca * fop; x.fillStyle = fill; x.fillText(ch, -w / 2, 0); } x.restore(); }
-      else { if (sw > 0 && sop > 0) { x.globalAlpha = ca * sop; x.strokeStyle = scol; x.lineWidth = sw * 2; x.strokeText(ch, cx, cy + dy); } if (fop > 0) { x.globalAlpha = ca * fop; x.fillStyle = fill; x.fillText(ch, cx, cy + dy); } }
+      const ca = baseA * a; const fill_ = fill; { const fill = fillC; void fill_;
+      if (sc !== 1 || rot || dx) { x.save(); x.translate(cx + w / 2 + dx, cy + dy); x.rotate(rot * D2R); x.scale(sc, sc); if (sw > 0 && sop > 0) { x.globalAlpha = ca * sop; x.strokeStyle = scol; x.lineWidth = sw * 2; x.strokeText(ch, -w / 2, 0); } if (fop > 0) { x.globalAlpha = ca * fop; x.fillStyle = fill; x.fillText(ch, -w / 2, 0); } x.restore(); }
+      else { if (sw > 0 && sop > 0) { x.globalAlpha = ca * sop; x.strokeStyle = scol; x.lineWidth = sw * 2; x.strokeText(ch, cx, cy + dy); } if (fop > 0) { x.globalAlpha = ca * fop; x.fillStyle = fill; x.fillText(ch, cx, cy + dy); } } }
       cx += w + ls;
     });
   });
@@ -1461,7 +1484,7 @@ function drawText(x, L, t) {
 /* ---------- bounds & matrix ---------- */
 function layerBounds(L, t) {
   if (L.type === 'shape' || L.type === 'path') { const g = shapeGeom(L, t); const sw = L.shape.strokeOn ? pv(L.p.sw, t) / 2 : 0; return { x: g.bb.x - sw, y: g.bb.y - sw, w: g.bb.w + sw * 2, h: g.bb.h + sw * 2 }; }
-  if (L.type === 'text') { const l = textLayout(L, t); const pad = L.text.bgOn ? pv(L.p.tpad, t) : 0; const sw = L.text.strokeOn ? pv(L.p.sw, t) : 0; return { x: -l.maxW / 2 - pad - sw, y: -l.totH / 2 - pad * .6 - sw, w: l.maxW + pad * 2 + sw * 2, h: l.totH + pad * 1.2 + sw * 2 }; }
+  if (L.type === 'text') { const l = textLayout(L, t); const an = L.text.anim && L.text.anim.mode !== 'none' && L.p.tam ? l.size * (L.text.anim.mode === 'drop' ? 1.3 : .45) * Math.max(1, pv(L.p.tam, t) / 100) : 0; const pad = (L.text.bgOn ? pv(L.p.tpad, t) : 0) + an; const sw = L.text.strokeOn ? pv(L.p.sw, t) : 0; return { x: -l.maxW / 2 - pad - sw, y: -l.totH / 2 - pad * .6 - sw, w: l.maxW + pad * 2 + sw * 2, h: l.totH + pad * 1.2 + sw * 2 }; }
   if (L.type === 'image' || L.type === 'video') { const M = MEDIA.get(L.media); const w = M ? M.w : 400, hh = M ? M.h : 300; return { x: -w / 2, y: -hh / 2, w, h: hh }; }
   if (L.type === 'adjust') return { x: -S.proj.w / 2, y: -S.proj.h / 2, w: S.proj.w, h: S.proj.h };
   if (L.type === 'group') {
@@ -1501,7 +1524,7 @@ function drawContent(x, L, t) {
     const g = shapeGeom(L, t), s = L.shape;
     const fillable = g.closed && s.fillOn && s.fillType !== 'none';
     const a0 = x.globalAlpha, fop = L.p.fop ? clamp(pv(L.p.fop, t), 0, 100) / 100 : 1, sop = L.p.sop ? clamp(pv(L.p.sop, t), 0, 100) / 100 : 1;
-    if (fillable && fop > 0) { x.globalAlpha = a0 * fop; if (s.fillType === 'image') drawImageFill(x, L, t, g); else { x.fillStyle = fillStyleFor(x, L, t, g.bb); x.fill(g.path); } x.globalAlpha = a0; }
+    if (fillable && fop > 0) { x.globalAlpha = a0 * fop; if (s.fillType === 'image') drawImageFill(x, L, t, g); else { x.fillStyle = fillStyleFor(x, L, t, g.bb); x.fill(g.path, g.rule || 'nonzero'); } x.globalAlpha = a0; }
     const sw = pv(L.p.sw, t);
     if ((s.strokeOn || !g.closed) && sw > 0 && sop > 0) { x.globalAlpha = a0 * sop;
       x.strokeStyle = pv(L.p.stroke, t); x.lineWidth = sw; x.lineJoin = 'round'; x.lineCap = s.cap || 'round';
@@ -1657,7 +1680,7 @@ function drawLayerAt(x, Ls, i, t, solo) {
 const FX = {};
 const FXCATS = [
   ['in', '등장·퇴장', '#3ccf91'], ['loop', '반복 움직임', '#ffbf47'], ['blur', '블러', '#6f9dff'], ['color', '색상', '#ff6fb1'],
-  ['style', '스타일·빛', '#c48bff'], ['distort', '왜곡', '#2fc2d6'], ['retro', '글리치·레트로', '#ff8a5c'],
+  ['style', '스타일·빛', '#c48bff'], ['distort', '왜곡', '#2fc2d6'], ['retro', '글리치·레트로', '#ff8a5c'], ['gen', '생성', '#ffd166'],
 ];
 const N = (k, l, d, min, max, st = 1, u = '', hard) => ({ k, l, t: 'n', d, min, max, st, u, hard });
 const C = (k, l, d) => ({ k, l, t: 'c', d });
@@ -1684,7 +1707,7 @@ function fxEnv(L, f, t) {
   const lt = Math.max(0, t - L.start) * spd, rem = Math.max(0, L.end - t) * spd, tt = t * spd;
   const seed = f.seed || 1;
   const mix = clamp((p.mix ?? 100) / 100 * modVal(f.o.mod, lt, seed), 0, 1);
-  return { p, o: f.o, lt, rem, tt, mix, t, L, seed };
+  return { p, o: f.o, lt, rem, tt, mix, t, L, seed, f };
 }
 function makeFx(type) {
   const d = FX[type]; const f = { id: uid(), type, on: true, open: true, seed: 1 + Math.floor(Math.random() * 997), p: {}, o: { mod: 'none' } };
@@ -1899,6 +1922,196 @@ def('scan', 'VHS 스캔라인', 'retro', '옛날 TV 주사선과 흐르는 띠',
 def('halftone', '하프톤', 'retro', '만화책 인쇄 망점', [N('size', '점 크기', 10, 3, 80, 1, 'px'), O('mode', '모드', 'mono', [['mono', '단색 잉크'], ['color', '원래 색']]), C('col', '잉크 색', '#111111')], { post(E) { const b = E.box, cs = Math.max(3, E.p.size * E.s); if (b.w < 1) return; const id = E.x.getImageData(b.x, b.y, b.w, b.h), d = id.data; clr(E.A); const x = E.A.x; for (let yy = 0; yy < b.h; yy += cs) for (let xx = 0; xx < b.w; xx += cs) { const sx = Math.min(b.w - 1, xx + cs / 2 | 0), sy = Math.min(b.h - 1, yy + cs / 2 | 0), i = (sy * b.w + sx) * 4; const a = d[i + 3] / 255; if (a < .05) continue; const l = lum(d[i], d[i + 1], d[i + 2]) / 255; const r = E.o.mode === 'mono' ? cs * .62 * Math.sqrt(1 - l) : cs * .55 * Math.sqrt(.25 + .75 * l); if (r < .3) continue; x.globalAlpha = a; x.fillStyle = E.o.mode === 'mono' ? E.p.col : `rgb(${d[i]},${d[i + 1]},${d[i + 2]})`; x.beginPath(); x.arc(b.x + xx + cs / 2, b.y + yy + cs / 2, r, 0, TAU); x.fill(); } if (E.o.mode === 'mono') { x.globalAlpha = 1; x.globalCompositeOperation = 'destination-over'; x.fillStyle = '#fff'; x.fillRect(0, 0, E.W, E.H); x.globalCompositeOperation = 'destination-in'; x.drawImage(E.c, 0, 0); } copyTo(E.A, E); } });
 def('crt', 'CRT 모니터', 'retro', '휘어진 화면 + RGB 줄무늬', [N('int', '진하기', 40, 0, 100, 1, '%'), N('sp', '줄 간격', 3, 2, 20, 1, 'px')], { post(E) { const b = E.box, sp = Math.max(2, E.p.sp * E.s); E.x.globalCompositeOperation = 'source-atop'; const cols = ['rgba(255,0,0,', 'rgba(0,255,0,', 'rgba(0,0,255,']; for (let x = b.x, i = 0; x < b.x + b.w; x += sp, i++) { E.x.fillStyle = cols[i % 3] + (E.p.int / 300) + ')'; E.x.fillRect(x, b.y, sp / 3, b.h); } E.x.fillStyle = `rgba(0,0,0,${E.p.int / 250})`; for (let y = b.y; y < b.y + b.h; y += sp * 2) E.x.fillRect(b.x, y, b.w, sp * .7); const cx = b.x + b.w / 2, cy = b.y + b.h / 2, R = Math.hypot(b.w, b.h) / 2; const g = E.x.createRadialGradient(cx, cy, R * .55, cx, cy, R); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${E.p.int / 100})`); E.x.fillStyle = g; E.x.fillRect(b.x, b.y, b.w, b.h); } });
 def('datamosh', '픽셀 소팅', 'retro', '밝은 픽셀이 녹아내리듯 늘어짐', [N('th', '기준 밝기', 60, 0, 100, 1, '%'), N('len', '길이', 80, 1, 600, 1, 'px'), O('dir', '방향', 'down', [['down', '아래로'], ['right', '오른쪽으로']])], { post(E) { const b = grow(E.box, 0), th = E.p.th * 2.55, L = Math.max(1, E.p.len * E.s | 0); pixBox(E, b, (d, w, hh) => { const down = E.o.dir === 'down'; const outer = down ? w : hh, inner = down ? hh : w; for (let o = 0; o < outer; o++) { let run = 0, src = -1; for (let n = 0; n < inner; n++) { const i = down ? (n * w + o) * 4 : (o * w + n) * 4; if (d[i + 3] && lum(d[i], d[i + 1], d[i + 2]) > th) { src = i; run = L; } else if (run > 0 && src >= 0) { const f = run / L; for (let c = 0; c < 4; c++) d[i + c] = lerp(d[i + c], d[src + c], f); run--; } } } }); } });
+/* ================= v40: 모션 블러·에코·커브·레벨·프랙탈 노이즈·파티클·오디오 스펙트럼·퍼펫 핀 ================= */
+/* the layer's own movement between two moments, as a device-space matrix (used by motion blur / echo) */
+function moveMat(L, t0, t1) { try { const a = devMat(layerMatrix(L, t0)), b = devMat(layerMatrix(L, t1)); return b.multiply(a.inverse()); } catch (e) { return new DOMMatrix(); } }
+def('mblur', '모션 블러 (자동)', 'blur', '움직이는 만큼 저절로 번지는 잔상 — 빠를수록 길게', [N('shut', '셔터 각도', 180, 0, 720, 1, '°'), N('q', '최대 샘플', 16, 2, 48, 1, '개')], {
+  pvMove: true,
+  post(E) {
+    const fd = 1 / S.proj.fps, ex = E.p.shut / 360 * fd; if (ex <= 0) return;
+    const t = E.t, a = moveMat(E.L, t, t - ex / 2), b = moveMat(E.L, t, t + ex / 2), cx = E.box.x + E.box.w / 2, cy = E.box.y + E.box.h / 2;
+    const pa = a.transformPoint(new DOMPoint(cx, cy)), pb = b.transformPoint(new DOMPoint(cx, cy));
+    const corner = (m) => { const p = m.transformPoint(new DOMPoint(E.box.x, E.box.y)); return Math.hypot(p.x - E.box.x, p.y - E.box.y); };
+    const dist = Math.max(Math.hypot(pb.x - pa.x, pb.y - pa.y), corner(a) + corner(b)); if (dist < .6) return;
+    const n = clamp(Math.ceil(dist / 1.6), 2, Math.round(E.p.q));
+    const ms = []; for (let i = 0; i < n; i++) { const k = n === 1 ? .5 : i / (n - 1); ms.push(moveMat(E.L, t, t + (k - .5) * ex)); }
+    avgDraw(E, n, k => { const m = ms[Math.round(k * (n - 1))]; return [m.a, m.b, m.c, m.d, m.e, m.f]; });
+    return grow(E.box, dist);
+  }
+});
+def('echo', '에코 (잔상)', 'blur', '지나간 모습이 꼬리처럼 남아요', [N('count', '잔상 수', 6, 1, 30, 1, '개'), N('delay', '간격', .05, .005, 1, .005, 's'), N('decay', '흐려짐', 35, 0, 95, 1, '%'), O('order', '순서', 'behind', [['behind', '뒤에 남기'], ['front', '앞에 겹치기']])], {
+  pvMove: true,
+  post(E) {
+    const n = Math.round(E.p.count), dl = Math.max(.001, E.p.delay), keep = 1 - E.p.decay / 100; clr(E.A);
+    const one = (i) => { const m = moveMat(E.L, E.t, E.t - i * dl); E.A.x.globalAlpha = Math.pow(keep, i); E.A.x.setTransform(m.a, m.b, m.c, m.d, m.e, m.f); E.A.x.drawImage(E.c, 0, 0); };
+    if (E.o.order === 'behind') { for (let i = n; i >= 1; i--) one(i); rst(E.A.x); E.A.x.drawImage(E.c, 0, 0); }
+    else { rst(E.A.x); E.A.x.drawImage(E.c, 0, 0); for (let i = 1; i <= n; i++) one(i); }
+    rst(E.A.x); copyTo(E.A, E); return fullBox();
+  }
+});
+/* ---- 색 보정: 레벨 · 커브 ---- */
+const CHS = [['rgb', '전체 (RGB)'], ['r', '빨강'], ['g', '초록'], ['b', '파랑']];
+function applyLUT(E, lut, ch) { pixBox(E, E.box, d => { const all = ch === 'rgb', ci = ch === 'r' ? 0 : ch === 'g' ? 1 : 2; for (let i = 0; i < d.length; i += 4) { if (!d[i + 3]) continue; if (all) { d[i] = lut[d[i]]; d[i + 1] = lut[d[i + 1]]; d[i + 2] = lut[d[i + 2]]; } else d[i + ci] = lut[d[i + ci]]; } }); }
+def('levels', '레벨', 'color', '가장 어두운 곳·밝은 곳·중간 밝기를 따로 맞춰요', [N('ib', '입력 검정', 0, 0, 254, 1, ''), N('iw', '입력 흰색', 255, 1, 255, 1, ''), N('gam', '중간 밝기 (감마)', 1, .1, 5, .01, ''), N('ob', '출력 검정', 0, 0, 255, 1, ''), N('ow', '출력 흰색', 255, 0, 255, 1, ''), O('ch', '채널', 'rgb', CHS)], {
+  post(E) { const ib = Math.min(E.p.ib, E.p.iw - 1), iw = Math.max(E.p.iw, ib + 1), g = Math.max(.01, E.p.gam), lut = new Uint8ClampedArray(256); for (let v = 0; v < 256; v++) { const x = clamp((v - ib) / (iw - ib), 0, 1); lut[v] = E.p.ob + Math.pow(x, 1 / g) * (E.p.ow - E.p.ob); } applyLUT(E, lut, E.o.ch); }
+});
+def('curves', '커브', 'color', '어두운·중간·밝은 부분을 곡선으로 부드럽게 조절', [N('sh', '어두운 부분', 0, -100, 100, 1, ''), N('mid', '중간 부분', 0, -100, 100, 1, ''), N('hi', '밝은 부분', 0, -100, 100, 1, ''), N('con', 'S자 대비', 0, -100, 100, 1, ''), O('ch', '채널', 'rgb', CHS)], {
+  post(E) {
+    const k = .45 * 255 / 100, xs = [0, 64, 128, 192, 255], ys = [0, 64 + E.p.sh * k - E.p.con * .25, 128 + E.p.mid * k, 192 + E.p.hi * k + E.p.con * .25, 255].map(v => clamp(v, 0, 255));
+    // monotone cubic (Fritsch–Carlson) through the 5 points
+    const n = 5, dx = [], dy = [], m = []; for (let i = 0; i < n - 1; i++) { dx.push(xs[i + 1] - xs[i]); dy.push((ys[i + 1] - ys[i]) / dx[i]); }
+    m.push(dy[0]); for (let i = 1; i < n - 1; i++) m.push(dy[i - 1] * dy[i] <= 0 ? 0 : (dy[i - 1] + dy[i]) / 2); m.push(dy[n - 2]);
+    for (let i = 0; i < n - 1; i++) { if (!dy[i]) { m[i] = m[i + 1] = 0; continue; } const a = m[i] / dy[i], b = m[i + 1] / dy[i], s = a * a + b * b; if (s > 9) { const tt = 3 / Math.sqrt(s); m[i] = tt * a * dy[i]; m[i + 1] = tt * b * dy[i]; } }
+    const lut = new Uint8ClampedArray(256);
+    for (let v = 0; v < 256; v++) { let i = Math.min(3, Math.floor(v / 64)); const h_ = dx[i], u = (v - xs[i]) / h_, u2 = u * u, u3 = u2 * u; lut[v] = (2 * u3 - 3 * u2 + 1) * ys[i] + (u3 - 2 * u2 + u) * h_ * m[i] + (-2 * u3 + 3 * u2) * ys[i + 1] + (u3 - u2) * h_ * m[i + 1]; }
+    applyLUT(E, lut, E.o.ch);
+  }
+});
+/* ---- 프랙탈 노이즈: 구름·연기·불 무늬 (3D 값 노이즈를 여러 겹) ---- */
+function vhash(x, y, z, s) { let h = (x * 374761393 + y * 668265263 + z * 1274126177 + s * 2246822519) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967295; }
+function vnoise3(x, y, z, s) {
+  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z), xf = x - xi, yf = y - yi, zf = z - zi;
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
+  const c = (a, b, c_) => vhash(xi + a, yi + b, zi + c_, s);
+  const x00 = c(0, 0, 0) + (c(1, 0, 0) - c(0, 0, 0)) * u, x10 = c(0, 1, 0) + (c(1, 1, 0) - c(0, 1, 0)) * u, x01 = c(0, 0, 1) + (c(1, 0, 1) - c(0, 0, 1)) * u, x11 = c(0, 1, 1) + (c(1, 1, 1) - c(0, 1, 1)) * u;
+  const y0 = x00 + (x10 - x00) * v, y1 = x01 + (x11 - x01) * v; return y0 + (y1 - y0) * w;
+}
+const NOISE_CV = document.createElement('canvas');
+def('fractal', '프랙탈 노이즈', 'gen', '구름·연기·불·물결 같은 자연스러운 무늬', [O('look', '무늬', 'cloud', [['cloud', '구름·연기'], ['turb', '불꽃·난류'], ['ridge', '대리석 줄무늬'], ['cell', '얼룩']]), N('scale', '크기', 220, 10, 2000, 1, 'px'), N('oct', '복잡도', 4, 1, 8, 1, '겹'), N('evo', '변화 속도', .3, 0, 5, .01, ''), N('flow', '흐름 (가로)', 30, -500, 500, 1, 'px/s'), N('con', '대비', 120, 10, 400, 1, '%'), N('bri', '밝기', 0, -100, 100, 1, ''), C('c1', '어두운 색', '#0b0f26'), C('c2', '밝은 색', '#9fc4ff'), O('mode', '합성', 'atop', [['atop', '레이어 모양 안에만'], ['fill', '상자 전체 채우기'], ['mul', '곱하기 (질감)'], ['add', '더하기 (빛)']])], {
+  post(E) {
+    const b = E.box; if (b.w < 1 || b.h < 1) return; const q = Math.min(1, 190 / Math.max(b.w, b.h)), w = Math.max(2, Math.round(b.w * q)), hh = Math.max(2, Math.round(b.h * q));
+    NOISE_CV.width = w; NOISE_CV.height = hh; const nx = NOISE_CV.getContext('2d'), id = nx.createImageData(w, hh), d = id.data;
+    const sc = Math.max(1, E.p.scale * E.s) * q, oct = Math.round(E.p.oct), z = E.tt * E.p.evo, fx = E.tt * E.p.flow * E.s * q / sc, c1 = hexToRgb(E.p.c1), c2 = hexToRgb(E.p.c2), con = E.p.con / 100, bri = E.p.bri / 100, look = E.o.look, seed = E.seed;
+    for (let y = 0; y < hh; y++) for (let x = 0; x < w; x++) {
+      let a = 0, amp = .5, f = 1, nrm = 0, px = x / sc - fx, py = y / sc;
+      for (let o = 0; o < oct; o++) { let v = vnoise3(px * f, py * f, z + o * 7.1, seed + o); if (look === 'turb') v = Math.abs(v * 2 - 1); else if (look === 'ridge') v = 1 - Math.abs(v * 2 - 1); a += v * amp; nrm += amp; amp *= .5; f *= 2.03; }
+      a /= nrm; if (look === 'ridge') a = .5 + .5 * Math.sin((px * 3 + a * 9) * 1.3); if (look === 'cell') a = a > .5 ? .8 + (a - .5) * .4 : a * .6;
+      a = clamp((a - .5) * con + .5 + bri, 0, 1); const i = (y * w + x) * 4;
+      d[i] = c1[0] + (c2[0] - c1[0]) * a; d[i + 1] = c1[1] + (c2[1] - c1[1]) * a; d[i + 2] = c1[2] + (c2[2] - c1[2]) * a; d[i + 3] = 255;
+    }
+    nx.putImageData(id, 0, 0); const X = E.x; X.imageSmoothingEnabled = true; X.imageSmoothingQuality = 'high';
+    X.globalCompositeOperation = E.o.mode === 'atop' ? 'source-atop' : E.o.mode === 'mul' ? 'multiply' : E.o.mode === 'add' ? 'lighter' : 'source-over';
+    if (E.o.mode === 'mul' || E.o.mode === 'add') { clr(E.A); E.A.x.imageSmoothingEnabled = true; E.A.x.drawImage(NOISE_CV, b.x, b.y, b.w, b.h); E.A.x.globalCompositeOperation = 'destination-in'; E.A.x.drawImage(E.c, 0, 0); rst(E.A.x); X.drawImage(E.A.c, 0, 0); }
+    else X.drawImage(NOISE_CV, b.x, b.y, b.w, b.h);
+  }
+});
+/* ---- 파티클: 시간만 알면 위치가 정해지는 방식이라 어디로 옮겨 봐도 똑같이 보여요 ---- */
+const PKINDS = [['spark', '불꽃 분수'], ['fire', '폭죽'], ['snow', '눈'], ['rain', '비'], ['glitter', '반짝이'], ['bubble', '거품'], ['dust', '먼지']];
+def('particles', '파티클', 'gen', '불꽃·눈·비·반짝이·폭죽처럼 알갱이가 흩날려요', [O('kind', '종류', 'spark', PKINDS), N('rate', '양', 60, 1, 600, 1, '개/초'), N('life', '수명', 1.6, .1, 10, .05, 's'), N('size', '크기', 8, 1, 120, .5, 'px'), N('speed', '속도', 420, 0, 3000, 1, 'px/s'), N('dir', '방향', -90, -180, 180, 1, '°'), N('spread', '퍼짐', 50, 0, 360, 1, '°'), N('grav', '중력', 500, -2000, 3000, 1, ''), N('ex', '나오는 곳 X', 0, -2000, 2000, 1, 'px'), N('ey', '나오는 곳 Y', 0, -2000, 2000, 1, 'px'), C('c1', '색 1', '#ffd36b'), C('c2', '색 2', '#ff5a3c'), B('glow', '빛나게', true)], {
+  post(E) {
+    const k = E.o.kind, X = E.x, s = E.s, life = Math.max(.05, E.p.life), t = E.lt + (['snow', 'rain', 'bubble', 'dust', 'glitter'].includes(k) ? life : 0), rate = E.p.rate, b = E.box; // 눈·비 등은 처음부터 화면에 가득
+    const area = k === 'snow' || k === 'rain' ? 'top' : k === 'glitter' || k === 'dust' ? 'area' : k === 'bubble' ? 'bottom' : 'point';
+    const ox = E.ax + E.p.ex * s, oy = E.ay + E.p.ey * s, c1 = hexToRgb(E.p.c1), c2 = hexToRgb(E.p.c2);
+    let i0 = Math.max(0, Math.floor((t - life) * rate)), i1 = Math.floor(t * rate); if (i1 - i0 > 4000) i0 = i1 - 4000;
+    const burst = k === 'fire', per = 1.4; // 폭죽: 1.4초마다 한 번씩 터짐
+    X.save(); if (E.o.glow) X.globalCompositeOperation = 'lighter';
+    const draw = (R, age, L_, ov) => {
+      const u = age / L_; if (u < 0 || u > 1) return; const dir = ov ? ov.dir : E.p.dir, spr = ov ? ov.spread : E.p.spread;
+      let ang = (dir + (R() - .5) * spr) * D2R, sp = E.p.speed * (.45 + R() * .8) * s, g = E.p.grav * s, ex0, ey0;
+      if (area === 'point') { ex0 = ox + (ov ? ov.bx : 0); ey0 = oy + (ov ? ov.by : 0); }
+      else if (area === 'top') { ex0 = b.x + R() * b.w; ey0 = b.y - 10 * s; }
+      else if (area === 'bottom') { ex0 = b.x + R() * b.w; ey0 = b.y + b.h + 10 * s; }
+      else { ex0 = b.x + R() * b.w; ey0 = b.y + R() * b.h; }
+      let x = ex0 + Math.cos(ang) * sp * age, y = ey0 + Math.sin(ang) * sp * age + .5 * g * age * age;
+      if (k === 'snow' || k === 'bubble' || k === 'dust') x += Math.sin(age * (1.5 + R() * 2) + R() * 6) * (k === 'dust' ? 8 : 22) * s;
+      const sz = E.p.size * s * (.4 + R() * .9), mixc = R(), col = [c1[0] + (c2[0] - c1[0]) * mixc, c1[1] + (c2[1] - c1[1]) * mixc, c1[2] + (c2[2] - c1[2]) * mixc];
+      let a = k === 'glitter' ? Math.pow(Math.abs(Math.sin(u * Math.PI * (2 + R() * 3))), 3) : k === 'snow' || k === 'rain' || k === 'bubble' ? Math.min(1, u * 8) * Math.min(1, (1 - u) * 4) : (1 - u) * Math.min(1, u * 10);
+      if (k === 'fire') a = Math.pow(1 - u, .55) * Math.min(1, u * 12); else if (k === 'spark') a *= 1 - u * .3;
+      X.globalAlpha = clamp(a, 0, 1); const cs = `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`;
+      if (k === 'rain') { const vy = Math.sin(ang) * sp + g * age, vx = Math.cos(ang) * sp, l = Math.hypot(vx, vy) || 1, len = sz * 3; X.strokeStyle = cs; X.lineWidth = Math.max(1, sz * .18); X.beginPath(); X.moveTo(x, y); X.lineTo(x - vx / l * len, y - vy / l * len); X.stroke(); return; }
+      if (k === 'spark' || k === 'fire') { const vy = Math.sin(ang) * sp + g * age, vx = Math.cos(ang) * sp, l = Math.hypot(vx, vy) || 1, len = Math.min(sz * 3, l * .03); X.strokeStyle = cs; X.lineCap = 'round'; X.lineWidth = sz * (1 - u * .6); X.beginPath(); X.moveTo(x, y); X.lineTo(x - vx / l * len, y - vy / l * len); X.stroke(); return; }
+      if (k === 'glitter') { const r = sz * (.6 + .4 * a); X.fillStyle = cs; X.beginPath(); for (let j = 0; j < 8; j++) { const rr = j % 2 ? r * .22 : r, aa = j * Math.PI / 4; X.lineTo(x + Math.cos(aa) * rr, y + Math.sin(aa) * rr); } X.closePath(); X.fill(); return; }
+      if (k === 'bubble') { X.strokeStyle = cs; X.lineWidth = Math.max(1, sz * .12); X.beginPath(); X.arc(x, y, sz, 0, TAU); X.stroke(); X.globalAlpha *= .6; X.fillStyle = '#fff'; X.beginPath(); X.arc(x - sz * .35, y - sz * .35, sz * .18, 0, TAU); X.fill(); return; }
+      const gr = X.createRadialGradient(x, y, 0, x, y, sz); gr.addColorStop(0, cs); gr.addColorStop(1, `rgba(${col[0] | 0},${col[1] | 0},${col[2] | 0},0)`); X.fillStyle = k === 'snow' || k === 'dust' ? cs : gr; X.beginPath(); X.arc(x, y, k === 'snow' ? sz * .5 : sz, 0, TAU); X.fill();
+    };
+    if (burst) { // 터질 때마다 rate/2 개가 한꺼번에 사방으로
+      const n = Math.max(6, Math.round(rate / 2)); for (let bi = Math.max(0, Math.floor((t - life) / per)); bi <= Math.floor(t / per); bi++) { const tb = bi * per, Rb = mulberry(E.seed * 131 + bi * 977), ov = { bx: (Rb() - .5) * b.w * .5, by: (Rb() - .5) * b.h * .3, spread: 14, dir: 0 }; for (let j = 0; j < n; j++) { ov.dir = j / n * 360; draw(mulberry(E.seed * 7919 + bi * 4241 + j * 13), t - tb, life, ov); } }
+    } else for (let i = i0; i <= i1; i++) { const R = mulberry(E.seed * 7919 + i * 7); draw(R, t - i / rate, life * (.7 + R() * .6)); }
+    X.restore(); return fullBox();
+  }
+});
+/* ---- 오디오 스펙트럼: 프로젝트의 소리(오디오·영상 레이어)를 그 시간에 분석해서 막대로 ---- */
+function fftMag(re) { const n = re.length, im = new Float32Array(n); for (let i = 1, j = 0; i < n; i++) { let bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit; if (i < j) { const tr = re[i]; re[i] = re[j]; re[j] = tr; } } for (let len = 2; len <= n; len <<= 1) { const ang = -2 * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang); for (let i = 0; i < n; i += len) { let cr = 1, ci = 0; for (let j = 0; j < len / 2; j++) { const a = i + j, b = a + len / 2, xr = re[b] * cr - im[b] * ci, xi = re[b] * ci + im[b] * cr; re[b] = re[a] - xr; im[b] = im[a] - xi; re[a] += xr; im[a] += xi; const nr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = nr; } } } const out = new Float32Array(n / 2); for (let i = 0; i < n / 2; i++) out[i] = Math.hypot(re[i], im[i]) / n; return out; }
+function audioWindow(t, n) { // mixed samples of every sounding layer around time t (null if nothing has decoded sound)
+  let any = false, sr = 44100; const out = new Float32Array(n);
+  S.proj.layers.forEach(L => { if ((L.type !== 'audio' && L.type !== 'video') || !L.visible || !layerActive(L, t)) return; const M = MEDIA.get(L.media); if (!M || !M.abuf) return; const b = M.abuf; sr = b.sampleRate; const g = clamp(audGain(L, M, t), 0, 4), mt = mediaTime(L, t), c0 = b.getChannelData(0), c1 = b.numberOfChannels > 1 ? b.getChannelData(1) : c0, st = Math.floor(mt * sr) - (n >> 1); for (let i = 0; i < n; i++) { const j = st + i; if (j >= 0 && j < c0.length) out[i] += (c0[j] + c1[j]) * .5 * g; } any = true; });
+  return any ? { d: out, sr } : null;
+}
+def('spectrum', '오디오 스펙트럼', 'gen', '음악 소리에 맞춰 막대·선이 춤춰요', [O('look', '모양', 'bars', [['bars', '막대'], ['mirror', '가운데 대칭 막대'], ['circle', '원형'], ['wave', '파형 (선)']]), N('bands', '막대 수', 48, 4, 256, 1, '개'), N('gain', '감도', 100, 10, 400, 1, '%'), N('gap', '막대 간격', 30, 0, 90, 1, '%'), N('lw', '선 두께', 4, .5, 40, .5, 'px'), C('c1', '색 1', '#5aaaf7'), C('c2', '색 2', '#ff6fb1'), B('round', '둥근 끝', true)], {
+  post(E) {
+    const b = E.box; if (b.w < 2 || b.h < 2) return; const N_ = 2048, nb = Math.round(E.p.bands), X = E.x, gain = E.p.gain / 100;
+    let vals = new Float32Array(nb), wave = null; const win = audioWindow(E.t, N_);
+    if (win) {
+      wave = win.d; const acc = new Float32Array(N_ / 2);
+      [0, -.023, -.046].forEach((dt, wi) => { const w = wi ? audioWindow(E.t + dt, N_) : win; if (!w) return; const re = new Float32Array(N_); for (let i = 0; i < N_; i++) re[i] = w.d[i] * (.5 - .5 * Math.cos(2 * Math.PI * i / (N_ - 1))); const m = fftMag(re); for (let i = 0; i < m.length; i++) acc[i] += m[i] / 3; });
+      const f0 = 40, f1 = Math.min(16000, win.sr / 2), hz = win.sr / N_;
+      for (let k = 0; k < nb; k++) { const a = f0 * Math.pow(f1 / f0, k / nb), c = f0 * Math.pow(f1 / f0, (k + 1) / nb); let s_ = 0, cnt = 0; for (let i = Math.max(1, Math.floor(a / hz)); i <= Math.max(Math.floor(a / hz) + 1, Math.ceil(c / hz)); i++) { s_ += acc[i] || 0; cnt++; } const db = 20 * Math.log10(s_ / Math.max(1, cnt) + 1e-7); vals[k] = clamp((db + 72) / 58 * gain, 0, 1); }
+    } else { for (let k = 0; k < nb; k++) vals[k] = clamp((.35 + .3 * noise1(E.tt * 3 + k * .37, E.seed) + .25 * Math.sin(E.tt * 5 + k * .5)) * (1 - k / nb * .5) * gain, 0, 1); } // 소리가 없으면 미리보기용 움직임
+    const c1 = E.p.c1, c2 = E.p.c2, col = u => lerpColor(c1, c2, clamp(u, 0, 1)); X.save(); X.lineCap = E.o.round ? 'round' : 'butt';
+    if (E.o.look === 'wave') {
+      X.strokeStyle = (() => { const g = X.createLinearGradient(b.x, 0, b.x + b.w, 0); g.addColorStop(0, c1); g.addColorStop(1, c2); return g; })(); X.lineWidth = E.p.lw * E.s; X.lineJoin = 'round'; X.beginPath();
+      const M_ = 400; for (let i = 0; i <= M_; i++) { const v = wave ? wave[Math.floor(i / M_ * (wave.length - 1))] * 2.2 * gain : Math.sin(i / M_ * 18 + E.tt * 6) * .3 * noise1(E.tt * 2 + i * .02, E.seed); const x = b.x + b.w * i / M_, y = b.y + b.h / 2 - clamp(v, -1, 1) * b.h / 2; i ? X.lineTo(x, y) : X.moveTo(x, y); } X.stroke();
+    } else if (E.o.look === 'circle') {
+      const cx = b.x + b.w / 2, cy = b.y + b.h / 2, R0 = Math.min(b.w, b.h) * .28, R1 = Math.min(b.w, b.h) * .5; X.lineWidth = Math.max(1, (TAU * R0 / nb) * (1 - E.p.gap / 100));
+      for (let k = 0; k < nb; k++) { const a = -Math.PI / 2 + k / nb * TAU, v = vals[k]; X.strokeStyle = col(k / nb); X.beginPath(); X.moveTo(cx + Math.cos(a) * R0, cy + Math.sin(a) * R0); X.lineTo(cx + Math.cos(a) * (R0 + (R1 - R0) * Math.max(.03, v)), cy + Math.sin(a) * (R0 + (R1 - R0) * Math.max(.03, v))); X.stroke(); }
+    } else {
+      const bw = b.w / nb, w = Math.max(1, bw * (1 - E.p.gap / 100)), mir = E.o.look === 'mirror';
+      for (let k = 0; k < nb; k++) { const v = Math.max(.02, vals[k]), hgt = v * (mir ? b.h / 2 : b.h), x = b.x + bw * (k + .5); X.strokeStyle = col(k / nb); X.lineWidth = w; X.beginPath(); if (mir) { X.moveTo(x, b.y + b.h / 2 - hgt); X.lineTo(x, b.y + b.h / 2 + hgt); } else { X.moveTo(x, b.y + b.h); X.lineTo(x, b.y + b.h - hgt); } X.stroke(); }
+    }
+    X.restore();
+  }
+});
+/* ---- 퍼펫 핀: 핀을 꽂고 끌면 그림이 고무처럼 휘어요 (MLS 강체 변형 + 삼각형 망) ---- */
+const PUP_CV = document.createElement('canvas');
+function puppetPins(f) { return (f.pins || []).filter(p => f.p['pin' + p.id + 'x']); }
+function puppetDisp(L, f, t) { return puppetPins(f).map(p => ({ id: p.id, x: p.x, y: p.y, dx: pv(f.p['pin' + p.id + 'x'], t), dy: pv(f.p['pin' + p.id + 'y'], t) })); }
+function mlsRigid(px, py, P, Q, out) { // P,Q: Float64Array [x0,y0,x1,y1…]
+  const n = P.length / 2; let sw = 0, psx = 0, psy = 0, qsx = 0, qsy = 0; const w = new Float64Array(n);
+  for (let i = 0; i < n; i++) { const dx = P[i * 2] - px, dy = P[i * 2 + 1] - py, d2 = dx * dx + dy * dy; if (d2 < 1e-6) { out[0] = Q[i * 2]; out[1] = Q[i * 2 + 1]; return; } w[i] = 1 / d2; sw += w[i]; psx += w[i] * P[i * 2]; psy += w[i] * P[i * 2 + 1]; qsx += w[i] * Q[i * 2]; qsy += w[i] * Q[i * 2 + 1]; }
+  psx /= sw; psy /= sw; qsx /= sw; qsy /= sw;
+  if (n === 1) { out[0] = px + qsx - psx; out[1] = py + qsy - psy; return; }
+  let a = 0, b = 0; for (let i = 0; i < n; i++) { const hx = P[i * 2] - psx, hy = P[i * 2 + 1] - psy, kx = Q[i * 2] - qsx, ky = Q[i * 2 + 1] - qsy; a += w[i] * (hx * kx + hy * ky); b += w[i] * (hx * ky - hy * kx); }
+  const l = Math.hypot(a, b) || 1, cr = a / l, ci = b / l, vx = px - psx, vy = py - psy; out[0] = qsx + vx * cr - vy * ci; out[1] = qsy + vx * ci + vy * cr;
+}
+def('puppet', '퍼펫 핀', 'distort', '핀을 꽂고 끌어서 팔다리처럼 휘게 해요', [N('mesh', '망 촘촘함', 22, 6, 48, 1, '칸'), N('rigid', '단단함', 60, 0, 100, 1, '%')], {
+  pvSetup(L, f) { const b = layerBounds(L, 0); [[-.32, .1], [.32, .1], [0, -.05]].forEach(([u, v], i) => { const id = 'p' + i; (f.pins = f.pins || []).push({ id, x: b.x + b.w * (.5 + u), y: b.y + b.h * (.5 + v) }); f.p['pin' + id + 'x'] = P(0); f.p['pin' + id + 'y'] = P(0); }); upsertKey(f.p.pinp1y, 0, 0); upsertKey(f.p.pinp1y, 1.5, -b.h * .3); upsertKey(f.p.pinp1y, 3, 0); },
+  ui(f, L) {
+    const n = puppetPins(f).length, on = S.puppet && S.puppet.fid === f.id;
+    return [h('div', { class: 'hint', style: 'margin:6px 0' }, n ? `핀 ${n}개. ${on ? '화면에서 빈 곳을 누르면 핀이 생기고, 핀을 끌면 휘어져요. 핀을 길게 누르면(PC: 오른쪽 클릭) 지워져요.' : '핀 편집을 켜고 화면에서 핀을 끌어 보세요.'}` : '핀 편집을 켜고 레이어 위를 눌러 핀을 꽂으세요. 2개 이상 꽂고 하나를 끌면 나머지는 버티면서 휘어져요.'),
+      h('div', { class: 'btnrow' }, h('button', { class: 'btn sm' + (on ? ' primary' : ''), html: icon('move') + (on ? '핀 편집 끝내기' : '핀 편집 켜기'), onclick: () => { if (on) endPuppet(); else startPuppet(L, f); } }),
+        n ? h('button', { class: 'btn sm danger', onclick: () => { Object.keys(f.p).forEach(k => { if (/^pin.+[xy]$/.test(k)) delete f.p[k]; }); f.pins = []; commit(); invalidate(); refreshInspector(); } }, '핀 모두 지우기') : '')];
+  },
+  post(E) {
+    const f = E.f; if (!f) return; const pins = puppetDisp(E.L, f, E.t); if (!pins.length) return;
+    let dm; try { dm = devMat(layerMatrix(E.L, E.t)); } catch (e) { return; }
+    const P = new Float64Array(pins.length * 2), Q = new Float64Array(pins.length * 2); let moved = false;
+    pins.forEach((p, i) => { const a = dm.transformPoint(new DOMPoint(p.x, p.y)), b = dm.transformPoint(new DOMPoint(p.x + p.dx, p.y + p.dy)); P[i * 2] = a.x; P[i * 2 + 1] = a.y; Q[i * 2] = b.x; Q[i * 2 + 1] = b.y; if (Math.hypot(b.x - a.x, b.y - a.y) > .3) moved = true; });
+    if (!moved) return;
+    const bx = E.box, G = Math.round(E.p.mesh), gw = G, gh = Math.max(2, Math.round(G * bx.h / Math.max(1, bx.w))), cw = bx.w / gw, ch = bx.h / gh, rig = E.p.rigid / 100;
+    // where is there something to draw? (skip empty cells)
+    PUP_CV.width = gw; PUP_CV.height = gh; const mx = PUP_CV.getContext('2d', { willReadFrequently: true }); mx.clearRect(0, 0, gw, gh); mx.drawImage(E.c, bx.x, bx.y, bx.w, bx.h, 0, 0, gw, gh); const al = mx.getImageData(0, 0, gw, gh).data;
+    const V = new Float64Array((gw + 1) * (gh + 1) * 2), o = [0, 0];
+    for (let j = 0; j <= gh; j++) for (let i = 0; i <= gw; i++) { const x = bx.x + i * cw, y = bx.y + j * ch; mlsRigid(x, y, P, Q, o); // 단단함이 낮으면 핀 이동량을 거리로 섞은 말랑한 변형
+      if (rig < 1) { let sw = 0, dx = 0, dy = 0; for (let k = 0; k < pins.length; k++) { const d2 = (P[k * 2] - x) ** 2 + (P[k * 2 + 1] - y) ** 2 + 1, w = 1 / (d2 * d2); sw += w; dx += w * (Q[k * 2] - P[k * 2]); dy += w * (Q[k * 2 + 1] - P[k * 2 + 1]); } o[0] = lerp(x + dx / sw, o[0], rig); o[1] = lerp(y + dy / sw, o[1], rig); }
+      const vi = (j * (gw + 1) + i) * 2; V[vi] = o[0]; V[vi + 1] = o[1]; }
+    copyTo(E, E.A); clr(E); const X = E.x, src = E.A.c;
+    const tri = (sx0, sy0, sx1, sy1, sx2, sy2, d0x, d0y, d1x, d1y, d2x, d2y) => {
+      const den = (sx1 - sx0) * (sy2 - sy0) - (sx2 - sx0) * (sy1 - sy0); if (Math.abs(den) < 1e-9) return;
+      const a = ((d1x - d0x) * (sy2 - sy0) - (d2x - d0x) * (sy1 - sy0)) / den, c = ((d2x - d0x) * (sx1 - sx0) - (d1x - d0x) * (sx2 - sx0)) / den, b = ((d1y - d0y) * (sy2 - sy0) - (d2y - d0y) * (sy1 - sy0)) / den, d = ((d2y - d0y) * (sx1 - sx0) - (d1y - d0y) * (sx2 - sx0)) / den, e = d0x - a * sx0 - c * sy0, f_ = d0y - b * sx0 - d * sy0;
+      const gx = (d0x + d1x + d2x) / 3, gy = (d0y + d1y + d2y) / 3, gr = 1.06, ex = (p, q) => [gx + (p - gx) * gr, gy + (q - gy) * gr];
+      X.save(); X.beginPath(); let p = ex(d0x, d0y); X.moveTo(p[0], p[1]); p = ex(d1x, d1y); X.lineTo(p[0], p[1]); p = ex(d2x, d2y); X.lineTo(p[0], p[1]); X.closePath(); X.clip(); X.setTransform(a, b, c, d, e, f_); X.drawImage(src, 0, 0); X.restore();
+    };
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++) {
+      let has = false; for (let dj = -1; dj <= 1 && !has; dj++) for (let di = -1; di <= 1; di++) { const ii = i + di, jj = j + dj; if (ii >= 0 && jj >= 0 && ii < gw && jj < gh && al[(jj * gw + ii) * 4 + 3] > 2) { has = true; break; } } if (!has) continue;
+      const v = (ii, jj) => (jj * (gw + 1) + ii) * 2, a_ = v(i, j), b_ = v(i + 1, j), c_ = v(i, j + 1), d_ = v(i + 1, j + 1), sx = bx.x + i * cw, sy = bx.y + j * ch;
+      tri(sx, sy, sx + cw, sy, sx, sy + ch, V[a_], V[a_ + 1], V[b_], V[b_ + 1], V[c_], V[c_ + 1]);
+      tri(sx + cw, sy, sx + cw, sy + ch, sx, sy + ch, V[b_], V[b_ + 1], V[d_], V[d_ + 1], V[c_], V[c_ + 1]);
+      [a_, b_, c_, d_].forEach(q => { x0 = Math.min(x0, V[q]); y0 = Math.min(y0, V[q + 1]); x1 = Math.max(x1, V[q]); y1 = Math.max(y1, V[q + 1]); });
+    }
+    return isFinite(x0) ? clipBox({ x: Math.floor(x0) - 2, y: Math.floor(y0) - 2, w: Math.ceil(x1 - x0) + 4, h: Math.ceil(y1 - y0) + 4 }) : E.box;
+  }
+});
 /* ================= STAGE VIEW ================= */
 const view = $('#view'), vx = view.getContext('2d');
 const compCv = document.createElement('canvas'), compX = compCv.getContext('2d');
@@ -2002,6 +2215,7 @@ function drawOverlay(x, m) {
   }
   if (S.brush) drawBrushPreview(x, m);
   if (S.outline) drawOutlinePreview(x, m);
+  if (S.puppet) drawPuppetPins(x, m);
   drawMsOutlines(x, m);
   if (S.pen) {
     const pts = S.pen.pts; x.save(); x.strokeStyle = '#ff6fb1'; x.fillStyle = 'rgba(255,111,177,.12)'; x.lineWidth = 2;
@@ -2043,7 +2257,7 @@ const HITCX = document.createElement('canvas').getContext('2d');
 function hitShape(L, t, p, tol) {
   const g = shapeGeom(L, t), s = L.shape;
   const fillable = g.closed && s.fillOn && s.fillType !== 'none' && (!L.p.fop || pv(L.p.fop, t) > 1);
-  if (fillable && HITCX.isPointInPath(g.path, p.x, p.y)) return true;
+  if (fillable && HITCX.isPointInPath(g.path, p.x, p.y, g.rule || 'nonzero')) return true;
   const sw = pv(L.p.sw, t), stroked = (s.strokeOn || !g.closed) && sw > 0 && (!L.p.sop || pv(L.p.sop, t) > 1);
   if (stroked) {
     if (Math.abs(pv(L.p.trimE, t) - pv(L.p.trimS, t)) < .5) return false;
@@ -2092,6 +2306,7 @@ view.addEventListener('pointerdown', e => {
   if (S.pick) { const c = pickSample(cx, cy); if (c) endPick(c); else toast('컴포지션 안쪽을 누르세요'); return; }
   if (S.pen) { penClick(cx, cy, m); return; }
   if (S.brush) { drag = { mode: 'brush', pts: [[cx, cy]], t0: performance.now(), last: [sx, sy] }; S.brush.cur = drag.pts; dirtyView = true; return; }
+  if (S.puppet && puppetDown(e, cx, cy, sx, sy, m, mob)) return;
   if (S.outline) { drag = { mode: 'outline', pts: [[cx, cy]], last: [sx, sy] }; S.outline.cur = drag.pts; dirtyView = true; return; }
   const L = selL(); const hr = mob ? 22 : 9;
   if (S.anchorEdit && L && !L.locked && L.type !== 'adjust' && L.type !== 'audio' && layerActive(L, t)) { drag = { mode: 'anchorEdit', L }; anchorTo(L, cx, cy, m); invalidate(); dirtyInsp = true; return; }
@@ -2180,6 +2395,7 @@ view.addEventListener('pointermove', e => {
       if (drag.others) drag.others.forEach(o => { const a1 = o.pinv.transformPoint(new DOMPoint(drag.start[0], drag.start[1])), b1 = o.pinv.transformPoint(new DOMPoint(drag.start[0] + dx, drag.start[1] + dy)); setVal(o.L, 'x', o.x0 + b1.x - a1.x); setVal(o.L, 'y', o.y0 + b1.y - a1.y); });
       invalidate(); dirtyInsp = true; break;
     }
+    case 'pin': { if (!drag.moved && Math.hypot(sx - drag.sx, sy - drag.sy) < 3) return; drag.moved = true; clearTimeout(drag.lp); puppetDrag(drag, cx, cy); break; }
     case 'rot': { const a = Math.atan2(cy - drag.ap[1], cx - drag.ap[0]); let r = drag.r0 + (a - drag.a0) / D2R; if (e.shiftKey) r = Math.round(r / 15) * 15; setVal(L, 'rot', r); invalidate(); dirtyInsp = true; break; }
     case 'scale': {
       const v = drag.inv.transformPoint(new DOMPoint(cx, cy)); const v0 = drag.v0;
@@ -2211,6 +2427,7 @@ function endPtr(e) {
     if (drag.mode === 'brush') { const d = drag; d.dt = performance.now() - d.t0; drag = null; brushStroke(d); updateHud(); return; }
     if (drag.mode === 'pan' && drag.tapDesel) select(null);
     if (drag.mode === 'move' && !drag.moved && drag.msTap) msToggle(drag.msTap);
+    if (drag.mode === 'pin') { clearTimeout(drag.lp); if (drag.moved || drag.fresh) commit(); refreshInspector(); }
     if (['move', 'rot', 'scale', 'anchor', 'anchorEdit', 'mask'].includes(drag.mode) && (drag.mode !== 'move' || drag.moved)) commit();
     drag = null; S.snapLines = null; dirtyView = true;
   }
@@ -2356,6 +2573,7 @@ function updateHud() {
       h('button', { class: 'chip', onclick: finishPen }, '완료'), h('button', { class: 'chip', onclick: () => { S.pen = null; updateHud(); dirtyView = true; } }, '취소'));
   } else if (S.anchorEdit) {
     hud.append(h('span', { class: 'chip modebadge' }, '중심점 이동'), h('span', { class: 'chip' }, '화면을 끌어 중심점을 옮깁니다. 모서리와 가운데에 스냅됩니다'), h('button', { class: 'chip', onclick: () => setAnchorEdit(false) }, '완료'));
+  } else if (S.puppet) { puppetHud(hud);
   } else if (MS.on) { msHud(hud);
   } else if (S.maskEdit) {
     hud.append(h('span', { class: 'chip modebadge' }, '마스크 편집'), h('span', { class: 'chip' }, '핸들을 끌어 모양을 바꾸세요'), h('button', { class: 'chip', onclick: () => { S.maskEdit = false; updateHud(); dirtyView = true; refreshInspector(); } }, '완료'));
@@ -2764,7 +2982,7 @@ function kfMenu(cx, cy) {
 function layerMenu(L, cx, cy) {
   openCtx(cx, cy, [{ cap: L.name },
   { l: '복제', ic: 'copy', fn: () => duplicateLayer(L) }, ...(isGroup(L) ? [] : [{ l: '플레이헤드에서 분할', ic: 'split', fn: () => splitLayer(L) }]),
-  { l: '그룹 만들기…', ic: 'folder', fn: groupSheet },
+  { l: '그룹 만들기…', ic: 'folder', fn: groupSheet }, { l: '도형 합치기·빼기…', ic: 'shape', fn: () => mergeSheet(MS.on ? msLayers() : []) },
   ...(isGroup(L) ? [{ l: '그룹 풀기', ic: 'folder', fn: () => ungroup(L) }] : []),
   ...(groupOf(L) ? [{ l: `‘${groupOf(L).name}’에서 빼기`, ic: 'up', fn: () => leaveGroup(L) }] : []),
   { l: '한 단계 위로', ic: 'up', fn: () => moveLayer(L, 1) }, { l: '한 단계 아래로', ic: 'down', fn: () => moveLayer(L, -1) },
@@ -3341,6 +3559,9 @@ function stylePanel(L) {
     const so = [togRow('외곽선', T.strokeOn, v => { T.strokeOn = v; rf(); })]; if (T.strokeOn) so.push(colorRow(L, 'stroke'), numRow(L, 'sw'), numRow(L, 'sop'));
     so.push(togRow('배경 상자', T.bgOn, v => { T.bgOn = v; rf(); }, '자막처럼 글자 뒤에 상자')); if (T.bgOn) so.push(colorRow(L, 'tbg'), numRow(L, 'tbo'), numRow(L, 'tpad'));
     out.push(sec('꾸미기', ...so));
+    { const A = T.anim || (T.anim = { mode: 'none', freq: 1, stag: 10, order: 'ltr' }), rows = [pillsRow('움직임', [{ v: 'none', l: '없음' }, { v: 'wave', l: '파도' }, { v: 'bounce', l: '통통' }, { v: 'swing', l: '흔들흔들' }, { v: 'pulse', l: '두근두근' }, { v: 'jitter', l: '덜덜' }, { v: 'drop', l: '떨어지며 등장' }, { v: 'color', l: '색 물결' }, { v: 'rainbow', l: '무지개' }], A.mode, v => { A.mode = v; rf(); })];
+      if (A.mode !== 'none') { rows.push(numRow(L, 'tam'), staticNum('빠르기', () => A.freq, v => { A.freq = clamp(v, 0, 20); }, .05, '회/초'), staticNum('글자 간 시차', () => A.stag, v => { A.stag = clamp(v, 0, 200); }, 1, '%'), selRow('순서', A.order, [['ltr', '왼쪽부터'], ['rtl', '오른쪽부터'], ['center', '가운데부터'], ['random', '무작위']], v => { A.order = v; commit(); invalidate(); })); if (A.mode === 'color') rows.push(colorRow(L, 'tac')); rows.push(h('p', { class: 'hint' }, '글자마다 시차를 두고 계속 움직여요. ‘물결 세기’를 키프레임하면 서서히 시작하거나 멈출 수 있어요.')); }
+      out.push(sec('글자 물결 (텍스트 애니메이터)', ...rows)); }
     out.push(sec('글자별 애니메이션', pillsRow('방식', [{ v: 'type', l: '타자기' }, { v: 'fade', l: '페이드' }, { v: 'up', l: '올라오기' }, { v: 'down', l: '내려오기' }, { v: 'scale', l: '커지기' }, { v: 'rotate', l: '회전' }, { v: 'blur', l: '번짐' }], T.revealMode, v => { T.revealMode = v; commit(); invalidate(); }),
       numRow(L, 'reveal'), h('p', { class: 'hint' }, '글자 등장을 0→100%로 키프레임하면 한 글자씩 나타납니다.'),
       h('button', { class: 'btn sm', onclick: () => { const t0 = L.start, t1 = Math.min(L.end, t0 + Math.max(.5, Array.from(String(pv(L.p.txt, S.time) || T.content)).length * .06)); L.p.reveal.k = []; upsertKey(L.p.reveal, t0, 0).e = { type: 'linear' }; upsertKey(L.p.reveal, t1, 100); rf(); toast('글자 등장 애니메이션을 넣었어요'); } }, '한 글자씩 등장 넣기')));
@@ -3352,7 +3573,15 @@ function stylePanel(L) {
         L.type !== 'audio' ? h('button', { class: 'btn sm', html: icon('fit') + '화면 맞춤', onclick: () => fitLayer(L, false) }) : null,
         L.type !== 'audio' ? h('button', { class: 'btn sm', html: icon('fit') + '꽉 채우기', onclick: () => fitLayer(L, true) }) : null,
         L.type !== 'audio' ? h('button', { class: 'btn sm', html: icon('scissors') + '테두리 따기', onclick: () => startOutline(L) }) : null)));
-    if (L.type !== 'image') { out.push(sec('재생 속도', selRow('재생 속도', String(L.speed || 1), [['0.25', '0.25×'], ['0.5', '0.5×'], ['1', '1×'], ['1.5', '1.5×'], ['2', '2×'], ['4', '4×']], v => { L.speed = parseFloat(v); commit(); invalidate(); }))); out.push(soundSection(L, () => refreshInspector())); }
+    if (L.type !== 'image') { const sp = [selRow('재생 속도', String(L.speed || 1), [['0.25', '0.25×'], ['0.5', '0.5×'], ['1', '1×'], ['1.5', '1.5×'], ['2', '2×'], ['4', '4×']], v => { L.speed = parseFloat(v); commit(); invalidate(); restartMedia && S.playing && restartMedia(); }),
+        togRow('거꾸로 재생', !!L.reverse, v => { L.reverse = v; if (v) L.remapOn = false; commit(); invalidate(); refreshInspector(); if (S.playing) restartMedia(); }, '끝에서 처음으로 되감기듯 재생')];
+      if (L.type === 'video') {
+        sp.push(togRow('시간 리맵', !!L.remapOn, v => { L.remapOn = v; if (v) { L.reverse = false; if (!L.p.remap) L.p.remap = P(0); const p = L.p.remap; if (!p.k.length) { const a = L.trimIn || 0; upsertKey(p, L.start, +a.toFixed(3)).e = { type: 'linear' }; upsertKey(p, L.end, +(a + (L.end - L.start) * (L.speed || 1)).toFixed(3)); } } commit(); invalidate(); refreshInspector(); if (S.playing) restartMedia(); }, '속도를 곡선으로: 빨라졌다 느려지기, 멈추기, 되감기'));
+        if (L.remapOn && L.p.remap) { sp.push(numRow(L, 'remap'), h('p', { class: 'hint' }, '‘원본 시간’ 키프레임이 그 순간 보여 줄 영상 위치예요. 그래프에서 기울기를 바꾸면 빨라지고 느려져요(평평하면 멈춤, 내려가면 되감기). 리맵 중에는 소리가 나지 않아요.'),
+          h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', onclick: () => { const p = L.p.remap, t0 = S.time, v = pv(p, t0), hold = 1; if (t0 < L.start || t0 > L.end) return; p.k.forEach(k => { if (k.t > t0 + 1e-6) k.t += hold; }); upsertKey(p, t0, +v.toFixed(3)).e = { type: 'hold' }; upsertKey(p, t0 + hold, +v.toFixed(3)); L.end += hold; if (S.proj.dur < L.end) S.proj.dur = L.end; commit(); invalidate(); refreshInspector(); toast('여기서 1초 멈췄다가 이어서 재생돼요'); } }, '여기서 1초 멈추기'),
+            h('button', { class: 'btn sm', onclick: () => { S.graphKey = { lid: L.id, key: 'remap' }; setDock('graph'); } }, '속도 곡선 편집'))); }
+      }
+      out.push(sec('재생 속도', ...sp)); out.push(soundSection(L, () => refreshInspector())); }
     if (L.type !== 'audio') out.push(sec('빠른 보정', h('p', { class: 'hint' }, '사진·영상 색감은 이펙트 탭의 색 보정, 크로마키, 듀오톤 등으로 바꿀 수 있어요.'), h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('fx') + '색 보정 추가', onclick: () => addFx(L, 'color') }), h('button', { class: 'btn sm', html: icon('drop') + '크로마키 (배경색 지우기)', onclick: () => chromaQuick(L) }))));
   }
   if (L.type === 'adjust') out.push(sec('조정 레이어', h('p', { class: 'hint' }, '조정 레이어는 아래에 있는 모든 레이어에 이펙트를 한꺼번에 적용합니다. 이펙트 탭에서 효과를 추가하고, 마스크로 적용 범위를 정할 수 있어요.'), h('button', { class: 'btn sm', html: icon('fx') + '이펙트 추가', onclick: () => fxBrowser() })));
@@ -3381,6 +3610,7 @@ function fxPanel(L) {
         else if (q.t === 's') body.append(selRow(q.l, f.o[q.k], q.opts, v => { f.o[q.k] = v; commit(); invalidate(); }));
         else if (q.t === 'b') body.append(togRow(q.l, f.o[q.k], v => { f.o[q.k] = v; commit(); invalidate(); }));
       });
+      if (d.ui) body.append(...d.ui(f, L));
       body.append(h('div', { class: 'sec-h', style: 'margin:8px 0 2px' }, '공통'), numRow(L, `fx:${f.id}:mix`), numRow(L, `fx:${f.id}:spd`),
         selRow('자동 변화', f.o.mod || 'none', MODS, v => { f.o.mod = v; commit(); invalidate(); }));
       card.append(body);
@@ -3528,6 +3758,7 @@ function updUndo() { $('#bUndo').disabled = Hist.idx <= 0; $('#bRedo').disabled 
 function resetHistory() { Hist.stack = []; Hist.idx = -1; commit(); }
 
 function select(id, keepKeys) {
+  if (S.puppet && id !== S.puppet.lid) endPuppet(true);
   if (MS.on && !MS.lock && !(id && MS.ids.has(id))) msExit();
   if (S.sel !== id) { S.sel = id; if (!keepKeys) S.selK = []; S.maskEdit = false; S.anchorEdit = false; updateHud(); if (id) { const L = findL(id); if (L && L.type === 'audio' && (S.tab === 'mask')) S.tab = 'transform'; } }
   refreshInspector(); ensureGraphKey(); refreshGraphBar(); dirtyView = dirtyTL = dirtyGraph = true; refreshKfBar();
@@ -3561,7 +3792,6 @@ function addFx(L, type, quiet) {
   if (!L) { if (FX[type].post) { const A = makeLayer('adjust', { start: 0, end: S.proj.dur }); S.proj.layers.push(A); S.sel = A.id; L = A; toast('조정 레이어를 만들어 전체 화면에 적용했어요'); } else { toast('움직임 이펙트는 레이어를 먼저 선택해야 해요'); return; } }
   if (L.type === 'adjust' && FX[type].pre) { toast('움직임 이펙트는 일반 레이어에만 쓸 수 있어요'); return; }
   if (L.type === 'audio') { toast('오디오 레이어에는 이펙트를 쓸 수 없어요'); return; }
-  if (isGroup(L) && !FX[type].pre) { toast('그룹에는 움직임 이펙트(등장·퇴장, 반복 움직임)만 쓸 수 있어요'); return; }
   const f = makeFx(type); L.fx.push(f); commit(); invalidate();
   if (!quiet) { S.tab = 'fx'; select(L.id); openTab('fx'); toast(`${FX[type].name} 추가됨`); }
 }
@@ -3659,7 +3889,14 @@ function pause() {
 }
 function togglePlay() { S.playing ? pause() : play(); }
 const VEL = new Map(), AEL = new Map(); let exporting = false;
-function mediaTime(L, t) { return (L.trimIn || 0) + (t - L.start) * (L.speed || 1); }
+function mediaTime(L, t) {
+  if (L.remapOn && L.p.remap) return Math.max(0, pv(L.p.remap, t)); // 시간 리맵: 이 순간에 원본의 몇 초를 보여줄지
+  const lin = (t - L.start) * (L.speed || 1);
+  if (L.reverse) return Math.max(0, (L.trimIn || 0) + (L.end - L.start) * (L.speed || 1) - lin - 1 / (S.proj.fps || 30)); // 거꾸로 재생
+  return (L.trimIn || 0) + lin;
+}
+const seekDriven = L => !!(L.reverse || L.remapOn);
+function revBuf(M) { if (M.rbuf && M.rbuf._src === M.abuf) return M.rbuf; const b = M.abuf; let r; try { r = new AudioBuffer({ length: b.length, numberOfChannels: b.numberOfChannels, sampleRate: b.sampleRate }); } catch (e) { return null; } for (let c = 0; c < b.numberOfChannels; c++) { const s_ = b.getChannelData(c), d = r.getChannelData(c), n = s_.length; for (let i = 0; i < n; i++) d[i] = s_[n - 1 - i]; } r._src = b; M.rbuf = r; return r; }
 function videoFor(L, M) {
   let v = VEL.get(L.id);
   if (!v || v._src !== M.url) {
@@ -3681,6 +3918,7 @@ function syncMediaPlaying(force) {
     if (L.type === 'audio' && (M.abuf || !M.url)) return; // decoded audio plays through the Web Audio engine below
     const el = L.type === 'video' ? videoFor(L, M) : audioFor(L, M);
     const active = layerActive(L, t) && L.visible && mediaTime(L, t) < (M.dur || 1e9);
+    if (active && seekDriven(L)) { if (!el.paused) el.pause(); if (L.type === 'video') { const mt = mediaTime(L, t); if (Math.abs(el.currentTime - mt) > .5 / (S.proj.fps || 30) && !el.seeking) { try { el.currentTime = mt; } catch (e) { } } } return; } // 거꾸로·리맵은 매 프레임 찾아가며 보여줌
     if (active) {
       const mt = mediaTime(L, t); el.playbackRate = L.speed || 1; const vol = clamp(audGain(L, M, t), 0, 1); if (L.type === 'video' && M.abuf) el.muted = true; else { el.volume = vol; el.muted = vol <= 0; }
       if (el.paused || force) { try { el.currentTime = mt; } catch (e) { } el.play().catch(() => { el.muted = true; el.play().catch(() => { }); }); }
@@ -3715,19 +3953,19 @@ function syncAudioBuffers(t, force) {
   const solo = S.proj.layers.some(l => l.solo);
   S.proj.layers.forEach(L => {
     if (L.type !== 'audio' && L.type !== 'video') return; const M = MEDIA.get(L.media); if (!M || !M.abuf) return;
-    const rate = L.speed || 1, mt = mediaTime(L, t);
-    const active = layerActive(L, t) && L.visible && (!solo || L.solo) && mt >= 0 && mt < M.abuf.duration - 0.01;
+    const rate = L.speed || 1, rbuf = L.reverse ? revBuf(M) : null, buf = rbuf || M.abuf, mt = rbuf ? M.abuf.duration - mediaTime(L, t) : mediaTime(L, t);
+    const active = !L.remapOn && layerActive(L, t) && L.visible && (!solo || L.solo) && mt >= 0 && mt < M.abuf.duration - 0.01;
     let n = AUD.nodes.get(L.id);
     if (!active) { if (n) stopAudioNode(L.id); return; }
     const vol = clamp(audGain(L, M, t), 0, 32);
-    if (n && (force || n.rate !== rate || n.buf !== M.abuf)) { stopAudioNode(L.id); n = null; }
+    if (n && (force || n.rate !== rate || n.buf !== buf)) { stopAudioNode(L.id); n = null; }
     if (n) { const expect = n.mt0 + (ac.currentTime - n.t0) * rate; if (Math.abs(expect - mt) > 0.3) { stopAudioNode(L.id); n = null; } }
     if (!n) {
-      const src = ac.createBufferSource(); src.buffer = M.abuf; src.playbackRate.value = rate;
+      const src = ac.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate;
       const ch = audChain(ac, L, src, ac.destination), g = ch.g; g.gain.value = vol;
       const remain = Math.max(0.01, (Math.min(L.end, S.proj.dur) - t) * rate);
       try { src.start(0, mt, remain); } catch (e) { return; }
-      n = { src, g, osc: ch.osc, rate, buf: M.abuf, t0: ac.currentTime, mt0: mt }; AUD.nodes.set(L.id, n);
+      n = { src, g, osc: ch.osc, rate, buf, t0: ac.currentTime, mt0: mt }; AUD.nodes.set(L.id, n);
       src.onended = () => { if (AUD.nodes.get(L.id) === n) AUD.nodes.delete(L.id); };
     } else n.g.gain.setTargetAtTime(vol, ac.currentTime, 0.02);
   });
@@ -3796,11 +4034,11 @@ function ensureAbuf(M) {
 async function abufNow(M) { if (!M) return null; if (M.abuf === undefined) await ensureAbuf(M); return M.abuf || null; }
 /* schedule one layer into an offline context; context time = project time - offset */
 function scheduleLayerAudio(oac, L, M, offset, from, to) {
-  const st = Math.max(from, L.start), en = Math.min(to, L.end); if (en <= st) return false;
-  const rate = L.speed || 1, src = oac.createBufferSource(); src.buffer = M.abuf; src.playbackRate.value = rate;
+  const st = Math.max(from, L.start), en = Math.min(to, L.end); if (en <= st || L.remapOn) return false;
+  const rate = L.speed || 1, rbuf = L.reverse ? revBuf(M) : null, src = oac.createBufferSource(); src.buffer = rbuf || M.abuf; src.playbackRate.value = rate;
   const ch = audChain(oac, L, src, oac.destination), g = ch.g.gain;
   g.setValueAtTime(audGain(L, M, st), st - offset); for (let t = st + 1 / 60; t <= en; t += 1 / 60) g.linearRampToValueAtTime(audGain(L, M, t), t - offset);
-  const mt = mediaTime(L, st); if (mt >= M.abuf.duration) return false;
+  const mt = rbuf ? M.abuf.duration - mediaTime(L, st) : mediaTime(L, st); if (mt >= M.abuf.duration) return false;
   src.start(st - offset, Math.max(0, mt), (en - st) * rate); return true;
 }
 async function renderLayerAudio(L) {
@@ -4192,13 +4430,33 @@ function openSheet(title, body, o = {}) {
   scrim.append(sh); scrim.hidden = false; scrim.onpointerdown = e => { if (e.target === scrim && !o.modal) close(); };
   return close;
 }
+const GEN_PRESETS = [['spark', '불꽃 분수', '#ff8a3c', 'wand'], ['fire', '폭죽', '#ff6fb1', 'star'], ['snow', '눈 내리기', '#9fc4ff', 'ellipse'], ['rain', '비 내리기', '#5aaaf7', 'line'], ['glitter', '반짝이', '#ffd166', 'star'], ['bubble', '거품', '#7fd6ff', 'ellipse'], ['fractal', '구름·연기 배경', '#6f7dbf', 'gradient'], ['spectrum', '오디오 스펙트럼', '#3ccf91', 'music']];
+function addGen(k) {
+  const pr = S.proj, isP = !['fractal', 'spectrum'].includes(k), nm = GEN_PRESETS.find(g => g[0] === k)[1];
+  const w = k === 'spectrum' ? Math.round(pr.w * .82) : pr.w, hh = k === 'spectrum' ? Math.round(pr.h * .22) : pr.h;
+  const L = makeLayer('shape', { kind: 'rect', w, h: hh, x: pr.w / 2, y: k === 'spectrum' ? pr.h * .7 : pr.h / 2, fill: '#000000', fillType: 'none', name: nm, start: 0, end: pr.dur });
+  const f = makeFx(isP ? 'particles' : k), set = o => Object.entries(o).forEach(([a, v]) => { if (f.p[a]) f.p[a].v = v; else f.o[a] = v; });
+  const base = Math.min(pr.w, pr.h) / 1080;
+  if (k === 'spark') set({ kind: 'spark', rate: 90, life: 1.6, size: 7 * base, speed: 950 * base, dir: -90, spread: 38, grav: 950 * base, ey: pr.h * .32, c1: '#ffd36b', c2: '#ff5a3c', glow: true });
+  if (k === 'fire') set({ kind: 'fire', rate: 140, life: 1.3, size: 5 * base, speed: 560 * base, grav: 260 * base, ey: -pr.h * .12, c1: '#ff6fb1', c2: '#ffd36b', glow: true });
+  if (k === 'snow') set({ kind: 'snow', rate: 40, life: 9, size: 9 * base, speed: 150 * base, dir: 90, spread: 30, grav: 0, c1: '#ffffff', c2: '#cfe6ff', glow: false });
+  if (k === 'rain') set({ kind: 'rain', rate: 170, life: 1.3, size: 16 * base, speed: 1900 * base, dir: 100, spread: 4, grav: 0, c1: '#9cc8ff', c2: '#ffffff', glow: false });
+  if (k === 'glitter') set({ kind: 'glitter', rate: 50, life: 1.5, size: 18 * base, speed: 0, c1: '#fff6c9', c2: '#ffd36b', glow: true });
+  if (k === 'bubble') set({ kind: 'bubble', rate: 12, life: 6, size: 26 * base, speed: 260 * base, dir: -90, spread: 16, grav: 0, c1: '#bfe6ff', c2: '#ffffff', glow: false });
+  if (k === 'fractal') set({ mode: 'fill', scale: 260 * base });
+  L.fx.push(f);
+  if (k === 'fractal') S.proj.layers.unshift(L); else addLayer(L);
+  select(L.id); commit(); invalidate(); openTab('fx');
+  toast(k === 'spectrum' ? '오디오를 넣으면 소리에 맞춰 움직여요 (지금은 미리보기 움직임)' : `‘${nm}’을 넣었어요. 이펙트 탭에서 양·크기·색을 바꿔 보세요`);
+}
 function addSheet() {
   const body = h('div'); let close;
   const item = (ic, label, col, fn) => h('button', { class: 'additem', onclick: () => { close(); fn(); } }, h('i', { style: `background:${col}`, html: icon(ic) }), label);
   const g1 = h('div', { class: 'addgrid' }, item('text', '텍스트', LCOL.text, () => addPreset('text')), item('image', '갤러리', LCOL.image, () => addPreset('media')), item('music', '오디오', LCOL.audio, () => addPreset('audio')), item('scribble', '선 긋기', LCOL.path, startBrush), item('pen', '펜 (자유 도형)', LCOL.path, () => addPreset('pen')), item('morph', '모양 연결', '#2fc2d6', morphSheet));
   const g2 = h('div', { class: 'addgrid' }); Object.keys(SHAPE_NAMES).forEach(k => g2.append(item(k, SHAPE_NAMES[k], LCOL.shape, () => addPreset(k))));
   const g3 = h('div', { class: 'addgrid' }, item('solid', '단색 배경', '#4b5170', () => addPreset('solid')), item('gradient', '그라디언트 배경', '#7a4fd6', () => addPreset('gradbg')), item('adjust', '조정 레이어', LCOL.adjust, () => addPreset('adjust')), item('fx', '이펙트 둘러보기', '#c48bff', () => fxBrowser()));
-  body.append(h('div', { class: 'addsec' }, '기본'), g1, h('div', { class: 'addsec' }, '도형'), g2, h('div', { class: 'addsec' }, '배경·특수'), g3);
+  const g4 = h('div', { class: 'addgrid' }, ...GEN_PRESETS.map(([k, l, col, ic]) => item(ic, l, col, () => addGen(k))));
+  body.append(h('div', { class: 'addsec' }, '기본'), g1, h('div', { class: 'addsec' }, '도형'), g2, h('div', { class: 'addsec' }, '배경·특수'), g3, h('div', { class: 'addsec' }, '생성 효과 (파티클·노이즈·소리)'), g4);
   close = openSheet('추가하기', body);
 }
 /* ---------- effect previews: each card renders a tiny looping comp through the real renderer ---------- */
@@ -4223,7 +4481,9 @@ function fxPreviewComp(type) {
   try {
     const L = makeLayer('image', { media: M.id, start: isIn ? .25 : 0, end: isIn ? 2.35 : cyc });
     if (!FXPV_FULL.has(type)) { L.p.sx.v = 52; L.p.sy.v = 52; }
-    L.fx.push(makeFx(type)); pr.layers.push(L);
+    const f = makeFx(type); L.fx.push(f); pr.layers.push(L);
+    if (d.pvMove) { L.p.sx.v = 40; L.p.sy.v = 40; upsertKey(L.p.x, 0, 90); upsertKey(L.p.x, cyc / 2, 230); upsertKey(L.p.x, cyc, 90); L.p.x.k.forEach(k => k.e = { type: 'bez', x1: .6, y1: 0, x2: .4, y2: 1 }); }
+    if (d.pvSetup) d.pvSetup(L, f);
   } finally { S.proj = keep; }
   return { pr, cyc };
 }
@@ -4252,7 +4512,7 @@ function fxBrowser() {
   const render = () => {
     grid.innerHTML = ''; pv.items = []; if (pv.io) pv.io.disconnect();
     pv.io = 'IntersectionObserver' in window ? new IntersectionObserver(ents => ents.forEach(en => { const e = en.target._pv; if (e) e.vis = en.isIntersecting; }), { root: null, rootMargin: '60px' }) : null;
-    Object.values(FX).filter(d => (cat === 'all' || d.cat === cat) && (!q || (d.name + d.desc).toLowerCase().includes(q)) && (!isGroup(L) || d.pre)).forEach(d => {
+    Object.values(FX).filter(d => (cat === 'all' || d.cat === cat) && (!q || (d.name + d.desc).toLowerCase().includes(q))).forEach(d => {
       const c = FXCATS.find(x => x[0] === d.cat);
       const cv = h('canvas', { width: FXPV.W, height: FXPV.H });
       const btn = h('button', { class: 'fxitem', title: d.desc, onclick: () => { stop(); close(); addFx(selL(), d.id); } }, cv, h('div', { class: 'fxt' }, h('b', null, h('i', { style: `background:${c[2]}` }), d.name), h('span', null, d.desc)));
@@ -4339,7 +4599,7 @@ function menuItems(kind) {
   if (kind === 'layer') return [
     { l: '텍스트', ic: 'text', k: 'T', fn: () => addPreset('text') }, { l: '도형…', ic: 'shape', fn: addSheet }, { l: '펜 (자유 도형)', ic: 'pen', k: 'P', fn: () => addPreset('pen') }, { l: '모양 연결 (사진 모핑)…', ic: 'morph', fn: morphSheet }, '-',
     { l: '단색 배경', ic: 'solid', fn: () => addPreset('solid') }, { l: '그라디언트 배경', ic: 'gradient', fn: () => addPreset('gradbg') }, { l: '조정 레이어', ic: 'adjust', fn: () => addPreset('adjust') }, '-',
-    { l: '그룹 만들기…', ic: 'folder', k: 'Ctrl+G', fn: groupSheet }, { l: '그룹 풀기', ic: 'folder', k: 'Ctrl+Shift+G', fn: needL(L => isGroup(L) ? ungroup(L) : groupOf(L) ? ungroup(groupOf(L)) : toast('선택한 레이어가 그룹이 아니에요')) }, '-',
+    { l: '그룹 만들기…', ic: 'folder', k: 'Ctrl+G', fn: groupSheet }, { l: '도형 합치기·빼기…', ic: 'shape', fn: () => mergeSheet(MS.on ? msLayers() : []) }, { l: '그룹 풀기', ic: 'folder', k: 'Ctrl+Shift+G', fn: needL(L => isGroup(L) ? ungroup(L) : groupOf(L) ? ungroup(groupOf(L)) : toast('선택한 레이어가 그룹이 아니에요')) }, '-',
     { l: '이펙트 추가…', ic: 'fx', fn: () => fxBrowser() }, { l: '한 단계 위로', ic: 'up', fn: needL(L => moveLayer(L, 1)) }, { l: '한 단계 아래로', ic: 'down', fn: needL(L => moveLayer(L, -1)) },
     { l: '화면에 맞추기', ic: 'fit', fn: needL(L => fitLayer(L, false)) }, { l: '화면 꽉 채우기', ic: 'fit', fn: needL(L => fitLayer(L, true)) }];
   if (kind === 'view') return [
@@ -4362,7 +4622,7 @@ function mainMenu(e) {
     { l: '프로젝트 파일 열기 (.json)', ic: 'folder', fn: () => $('#projIn').click() },
     { l: '프로젝트 파일로 저장', ic: 'export', fn: saveProjectFile },
     '-', { l: '사진·동영상 가져오기', ic: 'image', fn: () => $('#fileIn').click() }, { l: '오디오 가져오기', ic: 'music', fn: () => $('#audioIn').click() }, { l: '모양 연결 (사진 모핑)…', ic: 'morph', fn: morphSheet },
-    { l: '그룹 만들기…', ic: 'folder', fn: groupSheet },
+    { l: '그룹 만들기…', ic: 'folder', fn: groupSheet }, { l: '도형 합치기·빼기…', ic: 'shape', fn: () => mergeSheet(MS.on ? msLayers() : []) },
     '-', { l: '전체화면 미리보기', ic: 'present', fn: openPlayer }, { l: '프로젝트 설정', ic: 'settings', fn: projectSheet }, { l: S.dock === 'graph' ? '타임라인으로 돌아가기' : '그래프 편집기 열기', ic: S.dock === 'graph' ? 'layers' : 'graph', fn: () => setDock(S.dock === 'graph' ? 'timeline' : 'graph') },
     ...modeItems(),
     '-', { l: '튜토리얼', ic: 'wand', fn: startTutorial }, { l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }]);
@@ -4653,7 +4913,7 @@ function shapeOutline(L, t) {
   if (kind === 'polygon' || kind === 'triangle' || kind === 'star') { const n = kind === 'triangle' ? 3 : Math.round(clamp(pv(p.sides, t), 3, 64)); return [regPts(n, w / 2, hh / 2, kind === 'star' ? clamp(pv(p.inner, t), 1, 100) / 100 : 0)]; }
   if (kind === 'heart') return [heartPts(w, hh)];
   if (kind === 'path') {
-    if (s.closed === false) return null; const polys = s.morph ? morphPieces(L, t) : [s.pts]; const sc = [pv(p.w, t) / 100, pv(p.h, t) / 100];
+    if (s.closed === false) return null; const polys = s.morph ? morphPieces(L, t) : s.polys && s.polys.length ? s.polys.filter((P, i) => !(s.polyHole && s.polyHole[i])) : [s.pts]; const sc = [pv(p.w, t) / 100, pv(p.h, t) / 100];
     const out = polys.filter(P => P && P.length >= 3).map(P => P.map(a => [a[0] * sc[0], a[1] * sc[1]])); return out.length ? out : null;
   }
   return null;
@@ -4935,7 +5195,7 @@ document.addEventListener('keydown', e => {
     case 'Home': setTime(0); followPlayhead(); break;
     case 'End': setTime(S.proj.dur); followPlayhead(); break;
     case 'Delete': case 'Backspace': e.preventDefault(); deleteSelection(); break;
-    case 'Escape': if (S.outline) endOutline(); else if (S.brush) endBrush(); else if (S.pick) endPick(null); else if (S.pen) { S.pen = null; updateHud(); dirtyView = true; } else if (S.anchorEdit) setAnchorEdit(false); else if (S.maskEdit) { S.maskEdit = false; updateHud(); refreshInspector(); dirtyView = true; } else if (S.selK.length) { S.selK = []; dirtyTL = dirtyGraph = true; } else if (S.dock === 'graph') setDock('timeline'); else select(null); break;
+    case 'Escape': if (S.puppet) endPuppet(); else if (S.outline) endOutline(); else if (S.brush) endBrush(); else if (S.pick) endPick(null); else if (S.pen) { S.pen = null; updateHud(); dirtyView = true; } else if (S.anchorEdit) setAnchorEdit(false); else if (S.maskEdit) { S.maskEdit = false; updateHud(); refreshInspector(); dirtyView = true; } else if (S.selK.length) { S.selK = []; dirtyTL = dirtyGraph = true; } else if (S.dock === 'graph') setDock('timeline'); else select(null); break;
     case 'Enter': if (S.pen) finishPen(); else if (S.brush) endBrush(); break;
     case 'k': case 'K': addTransformKeys(); break;
     case '[': if (L && S.time < L.end) { if (L.type === 'video' || L.type === 'audio') L.trimIn = Math.max(0, (L.trimIn || 0) + (S.time - L.start) * (L.speed || 1)); L.start = S.time; commit(); invalidate(); updateCtrls(); } break;
@@ -5752,6 +6012,79 @@ function transitionRows(L) {
   if (next) { const t = trOf(L, next); rows.push(h('div', { class: 'prow' }, h('span', { class: 'kfb none' }), h('div', { class: 'plabel static', style: 'flex:1;width:auto' }, `뒤 클립 ‘${next.name}’과`, h('div', { class: 'hint', style: 'margin:0' }, t ? `${(TRANS.find(x => x.v === t.kind) || {}).l} · ${t.dur.toFixed(1)}초` : '전환 없음')), h('button', { class: 'btn sm', onclick: () => transitionSheet(L, next) }, t ? '바꾸기' : '전환 넣기'))); }
   return rows.length ? sec('화면 전환', ...rows) : null;
 }
+/* ================= SHAPE MERGE (도형 합치기·빼기·교차·겹친 곳 빼기) ================= */
+const MERGE_OPS = [['union', '합치기', '모두 하나로'], ['subtract', '빼기', '맨 아래 도형에서 위 도형들 모양을 오려 내요'], ['intersect', '겹친 부분만', '모두 겹친 곳만 남겨요'], ['xor', '겹친 곳 빼기', '겹친 곳만 뚫어요']];
+function mergeShapes(Ls, op) {
+  const t = S.time, items = S.proj.layers.filter(L => Ls.includes(L)).map(L => { const o = shapeOutline(L, t); if (!o) return null; const M = layerMatrix(L, t); return { L, polys: o.map(P => P.map(([x, y]) => { const q = M.transformPoint(new DOMPoint(x, y)); return [q.x, q.y]; })) }; }).filter(Boolean);
+  if (items.length < 2) { toast('도형 레이어를 2개 이상 고르세요 (선·화살표는 안 돼요)'); return null; }
+  const all = polysBox(items.flatMap(i => i.polys)), pad = 4, k = Math.min(4, 1600 / Math.max(1, all.w, all.h)), W = Math.ceil((all.w + pad * 2) * k), H = Math.ceil((all.h + pad * 2) * k), n = W * H, ox = all.x0 - pad, oy = all.y0 - pad;
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d', { willReadFrequently: true });
+  const masks = items.map(it => { x.clearRect(0, 0, W, H); x.fillStyle = '#fff'; x.beginPath(); it.polys.forEach(P => { P.forEach(([px, py], i) => i ? x.lineTo((px - ox) * k, (py - oy) * k) : x.moveTo((px - ox) * k, (py - oy) * k)); x.closePath(); }); x.fill(it.L.shape && it.L.shape.polys && it.L.shape.polys.length > 1 ? 'evenodd' : 'nonzero'); const d = x.getImageData(0, 0, W, H).data, m = new Uint8Array(n); for (let i = 0; i < n; i++) m[i] = d[i * 4 + 3] > 127 ? 1 : 0; return m; });
+  const acc = new Uint8Array(n);
+  for (let i = 0; i < n; i++) { let c = 0; for (const m of masks) c += m[i]; acc[i] = op === 'union' ? (c > 0 ? 1 : 0) : op === 'intersect' ? (c === masks.length ? 1 : 0) : op === 'xor' ? (c % 2) : (masks[0][i] && c === 1 ? 1 : 0); }
+  const polys = traceAllPieces(acc, { k, W, H }).map(P => { const hole = P.hole, R = rdpSimplify(P.concat([P[0]]), .45 / k).slice(0, -1).map(([px, py]) => [px + ox, py + oy]); if (hole) R.hole = true; return R; }).filter(P => P.length >= 3);
+  if (!polys.length) { toast(op === 'intersect' ? '모두 겹치는 부분이 없어요' : '남는 모양이 없어요'); return null; }
+  const bb = polysBox(polys), cx = bb.cx, cy = bb.cy, base = items[0].L, r2 = v => Math.round(v * 100) / 100;
+  const rel = polys.map(P => { const R = P.map(([px, py]) => [r2(px - cx), r2(py - cy)]); if (P.hole) R.hole = true; return R; });
+  const outer = rel.filter(P => !P.hole); const main = outer.reduce((a, b) => Math.abs(polyArea(b)) > Math.abs(polyArea(a)) ? b : a, outer[0] || rel[0]);
+  const L = makeLayer('path', { x: r2(cx), y: r2(cy), w: 100, h: 100, pts: main, fill: pv(base.p.fill, t), smooth: false, name: MERGE_OPS.find(o => o[0] === op)[1] + ' 도형', start: Math.min(...items.map(i => i.L.start)), end: Math.max(...items.map(i => i.L.end)) });
+  L.shape.polys = rel.length > 1 ? rel : null; L.shape.polyHole = rel.length > 1 ? rel.map(P => !!P.hole) : null; L.shape.closed = true; L.shape.fillType = base.shape.fillType === 'image' || base.shape.fillType === 'none' ? 'solid' : base.shape.fillType;
+  if (base.shape.strokeOn) { L.shape.strokeOn = true; L.p.sw.v = pv(base.p.sw, t); L.p.stroke.v = pv(base.p.stroke, t); }
+  if (base.p.fill2 && L.p.fill2) L.p.fill2.v = pv(base.p.fill2, t);
+  items.forEach(i => { i.L.visible = false; });
+  const at = S.proj.layers.indexOf(items[items.length - 1].L); S.proj.layers.splice(at + 1, 0, L); if (base.parent) L.parent = base.parent;
+  normalizeGroups(); select(L.id); commit(); invalidate(); toast(`도형을 ${MERGE_OPS.find(o => o[0] === op)[1]} 했어요 (원래 도형은 숨겼어요)`, { l: '실행 취소', fn: undo });
+  return L;
+}
+function mergeSheet(Ls) {
+  Ls = (Ls || []).filter(L => morphable(L)); if (Ls.length < 2) { toast('도형 레이어를 2개 이상 골라 주세요. 레이어 이름을 꾹 누르거나(PC: Ctrl+클릭) 여러 개 고르면 돼요'); return; }
+  const body = h('div', null, h('p', { class: 'hint', style: 'margin-top:0' }, `고른 도형 ${Ls.length}개로 새 도형을 만들어요. 원래 도형은 숨겨 둬요.`),
+    h('div', { class: 'mergegrid' }, ...MERGE_OPS.map(([v, l, d]) => h('button', { class: 'mergebtn', onclick: () => { close(); msExit(); mergeShapes(Ls, v); } }, h('i', { class: 'mg mg-' + v }), h('b', null, l), h('span', null, d)))));
+  const close = openSheet('도형 합치기', body, { narrow: true });
+}
+/* ================= PUPPET PIN EDITING (퍼펫 핀 꽂기·끌기) ================= */
+function puppetCtx() { const P_ = S.puppet; if (!P_) return null; const L = findL(P_.lid), f = L && L.fx.find(q => q.id === P_.fid); return L && f ? { L, f } : null; }
+function startPuppet(L, f) {
+  if (S.brush) endBrush(); if (S.outline) endOutline(); S.pen = null; S.maskEdit = false; S.anchorEdit = false; if (S.playing) pause();
+  S.puppet = { lid: L.id, fid: f.id }; if (S.mode === 'mobile') $('#inspector').classList.remove('open');
+  updateHud(); refreshInspector(); dirtyView = true; toast(puppetPins(f).length ? '핀을 끌어 휘게 하세요. 시간을 옮기고 다시 끌면 애니메이션이 돼요' : '레이어 위를 눌러 핀을 2개 이상 꽂아 보세요');
+}
+function endPuppet(quiet) { if (!S.puppet) return; S.puppet = null; updateHud(); dirtyView = true; if (!quiet) refreshInspector(); }
+function puppetHud(hud) {
+  const c = puppetCtx(), n = c ? puppetPins(c.f).length : 0;
+  hud.append(h('span', { class: 'chip modebadge' }, '퍼펫 핀'), h('span', { class: 'chip hint2' }, n < 2 ? '레이어 위를 눌러 핀을 꽂으세요 (2개 이상)' : '핀을 끌면 휘어요 · 시간을 옮겨 다시 끌면 움직임이 돼요'),
+    h('span', { class: 'chip' }, `핀 ${n}개`), h('button', { class: 'chip pri', onclick: () => endPuppet() }, '완료'));
+}
+function puppetScreenPins(L, f, m) { const T = layerMatrix(L, S.time); return puppetDisp(L, f, S.time).map(p => { const q = T.transformPoint(new DOMPoint(p.x + p.dx, p.y + p.dy)), r = T.transformPoint(new DOMPoint(p.x, p.y)); return { p, s: toScr(m, q.x, q.y), r: toScr(m, r.x, r.y) }; }); }
+function puppetDown(e, cx, cy, sx, sy, m, mob) {
+  const c = puppetCtx(); if (!c) { endPuppet(); return false; } const { L, f } = c, hr = mob ? 24 : 12;
+  const hit = puppetScreenPins(L, f, m).find(o => Math.hypot(o.s[0] - sx, o.s[1] - sy) < hr);
+  const delPin = id => { delete f.p['pin' + id + 'x']; delete f.p['pin' + id + 'y']; f.pins = f.pins.filter(p => p.id !== id); commit(); invalidate(); updateHud(); refreshInspector(); toast('핀을 지웠어요'); };
+  if (hit) {
+    if (e.button === 2) { delPin(hit.p.id); return true; }
+    drag = { mode: 'pin', L, f, id: hit.p.id, sx, sy, moved: false };
+    if (mob) drag.lp = setTimeout(() => { if (drag && drag.mode === 'pin' && !drag.moved) { drag = null; delPin(hit.p.id); } }, 600);
+    return true;
+  }
+  let loc; try { loc = layerMatrix(L, S.time).inverse().transformPoint(new DOMPoint(cx, cy)); } catch (er) { return true; }
+  const b = layerBounds(L, S.time); if (loc.x < b.x || loc.y < b.y || loc.x > b.x + b.w || loc.y > b.y + b.h) { toast('레이어 위를 눌러 핀을 꽂으세요'); return true; }
+  const id = uid().slice(0, 6); (f.pins = f.pins || []).push({ id, x: +loc.x.toFixed(1), y: +loc.y.toFixed(1) });
+  f.p['pin' + id + 'x'] = P(0); f.p['pin' + id + 'y'] = P(0); upsertKey(f.p['pin' + id + 'x'], S.time, 0); upsertKey(f.p['pin' + id + 'y'], S.time, 0);
+  drag = { mode: 'pin', L, f, id, sx, sy, moved: false, fresh: true }; invalidate(); updateHud(); dirtyTL = true; return true;
+}
+function puppetDrag(d, cx, cy) {
+  const pin = (d.f.pins || []).find(p => p.id === d.id); if (!pin) return;
+  let loc; try { loc = layerMatrix(d.L, S.time).inverse().transformPoint(new DOMPoint(cx, cy)); } catch (e) { return; }
+  upsertKey(d.f.p['pin' + d.id + 'x'], S.time, +(loc.x - pin.x).toFixed(2)); upsertKey(d.f.p['pin' + d.id + 'y'], S.time, +(loc.y - pin.y).toFixed(2));
+  invalidate(); dirtyTL = true;
+}
+function drawPuppetPins(x, m) {
+  const c = puppetCtx(); if (!c) return; const mob = S.mode === 'mobile', r = mob ? 9 : 7;
+  x.save(); puppetScreenPins(c.L, c.f, m).forEach(o => {
+    if (Math.hypot(o.s[0] - o.r[0], o.s[1] - o.r[1]) > 2) { x.setLineDash([3, 3]); x.strokeStyle = 'rgba(255,191,71,.6)'; x.lineWidth = 1; x.beginPath(); x.moveTo(o.r[0], o.r[1]); x.lineTo(o.s[0], o.s[1]); x.stroke(); x.setLineDash([]); x.fillStyle = 'rgba(255,191,71,.5)'; x.beginPath(); x.arc(o.r[0], o.r[1], 3, 0, TAU); x.fill(); }
+    x.fillStyle = '#ffbf47'; x.strokeStyle = '#1a1a1a'; x.lineWidth = 2; x.beginPath(); x.arc(o.s[0], o.s[1], r, 0, TAU); x.fill(); x.stroke(); x.fillStyle = '#1a1a1a'; x.beginPath(); x.arc(o.s[0], o.s[1], r * .35, 0, TAU); x.fill();
+  }); x.restore();
+}
 /* ================= MULTI-SELECT (여러 레이어 한꺼번에) ================= */
 function msEnter(id) { MS.on = true; MS.ids = new Set(); if (S.sel && S.sel !== id && findL(S.sel)) MS.ids.add(S.sel); if (id) MS.ids.add(id); try { navigator.vibrate && navigator.vibrate(12); } catch (e) { } msSync(id); }
 function msToggle(id) { if (!MS.on) { msEnter(id); return; } if (MS.ids.has(id)) MS.ids.delete(id); else MS.ids.add(id); if (!MS.ids.size) { msExit(); return; } msSync(MS.ids.has(id) ? id : [...MS.ids].pop()); }
@@ -5789,6 +6122,7 @@ function msHud(hud) {
     h('button', { class: 'chip', onclick: msAll }, '전체'),
     h('button', { class: 'chip', onclick: msKeys }, '키프레임 모두'),
     h('button', { class: 'chip', onclick: msGroup, disabled: n < 1 }, '그룹으로 묶기'),
+    msLayers().filter(morphable).length >= 2 ? h('button', { class: 'chip', onclick: () => mergeSheet(msLayers()) }, '도형 합치기') : '',
     typeof duplicateLayer === 'function' ? h('button', { class: 'chip', onclick: msDup }, '복제') : null,
     h('button', { class: 'chip', onclick: msDelete }, '삭제'),
     h('button', { class: 'chip', onclick: msExit }, '완료')].filter(Boolean));
