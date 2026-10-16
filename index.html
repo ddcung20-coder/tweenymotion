@@ -686,7 +686,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v40</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v41</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -741,6 +741,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v41</b><span>내보내기가 빨라졌습니다: 효과가 걸린 레이어는 효과가 닿는 범위만 계산하고, 앞 프레임과 똑같은 프레임은 다시 그리지 않으며, 가능하면 기기의 하드웨어 인코더를 씁니다. 다른 기기로 보내기는 데이터를 큰 조각으로 그대로 흘려보내고 프로젝트 내용을 압축해서 훨씬 빨라졌고, 보내는 속도(초당 용량)가 보입니다.</span></li>
         <li><b>v40.1</b><span>모양 연결의 자동 테두리 추출을 새로 만들었습니다. 사진 가장자리를 배경 견본으로 삼아 물체를 그래프 컷으로 가르고 테두리를 실제 경계선에 붙여서, 배경이 복잡하거나 두 가지 색인 사진도 물체만 정확히 잡습니다.</ 테두리 따기도 강해졌습니다: 출발점을 여러 개 시도해 가장 물체다운 결과를 고르고, 배경 색을 사진 바깥 전체에서 배우고, 색만 다른 경계도 잡습니다. 흐리거나 노이즈가 많은 사진에서 특히 좋아졌습니다.</span></li>
         <li><b>v40</b><span>새 이펙트: 모션 블러(자동)·에코·레벨·커브·프랙탈 노이즈·파티클(불꽃·폭죽·눈·비·반짝이·거품)·오디오 스펙트럼·퍼펫 핀. 글자 물결(텍스트 애니메이터), 도형 합치기·빼기·교차, 영상 거꾸로 재생·시간 리맵이 생겼습니다. 그룹에도 모든 이펙트를 쓸 수 있습니다.</span></li>
         <li><b>v39</b><span>튜토리얼을 새로 만들었습니다(할 일 상자·이전 버튼·편집 도구 안내). 휴대폰에서 위 막대·재생 막대·그래프 편집기가 잘리지 않게 정리했습니다. 테두리 따기는 다 그은 뒤 완료를 누르면 한꺼번에 분석하고, 클립과 화면 속 물체가 가까운 곳에 딱 붙습니다.</span></li>
@@ -1305,7 +1306,7 @@ const S = {
 /* ================= RENDERER ================= */
 const FILTER_OK = (() => { try { const c = document.createElement('canvas').getContext('2d'); c.filter = 'blur(2px)'; return c.filter === 'blur(2px)'; } catch (e) { return false; } })();
 const MEDIA = new Map();          // id -> {id,type,name,blob,url,el,w,h,dur,ready}
-const POOL = []; let RW = 1, RH = 1, RS = 1;
+let POOL = []; let RW = 1, RH = 1, RS = 1, WX = 0, WY = 0; const POOLS = new Map(), MAIN_POOL = POOL;
 function pool(i) {
   let o = POOL[i];
   if (!o) { const c = document.createElement('canvas'); o = POOL[i] = { c, x: c.getContext('2d') }; }
@@ -1519,7 +1520,7 @@ function layerActive(L, t) { return t >= L.start - 1e-6 && t < L.end - 1e-6; }
 function deviceBox(m, b, pad, s) {
   const c = [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]].map(([x, y]) => m.transformPoint(new DOMPoint(x, y)));
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; c.forEach(p => { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); });
-  return clipBox({ x: Math.floor(x0 * s - pad), y: Math.floor(y0 * s - pad), w: Math.ceil((x1 - x0) * s + pad * 2), h: Math.ceil((y1 - y0) * s + pad * 2) });
+  return clipBox({ x: Math.floor(x0 * s - pad) - WX, y: Math.floor(y0 * s - pad) - WY, w: Math.ceil((x1 - x0) * s + pad * 2), h: Math.ceil((y1 - y0) * s + pad * 2) });
 }
 function clipBox(b) { const x0 = clamp(b.x, 0, RW), y0 = clamp(b.y, 0, RH), x1 = clamp(b.x + b.w, 0, RW), y1 = clamp(b.y + b.h, 0, RH); return { x: x0, y: y0, w: Math.max(0, x1 - x0), h: Math.max(0, y1 - y0) }; }
 const fullBox = () => ({ x: 0, y: 0, w: RW, h: RH });
@@ -1591,7 +1592,28 @@ function applyMask(o, T, L, t, dm) {
 
 /* ---------- per-layer render to pool ---------- */
 function hasPost(L) { return L.fx.some(f => f.on && FX[f.type] && FX[f.type].post); }
-function devMat(m) { return new DOMMatrix([RS, 0, 0, RS, 0, 0]).multiply(m); }
+function devMat(m) { return new DOMMatrix([RS, 0, 0, RS, -WX, -WY]).multiply(m); }
+/* 효과가 걸린 레이어는 화면 전체가 아니라 '레이어 + 효과가 퍼지는 범위'만큼의 작은 캔버스에서 그린다 (빠름).
+   범위를 확실히 아는 효과만 — 나머지(파티클·에코·반복 복제 등)는 예전처럼 화면 전체 */
+const FX_REACH = {
+  blur: p => p.r * 3, blurpulse: p => p.r * 3, dirblur: p => p.len * 1.2,
+  color: () => 0, tint: () => 0, duotone: () => 0, bw: () => 0, invert: () => 0, posterize: () => 0, threshold: () => 0, chromakey: () => 0, levels: () => 0, curves: () => 0, huecycle: () => 0, colorflash: () => 0,
+  shadow: p => p.dist + p.soft * 2, stroke: p => p.w * 1.5 + 2, glow: p => p.r * 3, neon: p => p.r * 3 + p.w * 2,
+  chroma: p => p.amt + 2, rgbshake: p => p.amt * 1.6 + 2, glitch: p => p.amt + p.rgb * 1.5 + 2, pixelate: p => p.size, halftone: p => p.size, noise: () => 0, sweep: () => 0,
+};
+function layerWindow(L, t) {
+  let reach = 0;
+  for (const f of L.fx) { if (!f.on) continue; const d = FX[f.type]; if (!d || !d.post) continue; const R = FX_REACH[f.type]; if (!R) return null; const p = {}; for (const k in f.p) p[k] = pv(f.p[k], t); const v = R(p); if (!(v >= 0) || !isFinite(v)) return null; reach += v; }
+  const pr = preFx(L, t), m = layerMatrix(L, t, 0, pr), b = deviceBox(m, layerBounds(L, t), 6 + reach * RS, RS);
+  return b.w < 1 || b.h < 1 ? { empty: true } : b;
+}
+function renderWindowed(L, t, win) {
+  const bw = Math.min(RW, Math.ceil(win.w / 128) * 128), bh = Math.min(RH, Math.ceil(win.h / 128) * 128), key = bw + 'x' + bh;
+  let P = POOLS.get(key); if (!P) { P = []; POOLS.set(key, P); if (POOLS.size > 8) POOLS.delete(POOLS.keys().next().value); }
+  const keep = [RW, RH, POOL, WX, WY]; RW = bw; RH = bh; POOL = P; WX = Math.min(win.x, keep[0] - bw); WY = Math.min(win.y, keep[1] - bh);
+  const ox = WX, oy = WY;
+  try { return { r: renderLayerPool(L, t, 0), ox, oy }; } finally { [RW, RH, POOL, WX, WY] = keep; }
+}
 /* renders L (content+fx+mask) into pool level; returns {o, op, box} */
 function renderLayerPool(L, t, lvl) {
   const o = pool(lvl * 4), A = pool(lvl * 4 + 1), B = pool(lvl * 4 + 2), K = pool(lvl * 4 + 3);
@@ -1669,6 +1691,11 @@ function drawLayerAt(x, Ls, i, t, solo) {
         if (x.globalAlpha <= 0.001) return;
         x.setTransform(dm.a, dm.b, dm.c, dm.d, dm.e, dm.f); drawContent(x, L, t); rst(x);
         return;
+      }
+      if (!matteL) {
+        const win = layerWindow(L, t);
+        if (win && win.empty) return;
+        if (win && win.w * win.h < RW * RH * .55) { const { r, ox, oy } = renderWindowed(L, t, win); rst(x); x.globalAlpha = r.op * gg.op; x.globalCompositeOperation = L.blend; x.drawImage(r.o.c, ox, oy); rst(x); return; }
       }
       const r = renderLayerPool(L, t, 0);
       if (matteL) {
@@ -4693,11 +4720,34 @@ async function renderAudioMix() {
   }
   if (!any) return null; return await oac.startRendering();
 }
+/* 바로 앞 프레임과 화면이 똑같은지: 모든 속성 값·켜짐 여부가 같고, 시간에 따라 저절로 변하는 효과가 없으면 같음 → 다시 그리지 않음 */
+const STATIC_FX = new Set(['blur', 'color', 'tint', 'grad', 'duotone', 'bw', 'invert', 'posterize', 'threshold', 'chromakey', 'levels', 'curves', 'shadow', 'glow', 'stroke', 'longshadow', 'vignette', 'letterbox', 'bulge', 'swirl', 'mirror', 'pixelate', 'repeat', 'kaleido', 'tile', 'chroma', 'halftone', 'puppet', 'dirblur', 'zoomblur', 'spinblur']);
+function frameKey(t) {
+  const out = [];
+  for (const L of S.proj.layers) {
+    const act = layerActive(L, t); out.push(act ? 1 : 0); if (!act) continue;
+    if (L.type === 'video') return null;
+    if (L.type === 'text' && L.text.anim && L.text.anim.mode !== 'none') return null;
+    for (const f of L.fx) {
+      if (!f.on) continue; const d = FX[f.type]; if (!d) continue;
+      if (d.cat === 'in') { const du = ((f.p.dur && pv(f.p.dur, t)) || 1) * 100 / Math.max(1, (f.p.spd ? pv(f.p.spd, t) : 100)) + .05; if (t - L.start < du || L.end - t < du) return null; } // 등장·퇴장 효과는 처음·끝 구간에서만 움직임
+      else if (!STATIC_FX.has(f.type)) return null;
+      if (f.o && f.o.mod && f.o.mod !== 'none') return null;
+      for (const k in f.p) out.push(pv(f.p[k], t));
+    }
+    for (const k in L.p) out.push(pv(L.p[k], t));
+    if (L.mask && L.mask.on) for (const k in L.mask.p) out.push(pv(L.mask.p[k], t));
+  }
+  return out;
+}
+const sameKey = (a, b) => { if (!a || !b || a.length !== b.length) return false; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false; return true; };
+const yieldNow = (() => { const ch = new MessageChannel(), q = []; ch.port1.onmessage = () => { const f = q.shift(); f && f(); }; return () => new Promise(r => { q.push(r); ch.port2.postMessage(0); }); })();
 async function exportMP4(st, prog, cancelled) {
   const pr = S.proj, W = even(pr.w * st.scale), H = even(pr.h * st.scale), fps = st.fps, N = Math.max(1, Math.round(pr.dur * fps));
   const bitrate = clamp(W * H * fps * st.bpp, 1e6, 80e6);
   const codecs = ['avc1.640034', 'avc1.640033', 'avc1.64002a', 'avc1.640028', 'avc1.4d0034', 'avc1.4d0028', 'avc1.42e034', 'avc1.42e01f'];
-  let cfg = null; for (const c of codecs) { const cand = { codec: c, width: W, height: H, bitrate, framerate: fps, avc: { format: 'avc' } }; try { const s = await VideoEncoder.isConfigSupported(cand); if (s.supported) { cfg = cand; break; } } catch (e) { } }
+  let cfg = null;
+  for (const hw of ['prefer-hardware', 'no-preference']) { for (const c of codecs) { const cand = { codec: c, width: W, height: H, bitrate, framerate: fps, avc: { format: 'avc' }, hardwareAcceleration: hw }; try { const s = await VideoEncoder.isConfigSupported(cand); if (s.supported) { cfg = cand; break; } } catch (e) { } } if (cfg) break; }
   if (!cfg) throw new Error('이 해상도로는 MP4 인코딩을 할 수 없어요. 해상도를 낮춰 보세요.');
   prog.label('소리 준비 중…');
   const abuf = await renderAudioMix().catch(() => null);
@@ -4706,13 +4756,20 @@ async function exportMP4(st, prog, cancelled) {
   const muxer = new Mp4Muxer.Muxer({ target: new Mp4Muxer.ArrayBufferTarget(), video: { codec: 'avc', width: W, height: H }, audio: acfg ? { codec: acfg.codec === 'opus' ? 'opus' : 'aac', numberOfChannels: 2, sampleRate: 48000 } : undefined, fastStart: 'in-memory', firstTimestampBehavior: 'offset' });
   let err = null; const enc = new VideoEncoder({ output: (c, m) => muxer.addVideoChunk(c, m), error: e => err = e }); enc.configure(cfg);
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d');
+  let prevKey = null, lastYield = performance.now(), skipped = 0; const t0 = performance.now();
+  const drained = () => new Promise(r => { const f = () => { if (enc.encodeQueueSize <= 12) { enc.removeEventListener('dequeue', f); r(); } }; enc.addEventListener('dequeue', f); f(); });
   for (let i = 0; i < N; i++) {
     if (cancelled() || err) break; const t = i / fps;
-    await prepVideos(t); renderFrame(cv, x, t, W / pr.w);
+    const key = frameKey(t);
+    if (i && sameKey(key, prevKey)) skipped++; // 앞 프레임과 똑같으면 그대로 다시 씀
+    else { await prepVideos(t); renderFrame(cv, x, t, W / pr.w); }
+    prevKey = key;
     const vf = new VideoFrame(cv, { timestamp: Math.round(i * 1e6 / fps), duration: Math.round(1e6 / fps) }); enc.encode(vf, { keyFrame: i % (fps * 2) === 0 }); vf.close();
-    while (enc.encodeQueueSize > 8) await sleep(3);
-    prog.set((i + 1) / N, `프레임 ${i + 1} / ${N}`, cv); if (i % 2 === 0) await sleep(0);
+    if (enc.encodeQueueSize > 12) await drained();
+    const now = performance.now();
+    if (now - lastYield > 40) { const sp = (i + 1) / ((now - t0) / 1000); prog.set((i + 1) / N, `프레임 ${i + 1} / ${N} · 초당 ${sp.toFixed(0)}프레임`, cv); lastYield = now; await yieldNow(); }
   }
+  prog.set(1, `프레임 ${N} / ${N}`, cv); if (window.EXPORT_STATS) window.EXPORT_STATS = { ms: performance.now() - t0, N, skipped, hw: cfg.hardwareAcceleration };
   if (cancelled()) { try { enc.close(); } catch (e) { } return null; }
   await enc.flush(); if (err) throw err;
   if (acfg && abuf) {
@@ -5962,12 +6019,44 @@ async function sendSheet() {
     });
     peer.on('error', e => { if (e && e.type === 'unavailable-id' && tries < 4) { try { peer.destroy(); } catch (x) { } open(tries + 1); return; } st.textContent = '연결에 문제가 생겼어요' + (e && e.type ? ` (${e.type})` : '') + '. 창을 닫았다가 다시 열어 주세요'; st.className = 'xst err'; });
     peer.on('connection', conn => {
-      if (XFER.conn) { conn.on('open', () => { conn.send({ t: 'busy' }); setTimeout(() => conn.close(), 300); }); return; }
-      XFER.conn = conn; conn.on('open', () => sendProjectTo(conn, st, bar, files, total)); conn.on('close', () => { if (!st.dataset.done) { st.textContent = '연결이 끊어졌어요'; st.className = 'xst err'; } });
-      conn.on('data', m => { if (m && m.t === 'ok') { st.dataset.done = 1; st.textContent = '다 보냈어요! 받은 기기에서 프로젝트가 열렸어요'; st.className = 'xst ok'; bar.set(1); } });
+      const raw = conn.serialization === 'raw', pack = m => raw ? JSON.stringify(m) : m;
+      if (XFER.conn) { conn.on('open', () => { conn.send(pack({ t: 'busy' })); setTimeout(() => conn.close(), 300); }); return; }
+      XFER.conn = conn; conn.on('open', () => raw ? sendProjectFast(conn, st, bar, files, total) : sendProjectTo(conn, st, bar, files, total)); conn.on('close', () => { if (!st.dataset.done) { st.textContent = '연결이 끊어졌어요'; st.className = 'xst err'; } });
+      conn.on('data', m => { if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { return; } } if (m && m.t === 'ok') { st.dataset.done = 1; st.textContent = '다 보냈어요! 받은 기기에서 프로젝트가 열렸어요'; st.className = 'xst ok'; bar.set(1); } });
     });
   };
   open(0);
+}
+/* 빠른 전송: 객체 포장 없이 바이트를 그대로, 큰 조각(최대 256KB)으로 쉬지 않고 흘려보냄. 프로젝트 내용은 gzip으로 압축 */
+async function gzipBytes(u8) { return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()); }
+async function gunzipBytes(u8) { return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()); }
+async function sendProjectFast(conn, st, bar, files, total) {
+  try {
+    const dc = conn.dataChannel, pc = conn.peerConnection; dc.binaryType = 'arraybuffer';
+    const maxMsg = (pc && pc.sctp && pc.sctp.maxMessageSize) || 65536, CH = Math.max(16384, Math.min(262144, maxMsg)) - 16, HIGH = 12 << 20;
+    dc.bufferedAmountLowThreshold = 4 << 20;
+    const waitLow = () => new Promise((res, rej) => { if (dc.bufferedAmount <= dc.bufferedAmountLowThreshold) return res(); const f = () => { dc.removeEventListener('bufferedamountlow', f); dc.removeEventListener('close', g); res(); }, g = () => { dc.removeEventListener('bufferedamountlow', f); rej(new Error('closed')); }; dc.addEventListener('bufferedamountlow', f); dc.addEventListener('close', g); });
+    const pr = deep(S.proj); delete pr.embedded;
+    let proj = new TextEncoder().encode(JSON.stringify(pr)), gz = false;
+    if (window.CompressionStream) { try { proj = await gzipBytes(proj); gz = true; } catch (e) { } }
+    st.textContent = '연결됐어요. 보내는 중…'; st.className = 'xst'; bar.hidden = false; bar.set(0);
+    dc.send(JSON.stringify({ t: 'hello2', gz, projSize: proj.byteLength, files: files.map(M => ({ id: M.id, name: M.name, type: M.type, mime: M.blob.type, size: M.blob.size })) }));
+    const parts = [proj, ...files.map(M => M.blob)], grand = proj.byteLength + total, t0 = performance.now(); let sent = 0, lastUi = 0;
+    for (let k = 0; k < parts.length; k++) {
+      const part = parts[k], size = part.byteLength ?? part.size, SLAB = 8 << 20;
+      for (let base = 0; base < size; base += SLAB) {
+        const slab = part instanceof Uint8Array ? part.subarray(base, base + SLAB) : new Uint8Array(await part.slice(base, base + SLAB).arrayBuffer());
+        for (let o = 0; o < slab.byteLength; o += CH) {
+          if (dc.bufferedAmount > HIGH) await waitLow();
+          if (dc.readyState !== 'open') throw new Error('closed');
+          const n = Math.min(CH, slab.byteLength - o), msg = new Uint8Array(12 + n), dv = new DataView(msg.buffer);
+          dv.setUint32(0, k); dv.setFloat64(4, base + o); msg.set(slab.subarray(o, o + n), 12); dc.send(msg.buffer); sent += n;
+          const now = performance.now(); if (now - lastUi > 150) { lastUi = now; bar.set(grand ? sent / grand : 1); st.textContent = `보내는 중… ${fmtBytes(sent)} / ${fmtBytes(grand)} · ${fmtBytes(sent / Math.max(.05, (now - t0) / 1000))}/초`; }
+        }
+      }
+    }
+    dc.send(JSON.stringify({ t: 'done' })); bar.set(1); st.textContent = '거의 다 됐어요. 받는 기기에서 여는 중…';
+  } catch (e) { console.warn(e); st.textContent = '보내다가 끊어졌어요. 다시 시도해 주세요'; st.className = 'xst err'; }
 }
 async function sendProjectTo(conn, st, bar, files, total) {
   try {
@@ -6006,7 +6095,7 @@ function recvSheet(prefill) {
     const to = setTimeout(() => { if (!got) fail('보내는 기기를 찾지 못했어요. 번호가 맞는지, 보내는 기기의 창이 열려 있는지 확인해 주세요'); }, 20000);
     peer.on('error', e => { clearTimeout(to); fail(e && e.type === 'peer-unavailable' ? '이 번호의 기기를 찾을 수 없어요. 보내는 기기에서 창이 열려 있는지 확인해 주세요' : '연결에 문제가 생겼어요' + (e && e.type ? ` (${e.type})` : '')); });
     peer.on('open', () => {
-      const conn = peer.connect(XPRE + code, { reliable: true }); XFER.conn = conn;
+      const conn = peer.connect(XPRE + code, { reliable: true, serialization: 'raw' }); XFER.conn = conn;
       receiveInto(conn, st, bar, () => { got = true; clearTimeout(to); }, ok => { if (ok) setTimeout(() => close(), 900); else fail('받다가 끊어졌어요. 다시 시도해 주세요'); });
     });
   }
@@ -6016,7 +6105,21 @@ function receiveInto(conn, st, bar, onFirst, onEnd) {
   let meta = null, bufs = {}, got = 0, total = 0, finished = false;
   conn.on('open', () => { st.textContent = '연결됐어요. 받는 중…'; });
   conn.on('close', () => { if (!finished) onEnd(false); });
+  let fast = null, lastUi = 0, t0 = 0; // 빠른 전송(바이트 그대로)
   conn.on('data', async m => {
+    if (m instanceof ArrayBuffer || ArrayBuffer.isView(m)) {
+      if (!fast) return; const ab = m instanceof ArrayBuffer ? m : m.buffer.slice(m.byteOffset, m.byteOffset + m.byteLength), dv = new DataView(ab), k = dv.getUint32(0), off = dv.getFloat64(4), n = ab.byteLength - 12;
+      if (fast.bufs[k]) fast.bufs[k].set(new Uint8Array(ab, 12), off); fast.got += n;
+      const now = performance.now(); if (now - lastUi > 150 || fast.got === fast.total) { lastUi = now; bar.set(fast.total ? fast.got / fast.total : 1); st.textContent = `받는 중… ${fmtBytes(fast.got)} / ${fmtBytes(fast.total)} · ${fmtBytes(fast.got / Math.max(.05, (now - t0) / 1000))}/초`; }
+      return;
+    }
+    if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { return; } }
+    if (m && m.t === 'hello2') { onFirst(); t0 = performance.now(); fast = { gz: m.gz, files: m.files, bufs: [new Uint8Array(m.projSize), ...m.files.map(f => new Uint8Array(f.size))], got: 0, total: m.projSize + m.files.reduce((a, f) => a + f.size, 0) }; bar.hidden = false; bar.set(0); st.textContent = `받는 중… 0 / ${fmtBytes(fast.total)}`; return; }
+    if (m && m.t === 'done' && fast) {
+      try { let pj = fast.bufs[0]; if (fast.gz) pj = await gunzipBytes(pj); meta = { proj: new TextDecoder().decode(pj), files: fast.files }; fast.files.forEach((f, i) => bufs[f.id] = fast.bufs[i + 1]); }
+      catch (e) { console.warn(e); onEnd(false); return; }
+      const send0 = conn.send.bind(conn); conn.send = o => send0(JSON.stringify(o)); // 답장도 바이트 방식으로
+    }
     if (!m || !m.t) return;
     if (m.t === 'busy') { st.textContent = '보내는 기기가 이미 다른 기기와 연결돼 있어요'; st.className = 'xst err'; return; }
     if (m.t === 'hello') { onFirst(); meta = m; total = m.files.reduce((a, f) => a + f.size, 0); m.files.forEach(f => bufs[f.id] = new Uint8Array(f.size)); bar.hidden = false; bar.set(total ? 0 : .5); st.textContent = total ? `받는 중… 0 / ${fmtBytes(total)}` : '받는 중…'; return; }
