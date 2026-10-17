@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://tweenymotion.com/</loc>
-    <lastmod>2026-10-15</lastmod>
+    <lastmod>2026-10-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://tweenymotion.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tweenymotion.com/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tweenymotion.com/"/>
+  </url>
+  <url>
+    <loc>https://tweenymotion.com/en</loc>
+    <lastmod>2026-10-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://tweenymotion.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tweenymotion.com/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tweenymotion.com/"/>
   </url>
 </urlset>
