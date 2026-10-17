@@ -737,7 +737,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v43</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v43.1</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -792,6 +792,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v43.1</b><span>화면에서 끌어서 회전·크기·위치를 바꿀 때도, 레이어가 이미 움직이고 있으면 그 속성에 키프레임이 자동으로 찍혀요 (속성 창에서 바꿀 때와 똑같이).</span></li>
         <li><b>v43</b><span>써 보면서 불편했던 22가지를 고쳤습니다. 마지막 키프레임에 이징을 걸면 들어오는 움직임에 적용되고(지금 걸린 이징 표시), K는 위치(또는 이미 움직이는 속성)만 찍어요. 키프레임 복사·붙여넣기, 새 레이어는 늘 처음부터, 클립은 0초 앞으로 안 넘어가고, 자른 클립과 함께 불러온 영상은 타임라인 한 줄에. 글자 레이어 이름은 글자를 따라가고, 이름 바꾸기·맨 위/아래로·끝까지 늘리기 메뉴, 시간 표시는 0:05 05f, 글꼴은 모양을 보며 고르기, 시작 창에서 화면 비율 선택, 화면 밖으로 나간 물체도 흐리게 보여요. 휴대폰은 미리보기가 커지고 속성 창 위로 맞춰지며, 작은 글자를 가리던 손잡이를 바깥으로 뺐어요. 내보내기에 GIF 움짤, 구간 내보내기, 예상 크기를 넣었어요.</span></li>
         <li><b>v42.2</b><span>동영상 내보내기 속도: 예전에는 원본 영상을 실제 재생 속도(1배속)로 틀어 놓고 프레임을 받아서, 효과가 없어도 영상 길이만큼은 걸렸어요. 이제 MP4·MOV 파일을 직접 읽어 기기의 영상 디코더로 재생 속도와 상관없이 최대한 빨리 풉니다. 시작할 때 화면에 보이는 영상과 색·그림이 똑같은지 확인하고, 다르거나 지원하지 않는 파일(WebM 등)은 자동으로 예전 방식을 써요. 휴대폰 세로 영상의 회전도 그대로 맞춰요.</span></li>
         <li><b>v42.1</b><span>내보내기 더 빠르게: 앞 프레임과 똑같이 생긴 레이어(멈춰 있는 글자·도형·사진, 글로우·그림자 같은 효과 포함)는 한 번만 그리고 다음 프레임부터는 그려 둔 그림을 그대로 씁니다. 움직이는 레이어만 새로 그려서, 정지된 요소가 많은 영상일수록 빨라집니다. 결과 화질은 그대로예요.</span></li>
@@ -1356,11 +1357,13 @@ function setValUI(L, key, v) {
       const ref = before.length ? Math.max(...before) : others.length ? Math.min(...others) : null;
       const old = pv(p, S.time); if (ref != null) upsertKey(p, ref, old); upsertKey(p, S.time, old);
       if (!L.open) L.open = true; dirtyTL = true;
-      const m = propMeta(L, key); clearTimeout(setValUI._t); setValUI._t = setTimeout(() => toast(ref != null ? `‘${m.short || m.l}’에도 키프레임을 넣었어요 (${fmtTC(ref, S.proj.fps)} → ${fmtTC(S.time, S.proj.fps)})` : `‘${m.short || m.l}’에 키프레임을 넣었어요`), 350);
+      const m = propMeta(L, key); clearTimeout(setValUI._t); setValUI._t = setTimeout(() => toast(ref != null ? `‘${({ x: '위치', y: '위치', sx: '크기', sy: '크기' })[key] || m.short || m.l}’에도 키프레임을 넣었어요 (${fmtTC(ref, S.proj.fps)} → ${fmtTC(S.time, S.proj.fps)})` : `‘${m.short || m.l}’에 키프레임을 넣었어요`), 350);
     }
   }
   setVal(L, key, v);
 }
+/* 캔버스에서 끌어 바꿀 때(이동·회전·크기): 레이어가 이미 움직이고 있으면 이 속성에도 키프레임을 자동으로 찍음 (속성 창에서 바꿀 때와 똑같이). 값이 안 바뀐 속성은 건드리지 않음 */
+function cvSet(L, key, v) { const p = getProp(L, key); if (!p) return; const cur = pv(p, S.time); if (isNum(v) && isNum(cur) && Math.abs(v - cur) < 1e-6) return; setValUI(L, key, v); }
 /* add delta to numeric prop at current time (keeps animated values consistent) */
 function addVal(L, key, dv) { const p = getProp(L, key); if (!p) return; setVal(L, key, pv(p, S.time) + dv); }
 function toggleKey(L, key, solo) {
@@ -2610,12 +2613,12 @@ view.addEventListener('pointermove', e => {
         S.snapLines = lines.length ? lines : null; { const key = (bx ? bx.g : '') + '|' + (by ? by.g : ''); if (lines.length && key !== drag.snapKey) { try { navigator.vibrate && navigator.vibrate(8); } catch (er) { } } drag.snapKey = lines.length ? key : null; }
       }
       const a = drag.pinv.transformPoint(new DOMPoint(drag.start[0], drag.start[1])), b2 = drag.pinv.transformPoint(new DOMPoint(drag.start[0] + dx, drag.start[1] + dy));
-      setVal(L, 'x', drag.x0 + b2.x - a.x); setVal(L, 'y', drag.y0 + b2.y - a.y);
-      if (drag.others) drag.others.forEach(o => { const a1 = o.pinv.transformPoint(new DOMPoint(drag.start[0], drag.start[1])), b1 = o.pinv.transformPoint(new DOMPoint(drag.start[0] + dx, drag.start[1] + dy)); setVal(o.L, 'x', o.x0 + b1.x - a1.x); setVal(o.L, 'y', o.y0 + b1.y - a1.y); });
+      cvSet(L, 'x', drag.x0 + b2.x - a.x); cvSet(L, 'y', drag.y0 + b2.y - a.y);
+      if (drag.others) drag.others.forEach(o => { const a1 = o.pinv.transformPoint(new DOMPoint(drag.start[0], drag.start[1])), b1 = o.pinv.transformPoint(new DOMPoint(drag.start[0] + dx, drag.start[1] + dy)); cvSet(o.L, 'x', o.x0 + b1.x - a1.x); cvSet(o.L, 'y', o.y0 + b1.y - a1.y); });
       invalidate(); dirtyInsp = true; break;
     }
     case 'pin': { if (!drag.moved && Math.hypot(sx - drag.sx, sy - drag.sy) < 3) return; drag.moved = true; clearTimeout(drag.lp); puppetDrag(drag, cx, cy); break; }
-    case 'rot': { const a = Math.atan2(cy - drag.ap[1], cx - drag.ap[0]); let r = drag.r0 + (a - drag.a0) / D2R; if (e.shiftKey) r = Math.round(r / 15) * 15; setVal(L, 'rot', r); invalidate(); dirtyInsp = true; break; }
+    case 'rot': { const a = Math.atan2(cy - drag.ap[1], cx - drag.ap[0]); let r = drag.r0 + (a - drag.a0) / D2R; if (e.shiftKey) r = Math.round(r / 15) * 15; cvSet(L, 'rot', r); invalidate(); dirtyInsp = true; break; }
     case 'scale': {
       const v = drag.inv.transformPoint(new DOMPoint(cx, cy)); const v0 = drag.v0;
       const ax = drag.ax * drag.sx0 / 100, ay = drag.ay * drag.sy0 / 100;
@@ -2623,14 +2626,14 @@ view.addEventListener('pointermove', e => {
       let nx = drag.sx0, ny = drag.sy0; const h0 = drag.h;
       if (h0.k === 'c') { const uni = S.mode === 'mobile' ? !e.shiftKey : !e.shiftKey; if (uni) { const f = (v.x * v0.x + v.y * v0.y) / ((v0.x * v0.x + v0.y * v0.y) || 1e-6); nx = drag.sx0 * f; ny = drag.sy0 * f; } else { nx = drag.sx0 * rx; ny = drag.sy0 * ry; } }
       else if (h0.i === 1 || h0.i === 3) nx = drag.sx0 * rx; else ny = drag.sy0 * ry;
-      setVal(L, 'sx', +nx.toFixed(2)); setVal(L, 'sy', +ny.toFixed(2)); invalidate(); dirtyInsp = true; break;
+      cvSet(L, 'sx', +nx.toFixed(2)); cvSet(L, 'sy', +ny.toFixed(2)); invalidate(); dirtyInsp = true; break;
     }
     case 'anchor': case 'anchorEdit': {
       anchorTo(L, cx, cy, m); invalidate(); dirtyInsp = true; break;
     }
     case 'fillEdit': {
       const a = drag.inv.transformPoint(new DOMPoint(cx, cy)), b = drag.inv.transformPoint(new DOMPoint(drag.start[0], drag.start[1]));
-      setVal(drag.L, 'fix', +(drag.fx0 + a.x - b.x).toFixed(1)); setVal(drag.L, 'fiy', +(drag.fy0 + a.y - b.y).toFixed(1)); invalidate(); dirtyInsp = true; break;
+      cvSet(drag.L, 'fix', +(drag.fx0 + a.x - b.x).toFixed(1)); cvSet(drag.L, 'fiy', +(drag.fy0 + a.y - b.y).toFixed(1)); invalidate(); dirtyInsp = true; break;
     }
     case 'mask': {
       const lp = drag.inv.transformPoint(new DOMPoint(cx, cy)), l0 = drag.inv.transformPoint(new DOMPoint(drag.start[0], drag.start[1]));
@@ -2689,13 +2692,13 @@ function doPinch() {
   const [a, b] = [...ptrs.values()]; if (!a || !b) return;
   const d = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, ang = Math.atan2(b[1] - a[1], b[0] - a[0]), c = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
   const P_ = pinch;
-  if (P_.fill) { setVal(P_.fill, 'fis', +clamp(P_.s0 * d / P_.d0, 1, 5000).toFixed(1)); invalidate(); dirtyInsp = true; return; }
+  if (P_.fill) { cvSet(P_.fill, 'fis', +clamp(P_.s0 * d / P_.d0, 1, 5000).toFixed(1)); invalidate(); dirtyInsp = true; return; }
   if (P_.layer) {
     const L = P_.layer, f = d / P_.d0; let r = P_.r0 + (ang - P_.a0) / D2R;
     if (Math.abs(((r % 90) + 90) % 90) < 3 || Math.abs(((r % 90) + 90) % 90) > 87) r = Math.round(r / 90) * 90;
-    setVal(L, 'sx', +(P_.sx0 * f).toFixed(2)); setVal(L, 'sy', +(P_.sy0 * f).toFixed(2)); setVal(L, 'rot', +r.toFixed(2));
+    cvSet(L, 'sx', +(P_.sx0 * f).toFixed(2)); cvSet(L, 'sy', +(P_.sy0 * f).toFixed(2)); cvSet(L, 'rot', +r.toFixed(2));
     const dxs = (c[0] - P_.c0[0]) / P_.z, dys = (c[1] - P_.c0[1]) / P_.z; const o = P_.pinv.transformPoint(new DOMPoint(0, 0)), q = P_.pinv.transformPoint(new DOMPoint(dxs, dys));
-    setVal(L, 'x', P_.x0 + q.x - o.x); setVal(L, 'y', P_.y0 + q.y - o.y); invalidate(); dirtyInsp = true;
+    cvSet(L, 'x', P_.x0 + q.x - o.x); cvSet(L, 'y', P_.y0 + q.y - o.y); invalidate(); dirtyInsp = true;
   } else {
     const nz = clamp(P_.zoom0 * d / P_.d0, 0.02, 16);
     S.view.zoom = P_.zoom0; S.view.px = P_.px0; S.view.py = P_.py0; const m0 = VM(); const cc = toComp(m0, P_.c0[0], P_.c0[1]);
