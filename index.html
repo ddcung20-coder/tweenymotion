@@ -161,7 +161,7 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .chip.modebadge.rainbowbadge{background:linear-gradient(90deg,#ff5b5b,#ffbf47,#3ccf91,#5aaaf7,#b77bff,#ff5b5b)!important;background-size:200% 100%!important;color:#111!important;animation:rbw 2.4s linear infinite}@keyframes rbw{to{background-position:200% 0}}
 .authlink{background:none;border:0;color:var(--acc2);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:2px;align-self:center}
 .savebtn{font-weight:600}.savebtn.dirty{border-color:var(--warn);color:#ffd77a}.savebtn.dirty::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--warn);margin-left:2px}.savebtn.busy{opacity:.6}.savebtn.saved{border-color:var(--ok);color:#9be3bf}
-.app[data-mode=mobile] .savebtn span{display:none}.app[data-mode=mobile] .savebtn{padding:0 8px}
+.app[data-mode=mobile] .savebtn span,.app[data-mode=mobile] .guidebtn span{display:none}.app[data-mode=mobile] .guidebtn{padding:0 8px}.guidebtn{color:var(--kf)}.app[data-mode=mobile] .savebtn span.app[data-mode=mobile] .savebtn{padding:0 8px}
 .xfer{display:flex;flex-direction:column;gap:12px}.xrow{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .xlab{font-size:12px;color:var(--fg3);margin-bottom:2px}.xcode{font:700 40px/1.1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;color:#fff}
 .xqr{width:150px;height:150px;background:#fff;border-radius:6px;padding:4px;flex:none}.xqr:empty{background:var(--bg2)}.xqr svg{width:100%;height:100%;display:block}
@@ -649,6 +649,27 @@ svg.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-widt
 @media (max-width:400px){#intro .ibar .ver{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 /* ---- tutorial ---- */
+.gb-search{width:100%;height:42px;border-radius:10px;border:1px solid var(--line2);background:var(--bg0);color:var(--fg);font:inherit;font-size:14.5px;padding:0 14px;margin-bottom:12px;outline:none}.gb-search:focus{border-color:var(--acc)}
+.gb-sec{border:1px solid var(--line2);border-radius:12px;margin-bottom:8px;overflow:hidden;background:var(--bg2)}
+.gb-cat{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;background:none;border:0;color:var(--fg);font:inherit;font-size:15px;cursor:pointer;text-align:left}
+.gb-cat:hover{background:rgba(255,255,255,.04)}.gb-cat b{flex:1;font-weight:700}
+.gb-ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:rgba(255,191,71,.14);color:var(--kf);flex:none}.gb-ic svg{width:17px;height:17px}
+.gb-n{font-size:12px;color:var(--fg3)}.gb-chev{display:grid;place-items:center;color:var(--fg2);transition:transform .25s}.gb-chev svg{width:16px;height:16px}.gb-cat.open .gb-chev{transform:rotate(180deg)}
+.gb-items{display:none;padding:0 8px 8px}.gb-items.open{display:block}
+.gb-item{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;column-gap:8px;width:100%;text-align:left;padding:10px 12px;margin-top:6px;border-radius:9px;border:1px solid transparent;background:var(--bg1);color:var(--fg);font:inherit;cursor:pointer;animation:gb-in .32s cubic-bezier(.2,.8,.2,1) both}
+.gb-item:hover{border-color:var(--kf)}.gb-q{font-size:14.5px;font-weight:700;grid-column:1}.gb-s{font-size:12.5px;color:var(--fg2);grid-column:1;margin-top:2px}.gb-s b{color:var(--kf)}
+.gb-go{grid-column:2;grid-row:1/3;align-self:center;color:var(--fg3)}.gb-go svg{width:16px;height:16px}
+@keyframes gb-in{from{opacity:0;transform:translateY(-8px) scaleY(.96)}to{opacity:1;transform:none}}
+.gb-count{font-size:12.5px;color:var(--fg3);margin:0 2px 2px}
+.gb-detail{animation:gb-slide .28s cubic-bezier(.2,.8,.2,1)}@keyframes gb-slide{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.gb-back{display:inline-flex;align-items:center;gap:4px;background:none;border:0;color:var(--fg2);font:inherit;font-size:13px;cursor:pointer;padding:4px 6px 4px 0}.gb-back svg{width:15px;height:15px}.gb-back:hover{color:var(--fg)}
+.gb-title{margin:6px 0 6px;font-size:19px;font-weight:800;line-height:1.35;word-break:keep-all}
+.gb-short{font-size:13px;color:var(--fg2);margin-bottom:12px}.gb-short b{color:var(--kf)}
+.gb-steps{list-style:none;margin:0;padding:0}.gb-steps li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line2);font-size:14.5px;line-height:1.6;word-break:keep-all;animation:gb-in .3s both}
+.gb-steps li i{flex:none;width:24px;height:24px;border-radius:50%;background:var(--kf);color:#211700;font-style:normal;font-weight:800;font-size:13px;display:grid;place-items:center;margin-top:1px}.gb-steps b{color:#fff}
+.gb-tip{margin-top:12px;padding:10px 12px;border-radius:9px;background:rgba(61,155,255,.1);border:1px solid rgba(61,155,255,.35);font-size:13.5px;line-height:1.55;color:var(--fg);word-break:keep-all}
+.gb-act{margin-top:14px;width:100%;height:42px}
+.gb-tabhelp{display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 24px);margin:14px 12px 18px;height:36px;border-radius:9px;border:1px dashed var(--line2);background:none;color:var(--fg2);font:inherit;font-size:13px;cursor:pointer}.gb-tabhelp:hover{color:var(--fg);border-color:var(--kf)}.gb-tabhelp svg{width:15px;height:15px}
 .tut{position:fixed;inset:0;z-index:260;pointer-events:none}
 body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 .tut[hidden]{display:none}
@@ -686,7 +707,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 </style>
 
 <div id="intro" role="dialog" aria-label="tweeny motion 시작 화면">
-  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v41.4</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
+  <div class="ibar"><div class="wm"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.4 2.8v10.6a3.7 3.7 0 0 0 3.7 3.7h.6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M2.9 7.4h7.2" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><circle cx="13.6" cy="7.4" r="1.25" fill="currentColor" opacity=".3"/><circle cx="16.1" cy="9.6" r="1.6" fill="currentColor" opacity=".5"/><circle cx="17.2" cy="13" r="1.95" fill="currentColor" opacity=".75"/><circle cx="15.6" cy="17.1" r="2.35" fill="currentColor"/></svg>tweeny motion</div><span class="ver">v42.2</span><div class="sp"></div><button class="ibtn" data-start>바로 시작하기</button></div>
   <header class="ihero">
     <p class="kick">트위니 모션, 브라우저에서 쓰는 모션그래픽 편집기</p>
     <h1 class="giant" aria-label="tweeny motion"><span class="w"><span style="--d:0ms">t</span><span style="--d:45ms">w</span><span style="--d:90ms">e</span><span style="--d:135ms">e</span><span style="--d:180ms">n</span><span style="--d:225ms">y</span></span><span class="w"><span style="--d:300ms">m</span><span style="--d:345ms">o</span><span style="--d:390ms">t</span><span style="--d:435ms">i</span><span style="--d:480ms">o</span><span style="--d:525ms">n</span></span></h1>
@@ -741,6 +762,9 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
 
       <h2>업데이트 기록</h2>
       <ul class="log">
+        <li><b>v42.2</b><span>동영상 내보내기 속도: 예전에는 원본 영상을 실제 재생 속도(1배속)로 틀어 놓고 프레임을 받아서, 효과가 없어도 영상 길이만큼은 걸렸어요. 이제 MP4·MOV 파일을 직접 읽어 기기의 영상 디코더로 재생 속도와 상관없이 최대한 빨리 풉니다. 시작할 때 화면에 보이는 영상과 색·그림이 똑같은지 확인하고, 다르거나 지원하지 않는 파일(WebM 등)은 자동으로 예전 방식을 써요. 휴대폰 세로 영상의 회전도 그대로 맞춰요.</span></li>
+        <li><b>v42.1</b><span>내보내기 더 빠르게: 앞 프레임과 똑같이 생긴 레이어(멈춰 있는 글자·도형·사진, 글로우·그림자 같은 효과 포함)는 한 번만 그리고 다음 프레임부터는 그려 둔 그림을 그대로 씁니다. 움직이는 레이어만 새로 그려서, 정지된 요소가 많은 영상일수록 빨라집니다. 결과 화질은 그대로예요.</span></li>
+        <li><b>v42</b><span>가이드북: 위쪽 ‘가이드북’ 버튼(휴대폰은 ? 버튼)을 누르면 ‘이럴 땐 이렇게’ 목록이 분야별로 펼쳐지고, 하고 싶은 일을 누르면 순서대로 자세한 방법과 팁, 바로 해 보기 버튼이 나옵니다. 65가지 안내와 검색, 탭마다 ‘이 탭 가이드’ 버튼이 있습니다.</span></li>
         <li><b>v41.4</b><span>내보내기 안정화: 긴 영상·원본 고화질로 내보낼 때 메모리를 두 배로 쓰지 않도록 조각으로 모아 저장하고, 작업용 캔버스 메모리를 줄였습니다. 24fps처럼 프로젝트와 프레임 수가 다른 동영상도 미리보기와 똑같은 프레임으로 끊김 없이 저장하고, 하드웨어 인코더가 프레임 순서를 섞으면 자동으로 다른 인코더로 다시 저장합니다.</span></li>
         <li><b>v41.3</b><span>사진 채우기: ‘화면에서 사진 움직이기’로 도형 안의 사진을 직접 끌어 옮기고(휠·두 손가락으로 크기), ‘키프레임 넣기’로 사진이 도형 안에서 움직이는 애니메이션을 만들 수 있습니다. 도형 밖으로 나간 사진 부분도 흐리게 보여 줍니다.</span></li>
         <li><b>v41.2</b><span>다른 기기로 보내기를 한 번에 4갈래로 나눠 동시에 보내도록 바꿔 훨씬 빨라졌습니다. 직접 연결이 잘 되도록 연결 경로 찾기도 늘렸고, 중계 서버를 거쳐 느릴 때는 화면에 알려 줍니다(같은 와이파이에 연결하면 가장 빨라요).</span></li>
@@ -796,6 +820,7 @@ body:has(.tut:not([hidden])) .toast:not(.warn){visibility:hidden}
     <div class="seg pconly" id="modeSeg" title="화면 모드">
       <button data-m="auto">자동</button><button data-m="pc">PC</button><button data-m="mobile">모바일</button>
     </div>
+    <button class="btn guidebtn" id="bGuide" title="가이드북 · 이럴 땐 이렇게"><svg class="i" data-ic2="help"></svg><span>가이드북</span></button>
     <button class="ib mobonly" id="bMenu" data-ic="more" title="메뉴"></button>
     <button class="btn savebtn" id="bSave" title="저장 (Ctrl+S)"><svg class="i" data-ic2="save"></svg><span>저장</span></button>
     <button class="acct" id="bAcct" title="계정"></button>
@@ -1657,10 +1682,62 @@ function lumaMatte(o, inv) {
   o.x.putImageData(id, 0, 0);
 }
 
+/* ---------- 내보내기용 레이어 캐시 ----------
+   앞 프레임과 모습이 똑같은 레이어(값·효과가 그대로)는 다시 그리지 않고, 한 번 그려 둔 그림을 그대로 붙인다.
+   두 프레임 연속 같으면 그때 저장 → 다음 프레임부터 재사용. 내보내기 중에만 켜짐 */
+let LCACHE = null, LC_PX = 0, LC_FR = 0, LC_HIT = 0;
+let LC_MAX = 1.6e7; // 캐시에 쓸 픽셀 한도 — 기기 메모리에 맞춰 (8GB 이상 약 128MB, 보통 64MB, 작은 기기 32MB)
+function lcStart() { lcStop(); const mem = navigator.deviceMemory || 4; LC_MAX = mem >= 8 ? 3.2e7 : mem >= 4 ? 1.6e7 : 8e6; LCACHE = new Map(); LC_PX = 0; LC_FR = 0; LC_HIT = 0; }
+function lcFree(e) { if (e && e.c) { LC_PX -= e.c.width * e.c.height; e.c.width = e.c.height = 0; e.c = null; } }
+function lcStop() { if (LCACHE) LCACHE.forEach(lcFree); LCACHE = null; LC_PX = 0; }
+function lcFxKey(Q, t, out) {
+  for (const f of Q.fx) {
+    if (!f.on) continue; const d = FX[f.type]; if (!d) continue;
+    if (d.cat === 'in') { const du = ((f.p.dur && pv(f.p.dur, t)) || 1) * 100 / Math.max(1, (f.p.spd ? pv(f.p.spd, t) : 100)) + .05; if (t - Q.start < du || Q.end - t < du) return false; }
+    else if (!STATIC_FX.has(f.type)) return false;
+    if (f.o && f.o.mod && f.o.mod !== 'none') return false;
+    for (const k in f.p) out.push(pv(f.p[k], t));
+  }
+  return true;
+}
+function layerKey(L, t) {
+  if (L.type === 'video' || L.type === 'adjust' || L.type === 'audio' || L.type === 'group') return null;
+  if (L.type === 'text' && L.text.anim && L.text.anim.mode !== 'none') return null;
+  const out = [RW, RH, RS]; let Q = L, n = 0;
+  while (Q && n++ < 17) {
+    if (!lcFxKey(Q, t, out)) return null;
+    for (const k in Q.p) if (k !== 'op') out.push(pv(Q.p[k], t)); // 불투명도는 붙일 때 따로 적용
+    Q = Q.parent ? findL(Q.parent) : null;
+  }
+  if (L.mask && L.mask.on) for (const k in L.mask.p) out.push(pv(L.mask.p[k], t));
+  const md = L.media || (L.shape && L.shape.fillType === 'image' && L.shape.fillMedia);
+  if (md) { const M = MEDIA.get(md); out.push(M && M.ready ? 1 : 0); }
+  return out;
+}
+/* 'none' 캐시 안 함 · 'miss' 이번엔 그냥 그림 · 'store' 그리면서 저장 · 'hit' 저장된 그림 사용 */
+function lcLook(L, t, extra) {
+  const key = layerKey(L, t); let e = LCACHE.get(L.id);
+  if (!key) { if (e) { lcFree(e); LCACHE.delete(L.id); } return { st: 'none' }; }
+  if (extra != null) key.push(extra);
+  if (!e || !sameKey(e.key, key)) { if (e) lcFree(e); e = { key, c: null }; LCACHE.set(L.id, e); e.fr = LC_FR; return { st: 'miss', e }; }
+  e.fr = LC_FR;
+  if (e.c) return { st: 'hit', e };
+  if (document.fonts && document.fonts.status !== 'loaded') return { st: 'miss', e };
+  return { st: 'store', e };
+}
+function lcCanvas(e, w, hh) {
+  if (w < 1 || hh < 1 || LC_PX + w * hh > LC_MAX) return null;
+  const c = document.createElement('canvas'); c.width = w; c.height = hh; LC_PX += w * hh; e.c = c; return c;
+}
+function lcSweep() { if (!LCACHE) return; LCACHE.forEach((e, id) => { if (e.fr < LC_FR - 1) { lcFree(e); LCACHE.delete(id); } }); } // 화면에서 사라진 레이어 정리
+/* 효과 없는 레이어 중 그리기가 무거운 것(글자·자유 도형·사진)만 캐시 */
+const lcHeavy = L => L.type === 'text' || L.type === 'path' || L.type === 'image' || (L.type === 'shape' && L.shape.fillType === 'image');
+
 /* ---------- frame ---------- */
-const BLENDS = [['source-over', '보통'], ['multiply', '곱하기'], ['screen', '스크린'], ['overlay', '오버레이'], ['darken', '어둡게'], ['lighten', '밝게'], ['color-dodge', '색상 닷지'], ['color-burn', '색상 번'], ['hard-light', '하드 라이트'], ['soft-light', '소프트 라이트'], ['difference', '차이'], ['exclusion', '제외'], ['hue', '색조'], ['saturation', '채도'], ['color', '색상'], ['luminosity', '광도'], ['lighter', '더하기']];
+const BLENDS =[['source-over', '보통'], ['multiply', '곱하기'], ['screen', '스크린'], ['overlay', '오버레이'], ['darken', '어둡게'], ['lighten', '밝게'], ['color-dodge', '색상 닷지'], ['color-burn', '색상 번'], ['hard-light', '하드 라이트'], ['soft-light', '소프트 라이트'], ['difference', '차이'], ['exclusion', '제외'], ['hue', '색조'], ['saturation', '채도'], ['color', '색상'], ['luminosity', '광도'], ['lighter', '더하기']];
 function renderFrame(cv, x, t, scale) {
   const pr = S.proj; RS = scale; RW = cv.width; RH = cv.height;
+  if (LCACHE) { LC_FR++; if (LC_FR % 30 === 0) lcSweep(); }
   rst(x); x.fillStyle = pr.bg; x.fillRect(0, 0, RW, RH);
   const Ls = pr.layers, solo = Ls.some(l => l.solo);
   const doneG = new Set();
@@ -1698,16 +1775,33 @@ function drawLayerAt(x, Ls, i, t, solo) {
       }
       const matteL = L.matte !== 'none' ? Ls[i + 1] : null;
       if (!matteL && !L.mask.on && !hasPost(L)) {
-        const prf = preFx(L, t); const dm = devMat(layerMatrix(L, t, 0, prf));
-        rst(x); x.globalAlpha = clamp(pv(L.p.op, t), 0, 100) / 100 * prf.op * gg.op; x.globalCompositeOperation = L.blend;
-        if (x.globalAlpha <= 0.001) return;
+        const prf = preFx(L, t), m = layerMatrix(L, t, 0, prf), dm = devMat(m);
+        const a = clamp(pv(L.p.op, t), 0, 100) / 100 * prf.op * gg.op;
+        if (a <= 0.001) return;
+        if (LCACHE && L.blend === 'source-over' && lcHeavy(L)) { // 보통 합성일 때만: 따로 그려 붙여도 결과가 똑같음
+          const lk = lcLook(L, t, a);
+          if (lk.st === 'hit') { rst(x); x.drawImage(lk.e.c, lk.e.ox, lk.e.oy); LC_HIT++; return; }
+          if (lk.st === 'store') {
+            const b = layerBounds(L, t), sc = Math.max(Math.hypot(dm.a, dm.b), Math.hypot(dm.c, dm.d));
+            const pad = Math.ceil(4 + (L.type === 'text' ? pv(L.p.size, t) * .6 : L.type === 'path' ? Math.max(b.w, b.h) * .2 : 0) * sc); // 글자 삐침·곡선 튀어나옴 여유
+            const box = deviceBox(m, b, pad, RS), c = lcCanvas(lk.e, box.w, box.h);
+            if (c) { const cx = c.getContext('2d'); cx.setTransform(dm.a, dm.b, dm.c, dm.d, dm.e - box.x, dm.f - box.y); cx.globalAlpha = a; drawContent(cx, L, t); lk.e.ox = box.x; lk.e.oy = box.y; rst(x); x.drawImage(c, box.x, box.y); return; }
+          }
+        }
+        rst(x); x.globalAlpha = a; x.globalCompositeOperation = L.blend;
         x.setTransform(dm.a, dm.b, dm.c, dm.d, dm.e, dm.f); drawContent(x, L, t); rst(x);
         return;
       }
       if (!matteL) {
+        const lk = LCACHE ? lcLook(L, t) : null;
+        if (lk && lk.st === 'hit') { rst(x); x.globalAlpha = clamp(pv(L.p.op, t), 0, 100) / 100 * preFx(L, t).op * gg.op; x.globalCompositeOperation = L.blend; x.drawImage(lk.e.c, lk.e.ox, lk.e.oy); rst(x); LC_HIT++; return; }
+        const keep = (cv, ox, oy) => { if (!lk || lk.st !== 'store') return; const c = lcCanvas(lk.e, cv.width, cv.height); if (!c) return; c.getContext('2d').drawImage(cv, 0, 0); lk.e.ox = ox; lk.e.oy = oy; };
         const win = layerWindow(L, t);
         if (win && win.empty) return;
-        if (win && win.w * win.h < RW * RH * .55) { const { r, ox, oy } = renderWindowed(L, t, win); rst(x); x.globalAlpha = r.op * gg.op; x.globalCompositeOperation = L.blend; x.drawImage(r.o.c, ox, oy); rst(x); return; }
+        if (win && win.w * win.h < RW * RH * .55) { const { r, ox, oy } = renderWindowed(L, t, win); keep(r.o.c, ox, oy); rst(x); x.globalAlpha = r.op * gg.op; x.globalCompositeOperation = L.blend; x.drawImage(r.o.c, ox, oy); rst(x); return; }
+        const r = renderLayerPool(L, t, 0); keep(r.o.c, 0, 0);
+        rst(x); x.globalAlpha = r.op * gg.op; x.globalCompositeOperation = L.blend; x.drawImage(r.o.c, 0, 0); rst(x);
+        return;
       }
       const r = renderLayerPool(L, t, 0);
       if (matteL) {
@@ -3513,6 +3607,7 @@ function refreshInspector() {
   else if (T === 'fx') body.append(...fxPanel(L));
   else if (T === 'mask') body.append(...maskPanel(L));
   else if (T === 'anim') body.append(...animPanel(L));
+  body.append(h('button', { class: 'gb-tabhelp', onclick: () => guideBook(L.type === 'image' || L.type === 'video' ? 'media' : GB_TABCAT[T]) }, h('span', { html: icon('help') }), '이 탭에서 뭘 할 수 있는지 가이드북 보기'));
   body.scrollTop = st;
   refreshGraphBar();
 }
@@ -3783,7 +3878,7 @@ function projectPanel() {
   wrap.append(sec('프로젝트', staticNum('길이', () => pr.dur, v => { const nd = clamp(v, .5, 3600); pr.layers.forEach(L => { if (Math.abs(L.end - pr.dur) < 1e-3 || L.end > nd) L.end = Math.max(nd, L.start + frameDur()); }); pr.dur = nd; S.time = Math.min(S.time, nd); updateTC(); }, .1),
     h('div', { class: 'prow' }, h('span', { class: 'kfb none' }), h('div', { class: 'plabel static' }, '크기'), h('span', { class: 'mono', style: 'flex:1;color:var(--fg2)' }, `${pr.w} × ${pr.h} · ${pr.fps}fps`)),
     h('div', { class: 'prow' }, h('span', { class: 'kfb none' }), h('div', { class: 'plabel static' }, '배경색'), h('label', { class: 'swatch' }, bgSw, bg)),
-    h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('settings') + '프로젝트 설정', onclick: projectSheet }), h('button', { class: 'btn sm', html: icon('help') + '도움말', onclick: helpSheet }))));
+    h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', html: icon('settings') + '프로젝트 설정', onclick: projectSheet }), h('button', { class: 'btn sm', html: icon('help') + '도움말', onclick: helpSheet }), h('button', { class: 'btn sm', html: icon('help') + '가이드북', onclick: () => guideBook() }))));
   return wrap;
 }
 function isDescendant(a, b) { let p = a.parent, n = 0; while (p && n++ < 32) { if (p === b.id) return true; const q = findL(p); p = q && q.parent; } return false; }
@@ -4635,6 +4730,140 @@ function projectSheet() {
     }, '적용')]
   });
 }
+/* ================= 가이드북: "이럴 땐 이렇게" ================= */
+/* 단계 문장은 [PC 문장, 휴대폰 문장] 짝이면 지금 화면 모드에 맞는 쪽을 보여 줌 */
+const GB_NEED = fn => () => { if (!selL()) { toast('먼저 타임라인에서 레이어를 하나 고르세요'); return; } fn(selL()); };
+const GB_TAB = t => GB_NEED(() => { openTab(t); if (S.mode === 'mobile') $('#inspector').classList.add('open'); });
+const GUIDE = [
+  { id: 'start', name: '시작 · 프로젝트', ic: 'newdoc', items: [
+    { q: '새 영상을 처음부터 만들고 싶을 때', s: '메뉴 → 새 프로젝트', steps: [['위쪽 <b>파일</b> 메뉴 → <b>새 프로젝트</b>를 누르세요.', '오른쪽 위 <b>⋯</b> 메뉴 → <b>새 프로젝트</b>를 누르세요.'], '지금 작업은 ‘내 프로젝트’에 그대로 남고, 빈 화면이 열려요.', '이어서 <b>영상 비율</b>(쇼츠 9:16, 유튜브 16:9 등)을 정해 주세요.'], tip: '연습용으로 샘플을 보고 싶으면 메뉴의 ‘샘플 프로젝트 열기’를 눌러 보세요.', act: ['새 프로젝트 만들기', () => askNew()] },
+    { q: '쇼츠·유튜브처럼 영상 비율을 바꾸고 싶을 때', s: '프로젝트 이름 → 비율 고르기', steps: ['위쪽의 <b>프로젝트 이름</b>을 누르면 프로젝트 설정이 열려요.', '<b>세로 9:16</b>(쇼츠·릴스·틱톡), <b>가로 16:9</b>(유튜브), <b>1:1·4:5</b>(인스타 피드) 중에서 고르세요.', '원하는 크기가 없으면 아래에 가로·세로 픽셀을 직접 넣으세요.', '<b>적용</b>을 누르면 끝이에요.'], tip: '비율을 바꿔도 레이어는 지워지지 않아요. 위치가 어긋나면 레이어 메뉴의 ‘화면에 맞추기’를 써 보세요.', act: ['프로젝트 설정 열기', () => projectSheet()] },
+    { q: '영상 전체 길이를 늘리거나 줄이고 싶을 때', s: '프로젝트 설정 → 길이', steps: ['위쪽 <b>프로젝트 이름</b>을 눌러 설정을 여세요.', '<b>길이</b>에 원하는 초를 넣고 <b>적용</b>을 누르세요.', '레이어 막대가 짧으면 막대 끝 손잡이를 끌어 늘려 주세요.'], act: ['프로젝트 설정 열기', () => projectSheet()] },
+    { q: '배경색을 바꾸고 싶을 때', s: '프로젝트 설정 → 배경색, 또는 배경 레이어', steps: ['간단히: 프로젝트 설정의 <b>배경색</b>을 바꾸세요.', ['움직이는 배경을 원하면: 도구 막대 <b>더보기</b>(또는 추가하기) → <b>단색 배경</b>·<b>그라디언트 배경</b>을 넣으세요.', '움직이는 배경을 원하면: 아래 <b>추가</b> → <b>단색 배경</b>·<b>그라디언트 배경</b>을 넣으세요.'], '배경 레이어는 타임라인 맨 아래에 두면 다른 레이어를 가리지 않아요.'], act: ['추가하기 열기', () => addSheet()] },
+    { q: '작업을 저장하고 싶을 때', s: '저장 버튼 (Ctrl+S)', steps: ['위쪽 <b>저장</b> 버튼을 누르세요. PC에서는 <b>Ctrl+S</b>도 돼요.', '작업은 이 기기(브라우저)에 저장되고 ‘내 프로젝트’에 쌓여요.', '구글로 로그인하면 계정에도 저장돼서 다른 기기에서 열 수 있어요.'], tip: '브라우저 기록을 지우면 기기 안 저장이 사라질 수 있어요. 중요한 작업은 ‘프로젝트 파일로 저장’으로 백업하세요.' },
+    { q: '전에 만든 작업을 다시 열고 싶을 때', s: '내 프로젝트', steps: [['위쪽 <b>폴더</b> 아이콘(내 프로젝트)을 누르세요.', '오른쪽 위 <b>⋯</b> → <b>내 프로젝트</b>를 누르세요.'], '목록에서 열고 싶은 작업을 누르세요.'], act: ['내 프로젝트 열기', () => libSheet()] },
+    { q: '작업을 파일로 백업하거나 옮기고 싶을 때', s: '메뉴 → 프로젝트 파일로 저장 (.json)', steps: ['메뉴 → <b>프로젝트 파일로 저장</b>을 누르면 .json 파일이 받아져요. 사진·영상도 함께 들어가요.', '다시 열 때는 메뉴 → <b>프로젝트 파일 열기</b>로 그 파일을 고르세요.'], act: ['지금 백업하기', () => saveProjectFile()] },
+    { q: '휴대폰 ↔ PC로 작업을 바로 옮기고 싶을 때', s: '다른 기기로 보내기 → 번호·QR', steps: ['보내는 기기: 메뉴 → <b>다른 기기로 보내기</b>. 6자리 번호와 QR이 나와요.', '받는 기기: tweenymotion.com을 열고 메뉴 → <b>다른 기기에서 받기</b>에 번호를 넣거나, 휴대폰 카메라로 QR을 찍으세요.', '다 받으면 받는 기기의 ‘내 프로젝트’에 저장돼요.'], tip: '두 기기를 <b>같은 와이파이</b>에 연결하면 훨씬 빨라요. ‘중계 서버를 거쳐서 느려요’가 뜨면 휴대폰의 모바일 데이터를 꺼 보세요.', act: ['보내기 열기', () => sendSheet()] },
+    { q: '실수해서 되돌리고 싶을 때', s: '되돌리기 (Ctrl+Z)', steps: ['위쪽 <b>↶</b> 버튼(PC는 <b>Ctrl+Z</b>)으로 한 단계씩 되돌려요.', '다시 앞으로 가려면 <b>↷</b>(Ctrl+Shift+Z)를 누르세요.'] },
+  ] },
+  { id: 'add', name: '넣기 · 글자 · 도형 · 사진', ic: 'plus', items: [
+    { q: '글자(자막)를 넣고 싶을 때', s: '텍스트 → 스타일 탭에서 내용·글꼴', steps: [['위쪽 도구 막대의 <b>텍스트</b>를 누르세요.', '아래 <b>추가</b> → <b>텍스트</b>를 누르세요.'], '<b>스타일</b> 탭의 <b>텍스트</b> 칸에 내용을 쓰세요. 줄바꿈도 돼요.', '글꼴·굵기·크기·색·자간을 같은 곳에서 바꿔요.', '<b>꾸미기</b>에서 외곽선·배경 상자를 켤 수 있어요.'], tip: '내 글꼴(TTF/OTF)은 글꼴 목록의 ‘내 글꼴 업로드’로 넣을 수 있어요.', act: ['추가하기 열기', () => addSheet()] },
+    { q: '도형(네모·원·별·하트)을 넣고 싶을 때', s: '도형 → 스타일 탭 ‘모양’', steps: [['도구 막대의 <b>도형</b>을 누르세요.', '<b>추가</b> → <b>도형</b>을 누르세요.'], '<b>스타일</b> 탭 → <b>모양</b>에서 사각형·원·다각형·별·하트·선·화살표·삼각형으로 바꿔요.', '<b>크기</b>에서 너비·높이·둥근 모서리를 정해요.'], act: ['추가하기 열기', () => addSheet()] },
+    { q: '사진이나 동영상을 넣고 싶을 때', s: '사진·영상 (갤러리)', steps: [['도구 막대의 <b>사진·영상</b>을 누르세요.', '<b>추가</b> → <b>갤러리</b>를 누르세요.'], '파일을 고르면 화면 가운데에 들어가요. 여러 개를 한꺼번에 골라도 돼요.', '레이어 메뉴의 <b>화면에 맞추기 / 꽉 채우기</b>로 크기를 맞춰요.'], act: ['추가하기 열기', () => addSheet()] },
+    { q: '배경음악이나 효과음을 넣고 싶을 때', s: '오디오 → 스타일 탭 ‘소리 편집’', steps: [['도구 막대의 <b>오디오</b>를 누르세요.', '<b>추가</b> → <b>오디오</b>를 누르세요.'], '타임라인에 소리 막대가 생겨요. 끌어서 시작 시간을, 끝을 끌어 길이를 맞춰요.', '<b>스타일</b> 탭 → <b>소리 편집</b>에서 볼륨·페이드·음색을 바꿔요.'], tip: '동영상 속 소리만 따로 쓰고 싶으면 영상 레이어의 ‘소리 분리 (음악 추출)’을 누르세요.' },
+    { q: '손으로 그린 선을 넣고 싶을 때', s: '선 긋기 (B)', steps: [['도구 막대의 <b>선 긋기</b>(단축키 B)를 누르세요.', '<b>추가</b> → <b>선 긋기</b>를 누르세요.'], '화면에 손가락이나 마우스로 그리세요. 여러 번 그어도 돼요.', '<b>완료</b>를 누르면 선 레이어가 생겨요.', '<b>그려지는 효과</b>를 켜면 그은 순서와 속도 그대로 선이 그려지는 애니메이션이 들어가요.'], act: ['선 긋기 시작', () => startBrush()] },
+    { q: '내 마음대로 모양을 만들고 싶을 때 (펜)', s: '펜 (P) → 점 찍기 → 첫 점으로 닫기', steps: [['도구 막대의 <b>펜</b>(P)을 누르세요.', '<b>추가</b> → <b>펜 (자유 도형)</b>을 누르세요.'], '화면을 눌러 점을 하나씩 찍어요.', '<b>첫 점을 다시 누르면</b> 닫힌 도형이 돼요. 열린 선으로 두려면 <b>완료</b>를 누르세요.'], act: ['펜 시작', () => startPen('shape')] },
+    { q: '눈·비·불꽃·반짝이를 넣고 싶을 때', s: '추가하기 → 생성 효과', steps: [['<b>더보기</b>(추가하기) → <b>생성 효과</b>에서 불꽃 분수·폭죽·눈·비·반짝이·거품·구름 배경·오디오 스펙트럼을 고르세요.', '<b>추가</b> → <b>생성 효과</b>에서 고르세요.'], '<b>이펙트</b> 탭에서 양·크기·속도·색을 바꿔요.', '나오는 위치는 레이어를 옮기면 따라가요.'], act: ['추가하기 열기', () => addSheet()] },
+  ] },
+  { id: 'anim', name: '움직이기 · 키프레임', ic: 'anim', items: [
+    { q: '물체를 A에서 B로 움직이고 싶을 때 (기본)', s: '시작에 ◇ → 시간 옮기기 → 끌기', steps: ['레이어를 고르고 <b>변형</b> 탭을 여세요.', '움직임을 시작할 시간에서 <b>위치 X</b> 왼쪽의 <b>◇</b>를 눌러 키프레임을 찍어요.', '타임라인에서 <b>시간을 옮긴 뒤</b> 화면에서 물체를 끌어요. 그 시간에 키프레임이 저절로 생겨요.', '<b>재생</b>하면 두 키프레임 사이가 부드럽게 이어져요.'], tip: '크기·회전·불투명도도 똑같아요. 재생 막대의 ◇(K)를 누르면 지금 시간에 위치·크기·회전·불투명도 키프레임을 한 번에 찍어요.', act: ['변형 탭 열기', GB_TAB('transform')] },
+    { q: '버튼 한 번으로 등장·퇴장 움직임을 넣고 싶을 때', s: '애니메이션 탭 → 빠른 애니메이션', steps: ['레이어를 고르고 <b>애니메이션</b> 탭을 여세요.', '<b>등장</b>(페이드 인·위로 등장·팝 등)이나 <b>퇴장</b>을 누르면 키프레임이 바로 들어가요.', '길이 슬라이더로 움직이는 시간을 정해요.'], tip: '넣은 뒤에도 타임라인의 키프레임을 끌어 자유롭게 고칠 수 있어요.', act: ['애니메이션 탭 열기', GB_TAB('anim')] },
+    { q: '계속 흔들리거나 빙글빙글 돌게 하고 싶을 때', s: '애니메이션 탭 → 반복 움직임', steps: ['<b>애니메이션</b> 탭 → <b>반복 움직임</b>에서 흔들기·회전·펄스·둥둥·통통 튀기 등을 고르세요.', '<b>이펙트</b> 탭에서 세기·속도를 조절해요.'], act: ['애니메이션 탭 열기', GB_TAB('anim')] },
+    { q: '천천히 멈추거나 쭉 튀어나가는 느낌을 주고 싶을 때', s: '그래프 → 이징 고르기', steps: ['타임라인 오른쪽 위의 <b>그래프</b> 버튼(G)을 누르세요.', '아래 목록에서 <b>부드럽게·감속·가속·오버슛</b> 등을 누르면 그 구간에 바로 적용되고 반복 재생돼요.', '곡선의 점을 끌어 직접 다듬을 수도 있어요.'], tip: '타임라인의 키프레임을 꾹 누르면(PC는 오른쪽 클릭) 이징을 바로 고르거나 복사·붙여넣기할 수 있어요.', act: ['그래프 열기', () => setDock('graph')] },
+    { q: '통통 튀거나 탱탱한 탄성을 주고 싶을 때', s: '그래프 → 바운스 / 탄성', steps: ['<b>그래프</b>를 열고 목록에서 <b>바운스</b> 또는 <b>탄성</b>을 고르세요.', '바운스는 <b>튀는 횟수</b>와 끝에 착지할지를, 탄성은 흔들림 횟수와 줄어드는 정도를 정해요.'], act: ['그래프 열기', () => setDock('graph')] },
+    { q: '키프레임을 옮기거나 지우고 싶을 때', s: '레이어 펼치기 → ◆ 끌기 / 휴지통', steps: ['타임라인에서 레이어 이름 왼쪽 <b>▸</b>를 눌러 펼치면 속성마다 ◆가 보여요.', '<b>◆를 끌면</b> 시간이 바뀌고, 누른 뒤 <b>휴지통</b>을 누르면 지워져요.', '모두 지우려면 <b>애니메이션</b> 탭 → <b>키프레임 관리</b> → 모든 키프레임 삭제.'], tip: ['여러 레이어를 Ctrl+클릭으로 고르면 키프레임을 한꺼번에 옮길 수 있어요.', '레이어 이름을 꾹 누르면 여러 개를 고를 수 있고, 키프레임을 한꺼번에 옮길 수 있어요.'] },
+    { q: '값만 바꾸면 키프레임이 저절로 생기게 하고 싶을 때', s: '자동 키프레임 ●', steps: ['재생 막대의 <b>●</b>(자동 키프레임)을 켜세요.', '이제 어떤 값을 바꾸든 지금 시간에 키프레임이 생겨요.', '다 하면 다시 눌러 끄세요.'], tip: '키프레임이 이미 있는 속성은 꺼져 있어도 값을 바꾸면 그 시간에 키프레임이 생겨요.', act: ['자동 키프레임 켜고 끄기', () => toggleAutoKey()] },
+    { q: '회전·크기의 기준점(중심점)을 바꾸고 싶을 때', s: '변형 탭 → 중심점', steps: ['<b>변형</b> 탭 → <b>중심점</b>의 9칸 중 하나를 누르면 그 자리로 바로 옮겨져요.', '자유롭게 두려면 <b>화면에서 옮기기</b>를 누르고 화면에서 끄세요.'], tip: '문이 열리듯 돌게 하려면 중심점을 왼쪽 가운데로 옮긴 뒤 회전하세요.', act: ['변형 탭 열기', GB_TAB('transform')] },
+    { q: '글자가 한 글자씩 나타나게 하고 싶을 때', s: '스타일 탭 → 글자별 애니메이션', steps: ['글자 레이어를 고르고 <b>스타일</b> 탭 → <b>글자별 애니메이션</b>에서 방식(타자기·페이드·올라오기 등)을 고르세요.', '<b>애니메이션</b> 탭 → <b>텍스트 애니메이션</b>의 버튼을 누르면 ‘글자 등장’ 키프레임까지 한 번에 들어가요.'], act: ['스타일 탭 열기', GB_TAB('style')] },
+    { q: '글자가 물결치거나 통통 튀게 하고 싶을 때', s: '스타일 탭 → 글자 물결', steps: ['글자 레이어의 <b>스타일</b> 탭 → <b>글자 물결 (텍스트 애니메이터)</b>에서 물결·바운스·흔들기·무지개 등을 고르세요.', '세기·빠르기·글자 사이 간격을 슬라이더로 바꿔요.'], act: ['스타일 탭 열기', GB_TAB('style')] },
+    { q: '선이 그려지듯 나타나게 하고 싶을 때', s: '선 레이어 → 트림 끝 0→100', steps: ['선이나 테두리가 있는 도형을 고르세요.', '<b>스타일</b> 탭 → <b>선</b>의 <b>트림 끝</b>에 0으로 키프레임을 찍어요.', '시간을 옮겨 <b>트림 끝</b>을 100으로 바꾸면 선이 그려지듯 나타나요.'], tip: '손으로 그은 선이라면 ‘그려지는 효과’ 스위치 하나로 끝나요.', act: ['스타일 탭 열기', GB_TAB('style')] },
+    { q: '사진의 일부(팔·꼬리)만 움직이고 싶을 때', s: '이펙트 → 퍼펫 핀', steps: ['사진 레이어에 <b>이펙트</b> → <b>퍼펫 핀</b>을 넣으세요.', '<b>핀 편집</b>을 누르고 움직일 곳과 고정할 곳에 핀을 꽂아요.', '시간을 옮겨 핀을 끌면 그 부분만 휘어지며 키프레임이 생겨요.'], act: ['이펙트 둘러보기', () => fxBrowser()] },
+  ] },
+  { id: 'style', name: '꾸미기 · 색 · 효과', ic: 'palette', items: [
+    { q: '색을 바꾸거나 그라디언트로 칠하고 싶을 때', s: '스타일 탭 → 채우기', steps: ['<b>스타일</b> 탭 → <b>채우기</b>에서 <b>단색 / 선형 / 원형</b>을 고르세요.', '색 칸을 눌러 색을 바꿔요. 스포이드로 화면 속 색을 집을 수도 있어요.', '색에도 ◇로 키프레임을 찍으면 색이 서서히 바뀌어요.'], act: ['스타일 탭 열기', GB_TAB('style')] },
+    { q: '도형 안을 사진으로 채우고, 사진을 움직이고 싶을 때', s: '채우기 → 사진 → 화면에서 사진 움직이기', steps: ['도형의 <b>스타일</b> 탭 → <b>채우기</b> → <b>사진</b>을 누르고 사진을 고르세요.', '<b>화면에서 사진 움직이기</b>를 누르면 사진을 직접 끌어 옮기고, 휠·두 손가락으로 크기를 바꿀 수 있어요.', '움직이게 하려면 <b>키프레임 넣기</b> → 시간 옮기기 → 사진 끌기.'], act: ['스타일 탭 열기', GB_TAB('style')] },
+    { q: '테두리(외곽선)를 두르고 싶을 때', s: '스타일 탭 → 선 / 꾸미기', steps: ['도형은 <b>스타일</b> 탭 → <b>선</b>을 켜고 색·두께를 정해요.', '글자는 <b>스타일</b> 탭 → <b>꾸미기</b>에서 외곽선을 켜요.', '사진이나 어떤 레이어든 <b>이펙트</b> → <b>외곽선</b>으로 모양을 따라 두를 수 있어요.'], act: ['스타일 탭 열기', GB_TAB('style')] },
+    { q: '그림자나 빛나는 효과를 주고 싶을 때', s: '이펙트 → 그림자 / 글로우 / 네온', steps: ['<b>이펙트</b> 탭 → <b>이펙트 추가</b>를 누르세요.', '<b>스타일·빛</b> 분류에서 그림자·글로우·네온 사인·롱 섀도를 골라요.', '색·반경·세기를 슬라이더로 조절해요.'], act: ['이펙트 둘러보기', () => fxBrowser()] },
+    { q: '이펙트(블러·글리치 등)를 넣고 싶을 때', s: '이펙트 탭 → 이펙트 추가', steps: ['레이어를 고르고 <b>이펙트</b> 탭 → <b>이펙트 추가</b>를 누르세요.', '분류(등장·퇴장 / 반복 / 블러 / 색상 / 스타일·빛 / 왜곡 / 글리치·레트로 / 생성)에서 고르면 미리보기가 움직여요.', '넣은 뒤 슬라이더로 조절하고, 스위치로 껐다 켜고, 휴지통으로 지워요.'], tip: '이펙트 값에도 ◇로 키프레임을 찍을 수 있어요. 예: 블러를 20→0으로.', act: ['이펙트 둘러보기', () => fxBrowser()] },
+    { q: '여러 레이어에 한꺼번에 효과를 주고 싶을 때', s: '조정 레이어', steps: [['<b>더보기</b> → <b>조정 레이어</b>를 넣으세요.', '<b>추가</b> → <b>조정 레이어</b>를 넣으세요.'], '조정 레이어에 이펙트(색 보정·블러 등)를 넣으면 <b>그 아래 모든 레이어</b>에 적용돼요.', '막대 길이로 효과가 걸리는 시간을 정해요.'], act: ['추가하기 열기', () => addSheet()] },
+    { q: '반투명하게 하거나 겹쳐 보이게 하고 싶을 때', s: '불투명도 · 블렌드', steps: ['<b>스타일</b> 탭(또는 변형 탭)의 <b>불투명도</b>를 낮춰요.', '<b>변형</b> 탭 → <b>레이어</b> → <b>블렌드</b>에서 곱하기·스크린·오버레이 등으로 겹치는 방식을 바꿔요.'], act: ['변형 탭 열기', GB_TAB('transform')] },
+  ] },
+  { id: 'edit', name: '자르기 · 정리', ic: 'scissors', items: [
+    { q: '클립 길이를 줄이거나 시작 시간을 옮기고 싶을 때', s: '막대 끌기 · 양 끝 손잡이', steps: ['타임라인 <b>막대를 끌면</b> 시작 시간이 바뀌어요.', ['<b>양 끝 손잡이</b>를 끌면 길이가 바뀌어요.', '막대를 <b>살짝 꾹 누른 뒤 끌면</b> 통째로 옮겨지고, <b>양 끝 손잡이</b>로 길이를 바꿔요.'], '다른 클립 끝이나 플레이헤드 가까이 가면 딱 붙어요(스냅).'] },
+    { q: '클립을 둘로 자르고 싶을 때', s: '플레이헤드 → 가위', steps: ['자를 레이어를 고르세요.', '파란 세로선(플레이헤드)을 자를 시간에 놓으세요.', '재생 막대의 <b>가위</b>를 누르면 두 클립으로 나뉘어요.'] },
+    { q: '장면 사이에 화면 전환을 넣고 싶을 때', s: '붙은 두 클립 사이 ⋈ 버튼', steps: ['두 클립을 끝과 끝이 딱 붙게 놓으세요(자르면 저절로 붙어 있어요).', '붙은 곳에 생기는 <b>⋈</b> 버튼을 누르세요.', '페이드·줌·밀어내기·와이프·스윕·흐려지며·회전·팝·쉐이크 중에서 고르고 길이를 정해요.'], tip: '그룹끼리도 전환을 넣을 수 있어요. 레이어의 변형 탭 → ‘화면 전환’에서도 바꿀 수 있어요.' },
+    { q: '여러 레이어를 한꺼번에 고르고 싶을 때', s: ['Ctrl+클릭', '레이어 이름 꾹'], steps: [['타임라인 레이어 이름을 <b>Ctrl+클릭</b>하면 체크가 붙으며 여러 개가 골라져요.', '타임라인 레이어 이름을 <b>꾹 누르면</b> 체크가 붙으며 여러 개를 고를 수 있어요.'], '고른 상태에서 막대나 화면의 물체를 끌면 함께 움직여요.', '위쪽에 뜨는 버튼으로 그룹 만들기·키프레임 모두 선택 등을 할 수 있어요.'] },
+    { q: '여러 레이어를 하나로 묶고 싶을 때 (그룹)', s: '그룹 만들기 (Ctrl+G)', steps: ['묶을 레이어들을 여러 개 고르세요.', '메뉴 → <b>그룹 만들기</b>(PC는 Ctrl+G)를 누르세요.', '그룹을 움직이면 안의 레이어가 함께 움직이고, 그룹에 이펙트·화면 전환을 걸 수 있어요.'], act: ['그룹 만들기', () => groupSheet()] },
+    { q: '레이어 순서(앞뒤)를 바꾸고 싶을 때', s: '레이어 메뉴 → 위로 / 아래로', steps: ['위에 있는 레이어가 화면에서 앞에 보여요.', '레이어 패널의 <b>⋯</b>(레이어 메뉴) → <b>한 단계 위로 / 아래로</b>를 누르세요.'] },
+    { q: '도형을 합치거나 겹친 부분을 빼고 싶을 때', s: '여러 개 고르기 → 도형 합치기·빼기', steps: ['도형을 두 개 이상 고르세요.', '메뉴 → <b>도형 합치기·빼기</b>를 누르세요.', '<b>합치기 / 빼기 / 겹친 부분만 / 겹친 곳 빼기</b> 중에서 고르면 새 도형이 만들어져요.'], act: ['도형 합치기 열기', () => mergeSheet(MS.on ? msLayers() : [])] },
+  ] },
+  { id: 'media', name: '사진 · 영상 편집', ic: 'image', items: [
+    { q: '사진 배경을 지우고 사람·물건만 남기고 싶을 때', s: '마스크 탭 → 테두리 따기', steps: ['사진(또는 영상) 레이어를 고르고 <b>마스크</b> 탭 → <b>테두리 따기</b>를 누르세요.', '물체 둘레를 손가락이나 마우스로 <b>대충 한 바퀴</b> 그어요. 끊어 그어도 돼요.', '<b>완료</b>를 누르면 물체 테두리에 맞춰 배경이 지워져요.', '더 지울 곳이 있으면 <b>빼기</b>로 바꿔 그 부분을 그어요.'], act: ['마스크 탭 열기', GB_TAB('mask')] },
+    { q: '그린스크린(초록 배경)을 지우고 싶을 때', s: '이펙트 → 크로마키', steps: ['영상에 <b>이펙트</b> → <b>크로마키</b>를 넣으세요.', '<b>지울 색</b>을 배경색으로 맞춰요(스포이드로 집으면 편해요).', '허용 범위·경계 부드럽기·색 번짐 제거로 다듬어요.'], act: ['이펙트 둘러보기', () => fxBrowser()] },
+    { q: '영상 속도를 바꾸거나 거꾸로 재생하고 싶을 때', s: '스타일 탭 → 재생 속도', steps: ['영상 레이어의 <b>스타일</b> 탭 → <b>재생 속도</b>에서 0.25×~4× 중에서 속도를 고르세요.', '<b>거꾸로 재생</b>을 켜면 뒤로 감기처럼 재생돼요.', '<b>시간 리맵</b>을 켜면 그래프로 빨라졌다 느려지는 속도를 직접 그릴 수 있어요.'], act: ['스타일 탭 열기', GB_TAB('style')] },
+    { q: '화면 일부만 보이게 잘라 내고 싶을 때 (마스크)', s: '마스크 탭 → 레이어 마스크', steps: ['<b>마스크</b> 탭 → <b>레이어 마스크</b>에서 사각형·원·자유 모양을 고르세요.', '화면의 핸들을 끌어 보일 부분을 정해요. <b>반전</b>으로 반대쪽만 보이게, <b>페더</b>로 가장자리를 부드럽게 할 수 있어요.', '마스크 위치·크기에도 키프레임을 찍을 수 있어요.'], act: ['마스크 탭 열기', GB_TAB('mask')] },
+    { q: '글자 모양 안에만 영상이 보이게 하고 싶을 때 (매트)', s: '마스크 탭 → 트랙 매트', steps: ['영상 레이어 <b>바로 위</b>에 글자(또는 도형) 레이어를 두세요.', '영상 레이어의 <b>마스크</b> 탭 → <b>트랙 매트</b>에서 <b>알파 매트</b>를 고르세요.', '위 레이어 모양대로만 영상이 보여요.'], act: ['마스크 탭 열기', GB_TAB('mask')] },
+    { q: '사진·영상의 밝기나 색감을 바꾸고 싶을 때', s: '스타일 탭 → 빠른 보정 / 색 보정 이펙트', steps: ['<b>스타일</b> 탭 → <b>빠른 보정</b>으로 밝기·대비·채도를 바로 바꿔요.', '더 세밀하게는 <b>이펙트</b> → 색 보정·레벨·커브·흑백·듀오톤을 써요.'], act: ['스타일 탭 열기', GB_TAB('style')] },
+  ] },
+  { id: 'morph', name: '모양 연결 (변신)', ic: 'morph', items: [
+    { q: '한 모양이 다른 모양으로 변신하게 하고 싶을 때', s: '모양 연결 → 시작·끝 고르기 → 만들기', steps: [['도구 막대의 <b>모양 연결</b>을 누르세요.', '<b>추가</b> → <b>모양 연결</b>을 누르세요.'], '<b>시작</b>과 <b>끝</b>에 도형 레이어나 사진을 고르세요.', '연결 시간과 움직임 느낌을 정하고 <b>만들기</b>를 누르면 끝이에요. 점을 하나하나 찍을 필요가 없어요.'], act: ['모양 연결 열기', () => morphSheet()] },
+    { q: '사진 속 물체 모양으로 변신시키고 싶을 때', s: '갤러리에서 고르기 → 자동 테두리', steps: ['모양 연결에서 <b>갤러리에서 고르기</b>로 사진을 넣으면 물체 테두리를 자동으로 찾아요(파란 선).', '잘 안 잡히면 <b>테두리 감도</b>를 조절하거나, 그 사진을 먼저 ‘테두리 따기’로 따 둔 뒤 ‘따 둔 테두리 쓰기’를 고르세요.'], tip: '배경이 투명한 PNG는 가장 정확해요. 섬처럼 떨어진 조각도 ‘떨어진 조각도’를 켜면 같이 연결돼요.', act: ['모양 연결 열기', () => morphSheet()] },
+    { q: '모양이 없던 곳에서 생겨나거나 사라지게 하고 싶을 때', s: '시작이나 끝을 비워 두기', steps: ['모양 연결에서 <b>끝만 고르면</b> 무(無)에서 생겨나고, <b>시작만 고르면</b> 스르륵 사라져요.', '어디서 생겨날지(가운데·아래·위·왼쪽·오른쪽·한 점)를 고를 수 있어요.'], act: ['모양 연결 열기', () => morphSheet()] },
+    { q: '변신 속도나 느낌을 바꾸고 싶을 때', s: '‘모핑 진행’ 키프레임 + 이징', steps: ['만든 레이어의 <b>스타일</b> 탭 → <b>모양 연결</b>에 <b>모핑 진행</b>(0%=시작, 100%=끝)이 있어요.', '타임라인에서 그 키프레임을 옮기면 변신 시간이, <b>그래프</b>의 이징을 바꾸면 느낌이 달라져요.', '<b>시작·끝 바꾸기</b>로 거꾸로 변신하게 할 수 있어요.'], act: ['그래프 열기', () => setDock('graph')] },
+  ] },
+  { id: 'export', name: '내보내기 · 공유', ic: 'export', items: [
+    { q: '완성한 영상을 MP4로 저장하고 싶을 때', s: '내보내기 → MP4 → 저장', steps: ['오른쪽 위 <b>내보내기</b>를 누르세요.', '<b>MP4 동영상</b>을 고르고 해상도·프레임 속도·화질을 정해요.', '<b>내보내기</b> → 다 되면 <b>저장</b>을 누르세요.'], tip: '내보내는 동안 이 화면을 켜 두세요. 다른 앱으로 넘어가면 느려지거나 멈출 수 있어요.', act: ['내보내기 열기', () => exportSheet()] },
+    { q: '가장 좋은 화질로 저장하고 싶을 때', s: '해상도 원본 + 화질 최고', steps: ['내보내기에서 해상도 <b>원본</b>, 화질 <b>최고</b>를 고르세요.', '부드러운 움직임을 원하면 프레임 속도를 <b>60</b>으로 올려요(시간은 두 배 걸려요).'], tip: '파일이 커지니 긴 영상은 ‘높음’도 충분히 선명해요.', act: ['내보내기 열기', () => exportSheet()] },
+    { q: '빨리 확인용으로만 뽑고 싶을 때', s: '해상도 50% + 화질 보통', steps: ['내보내기에서 해상도 <b>50%</b>, 화질 <b>보통</b>을 고르면 몇 배 빨라요.', '확인이 끝나면 원본으로 다시 내보내세요.'], act: ['내보내기 열기', () => exportSheet()] },
+    { q: '지금 화면을 사진(썸네일)으로 저장하고 싶을 때', s: '내보내기 → PNG', steps: ['플레이헤드를 원하는 장면에 놓으세요.', '<b>내보내기</b> → <b>현재 프레임 이미지 (PNG)</b>를 고르고 저장하세요.'], act: ['내보내기 열기', () => exportSheet()] },
+    { q: '소리만 따로 저장하고 싶을 때', s: '내보내기 → 소리만 (WAV)', steps: ['<b>내보내기</b> → <b>소리만 (WAV)</b>를 고르면 프로젝트의 모든 소리를 섞어 저장해요.'], act: ['내보내기 열기', () => exportSheet()] },
+    { q: '휴대폰 갤러리(사진 앱)에 넣고 싶을 때', s: '저장 → 파일에서 사진 앱으로', steps: ['내보내기 후 <b>저장</b>을 누르면 다운로드(파일) 폴더에 저장돼요.', '아이폰: 파일 앱에서 영상을 열고 <b>공유 → 비디오 저장</b>.', '갤럭시: 내 파일 → 다운로드에서 영상을 누르면 갤러리에서도 보여요.'] },
+  ] },
+  { id: 'trouble', name: '문제가 생겼을 때', ic: 'help', items: [
+    { q: '미리보기가 버벅일 때', s: '화면 아래 ‘품질’ 낮추기', steps: ['캔버스 아래 <b>품질</b>을 <b>자동</b>이나 낮은 값으로 바꾸세요. 미리보기만 가벼워지고 내보내기 화질은 그대로예요.', '블러·글로우·잔상·파티클처럼 무거운 이펙트는 작업 중에 잠깐 꺼 둬도 돼요.'] },
+    { q: '내보내기가 너무 오래 걸릴 때', s: '해상도·효과·창 확인', steps: ['내보내는 창 아래 <b>프레임당 그리기 · 인코더 대기</b> 숫자를 보세요. 그리기가 크면 효과가 무거운 거예요.', '확인용이면 해상도 50%로, 최종본만 원본으로 뽑아요.', '다른 탭과 앱을 닫고, 화면을 켜 둔 채 기다려요.'] },
+    { q: '다른 기기로 보내기가 느릴 때', s: '같은 와이파이 · 모바일 데이터 끄기', steps: ['두 기기를 <b>같은 와이파이</b>에 연결하세요.', '휴대폰의 <b>모바일 데이터를 끄면</b> 직접 연결이 잘 돼요.', '받는 화면에 ‘중계 서버를 거쳐서 느려요’가 보이면 직접 연결이 막힌 거예요. 와이파이를 바꿔 보세요.'] },
+    { q: '레이어가 화면에 안 보일 때', s: '눈·시간·불투명도·순서 확인', steps: ['타임라인의 <b>눈</b> 아이콘이 꺼져 있지 않은지 보세요.', '플레이헤드가 그 레이어 <b>막대 안</b>에 있는지 보세요. 막대 밖 시간에는 안 보여요.', '<b>불투명도</b>가 0이 아닌지, 다른 레이어에 <b>가려지지</b> 않았는지 확인하세요.', '화면 밖에 있다면 레이어 메뉴 → <b>화면에 맞추기</b>.'] },
+    { q: '키프레임이 원치 않게 자꾸 생길 때', s: '자동 키프레임 ● 끄기', steps: ['재생 막대의 <b>●</b>(자동 키프레임)이 켜져 있으면 끄세요.', '키프레임이 있는 속성은 다른 시간에서 값을 바꾸면 키프레임이 생겨요. 전체를 옮기려면 키프레임이 있는 시간으로 가서 고치세요.'], act: ['자동 키프레임 켜고 끄기', () => toggleAutoKey()] },
+    { q: '화면이 너무 크거나 작아졌을 때', s: '화면에 맞춤 (F)', steps: [['캔버스 아래 <b>화면에 맞춤</b> 버튼이나 <b>F</b> 키를 누르세요. 마우스 휠로 확대·축소해요.', '캔버스 아래 <b>화면에 맞춤</b> 버튼을 누르세요. 두 손가락으로 벌리고 오므려 확대·축소해요.']], act: ['화면에 맞추기', () => fitView()] },
+    { q: '처음부터 차근차근 배우고 싶을 때', s: '튜토리얼', steps: ['메뉴의 <b>튜토리얼</b>을 누르면 노란 테두리를 따라 첫 애니메이션부터 저장까지 함께 해 봐요.'], act: ['튜토리얼 시작', () => startTutorial()] },
+  ] },
+];
+const GB = { open: {} };
+const gbPick = v => Array.isArray(v) ? (S.mode === 'mobile' ? v[1] : v[0]) : v;
+const gbPlain = s_ => String(gbPick(s_) || '').replace(/<[^>]+>/g, '');
+function guideBook(catId, itemQ) {
+  const body = h('div', { class: 'gb' }), list = h('div', { class: 'gb-list' }), detail = h('div', { class: 'gb-detail', hidden: true });
+  const search = h('input', { class: 'gb-search', type: 'search', placeholder: '무엇을 하고 싶나요?  예) 자막, 배경 지우기, 느리게', 'aria-label': '가이드 검색' });
+  body.append(h('p', { class: 'hint', style: 'margin:0 0 10px' }, '하고 싶은 일을 누르면 어떻게 하는지 차근차근 알려 드려요.'), search, list, detail);
+  let close = null;
+  const showDetail = (cat, it) => {
+    list.hidden = true; search.hidden = true; detail.hidden = false; detail.innerHTML = '';
+    const steps = (it.steps || []).map(gbPick);
+    detail.append(
+      h('button', { class: 'gb-back', onclick: () => { detail.hidden = true; list.hidden = false; search.hidden = false; } }, h('span', { html: icon('prev') }), cat.name),
+      h('h4', { class: 'gb-title' }, it.q),
+      h('div', { class: 'gb-short', html: '한 줄 요약 · <b>' + gbPick(it.s) + '</b>' }),
+      h('ol', { class: 'gb-steps' }, ...steps.map((s_, i) => h('li', { style: `animation-delay:${i * 60}ms` }, h('i', null, String(i + 1)), h('span', { html: s_ })))),
+      it.tip ? h('div', { class: 'gb-tip', html: '💡 ' + gbPick(it.tip) }) : '',
+      it.act ? h('button', { class: 'btn primary gb-act', onclick: () => { close && close(); setTimeout(() => it.act[1](), 60); } }, it.act[0]) : '');
+    detail.scrollIntoView && detail.parentElement && (detail.parentElement.scrollTop = 0);
+  };
+  const itemBtn = (cat, it, i) => h('button', { class: 'gb-item', style: `animation-delay:${Math.min(i, 14) * 28}ms`, onclick: () => showDetail(cat, it) },
+    h('span', { class: 'gb-q' }, it.q), h('span', { class: 'gb-s', html: gbPick(it.s) }), h('span', { class: 'gb-go', html: icon('next') }));
+  const render = () => {
+    list.innerHTML = ''; const q = search.value.trim().toLowerCase();
+    if (q) {
+      const hits = []; GUIDE.forEach(cat => cat.items.forEach(it => { const hay = (it.q + ' ' + gbPlain(it.s) + ' ' + (it.steps || []).map(gbPlain).join(' ') + ' ' + gbPlain(it.tip) + ' ' + cat.name).toLowerCase(); if (q.split(/\s+/).every(w => hay.includes(w) || (w.length >= 3 && hay.includes(w.slice(0, -1))))) hits.push([cat, it]); }));
+      list.append(h('div', { class: 'gb-count' }, hits.length ? `${hits.length}개 찾았어요` : '맞는 안내가 없어요. 다른 말로 찾아보세요.'), ...hits.map(([cat, it], i) => itemBtn(cat, it, i)));
+      return;
+    }
+    GUIDE.forEach(cat => {
+      const open = !!GB.open[cat.id], items = h('div', { class: 'gb-items' + (open ? ' open' : '') });
+      if (open) cat.items.forEach((it, i) => items.append(itemBtn(cat, it, i)));
+      const head = h('button', { class: 'gb-cat' + (open ? ' open' : ''), onclick: () => { GB.open[cat.id] = !GB.open[cat.id]; render(); } },
+        h('span', { class: 'gb-ic', html: icon(cat.ic) }), h('b', null, cat.name), h('span', { class: 'gb-n' }, cat.items.length + '개'), h('span', { class: 'gb-chev', html: icon('chevd') }));
+      list.append(h('div', { class: 'gb-sec' }, head, items));
+    });
+  };
+  search.oninput = render;
+  if (catId) GB.open[catId] = true;
+  render();
+  close = openSheet('가이드북 · 이럴 땐 이렇게', body, { narrow: true });
+  if (itemQ) { for (const cat of GUIDE) { const it = cat.items.find(x => x.q === itemQ); if (it) { showDetail(cat, it); break; } } }
+}
+const GB_TABCAT = { transform: 'anim', style: 'style', fx: 'style', mask: 'media', anim: 'anim' };
+
 function helpSheet() {
   const body = h('div', null,
     h('div', { class: 'addsec', style: 'margin-top:0' }, '처음이라면'),
@@ -4686,7 +4915,7 @@ function menuItems(kind) {
     { l: ck(S.guides) + '가이드 표시', ic: 'grid', fn: toggleGuides }, { l: ck(S.snap) + '스냅', ic: 'magnet', fn: toggleSnap }, '-',
     { l: ck(S.dock === 'timeline') + '타임라인', ic: 'layers', fn: () => setDock('timeline') }, { l: ck(S.dock === 'graph') + '그래프 편집기', ic: 'graph', k: 'G', fn: () => setDock('graph') }, '-',
     ...modeItems()];
-  return [{ l: '튜토리얼', ic: 'wand', fn: startTutorial }, { l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample }];
+  return [{ l: '가이드북 · 이럴 땐 이렇게', ic: 'help', fn: () => guideBook() }, { l: '튜토리얼', ic: 'wand', fn: startTutorial }, { l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }, { l: '샘플 프로젝트 열기', ic: 'wand', fn: askSample }];
 }
 function openMenu(b) {
   if (ctxClosed.owner === b && performance.now() - ctxClosed.t < 300) return;
@@ -4703,7 +4932,7 @@ function mainMenu(e) {
     { l: '그룹 만들기…', ic: 'folder', fn: groupSheet }, { l: '도형 합치기·빼기…', ic: 'shape', fn: () => mergeSheet(MS.on ? msLayers() : []) },
     '-', { l: '전체화면 미리보기', ic: 'present', fn: openPlayer }, { l: '프로젝트 설정', ic: 'settings', fn: projectSheet }, { l: S.dock === 'graph' ? '타임라인으로 돌아가기' : '그래프 편집기 열기', ic: S.dock === 'graph' ? 'layers' : 'graph', fn: () => setDock(S.dock === 'graph' ? 'timeline' : 'graph') },
     ...modeItems(),
-    '-', { l: '튜토리얼', ic: 'wand', fn: startTutorial }, { l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }]);
+    '-', { l: '가이드북 · 이럴 땐 이렇게', ic: 'help', fn: () => guideBook() }, { l: '튜토리얼', ic: 'wand', fn: startTutorial }, { l: '도움말 · 단축키', ic: 'help', fn: helpSheet }, { l: '소개 페이지', ic: 'help', fn: showIntro }]);
 }
 
 /* ================= PROJECT FILES ================= */
@@ -4790,9 +5019,184 @@ class VidPump {
   }
   close() { this.dead = true; this.q.forEach(o => o.f.close()); if (this.cur) this.cur.f.close(); this.q = []; this.cur = null; try { this.v.pause(); this.v.removeAttribute('src'); this.v.load(); } catch (e) { } this.v.remove(); }
 }
+/* ---------- MP4/MOV 파일 직접 읽기 (영상 트랙의 샘플 위치·시간표) ---------- */
+const mp4Fcc = (dv, o) => String.fromCharCode(dv.getUint8(o), dv.getUint8(o + 1), dv.getUint8(o + 2), dv.getUint8(o + 3));
+function mp4Boxes(dv, s, e) {
+  const out = [];
+  while (s + 8 <= e) {
+    let sz = dv.getUint32(s), hl = 8; const ty = mp4Fcc(dv, s + 4);
+    if (sz === 1) { sz = Number(dv.getBigUint64(s + 8)); hl = 16; } else if (sz === 0) sz = e - s;
+    if (sz < hl || s + sz > e) break; out.push({ ty, s: s + hl, e: s + sz }); s += sz;
+  }
+  return out;
+}
+const mp4Kid = (dv, b, ty) => b && mp4Boxes(dv, b.s, b.e).find(x => x.ty === ty);
+const hex2 = v => v.toString(16).padStart(2, '0'), dec2 = v => String(v).padStart(2, '0');
+function mp4Codec(dv, ent) {
+  const fourcc = mp4Fcc(dv, ent.s - 4), kids = mp4Boxes(dv, ent.s + 78, ent.e);
+  const bytes = b => new Uint8Array(dv.buffer, dv.byteOffset + b.s, b.e - b.s).slice();
+  const box = ty => kids.find(k => k.ty === ty);
+  let b;
+  if ((fourcc === 'avc1' || fourcc === 'avc3') && (b = box('avcC'))) { const d = bytes(b); return { codec: fourcc + '.' + hex2(d[1]) + hex2(d[2]) + hex2(d[3]), desc: d }; }
+  if ((fourcc === 'hvc1' || fourcc === 'hev1') && (b = box('hvcC'))) {
+    const d = bytes(b), sp = d[1] >> 6, tier = (d[1] >> 5) & 1, prof = d[1] & 31;
+    let cf = ((d[2] << 24) | (d[3] << 16) | (d[4] << 8) | d[5]) >>> 0, rv = 0; for (let i = 0; i < 32; i++) { rv = (rv << 1) | (cf & 1); cf >>>= 1; } rv >>>= 0;
+    const cons = Array.from(d.slice(6, 12)); while (cons.length && !cons[cons.length - 1]) cons.pop();
+    return { codec: [fourcc, ['', 'A', 'B', 'C'][sp] + prof, rv.toString(16), (tier ? 'H' : 'L') + d[12], ...cons.map(v => v.toString(16))].join('.'), desc: d };
+  }
+  if (fourcc === 'vp09' && (b = box('vpcC'))) { const d = bytes(b); return { codec: `vp09.${dec2(d[4])}.${dec2(d[5])}.${dec2(d[6] >> 4)}` }; }
+  if (fourcc === 'av01' && (b = box('av1C'))) { const d = bytes(b), prof = d[1] >> 5, lvl = d[1] & 31, tier = d[2] >> 7, hb = (d[2] >> 6) & 1, tw = (d[2] >> 5) & 1; return { codec: `av01.${prof}.${dec2(lvl)}${tier ? 'H' : 'M'}.${dec2(hb ? (tw ? 12 : 10) : 8)}`, desc: d }; }
+  return null;
+}
+function mp4ParseMoov(dv) {
+  const top = mp4Boxes(dv, 0, dv.byteLength), mvhd = top.find(b => b.ty === 'mvhd');
+  const mts = mvhd ? dv.getUint32(mvhd.s + (dv.getUint8(mvhd.s) ? 20 : 12)) || 1000 : 1000;
+  for (const tk of top.filter(b => b.ty === 'trak')) {
+    const mdia = mp4Kid(dv, tk, 'mdia'), hdlr = mp4Kid(dv, mdia, 'hdlr'); if (!hdlr || mp4Fcc(dv, hdlr.s + 8) !== 'vide') continue;
+    const mdhd = mp4Kid(dv, mdia, 'mdhd'), ts = dv.getUint32(mdhd.s + (dv.getUint8(mdhd.s) ? 20 : 12)) || 1;
+    const stbl = mp4Kid(dv, mp4Kid(dv, mdia, 'minf'), 'stbl'); if (!stbl) return null;
+    const K = ty => mp4Kid(dv, stbl, ty);
+    const stsd = K('stsd'); if (!stsd) return null;
+    const ent = mp4Boxes(dv, stsd.s + 8, stsd.e)[0]; if (!ent) return null;
+    const cc = mp4Codec(dv, ent); if (!cc) return { unsupported: mp4Fcc(dv, ent.s - 4) };
+    const cw = dv.getUint16(ent.s + 24), ch = dv.getUint16(ent.s + 26);
+    // 크기
+    const stsz = K('stsz'), stz2 = K('stz2'); let n = 0, size;
+    if (stsz) { const fixed = dv.getUint32(stsz.s + 4); n = dv.getUint32(stsz.s + 8); size = new Uint32Array(n); for (let i = 0; i < n; i++) size[i] = fixed || dv.getUint32(stsz.s + 12 + i * 4); }
+    else if (stz2) { const fs = dv.getUint8(stz2.s + 7); n = dv.getUint32(stz2.s + 8); size = new Uint32Array(n); for (let i = 0; i < n; i++) size[i] = fs === 16 ? dv.getUint16(stz2.s + 12 + i * 2) : fs === 8 ? dv.getUint8(stz2.s + 12 + i) : (dv.getUint8(stz2.s + 12 + (i >> 1)) >> ((i & 1) ? 0 : 4)) & 15; }
+    if (!n) return null; // 조각난 mp4(fMP4) 등은 지원 안 함 → 예전 방식
+    // 위치
+    const stco = K('stco'), co64 = K('co64'), stsc = K('stsc'); if ((!stco && !co64) || !stsc) return null;
+    const nch = dv.getUint32((stco || co64).s + 4), chOff = new Float64Array(nch);
+    for (let i = 0; i < nch; i++) chOff[i] = stco ? dv.getUint32(stco.s + 8 + i * 4) : Number(dv.getBigUint64(co64.s + 8 + i * 8));
+    const nsc = dv.getUint32(stsc.s + 4), sc = []; for (let i = 0; i < nsc; i++) sc.push([dv.getUint32(stsc.s + 8 + i * 12), dv.getUint32(stsc.s + 12 + i * 12)]);
+    const off = new Float64Array(n); let k = 0;
+    for (let c = 0, e = 0; c < nch && k < n; c++) { while (e + 1 < sc.length && sc[e + 1][0] <= c + 1) e++; let o = chOff[c]; for (let j = 0; j < sc[e][1] && k < n; j++) { off[k] = o; o += size[k]; k++; } }
+    if (k < n) return null;
+    // 시간
+    const stts = K('stts'), ctts = K('ctts'); if (!stts) return null;
+    const dts = new Float64Array(n), pts = new Float64Array(n); let d = 0; k = 0;
+    for (let i = 0, ne = dv.getUint32(stts.s + 4); i < ne && k < n; i++) { const cnt = dv.getUint32(stts.s + 8 + i * 8), del = dv.getUint32(stts.s + 12 + i * 8); for (let j = 0; j < cnt && k < n; j++) { dts[k++] = d; d += del; } }
+    while (k < n) dts[k++] = d;
+    pts.set(dts);
+    if (ctts) { const v1 = dv.getUint8(ctts.s) === 1; k = 0; for (let i = 0, ne = dv.getUint32(ctts.s + 4); i < ne && k < n; i++) { const cnt = dv.getUint32(ctts.s + 8 + i * 8), co = v1 ? dv.getInt32(ctts.s + 12 + i * 8) : dv.getUint32(ctts.s + 12 + i * 8) | 0; for (let j = 0; j < cnt && k < n; j++) pts[k] = dts[k++] + co; } }
+    const stss = K('stss'), key = new Uint8Array(n);
+    if (stss) { for (let i = 0, ne = dv.getUint32(stss.s + 4); i < ne; i++) { const s = dv.getUint32(stss.s + 8 + i * 4) - 1; if (s >= 0 && s < n) key[s] = 1; } } else key.fill(1);
+    key[0] = 1;
+    // 편집 목록(edit list): 앞부분 지연·시작 위치
+    let start = 0, delay = 0; const edts = mp4Kid(dv, tk, 'edts'), elst = mp4Kid(dv, edts, 'elst');
+    if (elst) { const v1 = dv.getUint8(elst.s) === 1, ne = dv.getUint32(elst.s + 4), W = v1 ? 20 : 12;
+      for (let i = 0; i < ne; i++) { const p = elst.s + 8 + i * W, dur = v1 ? Number(dv.getBigUint64(p)) : dv.getUint32(p), mt = v1 ? Number(dv.getBigInt64(p + 8)) : dv.getInt32(p + 4); if (mt === -1) { delay += dur / mts; continue; } start = mt; break; } }
+    const t = new Float64Array(n); for (let i = 0; i < n; i++) t[i] = (pts[i] - start) / ts + delay;
+    const dur = new Float64Array(n); for (let i = 0; i < n; i++) dur[i] = ((i + 1 < n ? dts[i + 1] : d) - dts[i]) / ts;
+    // 회전(휴대폰 세로 영상)
+    const tkhd = mp4Kid(dv, tk, 'tkhd'); let rot = 0;
+    if (tkhd) { const mo = tkhd.s + (dv.getUint8(tkhd.s) ? 52 : 40), a = dv.getInt32(mo), b = dv.getInt32(mo + 4); rot = Math.round(Math.atan2(b, a) / (Math.PI / 2)) * 90; rot = ((rot % 360) + 360) % 360; }
+    return { codec: cc.codec, desc: cc.desc, w: cw, h: ch, n, off, size, t, dur, key, rot };
+  }
+  return null;
+}
+async function mp4Index(blob) {
+  const rd = async (a, n) => new DataView(await blob.slice(a, a + n).arrayBuffer());
+  let pos = 0; const size = blob.size;
+  while (pos + 8 <= size) {
+    const h = await rd(pos, 16); if (h.byteLength < 8) break; let sz = h.getUint32(0), hl = 8; const ty = mp4Fcc(h, 4);
+    if (sz === 1) { if (h.byteLength < 16) break; sz = Number(h.getBigUint64(8)); hl = 16; } else if (sz === 0) sz = size - pos;
+    if (sz < hl) break;
+    if (ty === 'moov') { if (sz > 256e6) return null; return mp4ParseMoov(await rd(pos + hl, sz - hl)); }
+    pos += sz;
+  }
+  return null;
+}
+/* 빠른 영상 풀기: MP4/MOV 파일을 직접 읽어서 하드웨어 디코더(WebCodecs)로 푼다 — 재생 속도(1배속)에 묶이지 않음.
+   시작할 때 화면에 보이는 영상과 같은 그림이 나오는지 한 번 확인하고, 다르거나 안 되면 예전 방식(VidPump)으로 */
+class DecPump {
+  constructor(M, rate) { this.M = M; this.rate = rate; this.q = []; this.cur = null; this.started = false; this.fb = null; this.gen = 0; this.wake = null; this.ended = false; this.idx = 0; this.win = null; this.wa = 0; }
+  _wake() { const w = this.wake; this.wake = null; if (w) w(); }
+  async _init() {
+    const ix = await mp4Index(this.M.blob); if (!ix || !ix.n || !ix.codec) throw new Error('mp4 index: ' + (ix && ix.unsupported || 'none'));
+    const base = { codec: ix.codec, codedWidth: ix.w, codedHeight: ix.h }; if (ix.desc) base.description = ix.desc;
+    for (const hw of ['prefer-hardware', 'no-preference']) { try { const c = { ...base, hardwareAcceleration: hw }; if (ix.rot) c.rotation = ix.rot; const s = await VideoDecoder.isConfigSupported(c); if (s.supported) { this.nativeRot = !!ix.rot && s.config && s.config.rotation === ix.rot; if (!this.nativeRot) delete c.rotation; this.cfg = c; break; } } catch (e) { } }
+    if (!this.cfg) throw new Error('codec not supported: ' + ix.codec);
+    this.ix = ix;
+    this.dec = new VideoDecoder({ output: f => { if (this.dead) { f.close(); return; } this.q.push({ t: f.timestamp / 1e6, f }); this._wake(); }, error: e => { this.err = e || new Error('decode'); this._wake(); } });
+    this.dec.configure(this.cfg);
+    if (ix.rot && !this.nativeRot) { const c = document.createElement('canvas'); c.width = this.M.w || (ix.rot % 180 ? ix.h : ix.w); c.height = this.M.h || (ix.rot % 180 ? ix.w : ix.h); this.rc = c; this.rx = c.getContext('2d'); }
+  }
+  _keyBefore(mt) { const { t, key, n } = this.ix; let s = 0; for (let i = 0; i < n; i++) if (key[i] && t[i] <= mt + 1e-6) s = i; return s; }
+  _restart(mt) {
+    this.gen++; this.q.forEach(o => o.f.close()); this.q = []; if (this.cur) { this.cur.f.close(); this.cur = null; }
+    try { this.dec.reset(); } catch (e) { } this.dec.configure(this.cfg);
+    this.idx = this._keyBefore(mt); this.flushing = null; this.ended = false;
+  }
+  async _read(i) {
+    const o = this.ix.off[i], sz = this.ix.size[i];
+    if (!this.win || o < this.wa || o + sz > this.wa + this.win.byteLength) { this.wa = o; this.win = new Uint8Array(await this.M.blob.slice(o, o + Math.max(sz, 4 << 20)).arrayBuffer()); }
+    return this.win.subarray(o - this.wa, o - this.wa + sz);
+  }
+  async _feed() {
+    const { n, t, dur, key } = this.ix, g = this.gen;
+    while (this.idx < n && this.dec.decodeQueueSize < 6 && this.q.length < 4) {
+      const i = this.idx; const data = await this._read(i); if (g !== this.gen || this.dead) return; this.idx++;
+      this.dec.decode(new EncodedVideoChunk({ type: key[i] ? 'key' : 'delta', timestamp: Math.round(t[i] * 1e6), duration: Math.max(1, Math.round(dur[i] * 1e6)), data }));
+    }
+    if (this.idx >= n && !this.flushing) { const g2 = this.gen; this.flushing = this.dec.flush().then(() => { if (g2 === this.gen) { this.ended = true; this._wake(); } }, e => { if (g2 === this.gen && !(e && e.name === 'AbortError')) { this.err = e; this._wake(); } }); }
+  }
+  _show(f) {
+    if (!this.rc) return f;
+    const c = this.rc, x = this.rx, r = this.ix.rot * Math.PI / 180, sw = this.ix.rot % 180 ? c.height : c.width, sh = this.ix.rot % 180 ? c.width : c.height;
+    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, c.width, c.height); x.translate(c.width / 2, c.height / 2); x.rotate(r); x.drawImage(f, -sw / 2, -sh / 2, sw, sh); return c;
+  }
+  async _get(mt, tol) {
+    const lim = mt + tol;
+    if (this.cur && lim < this.cur.t - 1e-6) this._restart(mt); // 뒤로 감기
+    else if (!this.q.length && this.cur && mt - this.cur.t > 1.5) { const k = this._keyBefore(mt); if (k > this.idx) this._restart(mt); } // 멀리 앞으로 → 가까운 키프레임부터
+    const t0 = performance.now();
+    for (;;) {
+      if (this.err) throw this.err;
+      while (this.q.length && this.q[0].t <= lim) { if (this.cur) this.cur.f.close(); this.cur = this.q.shift(); }
+      if (this.q.length || this.ended) { const o = this.cur || this.q[0]; return o ? this._show(o.f) : null; }
+      await this._feed(); if (this.err) throw this.err;
+      if (this.q.length && this.q[0].t > lim) continue;
+      if (performance.now() - t0 > 8000) throw new Error('decoder stalled');
+      if (!this.q.length && !this.ended) await new Promise(r => { this.wake = r; setTimeout(r, 150); });
+    }
+  }
+  async _check(mt, tol) { // 화면에서 보이는 영상(<video>)과 색·그림이 똑같은지 확인 (색 공간도 거기에 맞춤)
+    const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = this.M.url;
+    try {
+      if (v.readyState < 2) await new Promise((r, j) => { v.addEventListener('loadeddata', r, { once: true }); v.addEventListener('error', j, { once: true }); setTimeout(r, 4000); });
+      await seekVideo(v, mt + .001); if (v.readyState < 2) throw new Error('video not ready');
+      try { const vf = new VideoFrame(v), c = vf.colorSpace || {}; vf.close();
+        const def = { matrix: 'smpte170m', primaries: 'smpte170m', transfer: 'smpte170m' };
+        this.cfg.colorSpace = { matrix: c.matrix || def.matrix, primaries: c.primaries || def.primaries, transfer: c.transfer || def.transfer, fullRange: !!c.fullRange };
+        this._restart(mt);
+      } catch (e) { }
+      const W = 48, H = 27, th = src => { const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(src, 0, 0, W, H); return x.getImageData(0, 0, W, H).data; };
+      const a = th(v), got = await this._get(mt, tol); if (!got) throw new Error('no frame');
+      const b = th(got); let s = 0; for (let i = 0; i < a.length; i += 4) s += Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2]);
+      const d = s / (W * H * 3); this.checkDiff = d; if (d > 4) throw new Error('frame mismatch ' + d.toFixed(1));
+    } finally { v.removeAttribute('src'); v.load(); }
+  }
+  _fallback(e) {
+    console.warn('빠른 영상 풀기 → 예전 방식', e); this.fbReason = String(e && e.message || e);
+    this.dead = true; try { this.dec && this.dec.close(); } catch (x) { } this.q.forEach(o => o.f.close()); this.q = []; if (this.cur) { this.cur.f.close(); this.cur = null; }
+    this.fb = new VidPump(this.M, this.rate);
+  }
+  async frameAt(mt, tol) {
+    if (this.fb) return this.fb.frameAt(mt, tol);
+    try {
+      if (!this.started) { this.started = true; await this._init(); this.idx = this._keyBefore(mt); await this._check(mt, tol); }
+      return await this._get(mt, tol);
+    } catch (e) { this._fallback(e); return this.fb.frameAt(mt, tol); }
+  }
+  close() { if (this.fb) { this.fb.close(); return; } this.dead = true; this.gen++; try { this.dec && this.dec.close(); } catch (e) { } this.q.forEach(o => o.f.close()); this.q = []; if (this.cur) { this.cur.f.close(); this.cur = null; } this.win = null; }
+}
+const DEC_OK = !!(window.VideoDecoder && window.EncodedVideoChunk && window.VideoFrame);
+const isMp4Like = M => M.blob && (/mp4|quicktime|m4v|3gpp/i.test(M.blob.type || '') || /\.(mp4|mov|m4v|3gp)$/i.test(M.name || '') || (!M.blob.type && !/\.(webm|mkv|ogv)$/i.test(M.name || '')));
 function makePumps(fps) {
   const pumps = new Map(); if (!window.VideoFrame || !('requestVideoFrameCallback' in HTMLVideoElement.prototype)) return pumps;
-  S.proj.layers.forEach(L => { if (L.type !== 'video' || !L.visible || seekDriven(L)) return; const M = MEDIA.get(L.media); if (!M || !M.ready || !M.url) return; pumps.set(L.id, new VidPump(M, clamp(L.speed || 1, .25, 4))); });
+  S.proj.layers.forEach(L => { if (L.type !== 'video' || !L.visible || seekDriven(L)) return; const M = MEDIA.get(L.media); if (!M || !M.ready || !M.url) return; const rate = clamp(L.speed || 1, .25, 4); pumps.set(L.id, DEC_OK && isMp4Like(M) ? new DecPump(M, rate) : new VidPump(M, rate)); });
   return pumps;
 }
 async function prepVideosFast(t, pumps, fps) {
@@ -4892,10 +5296,10 @@ async function exportMP4(st, prog, cancelled, hwPrefs) {
     if (enc.encodeQueueSize > 6) { const a = performance.now(); await drained(); tEnc += performance.now() - a; }
     if (reorder && cfg.hardwareAcceleration !== 'prefer-software') { try { enc.close(); } catch (e) { } throw Object.assign(new Error('reorder'), { reorder: true }); } // 하드웨어 인코더가 프레임 순서를 섞으면 소프트웨어로 다시
     const now = performance.now();
-    if (now - lastYield > 40) { const sp = (i + 1) / ((now - t0) / 1000); prog.set((i + 1) / N, `프레임 ${i + 1} / ${N} · 초당 ${sp.toFixed(0)}프레임`, cv); const k = 1 / (i + 1); prog.label(`프레임당 그리기 ${(tDraw * k).toFixed(0)}ms` + (tVid > 1 ? ` · 영상 ${(tVid * k).toFixed(0)}ms` : '') + (tEnc > 1 ? ` · 인코더 대기 ${(tEnc * k).toFixed(0)}ms` : '') + (skipped ? ` · 같은 화면 ${skipped}장 재사용` : '')); lastYield = now; await yieldNow(); }
+    if (now - lastYield > 40) { const sp = (i + 1) / ((now - t0) / 1000); prog.set((i + 1) / N, `프레임 ${i + 1} / ${N} · 초당 ${sp.toFixed(0)}프레임`, cv); const k = 1 / (i + 1); prog.label(`프레임당 그리기 ${(tDraw * k).toFixed(0)}ms` + (tVid > 1 ? ` · 영상 ${(tVid * k).toFixed(0)}ms` : '') + (tEnc > 1 ? ` · 인코더 대기 ${(tEnc * k).toFixed(0)}ms` : '') + (skipped ? ` · 같은 화면 ${skipped}장 재사용` : '') + (LC_HIT ? ` · 레이어 재사용 ${LC_HIT}번` : '')); lastYield = now; await yieldNow(); }
   }
   } finally { pumps.forEach(P => P.close()); VFR.clear(); freeAllPools(); }
-  prog.set(1, `프레임 ${N} / ${N}`, cv); if (window.EXPORT_STATS) window.EXPORT_STATS = { ms: performance.now() - t0, N, skipped, hw: cfg.hardwareAcceleration, tDraw, tVid, tEnc };
+  prog.set(1, `프레임 ${N} / ${N}`, cv); if (window.EXPORT_STATS) window.EXPORT_STATS = { ms: performance.now() - t0, N, skipped, lcHit: LC_HIT, hw: cfg.hardwareAcceleration, tDraw, tVid, tEnc };
   if (cancelled()) { try { enc.close(); } catch (e) { } return null; }
   await enc.flush(); if (err) throw err;
   if (acfg && abuf) {
@@ -4964,14 +5368,14 @@ async function runExport(st) {
   if (st.fmt === 'json') { saveProjectFile(); return; }
   if (st.fmt === 'wav') { toast('소리를 섞는 중…'); const b = await renderAudioMix().catch(() => null); if (!b) { toast('내보낼 소리가 없어요. 오디오나 소리 있는 영상을 넣어 주세요'); return; } resultSheet(wavBlob(b), 'wav'); return; }
   if (st.fmt === 'png') { const cv = document.createElement('canvas'); cv.width = even(pr.w * st.scale); cv.height = even(pr.h * st.scale); exporting = true; await prepVideos(S.time); renderFrame(cv, cv.getContext('2d'), S.time, cv.width / pr.w); exporting = false; invalidate(); cv.toBlob(b => b ? resultSheet(b, 'png') : toast('이미지를 만들지 못했어요'), 'image/png'); return; }
-  const prog = progressSheet(); exporting = true; VEL.forEach(v => v.pause());
+  const prog = progressSheet(); exporting = true; VEL.forEach(v => v.pause()); lcStart();
   try {
     let blob = null, ext = 'mp4';
     if (st.fmt === 'mp4' && window.VideoEncoder && window.Mp4Muxer && window.Mp4Muxer.Muxer) { try { try { blob = await exportMP4(st, prog, prog.cancelled); } catch (e0) { if (!e0 || !e0.reorder) throw e0; prog.label('화질을 지키려고 다른 인코더로 다시 저장하는 중…'); blob = await exportMP4(st, prog, prog.cancelled, ['prefer-software', 'no-preference']); } } catch (e) { console.warn('mp4 encoder failed, falling back', e); if (prog.cancelled()) throw e; prog.label('다른 방식으로 다시 시도하는 중…'); blob = await exportRecorder(st, prog, prog.cancelled); if (blob) ext = blob.type.includes('mp4') ? 'mp4' : 'webm'; } }
     else { blob = await exportRecorder(st, prog, prog.cancelled); if (blob) ext = blob.type.includes('mp4') ? 'mp4' : 'webm'; }
     prog.close(); if (blob) resultSheet(blob, ext); else toast('내보내기를 취소했어요');
   } catch (e) { console.error(e); prog.close(); toast('내보내기 실패: ' + (e && e.message ? e.message : e)); }
-  finally { exporting = false; invalidate(); }
+  finally { exporting = false; lcStop(); invalidate(); }
 }
 
 /* ================= SAMPLE ================= */
@@ -5468,7 +5872,7 @@ function bind() {
   $('#bStart').onclick = () => { setTime(0); followPlayhead(); }; $('#bEnd').onclick = () => { setTime(S.proj.dur); followPlayhead(); };
   $('#bPrevF').onclick = () => stepFrame(-1); $('#bNextF').onclick = () => stepFrame(1);
   $('#bLoop').classList.toggle('on', S.loop); $('#pLoop').classList.toggle('on', S.loop); $('#bLoop').onclick = toggleLoop;
-  $('#bKf').onclick = addTransformKeys;
+  $('#bKf').onclick = addTransformKeys; $('#bGuide').onclick = () => guideBook();
   $('#bAuto').onclick = toggleAutoKey;
   $('#bSplit').onclick = () => { const L = selL(); if (L) splitLayer(L); else toast('분할할 레이어를 선택하세요'); };
   $('#bDel').onclick = deleteSelection; bindPlayer();
