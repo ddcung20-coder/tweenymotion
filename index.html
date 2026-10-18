@@ -7847,7 +7847,10 @@ function geoLoad() {
   if (GEO.loadP) return GEO.loadP;
   GEO.loadP = (async () => {
     try {
-      const tj = await fetch(GEO.base + 'tiles.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+      // geo/ 폴더 안에 올렸든, index.html 옆(맨 위)에 바로 올렸든 둘 다 찾음
+      let tj = null;
+      for (const base of ['geo/', '']) { try { const r = await fetch(base + 'tiles.json', { cache: 'no-cache' }); if (!r.ok) continue; const j = await r.json(); if (j && j.levels && j.packs) { tj = j; GEO.base = base; break; } } catch (e) { } }
+      if (!tj) throw new Error('tiles.json not found');
       GEO.tiles = tj; GEO.W = tj.coastW || 10000; GEO.coast = Uint8Array.from(atob(tj.coast), c => c.charCodeAt(0)); delete tj.coast; GEO.rings = null; GEO.failed = false; invalidate(); return true;
     } catch (e) { console.warn('geo data', e); GEO.failed = true; GEO.loadP = null; return false; }
   })();
