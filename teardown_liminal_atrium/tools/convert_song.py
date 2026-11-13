@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Convert a song (mp3/wav/flac) into the pool radio loop: mono 44.1 kHz Ogg Vorbis with soft loop edges.
-usage: python3 tools/convert_song.py <song file>   ->  snd/radio_song.ogg"""
+usage: python3 tools/convert_song.py <song file> [output name]   ->  snd/radio_song.ogg (default)
+       e.g. python3 tools/convert_song.py song.mp3 mall_song.ogg   (B1 arcade music)"""
 import sys, os
 import numpy as np, soundfile as sf
 src = sys.argv[1]
@@ -14,7 +15,7 @@ fade = int(0.6 * sr)
 x[:fade] *= np.linspace(0, 1, fade)                  # soft start / end so the loop seam does not click
 x[-fade:] *= np.linspace(1, 0, fade)
 x = x / (np.abs(x).max() + 1e-9) * 0.9
-out = os.path.join(os.path.dirname(__file__), "..", "snd", "radio_song.ogg")
+out = os.path.join(os.path.dirname(__file__), "..", "snd", sys.argv[2] if len(sys.argv) > 2 else "radio_song.ogg")
 with sf.SoundFile(out, "w", samplerate=sr, channels=1, format="OGG", subtype="VORBIS") as f:
     x = x.astype(np.float32)
     for i in range(0, len(x), 32768):                # chunked: libsndfile crashes on one huge Vorbis write

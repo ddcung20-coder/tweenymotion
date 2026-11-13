@@ -254,3 +254,11 @@ pad *= 0.8 + 0.2 * np.sin(2 * np.pi * tt / L)
 pad += 0.12 * bandpass(loop_noise(L, 0.6), 3000, 9000) * (0.5 + 0.5 * np.sin(2 * np.pi * 2 * tt / L))   # airy shimmer
 save("dream_pad.ogg", lowpass(pad, 4000), 0.55)
 print("mission sounds written")
+
+# --- automatic sliding door: soft motor whir + air hiss (v3.19, basement) ---------------------------
+sec = 1.3; n = int(sec * SR); tt = t(sec)
+shape_ = np.sin(np.pi * np.clip(tt / 1.1, 0, 1)) ** 0.8
+whir = (np.sin(2 * np.pi * (180 + 60 * shape_) * tt) * 0.5 + 0.25 * np.sin(2 * np.pi * (360 + 120 * shape_) * tt)) * shape_
+hiss = bandpass(rng.standard_normal(n), 2500, 7000) * shape_ * 0.35
+save("autodoor.ogg", whir + hiss, 0.5)
+print("autodoor sound written")

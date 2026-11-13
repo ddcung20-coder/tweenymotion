@@ -149,8 +149,19 @@ for k in range(FLOORS):
         x, z = ns["corner"][key].pt(30, 22)
         checks[f"utility room {key} floor {k + 1}"] = (x, fy(k), z)
 checks["roof (via stair penthouse)"] = (bx0 + 20, ns["ROOF_Y"], (bz0 + bz1) // 2)
+YB = ns["YB"]
+checks["B1 car-park ramp (top, street level)"] = (30, G0, 66)
+checks["B1 car-park ramp (bottom)"] = (30, YB, 280)
+checks["B1 car park"] = (162, YB, 200)
+checks["B1 arcade promenade (through automatic door 1)"] = (310, YB, 250)
+checks["B1 arcade corridor (through automatic door 2)"] = (184, YB, 412)
+checks["B1 SE elevator hall"] = (374, YB, 130)
+checks["B1 NW elevator lobby"] = (96, YB, 452)
+checks["B1 lounge"] = (366, YB, 470)
+for (nm_, kind_, sx_, sz_) in ns["SHOPS"]:
+    checks[f"B1 {kind_} '{nm_}' (inside)"] = (sx_, YB, sz_)
 for nm, (x, y, z) in checks.items():
-    report(f"reachable: {nm}", reachable(int(x), int(y), int(z)))
+    report(f"reachable: {nm}", reachable(int(x), int(y), int(z), r=8))
 
 # 5b. both sides of every swing door are reachable (rooms, bathrooms, stairwells, lobby, entrance)
 side_bad = []
@@ -272,9 +283,9 @@ report("every door handle is on the latch side (away from the hinge)", not wrong
 cab = 0
 for e in ns["ELEVATORS"]:
     arr = e["arr"]; gx, gy, gz = e["gmin"]; sx, sy, sz = arr.shape
-    lo = gy - e["floor"] * ns["FH"]; hi = gy + (ns["FLOORS"] - 1 - e["floor"]) * ns["FH"] + sy
+    lo = ns["YB"] - 2; hi = gy + (ns["FLOORS"] - 1 - e["floor"]) * ns["FH"] + sy     # B1 .. floor 6
     cab += int((FULL[gx:gx + sx, lo:hi, gz:gz + sz] > 0).sum())
-report("elevator cabs travel floor 1-6 without touching anything", cab == 0, f"{cab} voxels in the way")
+report("elevator cabs travel B1 - floor 6 without touching anything", cab == 0, f"{cab} voxels in the way")
 
 # 6b. mission + curtains (separate static bodies moved by main.lua)
 def body_hits(arr, gmin, dx=0, dz=0, world=FULL):
@@ -342,6 +353,20 @@ for i, m in enumerate(ns["DECOR_MQ"]):
             or any((c[0], c[2]) in door_xz for c in cells_of(arr, m["gmin"])):
         dec_bad.append(i)
 report(f"all {len(ns['DECOR_MQ'])} decorative dreamers stand clear on the floor", not dec_bad and len(ns["DECOR_MQ"]) >= 2, str(dec_bad))
+ad_bad = []
+for i, d in enumerate(ns["DOORS"]):
+    if not d["tag"].startswith("autodoor"): continue
+    dx_, dz_ = d["slide"]
+    for f_ in (0.5, 1.0):
+        if body_hits(d["arr"], d["gmin"], int(round(dx_ * f_)), int(round(dz_ * f_))):
+            ad_bad.append((i, f_))
+n_ad = sum(1 for d in ns["DOORS"] if d["tag"].startswith("autodoor"))
+report(f"automatic doors: {n_ad} glass leaves slide fully open without hitting anything", n_ad == 4 and not ad_bad, str(ad_bad))
+calls_b1 = sorted(c[2] for c in ns["CALLS"] if c[3] == -1)
+report("all 4 elevators stop at B1 (landing door + call button)", len(calls_b1) == 4 and
+       sum(1 for d in ns["DOORS"] if "elevdoor" in d["tag"] and "floor=-1" in d["tag"]) == 4, str(calls_b1))
+mall = [sp for sp in ns["SOUND_SPOTS"] if sp[0] == "mall"]
+report(f"{len(mall)} arcade music speakers sit in open air in B1", len(mall) >= 5 and all(FULL[int(x), int(y), int(z)] == 0 and y < G0 for (_, x, y, z) in mall))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless

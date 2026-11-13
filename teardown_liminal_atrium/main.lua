@@ -3,7 +3,7 @@
 --  2) working elevators (call buttons / floor buttons with E) with chime, motor hum, door and music sounds
 --  3) building ambience, flickering corridor lights with fluorescent buzz
 --  4) creak / thud sounds for the physical (grab-and-pull) doors
---  5) curtains that open / close with E
+--  5) curtains that open / close with E, automatic sliding doors in the basement (B1)
 --  6) the dreamcore mission "SWEET DREAMS": six lost memories, pastel dreamers that show the way
 
 ----------------------------------------------------------------------------------------------------
@@ -101,6 +101,8 @@ local function loadSounds()
 	snd.spa       = LoadLoop("MOD/snd/spa_bubbles.ogg")
 	snd.song      = LoadLoop("MOD/snd/radio_song.ogg")
 	snd.curtain   = LoadSound("MOD/snd/curtain.ogg")
+	snd.autodoor  = LoadSound("MOD/snd/autodoor.ogg")
+	snd.mall      = LoadLoop("MOD/snd/mall_song.ogg")
 	snd.deskbell  = LoadSound("MOD/snd/deskbell.ogg")
 	snd.musicbox  = LoadSound("MOD/snd/musicbox.ogg")
 	snd.hum       = LoadSound("MOD/snd/dream_hum.ogg")
@@ -170,6 +172,7 @@ local CAB_SPEED = 1.2
 local DOOR_RATE = 0.8
 local HOLD_TIME = 6.0
 
+local B1_H      = 3.6               -- the basement storey is taller (floor index -1 = B1)
 local cars = {}
 local carByShaft = {}
 local carByBody = {}
@@ -178,6 +181,11 @@ local function tagNum(h, t, def)
 	local v = tonumber(GetTagValue(h, t))
 	if v == nil then return def end
 	return v
+end
+
+local function floorOff(f)
+	if f < 0 then return f * B1_H end
+	return f * FLOOR_H
 end
 
 local function doorBroken(door)
@@ -240,7 +248,7 @@ local function elevInit()
 			body = b, shaft = GetTagValue(b, "shaft"), floor = f, target = f,
 			vox0 = count, broken = false, checkTimer = 0,
 			x = t.pos[1], z = t.pos[3], rot = t.rot, y = t.pos[2],
-			base = t.pos[2] - f * FLOOR_H, state = "opening", hold = HOLD_TIME, doors = {},
+			base = t.pos[2] - floorOff(f), state = "opening", hold = HOLD_TIME, doors = {},
 		}
 		cars[#cars + 1] = c
 		carByShaft[c.shaft] = c
@@ -270,7 +278,8 @@ local function elevInit()
 	end
 	local btns = FindShapes("elevbtn", true)
 	for i = 1, #btns do
-		SetTag(btns[i], "interact", "Floor " .. (tagNum(btns[i], "floor", 0) + 1))
+		local f = tagNum(btns[i], "floor", 0)
+		SetTag(btns[i], "interact", f < 0 and "Floor B1 (arcade)" or ("Floor " .. (f + 1)))
 	end
 	local calls = FindShapes("elevcall", true)
 	for i = 1, #calls do
@@ -370,7 +379,7 @@ local function elevUpdate(dt)
 				c.state = (c.target ~= c.floor) and "moving" or "idle"
 			end
 		elseif c.state == "moving" then
-			local goal = c.base + c.target * FLOOR_H
+			local goal = c.base + floorOff(c.target)
 			local step = CAB_SPEED * dt
 			if math.abs(goal - c.y) <= step then
 				c.y = goal
@@ -476,6 +485,16 @@ local function radioTick(cam)
 end
 
 local function spotsTick(cam)
+	-- arcade music: the nearest speaker, only while the player is down in B1
+	local near, nd = nil, 45
+	for i = 1, #spots do
+		local sp = spots[i]
+		if sp.kind == "mall" and cam[2] < sp.pos[2] + 2.2 then
+			local d = dist(sp.pos, cam)
+			if d < nd then near, nd = sp, d end
+		end
+	end
+	if near then PlayLoop(snd.mall, near.pos, 0.8) end
 	for i = 1, #spots do
 		local sp = spots[i]
 		local d = dist(sp.pos, cam)
@@ -483,6 +502,61 @@ local function spotsTick(cam)
 			PlayLoop(snd.pool, sp.pos, 0.45)
 		elseif sp.kind == "spa" and d < 18 then
 			PlayLoop(snd.spa, sp.pos, 0.5)
+		end
+	end
+end
+
+----------------------------------------------------------------------------------------------------
+-- automatic sliding doors (B1: car park <-> arcade). Open when someone walks up, close after.
+--  "autodoor" bodies   tags: grp sx sz (slide offset of the leaf when open)
+----------------------------------------------------------------------------------------------------
+local autoGroups = {}
+
+local function autoInit()
+	local bodies = FindBodies("autodoor", true)
+	for i = 1, #bodies do
+		local b = bodies[i]
+		local grp = GetTagValue(b, "grp")
+		local g = autoGroups[grp]
+		if not g then
+			g = { leaves = {}, amount = 0, target = 0, hold = 0 }
+			autoGroups[grp] = g
+		end
+		g.leaves[#g.leaves + 1] = { body = b, t0 = GetBodyTransform(b), shapes = GetBodyShapes(b),
+			slide = Vec(tagNum(b, "sx", 0), 0, tagNum(b, "sz", 0)) }
+	end
+	for _, g in pairs(autoGroups) do
+		local c = Vec(0, 0, 0)
+		for i = 1, #g.leaves do c = VecAdd(c, g.leaves[i].t0.pos) end
+		g.center = VecScale(c, 1 / #g.leaves)
+	end
+end
+
+local function autoTick(dt)
+	local pp = GetPlayerTransform().pos
+	for _, g in pairs(autoGroups) do
+		local dx, dz = pp[1] - g.center[1], pp[3] - g.center[3]
+		local near = math.sqrt(dx * dx + dz * dz) < 3.2 and math.abs(pp[2] - g.center[2]) < 2.5
+		if near then g.hold = 1.2 else g.hold = g.hold - dt end
+		local want = g.hold > 0 and 1 or 0
+		if want ~= g.target then
+			g.target = want
+			PlaySound(snd.autodoor, VecAdd(g.center, Vec(0, 1.2, 0)), 0.6)
+		end
+		if g.amount ~= g.target then
+			if g.amount < g.target then g.amount = math.min(1, g.amount + dt * 1.8)
+			else g.amount = math.max(0, g.amount - dt * 1.4) end
+			local e = g.amount * g.amount * (3 - 2 * g.amount)
+			for i = 1, #g.leaves do
+				local l = g.leaves[i]
+				local ok = IsHandleValid(l.body)
+				for j = 1, #l.shapes do
+					if not IsHandleValid(l.shapes[j]) or IsShapeBroken(l.shapes[j]) then ok = false end
+				end
+				if ok then     -- a smashed glass leaf stays where it is
+					SetBodyTransform(l.body, Transform(VecAdd(l.t0.pos, VecScale(l.slide, e)), l.t0.rot))
+				end
+			end
 		end
 	end
 end
@@ -1030,6 +1104,7 @@ function init()
 	flickerInit()
 	spotsInit()
 	curtainsInit()
+	autoInit()
 	missionInit()
 	say("Front desk: ring the bell when you are ready to dream.", 7)
 end
@@ -1059,6 +1134,7 @@ function tick(dt)
 		end
 	end
 	curtainsTick(dt)
+	autoTick(dt)
 	missionTick(dt)
 	local cam = GetCameraTransform().pos
 	PlayLoop(snd.ambience, cam, 0.3)

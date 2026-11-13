@@ -58,6 +58,11 @@ DREAM_PINK  = P(43, (246, 188, 218))
 DREAM_LILAC = P(44, (206, 190, 242))
 DREAM_SKY   = P(45, (176, 214, 248))
 DREAM_CLOUD = P(46, (250, 247, 253))
+# basement arcade: polished stone (rock = hard) + car park paint
+MARBLE_W    = P(47, (234, 231, 226)); MARBLE_W2 = P(48, (220, 216, 209))
+MARBLE_B    = P(49, (40, 38, 42))
+MARBLE_BG   = P(50, (198, 184, 162))
+YELLOW_PAINT = P(51, (226, 186, 40))
 # per-floor corridor themes (dirt range: soft like carpet / plaster)
 CARP_G  = P(26, (52, 86, 62));  CARP_G2  = P(27, (45, 77, 55))
 CARP_BL = P(28, (40, 58, 100)); CARP_BL2 = P(29, (35, 51, 89))
@@ -169,10 +174,12 @@ AZ = LONG_BAYS * LONG_BAY_W          # atrium Z size 272 (27.2 m)
 BX, BZ = AX + 2 * T, AZ + 2 * T
 W, D = BX + 2 * M, BZ + 2 * M
 FLOORS, FH, SLAB_T = 6, 30, 3
-G0 = 4                               # ground floor surface y
+BASE_H = 36                          # basement B1 floor-to-floor (3.6 m)
+G0 = 4 + BASE_H                      # ground floor surface y
+YB = G0 - BASE_H                     # basement B1 floor surface y
 ROOF_Y = G0 + FLOORS * FH            # 184: roof surface of the room ring
 ATR_TOP = ROOF_Y + 22                # 206: atrium ceiling underside
-H = ATR_TOP + 3 + 4 + 2 + 30         # + rooftop sign
+H = ATR_TOP + 3 + 4 + 2 + 30         # + rooftop sign (every shape is still <= 256 tall)
 
 bx0, bz0 = M, M
 bx1, bz1 = M + BX, M + BZ
@@ -204,6 +211,10 @@ def light(gx, gy, gz, rgb, scale=1.0, size=0.1, tags=""):
 
 def fy(k):
     return G0 + k * FH
+
+LEVELS = [-1] + list(range(FLOORS))     # elevator stops: B1 + floors 1-6
+def lvl_y(k):
+    return YB if k < 0 else fy(k)
 
 # ----------------------------------------------------------------------------
 # Local frame helper: build things in (u, v, y) space.
@@ -373,7 +384,8 @@ def keep_connected(mask, seeds):
 # 1. Site: ground, sidewalk, lawns, trees, parking
 # ============================================================================
 box(0, W, 0, 1, 0, D, BEDROCK)
-box(0, W, 1, G0, 0, D, ASPHALT)
+box(0, W, 1, G0 - 3, 0, D, SOIL)       # earth (the basement is dug into it)
+box(0, W, G0 - 3, G0, 0, D, ASPHALT)
 SW = 26   # sidewalk width
 # sidewalk ring (raised 1 voxel), curb, lawn strip with trees
 box(bx0 - SW, bx1 + SW, G0, G0 + 1, bz0 - SW, bz1 + SW, PAVER)
@@ -420,8 +432,6 @@ for i in range(13):
         continue
     box(x, x + 1, G0 - 1, G0, 4, bz0 - SW - 4, PAINT_LINE)
     box(x + 8, x + 22, G0, G0 + 1, bz0 - SW - 9, bz0 - SW - 7, CURB)
-# foundation slab
-box(bx0, bx1, 1, G0, bz0, bz1, SLAB)
 
 # ============================================================================
 # 2. Structure shell: floor slabs, brick exterior, roof
@@ -472,6 +482,86 @@ for west in (True, False):
 # roof membrane over the room ring
 box(bx0 + T_EXT, bx1 - T_EXT, ROOF_Y - 1, ROOF_Y, bz0 + T_EXT, bz1 - T_EXT, ROOF)
 box(ax0, ax1, ROOF_Y - SLAB_T, ROOF_Y, az0, az1, 0)
+
+# ============================================================================
+# 2b. Basement B1 shell: solid block under the hotel, hollowed out. Half underground car park
+#     (west / south-west, with a ramp to the street), half luxury shopping arcade (east + north).
+# ============================================================================
+IX0, IX1, IZ0, IZ1 = bx0 + T_EXT, bx1 - T_EXT, bz0 + T_EXT, bz1 - T_EXT   # B1 interior
+YC = G0 - SLAB_T                     # B1 ceiling = underside of the ground floor slab
+PX1, PZ1 = ax0 + 2 * SHORT_BAY_W, 398  # car park | arcade dividers (x = shape seam, z)
+BRNG = random.Random(91)             # own RNG: the basement never shifts the rest of the map
+box(bx0, bx1, 1, G0, bz0, bz1, SLAB)
+box(IX0, IX1, YB, YC, IZ0, IZ1, 0)
+# floors: car park = sealed concrete, arcade = polished marble checkerboard
+box(IX0, PX1, YB - 1, YB, IZ0, PZ1, STAIR_CONC)
+for x in range(IX0, IX1):
+    for z in range(IZ0, IZ1):
+        if x < PX1 + 2 and z < PZ1 + 2:
+            continue
+        G[x, YB - 1, z] = MARBLE_W if ((x // 6) + (z // 6)) % 2 == 0 else MARBLE_W2
+# promenade: black border + gold inlay down the middle
+PRM0, PRM1 = 290, 330
+box(PRM0, PRM0 + 1, YB - 1, YB, IZ0, IZ1, MARBLE_B); box(PRM1 - 1, PRM1, YB - 1, YB, IZ0, IZ1, MARBLE_B)
+box(PRM0 + 19, PRM0 + 21, YB - 1, YB, IZ0, IZ1, BRASS)
+for z in range(IZ0 + 10, IZ1, 24):
+    box(PRM0 + 1, PRM1 - 1, YB - 1, YB, z, z + 1, MARBLE_B)
+# divider walls (car park side raw concrete, arcade side plaster)
+box(PX1, PX1 + 2, YB, YC, IZ0, PZ1 + 2, SLAB)
+box(PX1 - 2, PX1, YB, YC, IZ0, PZ1, SLAB)          # car-park facing on the other side of the x = PX1 shape seam
+box(IX0, PX1 + 2, YB, YC, PZ1, PZ1 + 2, SLAB)
+# arcade ceiling is painted white, the car park keeps raw concrete
+paint(PX1 + 2, IX1, YC, YC + 1, IZ0, IZ1, CEIL)
+paint(IX0, PX1 + 2, YC, YC + 1, PZ1 + 2, IZ1, CEIL)
+paint(PX1 + 1, PX1 + 2, YB, YC, IZ0, PZ1 + 2, LOBBY_WALL)   # arcade-side face of the x divider
+paint(IX0, PX1 + 2, YB, YC, PZ1 + 1, PZ1 + 2, LOBBY_WALL)   # arcade-side face of the z divider
+paint(PX1 + 2, IX1, YB, YC, IZ1, IZ1 + 1, LOBBY_WALL)
+paint(PX1 + 2, IX1, YB, YC, IZ0 - 1, IZ0, LOBBY_WALL)
+paint(IX1, IX1 + 1, YB, YC, IZ0, IZ1, LOBBY_WALL)
+paint(IX0 - 1, IX0, YB, YC, PZ1 + 2, IZ1, LOBBY_WALL)
+
+# ---- ramp from the street (south-west) down along the west side, then a tunnel into the car park
+RX0, RX1 = 6, 54
+RZ_TOP, RZ_BOT, RZ_END = 60, 240, 312
+TZ0, TZ1 = 260, 310                  # tunnel / car park entry
+def ramp_y(z):
+    if z < RZ_TOP:
+        return G0
+    if z >= RZ_BOT:
+        return YB
+    return G0 - int(round((z - RZ_TOP) * (G0 - YB) / (RZ_BOT - RZ_TOP)))
+box(RX0 - 2, RX0, YB - 1, G0 + 3, 58, RZ_END + 2, SLAB)          # retaining walls with a low parapet
+box(RX1, RX1 + 2, YB - 1, G0 + 3, 58, RZ_END + 2, SLAB)
+box(RX0 - 2, RX1 + 2, YB - 1, G0 + 3, RZ_END, RZ_END + 2, SLAB)
+for z in range(56, RZ_END):
+    ry = ramp_y(z)
+    box(RX0, RX1, ry, G0 + 4, z, z + 1, 0)
+    box(RX0, RX1, ry - 1, ry, z, z + 1, STAIR_CONC)
+    if ry < G0 and (z // 3) % 2 == 0:
+        box(RX0 + 2, RX1 - 2, ry - 1, ry, z, z + 1, ASPHALT2)    # anti-slip grooves
+box(RX0 + 23, RX0 + 25, YB - 1, YB, RZ_BOT, RZ_END, PAINT_LINE)   # centre line at the bottom
+for (wx0, wx1) in ((RX0 - 2, RX0), (RX1, RX1 + 2)):              # steel guard rail on the parapets
+    for z in range(60, RZ_END + 2, 12):
+        box(wx0, wx1, G0 + 3, G0 + 10, z, z + 1, STEEL)
+    box(wx0, wx1, G0 + 10, G0 + 11, 60, RZ_END + 2, STEEL)
+box(RX0 - 2, RX1 + 2, G0 + 10, G0 + 11, RZ_END, RZ_END + 1, STEEL)
+# tunnel: lined concrete box under the sidewalk, into the building's west wall
+box(RX1, IX0, YB - 1, YB + 33, TZ0 - 2, TZ1 + 2, SLAB)
+box(RX1, bx0, YB, YB + 30, TZ0, TZ1, 0)
+box(bx0, IX0, YB, YB + 26, TZ0, TZ1, 0)                          # lower lintel in the building wall
+box(RX1, IX0, YB - 1, YB, TZ0, TZ1, STAIR_CONC)
+for z in range(TZ0, TZ1, 10):                                     # yellow / black clearance bar over the entry
+    box(RX1, RX1 + 1, YB + 28, YB + 30, z, z + 5, YELLOW_PAINT)
+    box(RX1, RX1 + 1, YB + 28, YB + 30, z + 5, z + 10, TIRE)
+# "P" sign by the ramp entrance (glowing letter on a blue panel, facing the street)
+box(RX1, RX1 + 2, G0 + 3, G0 + 30, 61, 63, STEEL)
+box(RX1 - 12, RX1 + 2, G0 + 18, G0 + 30, 60, 61, BLANKET_C)
+for r_, row in enumerate(["####.", "#...#", "####.", "#....", "#...."]):
+    for c_, cc in enumerate(row):
+        if cc == "#":
+            xx = RX1 - 3 - c_ * 2
+            yy = G0 + 27 - r_ * 2
+            box(xx - 1, xx + 1, yy - 1, yy + 1, 59, 60, CEIL_LAMP)
 
 # ============================================================================
 # 3. Atrium: facade walls, windows, ceiling, floor
@@ -1379,6 +1469,7 @@ def elevators(fr, key):
         fr.box(0, CB - T_FAC, y, y + FH - SLAB_T, 0, CB - T_FAC, 0)
         fr.box(0, CB - T_FAC, y - 1, y, 0, CB - T_FAC, TILE_DARK)
     fr.box(0, 22, G0, ROOF_Y + 12, 0, CB - T_FAC, SLAB)
+    fr.box(-T_PART, 22, 1, G0, 0, CB - T_FAC, SLAB)                              # shaft core down to B1
     for qi, q0 in enumerate((2, 24)):
         shaft = f"{key}{qi}"
         fr.box(0, 20, 1, ROOF_Y, q0, q0 + 18, 0)                                  # hollow shaft + pit
@@ -1397,7 +1488,7 @@ def elevators(fr, key):
         arr, gmin = frame_shape(fr, CAR_P0, CAR_P1, yb, yb + CAR_H, q0 + 1, q0 + 17, car_style)
         # car buttons: one per floor, stacked on the chrome panel (separate shapes)
         buttons = []
-        for f in range(FLOORS):
+        for f in LEVELS:
             by = yb + 2 + 8 + f * 2
             barr, bmin = frame_shape(fr, CAR_P0 + 2, CAR_P0 + 3, by, by + 1, q0 + 1 + 14, q0 + 1 + 15,
                                      lambda *a_: CEIL_LAMP)
@@ -1405,8 +1496,8 @@ def elevators(fr, key):
         cxl, czl = cont(fr, (CAR_P0 + CAR_P1) / 2, q0 + 9)
         ELEVATORS.append(dict(arr=arr, gmin=gmin, shaft=shaft, floor=start, buttons=buttons,
                               light=(cxl, yb + CAR_H - 5, czl)))
-        for k in range(FLOORS):
-            y = fy(k)
+        for k in LEVELS:
+            y = lvl_y(k)
             fr.box(-T_PART, 0, y, y + 22, q0 + 4, q0 + 14, 0)
             # support points inside the wall (left jamb, right of the pocket, above the header):
             # main.lua drops the door when these are blown away
@@ -1424,8 +1515,8 @@ def elevators(fr, key):
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 3, q0 + 4, BRASS)
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 14, q0 + 15, BRASS)
             fr.box(-T_PART - 1, -T_PART, y + 22, y + 23, q0 + 3, q0 + 15, BRASS)
-            fr.box(-T_PART - 1, -T_PART, y + 23, y + 26, q0 + 6, q0 + 12, DARK_METAL)
-            for f in range(FLOORS):                                              # floor dial dots
+            fr.box(-T_PART - 1, -T_PART, y + 23, y + 26, q0 + 5, q0 + 12, DARK_METAL)
+            for f in LEVELS:                                                     # floor dial dots (B1..6)
                 fr.box(-T_PART - 2, -T_PART - 1, y + 24, y + 25, q0 + 6 + f, q0 + 7 + f, CEIL_LAMP if f == k else BRASS)
             fr.box(-T_PART - 1, -T_PART, y + 9, y + 15, q0 + 15, q0 + 17, BRASS)
             barr, bmin = frame_shape(fr, -T_PART - 2, -T_PART - 1, y + 11, y + 13, q0 + 15, q0 + 16,
@@ -1810,6 +1901,384 @@ for k_ in range(FLOORS):
 MQ_PLACED += stamp_mannequin(WORLD, lx0 + 4, G0, lz0 + 24)
 MQ_PLACED += stamp_mannequin(WORLD, px1 + 22, DY, pz0 + 8)
 print("decor mannequins", MQ_PLACED, "of", len(MQ_DECOR) + 2, file=sys.stderr)
+
+# ============================================================================
+# 8c. Basement B1 fit-out: luxury arcade (boutiques, restaurant, café, fountain), car park,
+#     automatic sliding doors between them. Elevators (NW + SE) open into the arcade.
+# ============================================================================
+BFONT = {
+    "A": [".#.", "#.#", "###", "#.#", "#.#"], "B": ["##.", "#.#", "##.", "#.#", "##."],
+    "C": [".##", "#..", "#..", "#..", ".##"], "E": ["###", "#..", "##.", "#..", "###"],
+    "F": ["###", "#..", "##.", "#..", "#.."], "I": ["###", ".#.", ".#.", ".#.", "###"],
+    "L": ["#..", "#..", "#..", "#..", "###"], "M": ["#...#", "##.##", "#.#.#", "#...#", "#...#"],
+    "N": ["#..#", "##.#", "#.##", "#..#", "#..#"], "O": [".#.", "#.#", "#.#", "#.#", ".#."],
+    "P": ["##.", "#.#", "##.", "#..", "#.."], "R": ["##.", "#.#", "##.", "#.#", "#.#"],
+    "S": [".##", "#..", ".#.", "..#", "##."], "T": ["###", ".#.", ".#.", ".#.", ".#."],
+    "U": ["#.#", "#.#", "#.#", "#.#", "###"], "V": ["#.#", "#.#", "#.#", "#.#", ".#."],
+    "X": ["#.#", "#.#", ".#.", "#.#", "#.#"], "1": [".#.", "##.", ".#.", ".#.", "###"],
+    " ": ["..", "..", "..", "..", ".."],
+}
+
+def ftext(fr, s, u_mid, y_top, v, col):
+    """5-row letters drawn in a frame plane at layer v; u runs to the viewer's right."""
+    widths = [len(BFONT[ch][0]) for ch in s]
+    u = u_mid - (sum(widths) + len(s) - 1) // 2
+    for ch, w_ in zip(s, widths):
+        for r_, row in enumerate(BFONT[ch]):
+            for c_, cc in enumerate(row):
+                if cc == "#":
+                    fr.box(u + c_, u + c_ + 1, y_top - r_ - 1, y_top - r_, v, v + 1, col)
+        u += w_ + 1
+
+def ceiling_panel(fr, u, v, rgb, scale=1.8, half=4):
+    fr.box(u - half, u + half, YC - 1, YC, v - half, v + half, BRASS)
+    fr.box(u - half + 1, u + half - 1, YC - 1, YC, v - half + 1, v + half - 1, CEIL_LAMP)
+    fr.light(u, YC - 3, v, rgb, scale, 0.3)
+
+def chandelier(x, z, rgb=(1.0, 0.86, 0.66), scale=2.4):
+    box(x, x + 1, YC - 4, YC, z, z + 1, BRASS)                         # chain
+    box(x - 4, x + 5, YC - 5, YC - 4, z - 4, z + 5, BRASS)              # ring
+    box(x - 3, x + 4, YC - 5, YC - 4, z - 3, z + 4, 0)
+    box(x, x + 1, YC - 5, YC - 4, z - 4, z + 5, BRASS); box(x - 4, x + 5, YC - 5, YC - 4, z, z + 1, BRASS)
+    for (dx, dz) in ((-4, -4), (4, -4), (-4, 4), (4, 4), (0, -4), (0, 4), (-4, 0), (4, 0)):
+        box(x + dx, x + dx + 1, YC - 7, YC - 5, z + dz, z + dz + 1, CEIL_LAMP)   # crystal drops
+    box(x - 1, x + 2, YC - 8, YC - 5, z - 1, z + 2, CEIL_LAMP)          # centre crystal
+    light(x + 0.5, YC - 10, z + 0.5, rgb, scale, 0.35)
+
+def pendant(x, z, rgb=(1.0, 0.85, 0.62), scale=1.6):
+    box(x, x + 1, YC - 5, YC, z, z + 1, BRASS)
+    box(x - 2, x + 3, YC - 6, YC - 5, z - 2, z + 3, BRASS)
+    box(x - 1, x + 2, YC - 7, YC - 6, z - 1, z + 2, LAMPSHADE)
+    light(x + 0.5, YC - 9, z + 0.5, rgb, scale, 0.25)
+
+def bench(fr, u0, u1, v0):
+    fr.box(u0, u1, YB + 3, YB + 4, v0, v0 + 4, WOOD_MED)
+    for u in (u0, u1 - 1):
+        fr.box(u, u + 1, YB, YB + 3, v0, v0 + 4, BRASS)
+
+def planter(x, z, seed):
+    box(x - 3, x + 4, YB, YB + 6, z - 3, z + 4, MARBLE_W)
+    box(x - 2, x + 3, YB + 5, YB + 6, z - 2, z + 3, SOIL)
+    box(x, x + 1, YB + 6, YB + 16, z, z + 1, TRUNK)
+    leaf_blob(x, YB + 19, z, 4, seed, LEAF2, anchor=(x, YB + 15, z), squash=1.0, keep=0.25)
+
+def chair(fr, u, v, face, col=UPHOL):
+    """dining chair, 4x4 footprint at (u, v); face = (du, dv) direction the sitter looks."""
+    for (a_, b_) in ((0, 0), (3, 0), (0, 3), (3, 3)):
+        fr.box(u + a_, u + a_ + 1, YB, YB + 4, v + b_, v + b_ + 1, WOOD_DARK)
+    fr.box(u, u + 4, YB + 4, YB + 5, v, v + 4, col)
+    du, dv = face
+    if du:
+        ub = u + (0 if du > 0 else 3)
+        fr.box(ub, ub + 1, YB + 5, YB + 10, v, v + 4, WOOD_DARK)
+    else:
+        vb = v + (0 if dv > 0 else 3)
+        fr.box(u, u + 4, YB + 5, YB + 10, vb, vb + 1, WOOD_DARK)
+
+def round_table(fr, u, v, top=SHEET, r=3, h=7, cloth=True):
+    fr.box(u - 1, u + 1, YB, YB + h, v - 1, v + 1, WOOD_DARK)
+    fr.box(u - 2, u + 2, YB, YB + 1, v - 2, v + 2, WOOD_DARK)
+    for a_ in range(-r, r):
+        for b_ in range(-r, r):
+            if (a_ + 0.5) ** 2 + (b_ + 0.5) ** 2 <= r * r:
+                fr.box(u + a_, u + a_ + 1, YB + h, YB + h + 1, v + b_, v + b_ + 1, top)
+                if cloth and abs(a_ + 0.5) + 0.8 > r - 0.5 or cloth and abs(b_ + 0.5) + 0.8 > r - 0.5:
+                    fr.box(u + a_, u + a_ + 1, YB + h - 3, YB + h, v + b_, v + b_ + 1, top)
+
+GEMS = [MEMORY, COVE_LAMP, EXIT_SIGN, POOL_LAMP, STREET_LMP, CEIL_LAMP]
+SOFT = [BLANKET_B, UPHOL2, TV_BODY, DREAM_PINK, DREAM_SKY, BLANKET_C, DREAM_LILAC, WOOD_LIGHT, CURT_DARK, TOWEL]
+
+def glass_counter(fr, u0, u1, v0, v1, kind="gems"):
+    fr.box(u0, u1, YB, YB + 8, v0, v1, WOOD_DARK)
+    fr.box(u0, u1, YB + 7, YB + 8, v0, v1, BRASS)
+    fr.box(u0, u1, YB + 8, YB + 9, v0, v1, BLANKET_B if kind == "gems" else TV_BODY)
+    fr.box(u0, u1, YB + 9, YB + 13, v0, v1, GLASS_DOOR)
+    fr.box(u0 + 1, u1 - 1, YB + 9, YB + 12, v0 + 1, v1 - 1, 0)
+    i = 0
+    for u in range(u0 + 2, u1 - 2, 3):
+        for v in range(v0 + 2, v1 - 2, 3):
+            if kind == "gems":
+                fr.box(u, u + 1, YB + 9, YB + 10, v, v + 1, GEMS[i % len(GEMS)] if i % 3 else BRASS)
+            else:
+                fr.box(u, u + 2, YB + 9, YB + 10, v, v + 2, BRASS)
+                fr.box(u, u + 1, YB + 9, YB + 10, v, v + 1, CERAMIC)
+            i += 1
+
+def painting(fr, u0, y0, v, w, h):
+    fr.box(u0, u0 + w, y0, y0 + h, v, v + 1, PICFRAME)
+    cols = BRNG.choice([(DREAM_PINK, DREAM_SKY, DREAM_CLOUD), (WALL_BLUE, DREAM_LILAC, CEIL), (WALL_ORANGE, DREAM_PINK, ART2),
+                        (LEAF2, DREAM_SKY, CEIL), (ART1, DREAM_CLOUD, WALL_MAUVE)])
+    for yy in range(y0 + 1, y0 + h - 1):
+        for uu in range(u0 + 1, u0 + w - 1):
+            t_ = ((yy - y0) * 2 + (uu - u0) + BRNG.randint(0, 1)) * 3 // (w + h)
+            fr.box(uu, uu + 1, yy, yy + 1, v, v + 1, cols[t_ % 3])
+
+SHOP_STYLE = {   # wall, floor, light colour
+    "jewelry": (TV_BODY, MARBLE_B, (1.0, 0.9, 0.75)), "bags": (ROOM_WALL_C, WOOD_LIGHT, (1.0, 0.85, 0.7)),
+    "watches": (WOOD_DARK, MARBLE_W, (1.0, 0.88, 0.7)), "perfume": (LOBBY_WALL, MARBLE_BG, (1.0, 0.82, 0.9)),
+    "fashion": (ATR_WALL, PARQUET, (0.95, 0.9, 1.0)), "shoes": (ROOM_WALL_B, MARBLE_BG, (1.0, 0.9, 0.8)),
+    "florist": (WALL_GREEN, TILE, (0.95, 1.0, 0.9)), "gallery": (CEIL, MARBLE_W, (1.0, 0.97, 0.92)),
+    "cafe": (WOOD_MED, PARQUET, (1.0, 0.8, 0.55)), "restaurant": (ROOM_WALL_C, PARQUET, (1.0, 0.78, 0.5)),
+}
+SHOPS = []
+
+def shop(x0, x1, z0, z1, side, kind, name, sign=STREET_LMP):
+    if side == "E":
+        fr = Frame(x1 - 1, z1 - 1, 0, -1, -1, 0); Wd, Dp = z1 - z0, x1 - x0
+    elif side == "W":
+        fr = Frame(x0, z0, 0, 1, 1, 0); Wd, Dp = z1 - z0, x1 - x0
+    else:
+        fr = Frame(x1 - 1, z0, -1, 0, 0, 1); Wd, Dp = x1 - x0, z1 - z0
+    wall, floor, rgb = SHOP_STYLE[kind]
+    SHOPS.append((name, kind, (x0 + x1) // 2, (z0 + z1) // 2))
+    fr.box(0, 2, YB, YC, 0, Dp, wall); fr.box(Wd - 2, Wd, YB, YC, 0, Dp, wall); fr.box(0, Wd, YB, YC, Dp - 2, Dp, wall)
+    fr.box(2, Wd - 2, YB - 1, YB, 0, Dp - 2, floor)
+    fr.box(2, Wd - 2, YB, YB + 1, 2, 3, WOOD_DARK); fr.box(2, Wd - 2, YB, YB + 1, Dp - 3, Dp - 2, WOOD_DARK)  # skirting
+    # storefront: glass between brass mullions, marble pilasters, black fascia with the name lit up
+    fr.box(0, Wd, YB, YC, 0, 1, TV_BODY)
+    fr.box(2, Wd - 2, YB, YB + 24, 0, 1, GLASS_DOOR)
+    fr.box(2, Wd - 2, YB, YB + 1, 0, 1, BRASS); fr.box(2, Wd - 2, YB + 24, YB + 25, 0, 1, BRASS)
+    for u in range(2, Wd - 2, 10):
+        fr.box(u, u + 1, YB, YB + 24, 0, 1, BRASS)
+    fr.box(0, 2, YB, YC, -1, 1, MARBLE_W); fr.box(Wd - 2, Wd, YB, YC, -1, 1, MARBLE_W)
+    d0, d1 = Wd // 2 - 9, Wd // 2 + 9
+    fr.box(d0, d1, YB, YB + 24, 0, 1, 0)
+    fr.box(d0 - 1, d0, YB, YB + 25, 0, 1, BRASS); fr.box(d1, d1 + 1, YB, YB + 25, 0, 1, BRASS)
+    fr.box(d0, d1, YB - 1, YB, 0, 1, MARBLE_B)                                  # threshold
+    ftext(fr, name, Wd // 2, YC - 1, -1, sign)
+    ceiling_panel(fr, Wd // 2, Dp // 2, rgb)
+    cu, cv = Wd // 2, Dp // 2
+    if kind == "jewelry":
+        glass_counter(fr, 8, Wd - 8, Dp - 14, Dp - 8)
+        glass_counter(fr, 4, 10, 12, Dp - 18); glass_counter(fr, Wd - 10, Wd - 4, 12, Dp - 18)
+        for yy in (YB + 12, YB + 20):
+            fr.box(4, Wd - 4, yy, yy + 1, Dp - 3, Dp - 2, BRASS)
+    elif kind == "bags":
+        for k_, sy in enumerate((YB + 8, YB + 17)):
+            fr.box(4, Wd - 4, sy, sy + 1, Dp - 6, Dp - 2, WOOD_LIGHT)
+            fr.box(4, Wd - 4, sy - 1, sy, Dp - 3, Dp - 2, STREET_LMP)              # under-shelf light strip
+            for i, u in enumerate(range(6, Wd - 8, 7)):
+                c_ = SOFT[(i + k_ * 3) % len(SOFT)]
+                fr.box(u, u + 4, sy + 1, sy + 5, Dp - 5, Dp - 3, c_)
+                fr.box(u + 1, u + 3, sy + 5, sy + 6, Dp - 4, Dp - 3, BRASS)          # handle
+        fr.box(cu - 6, cu + 6, YB, YB + 7, cv - 3, cv + 3, WOOD_DARK)
+        for i, u in enumerate((cu - 4, cu + 1)):
+            fr.box(u, u + 4, YB + 7, YB + 11, cv - 1, cv + 1, SOFT[i + 3])
+            fr.box(u + 1, u + 3, YB + 11, YB + 12, cv - 1, cv, BRASS)
+        fr.box(4, 9, YB, YB + 4, cv - 3, cv + 3, BLANKET_B)                        # velvet ottoman
+    elif kind == "watches":
+        for sy in (YB + 9, YB + 15, YB + 21):
+            for u in range(5, Wd - 6, 5):
+                fr.box(u, u + 3, sy, sy + 3, Dp - 3, Dp - 2, BRASS)
+                fr.box(u + 1, u + 2, sy + 1, sy + 2, Dp - 3, Dp - 2, CERAMIC)
+                fr.box(u + 1, u + 2, sy - 1, sy, Dp - 3, Dp - 2, TV_BODY)
+                fr.box(u + 1, u + 2, sy + 3, sy + 4, Dp - 3, Dp - 2, TV_BODY)
+        glass_counter(fr, cu - 10, cu + 10, cv - 3, cv + 3, kind="watch")
+    elif kind == "perfume":
+        fr.box(4, Wd - 4, YB + 4, YB + 24, Dp - 3, Dp - 2, MIRROR)
+        for sy in (YB + 8, YB + 14, YB + 20):
+            fr.box(4, Wd - 4, sy, sy + 1, Dp - 6, Dp - 3, BRASS)
+            for i, u in enumerate(range(5, Wd - 5, 3)):
+                fr.box(u, u + 1, sy + 1, sy + 3, Dp - 5, Dp - 4, (GLASS_DOOR, MEMORY, POOL_LAMP, COVE_LAMP)[(i + sy) % 4])
+                fr.box(u, u + 1, sy + 3, sy + 4, Dp - 5, Dp - 4, BRASS)
+        fr.box(cu - 5, cu + 5, YB, YB + 8, cv - 5, cv + 5, MARBLE_W)
+        for i, (a_, b_) in enumerate(((-3, -3), (1, -2), (-2, 1), (2, 2))):
+            fr.box(cu + a_, cu + a_ + 2, YB + 8, YB + 12, cv + b_, cv + b_ + 2, (MEMORY, COVE_LAMP, GLASS_DOOR, POOL_LAMP)[i])
+            fr.box(cu + a_, cu + a_ + 1, YB + 12, YB + 13, cv + b_, cv + b_ + 1, BRASS)
+    elif kind == "fashion":
+        for (rv, n0) in ((Dp - 7, 0), (cv, 4)):
+            u0, u1 = 6, Wd - 6
+            fr.box(u0, u0 + 1, YB, YB + 18, rv, rv + 1, STEEL); fr.box(u1 - 1, u1, YB, YB + 18, rv, rv + 1, STEEL)
+            fr.box(u0, u1, YB + 17, YB + 18, rv, rv + 1, CHROME)
+            for i, u in enumerate(range(u0 + 2, u1 - 2, 2)):
+                fr.box(u, u + 1, YB + 6 + (i % 3), YB + 17, rv - 2, rv + 3, SOFT[(i // 2 + n0) % len(SOFT)])
+        fr.box(2, 3, YB, YB + 22, 8, 16, BRASS); fr.box(2, 3, YB + 1, YB + 21, 9, 15, MIRROR)
+    elif kind == "shoes":
+        for sy in (YB + 6, YB + 12, YB + 18):
+            fr.box(3, Wd - 3, sy, sy + 1, Dp - 6, Dp - 2, WOOD_LIGHT)
+            for i, u in enumerate(range(5, Wd - 6, 6)):
+                c_ = SOFT[(i + sy) % len(SOFT)]
+                for du in (0, 2):
+                    fr.box(u + du, u + du + 1, sy + 1, sy + 2, Dp - 5, Dp - 2, c_)
+                    fr.box(u + du, u + du + 1, sy + 2, sy + 4, Dp - 3, Dp - 2, c_)
+        fr.box(cu - 7, cu + 7, YB, YB + 5, cv - 2, cv + 2, UPHOL)
+    elif kind == "florist":
+        for i, u in enumerate(range(5, Wd - 8, 8)):
+            for tier, (tv, th) in enumerate(((Dp - 8, 0), (Dp - 5, 4))):
+                fr.box(u, u + 5, YB, YB + th + 4, tv, tv + 3, WOOD_MED)
+                fr.box(u + 1, u + 4, YB + th + 4, YB + th + 7, tv, tv + 3, STEEL)
+                for j, (a_, b_) in enumerate(((1, 0), (3, 1), (2, 2))):
+                    hgt = 4 + (i + j + tier) % 4
+                    fr.box(u + a_, u + a_ + 1, YB + th + 7, YB + th + 7 + hgt, tv + b_, tv + b_ + 1, LEAF)
+                    hc = (DREAM_PINK, BLANKET_B, WALL_ORANGE, DREAM_LILAC, CEIL, DREAM_SKY)[(i * 3 + j + tier) % 6]
+                    fr.box(u + a_, u + a_ + 1, YB + th + 7 + hgt, YB + th + 9 + hgt, tv + b_, tv + b_ + 1, hc)
+        fr.box(cu - 6, cu + 6, YB, YB + 8, cv - 3, cv + 3, WOOD_MED)
+        for j in range(5):
+            fr.box(cu - 5 + j * 2, cu - 4 + j * 2, YB + 8, YB + 12, cv - 1, cv, LEAF)
+            fr.box(cu - 5 + j * 2, cu - 4 + j * 2, YB + 12, YB + 14, cv - 1, cv, (DREAM_PINK, WALL_ORANGE, CEIL, BLANKET_B, DREAM_LILAC)[j])
+    elif kind == "gallery":
+        for u in range(5, Wd - 18, 20):
+            painting(fr, u, YB + 8, Dp - 3, 14, 12)
+        fr.box(cu - 6, cu + 6, YB + 3, YB + 4, cv - 2, cv + 2, WOOD_LIGHT)
+        for u in (cu - 6, cu + 5):
+            fr.box(u, u + 1, YB, YB + 3, cv - 2, cv + 2, BRASS)
+    elif kind == "cafe":
+        fr.box(4, Wd - 14, YB, YB + 10, Dp - 10, Dp - 6, WOOD_DARK)
+        fr.box(4, Wd - 14, YB + 10, YB + 11, Dp - 10, Dp - 6, MARBLE_W)
+        fr.box(6, 11, YB + 11, YB + 16, Dp - 9, Dp - 6, CHROME)                     # espresso machine
+        fr.box(7, 10, YB + 12, YB + 13, Dp - 10, Dp - 9, BRASS)
+        fr.box(14, 26, YB + 11, YB + 16, Dp - 10, Dp - 6, GLASS_DOOR)               # pastry case
+        fr.box(15, 25, YB + 11, YB + 15, Dp - 9, Dp - 7, 0)
+        for i, u in enumerate(range(15, 25, 2)):
+            fr.box(u, u + 1, YB + 11, YB + 12, Dp - 8, Dp - 7, (DREAM_PINK, WALL_ORANGE, CEIL, ART2, DREAM_LILAC)[i % 5])
+        fr.box(4, Wd - 4, YB + 18, YB + 19, Dp - 4, Dp - 2, WOOD_LIGHT)
+        for u in range(6, Wd - 6, 3):
+            fr.box(u, u + 1, YB + 19, YB + 21, Dp - 3, Dp - 2, CERAMIC)
+        fr.box(Wd - 12, Wd - 4, YB + 12, YB + 20, Dp - 3, Dp - 2, TV_BODY)          # menu board
+        for (tu, tv) in ((10, 12), (Wd // 2 + 6, 12), (Wd // 2 + 6, Dp // 2 + 2)):
+            round_table(fr, tu, tv, MARBLE_W, r=3, h=8, cloth=False)
+            chair(fr, tu - 9, tv - 2, (1, 0), BLANKET_B); chair(fr, tu + 5, tv - 2, (-1, 0), BLANKET_B)
+    return fr, Wd, Dp
+
+# ---- west row (fronts face east onto the promenade)
+shop(PX1 + 2, PRM0, IZ0, 160, "E", "jewelry", "ORO")
+shop(PX1 + 2, PRM0, 160, 232, "E", "bags", "VELOUR")
+shop(PX1 + 2, PRM0, 266, 332, "E", "watches", "NOCTURNE")
+shop(PX1 + 2, PRM0, 332, PZ1, "E", "perfume", "AURELIA")
+shop(PX1 + 2, PRM0, 428, IZ1, "E", "cafe", "CAFE")
+# ---- east row (fronts face west)
+shop(PRM1, IX1, 176, 246, "W", "fashion", "MAISON")
+shop(PRM1, IX1, 246, 316, "W", "shoes", "SOLE")
+shop(PRM1, IX1, 316, 386, "W", "gallery", "LUNE")
+shop(PRM1, IX1, 386, 456, "W", "florist", "FLEUR")
+
+# ---- restaurant LUMIERE (north arcade, front faces south onto the arcade corridor)
+rfr, RW, RD = shop(132, PX1 + 2, 428, IZ1, "S", "restaurant", "LUMIERE", sign=CEIL_LAMP)
+rfr.box(2, RW - 2, YB, YB + 10, RD - 3, RD - 2, WAINS)
+rfr.box(2, RW - 2, YB + 10, YB + 11, RD - 3, RD - 2, CHAIR_RAIL)
+rfr.box(8, RW - 30, YB, YB + 11, RD - 16, RD - 11, WOOD_DARK)                     # bar
+rfr.box(8, RW - 30, YB + 11, YB + 12, RD - 17, RD - 11, MARBLE_B)
+for u in range(10, RW - 32, 6):                                                    # bar stools
+    rfr.box(u, u + 1, YB, YB + 7, RD - 20, RD - 19, BRASS)
+    rfr.box(u - 1, u + 2, YB + 7, YB + 8, RD - 21, RD - 18, BLANKET_B)
+rfr.box(8, RW - 30, YB + 14, YB + 26, RD - 3, RD - 2, MIRROR)
+for sy in (YB + 14, YB + 20):
+    rfr.box(8, RW - 30, sy, sy + 1, RD - 6, RD - 3, WOOD_DARK)
+    for i, u in enumerate(range(9, RW - 31, 2)):
+        rfr.box(u, u + 1, sy + 1, sy + 4, RD - 5, RD - 4, (GLASS_EXT, LEAF3, GLASS_EXT, COR_CARP)[i % 4])
+for (tu, tv) in ((18, 14), (40, 14), (62, 14), (84, 14), (29, 30), (51, 30), (73, 30)):
+    if tv + 6 > RD - 22 or tu + 9 > RW - 2:
+        continue
+    round_table(rfr, tu, tv, SHEET, r=4, h=7)
+    rfr.box(tu, tu + 1, YB + 8, YB + 10, tv, tv + 1, STREET_LMP)                   # candle
+    chair(rfr, tu - 10, tv - 2, (1, 0)); chair(rfr, tu + 6, tv - 2, (-1, 0))
+for (cu_, cv_) in ((RW // 3, RD // 2 - 6), (2 * RW // 3, RD // 2 - 6)):
+    cx_, cz_ = rfr.pt(cu_, cv_)
+    chandelier(cx_, cz_, (1.0, 0.76, 0.45), 2.0)
+
+# ---- promenade: chandeliers, gold ceiling trim, fountain, benches, planters
+for z in range(IZ0 + 2, IZ1 - 2, 24):
+    box(PRM0, PRM1, YC - 1, YC, z, z + 1, BRASS)
+box(PRM0, PRM0 + 1, YC - 1, YC, IZ0, IZ1, BRASS); box(PRM1 - 1, PRM1, YC - 1, YC, IZ0, IZ1, BRASS)
+for z in (IZ0 + 50, IZ0 + 120, 244, 330, 400, 466):          # (clear of the shape seams at z 224 / 360)
+    chandelier((PRM0 + PRM1) // 2, z)
+FX0, FX1, FZ0, FZ1 = PRM0 + 8, PRM1 - 8, 270, 302
+box(FX0, FX1, YB, YB + 4, FZ0, FZ1, MARBLE_W)
+box(FX0 + 2, FX1 - 2, YB, YB + 4, FZ0 + 2, FZ1 - 2, 0)
+paint(FX0 + 2, FX1 - 2, YB - 1, YB, FZ0 + 2, FZ1 - 2, POOL_TILE)
+fcx, fcz = (FX0 + FX1) // 2, (FZ0 + FZ1) // 2
+box(fcx - 1, fcx + 1, YB, YB + 11, fcz - 1, fcz + 1, MARBLE_W)
+box(fcx - 3, fcx + 3, YB + 11, YB + 12, fcz - 3, fcz + 3, BRASS)
+box(fcx - 2, fcx + 2, YB + 12, YB + 13, fcz - 2, fcz + 2, BRASS)
+box(fcx - 1, fcx + 1, YB + 13, YB + 15, fcz - 1, fcz + 1, MARBLE_W)
+POOLS.append((YB + 3, 3, [(FX0 + 2, FZ0 + 2), (FX1 - 2, FZ0 + 2), (FX1 - 2, FZ1 - 2), (FX0 + 2, FZ1 - 2)]))
+pfr_w = Frame(PRM0, IZ0, 0, 1, 1, 0)       # u along +z, v into the promenade from its west edge
+pfr_e = Frame(PRM1 - 1, IZ0, 0, 1, -1, 0)  # from its east edge
+for z in (140, 380, 476):
+    bench(pfr_w, z - IZ0, z - IZ0 + 12, 2); bench(pfr_e, z - IZ0, z - IZ0 + 12, 2)
+planter(PRM0 + 6, 318, 301); planter(PRM1 - 7, 318, 302)
+planter(PRM0 + 6, 438, 303); planter(PRM1 - 7, 438, 304); planter(PRM1 - 7, 254, 305)
+# SE elevator hall, NW elevator lobby, arcade corridor
+pendant(335, 130); pendant(374, 165); planter(374, 98, 306)
+pendant(96, 452); pendant(96, 485); planter(118, 488, 307)
+for x in (110, 150, 210, 262):
+    pendant(x, 414)
+bench(Frame(IX0, PZ1 + 2, 1, 0, 0, 1), 26, 38, 1)
+# lounge at the north end of the east row: two sofas, a coffee table
+for (z0_, back) in ((462, 462), (485, 488)):
+    box(358, 374, YB, YB + 4, z0_, z0_ + 5, UPHOL)
+    box(358, 374, YB + 4, YB + 10, back, back + 2, UPHOL)
+    box(358, 360, YB + 4, YB + 7, z0_, z0_ + 5, UPHOL); box(372, 374, YB + 4, YB + 7, z0_, z0_ + 5, UPHOL)
+box(361, 371, YB, YB + 4, 472, 480, WOOD_DARK); box(361, 371, YB + 4, YB + 5, 472, 480, MARBLE_B)
+pendant(366, 476)
+
+# ---- automatic sliding glass doors between the car park and the arcade
+def autodoor_style(a, b, c, A, B, C):
+    if b in (0, 1, B - 1) or (A > 1 and a in (0, A - 1)) or (C > 1 and c in (0, C - 1)):
+        return FRAME
+    return GLASS_DOOR
+AUTODOORS = []
+def auto_door(grp, along_x, wall0, a0, a1):
+    """double sliding door in a 2-thick wall at wall0..wall0+2; leaves run in the arcade-side layer
+    and slide into pockets of that layer (main.lua opens them when someone walks up)."""
+    mid = (a0 + a1) // 2
+    lay = wall0 + 1
+    if along_x:      # wall runs along x (normal z)
+        box(a0, a1, YB, YB + 24, wall0, wall0 + 2, 0)
+        box(a0 - (mid - a0), a0, YB, YB + 24, lay, lay + 1, 0)
+        box(a1, a1 + (a1 - mid), YB, YB + 24, lay, lay + 1, 0)
+        add_door(WORLD, a0, mid, YB, YB + 24, lay, lay + 1, autodoor_style, slide=(-(mid - a0), 0), tag=f"autodoor grp={grp}")
+        add_door(WORLD, mid, a1, YB, YB + 24, lay, lay + 1, autodoor_style, slide=(a1 - mid, 0), tag=f"autodoor grp={grp}")
+        box(mid - 2, mid + 2, YB + 26, YB + 27, wall0 - 1, wall0, DARK_METAL)     # sensors
+        box(mid - 2, mid + 2, YB + 26, YB + 27, wall0 + 2, wall0 + 3, DARK_METAL)
+    else:            # wall runs along z (normal x)
+        box(wall0, wall0 + 2, YB, YB + 24, a0, a1, 0)
+        box(lay, lay + 1, YB, YB + 24, a0 - (mid - a0), a0, 0)
+        box(lay, lay + 1, YB, YB + 24, a1, a1 + (a1 - mid), 0)
+        add_door(WORLD, lay, lay + 1, YB, YB + 24, a0, mid, autodoor_style, slide=(0, -(mid - a0)), tag=f"autodoor grp={grp}")
+        add_door(WORLD, lay, lay + 1, YB, YB + 24, mid, a1, autodoor_style, slide=(0, a1 - mid), tag=f"autodoor grp={grp}")
+        box(wall0 + 2, wall0 + 3, YB + 26, YB + 27, mid - 2, mid + 2, DARK_METAL)
+    AUTODOORS.append((grp, along_x, wall0, a0, a1))
+auto_door(1, False, PX1, 240, 256)
+box(PX1 - 2, PX1, YB, YB + 24, 240, 256, 0)                       # through the car-park facing too
+box(PX1 - 3, PX1 - 2, YB + 26, YB + 27, 246, 250, DARK_METAL)     # sensor on the car-park side
+auto_door(2, True, PZ1, 176, 192)
+# "MALL" above both doors on the car-park side
+ftext(Frame(PX1 - 2, 240, 0, 1, 1, 0), "MALL", 8, YC - 1, -1, CEIL_LAMP)
+ftext(Frame(192 - 1, PZ1, -1, 0, 0, 1), "MALL", 8, YC - 1, -1, CEIL_LAMP)
+
+# ---- car park: bays, aisle line, columns, tube lights, pipes, signs, parked cars
+AISLE0, AISLE1 = IX0 + 46, PX1 - 46
+for z in range(IZ0, PZ1, 26):
+    if not (TZ0 - 4 <= z <= TZ1 + 4):
+        box(IX0, AISLE0, YB - 1, YB, z, z + 1, PAINT_LINE)
+    box(AISLE1, PX1, YB - 1, YB, z, z + 1, PAINT_LINE)
+for z in range(IZ0, PZ1, 12):
+    box((AISLE0 + AISLE1) // 2 - 1, (AISLE0 + AISLE1) // 2 + 1, YB - 1, YB, z, z + 6, YELLOW_PAINT)
+box(AISLE0, AISLE0 + 1, YB - 1, YB, IZ0, PZ1, YELLOW_PAINT); box(AISLE1 - 1, AISLE1, YB - 1, YB, IZ0, PZ1, YELLOW_PAINT)
+for cxc in (AISLE0 - 3, AISLE1 + 3):
+    for czc in (150, 220, 340):
+        box(cxc - 3, cxc + 3, YB, YC, czc - 3, czc + 3, SLAB)
+        for yy in range(YB, YB + 8, 2):
+            paint(cxc - 3, cxc + 3, yy, yy + 1, czc - 3, czc + 3, YELLOW_PAINT)
+            paint(cxc - 3, cxc + 3, yy + 1, yy + 2, czc - 3, czc + 3, TIRE)
+        face = Frame(cxc + 2, czc + 2, 0, -1, -1, 0) if cxc < (AISLE0 + AISLE1) // 2 else Frame(cxc - 3, czc - 3, 0, 1, 1, 0)
+        ftext(face, "B1", 2, YB + 20, -1, YELLOW_PAINT)
+def tube(x, z):
+    box(x, x + 1, YC - 1, YC, z + 1, z + 2, STEEL); box(x, x + 1, YC - 1, YC, z + 8, z + 9, STEEL)
+    box(x, x + 1, YC - 2, YC - 1, z, z + 10, CEIL_LAMP)
+    light(x + 0.5, YC - 4, z + 5, (0.88, 0.95, 1.0), 1.8, 0.3)
+for z in (100, 170, 240, 320, 375):
+    tube((AISLE0 + AISLE1) // 2, z)
+for z in (130, 210, 350):
+    tube(IX0 + 23, z); tube(PX1 - 23, z)
+box(IX0 + 10, IX0 + 12, YC - 2, YC, IZ0, PZ1, STEEL); box(PX1 - 12, PX1 - 10, YC - 2, YC, IZ0, PZ1, STEEL)
+ftext(Frame(IX0 - 1, TZ1 - 1, 0, -1, -1, 0), "EXIT", (TZ1 - TZ0) // 2, YC - 1, -1, EXIT_SIGN)
+for (pn, px_, pz_) in (("car_a", IX0 + 8, 100), ("car_c", IX0 + 8, 180), ("car_b", AISLE1 + 14, 300)):
+    PROPS.append((pn, px_, YB, pz_, 0))
+# music for the arcade (the player's song, looped from the nearest speaker)
+for (sx_, sz_) in ((310, 140), (310, 260), (310, 380), (310, 470), (185, 462), (180, 414), (372, 130)):
+    SOUND_SPOTS.append(("mall", sx_, YB + 15, sz_))
 
 # ============================================================================
 # 9. Texture pass: per-voxel / per-panel colour variation
@@ -2299,10 +2768,11 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.18\n"
+        f.write("name = Liminal Atrium v3.19\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
-                "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot. Sandbox - break everything. "
+                "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
+                "car park and a luxury shopping arcade. Sandbox - break everything. "
                 "Dreamcore mission SWEET DREAMS: ring the front-desk bell, follow the pastel dreamers to six lost memories and wake up.\n"
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
