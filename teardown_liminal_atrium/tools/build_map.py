@@ -1925,6 +1925,8 @@ BFONT = {
     " ": ["..", "..", "..", "..", ".."],
 }
 
+SIGN_CELLS = []   # (letter voxel, the cell right in front of it): checked by qa_full.py
+
 def ftext(fr, s, u_mid, y_top, v, col):
     """5-row letters drawn in a frame plane at layer v; u runs to the viewer's right."""
     widths = [len(BFONT[ch][0]) for ch in s]
@@ -1934,6 +1936,8 @@ def ftext(fr, s, u_mid, y_top, v, col):
             for c_, cc in enumerate(row):
                 if cc == "#":
                     fr.box(u + c_, u + c_ + 1, y_top - r_ - 1, y_top - r_, v, v + 1, col)
+                    x_, z_ = fr.pt(u + c_, v); fx_, fz_ = fr.pt(u + c_, v - 1)
+                    SIGN_CELLS.append(((x_, y_top - r_ - 1, z_), (fx_, y_top - r_ - 1, fz_), s))
         u += w_ + 1
 
 def ceiling_panel(fr, u, v, rgb, scale=1.8, half=4):
@@ -2318,7 +2322,7 @@ for (xa, xb, za, zb) in ((IX0 - 1, IX0, IZ0, PZ1), (IX0, PX1 - 2, IZ0 - 1, IZ0),
     paint(xa, xb, YB, YB + 10, za, zb, WALL_GREY, [SLAB])
     paint(xa, xb, YB + 10, YB + 11, za, zb, YELLOW_PAINT, [SLAB])
 # downstand beams across the ceiling (in line with the columns), sprinkler main, cable tray, supply duct
-for bz in (120, 150, 218, 280, 340, 388):
+for bz in (120, 150, 218, 300, 340, 388):        # (z 300: clear of the EXIT sign over the tunnel mouth)
     xs_ = [x for x in range(IX0, PX1 - 2) if garage_ok(x, x + 1, bz, bz + 4, 1)]
     for x in xs_:
         box(x, x + 1, YC - 4, YC, bz, bz + 4, SLAB)
@@ -2371,9 +2375,9 @@ for z in range(TZ0 + 2, TZ1 - 2):
 box(IX0 + 2, IX0 + 7, YB, YB + 14, TZ1 + 6, TZ1 + 10, DARK_METAL)
 box(IX0 + 7, IX0 + 8, YB + 9, YB + 12, TZ1 + 7, TZ1 + 9, TV_SCREEN)
 box(IX0 + 7, IX0 + 8, YB + 6, YB + 7, TZ1 + 7, TZ1 + 9, YELLOW_PAINT)
-box(IX0, IX0 + 2, YB + 6, YB + 18, 200, 208, RED)
-box(IX0 + 2, IX0 + 3, YB + 7, YB + 17, 201, 207, GLASS_DOOR)
-box(IX0 + 1, IX0 + 2, YB + 9, YB + 15, 202, 206, CEIL)
+box(IX0, IX0 + 2, YB + 3, YB + 15, 200, 208, RED)                  # (below the bay number)
+box(IX0 + 2, IX0 + 3, YB + 4, YB + 14, 201, 207, GLASS_DOOR)
+box(IX0 + 1, IX0 + 2, YB + 6, YB + 12, 202, 206, CEIL)
 box(IX0 + 30, IX0 + 40, YB + 6, YB + 22, IZ0, IZ0 + 2, DARK_METAL)
 box(IX0 + 33, IX0 + 37, YB + 16, YB + 19, IZ0 + 2, IZ0 + 3, YELLOW_PAINT)
 box(PX1 - 12, PX1 - 8, YB, YB + 9, PZ1 - 6, PZ1 - 2, DUMPSTER)
@@ -3065,7 +3069,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.24\n"
+        f.write("name = Liminal Atrium v3.25\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

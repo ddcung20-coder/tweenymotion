@@ -400,6 +400,11 @@ for i, (poly, cells) in enumerate(ns["PUDDLES"]):
     if not all(FULL[x, YB - 1, z] == 0 and FULL[x, YB - 2, z] > 0 for (x, z) in cells):
         pd_bad.append(i)
 report(f"{len(ns['PUDDLES'])} car-park puddles: real water in a 10 cm dip in the floor", len(ns["PUDDLES"]) >= 6 and not pd_bad, str(pd_bad))
+hidden = collections.Counter()
+for (c_, f_, txt) in ns["SIGN_CELLS"]:
+    if FULL[c_] == 0 or FULL[f_] != 0:
+        hidden[txt] += 1
+report(f"all {len(set(t for _, _, t in ns['SIGN_CELLS']))} wall signs readable (every letter there, nothing in front of it)", not hidden, str(dict(hidden)))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
