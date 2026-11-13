@@ -267,7 +267,8 @@ ELEVATORS = []     # dynamic cars driven by MOD/elevator.lua
 CURTAINS = []      # curtain panels (static bodies slid open / shut by main.lua)
 KEYCARDS = []      # mission key cards (one per floor)
 MANNEQUINS = []    # mission mannequins (static bodies moved by main.lua along a corridor)
-MQ_DECOR = []      # decorative mannequins stamped into the world after the rooms
+MQ_DECOR = []      # decorative dreamer spots (rooms), placed after the rooms
+DECOR_MQ = []      # decorative dreamers: static bodies, visible only during the mission
 MRNG = random.Random(4242)   # separate RNG: the new features never shift the rest of the map
 
 def mannequin_model():
@@ -1127,7 +1128,8 @@ build_rooms()
 build_corridors()
 
 def stamp_mannequin(fr, u0, y, v0):
-    """mannequin standing at frame (u0.., v0..), facing -v (towards the window / lower v)."""
+    """decorative dreamer standing at frame (u0.., v0..), facing -v. A separate static body
+    (tag "dreamdecor") that main.lua only shows while the mission runs."""
     arr, gmin = frame_shape(fr, u0, u0 + 5, y, y + 18, v0, v0 + 3, lambda a_, b_, c_, A, B, C: MQ_MODEL[a_, b_, c_])
     gx, gy, gz = gmin
     reg = G[gx:gx + arr.shape[0], gy:gy + arr.shape[1], gz:gz + arr.shape[2]]
@@ -1136,7 +1138,7 @@ def stamp_mannequin(fr, u0, y, v0):
     feet = arr[:, 0, :] > 0
     if not (G[gx:gx + arr.shape[0], gy - 1, gz:gz + arr.shape[2]][feet] > 0).all():
         return False
-    reg[arr > 0] = arr[arr > 0]
+    DECOR_MQ.append(dict(arr=arr, gmin=gmin))
     return True
 
 MQ_PLACED = sum(stamp_mannequin(fr_, u_, y_, v_) for (fr_, u_, y_, v_) in MQ_DECOR)
@@ -2197,6 +2199,10 @@ def export():
         xml.append(f'\t\t<body name="keycard{i}" tags="keycard floor={kc["floor"] + 1}" pos="{f3(o)}">'
                    f'<vox pos="0 0 0" file="MOD/vox/{shape_file("keycard", kc["arr"])}.vox" object="shape">'
                    f'<light pos="0 0.15 -0.05" type="sphere" color="1 0.62 0.9" scale="0.8" size="0.05"/></vox></body>\n')
+    for i, m in enumerate(DECOR_MQ):
+        o = body_origin(m["arr"], m["gmin"])
+        xml.append(f'\t\t<body name="dreamdecor{i}" tags="dreamdecor" pos="{f3(o)}">'
+                   f'<vox pos="0 0 0" file="MOD/vox/{shape_file("mannequin", m["arr"])}.vox" object="shape"/></body>\n')
     for i, m in enumerate(MANNEQUINS):
         o = body_origin(m["arr"], m["gmin"])
         (ax_, az_), (bx_, bz_) = m["seg"]
@@ -2293,7 +2299,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.17\n"
+        f.write("name = Liminal Atrium v3.18\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot. Sandbox - break everything. "
@@ -2301,7 +2307,7 @@ def export():
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
                  doors=len(DOORS), door_files=len(door_files), curtains=len(CURTAINS), keycards=len(KEYCARDS),
-                 mannequins=len(MANNEQUINS), lamp_shapes=len(lamps), lamp_files=len(lamp_files), lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
+                 mannequins=len(MANNEQUINS), decor_dreamers=len(DECOR_MQ), lamp_shapes=len(lamps), lamp_files=len(lamp_files), lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
                  rooms=len(room_log), lit=sum(1 for r in room_log if r[3].startswith("lit")),
                  tv=sum(1 for r in room_log if r[3] == "tv"))
     print(json.dumps(stats))
@@ -2317,7 +2323,7 @@ if __name__ == "__main__":
             reg = Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz]
             reg[arr > 0] = arr[arr > 0]
         stamps = [(c_["arr"], c_["gmin"]) for c_ in CURTAINS] + [(k_["arr"], k_["gmin"]) for k_ in KEYCARDS] + \
-                 [(m_["arr"], m_["gmin"]) for m_ in MANNEQUINS] + [(BELL["arr"], BELL["gmin"])] + [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
+                 [(m_["arr"], m_["gmin"]) for m_ in MANNEQUINS + DECOR_MQ] + [(BELL["arr"], BELL["gmin"])] + [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
             + [(c_[0], c_[1]) for c_ in CALLS]
         for arr, (gx, gy, gz) in stamps:
             sx, sy, sz = arr.shape

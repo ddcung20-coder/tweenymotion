@@ -576,7 +576,8 @@ local M = { state = "idle", keys = 0, t = 0, msg = nil, msgT = 0, dream = 0, fou
 LIMINAL_MISSION = M          -- (read by the offline tests)
 local bell = { shapes = {} }
 local cards = {}
-local mqs = {}
+local mqs = {}               -- guiding dreamers (corridors)
+local decor = {}             -- standing dreamers (rooms, lobby, pool)
 local startT = nil
 local HIDE = Vec(0, -500, 0)
 local GLIDE = 0.7            -- m/s, a slow sleepwalk
@@ -643,16 +644,47 @@ local function cardsShow()
 	end
 end
 
-local function mqReset()
-	for i = 1, #mqs do
-		local m = mqs[i]
-		if not m.dead and IsHandleValid(m.body) then
-			SetBodyTransform(m.body, m.t0)
-			m.pos = VecCopy(m.t0.pos)
-			m.rotY = 0
-		end
-		m.spoke = false
+local function damaged(m)
+	if not IsHandleValid(m.body) then return true end
+	local count = 0
+	for j = 1, #m.shapes do
+		if not IsHandleValid(m.shapes[j]) or IsShapeBroken(m.shapes[j]) then return true end
+		count = count + GetShapeVoxelCount(m.shapes[j])
 	end
+	return count < m.voxels * 0.92
+end
+
+local function eachDreamer(fn)
+	for i = 1, #mqs do fn(mqs[i]) end
+	for i = 1, #decor do fn(decor[i]) end
+end
+
+-- dreamers exist only while dreaming: outside the mission they are parked far below the map
+local function dreamersHide()
+	eachDreamer(function(m)
+		m.hidden = true
+		if IsHandleValid(m.body) then
+			SetBodyDynamic(m.body, false)
+			SetBodyVelocity(m.body, Vec(0, 0, 0))
+			SetBodyAngularVelocity(m.body, Vec(0, 0, 0))
+			SetBodyTransform(m.body, Transform(VecAdd(m.t0.pos, HIDE), m.t0.rot))
+		end
+	end)
+end
+
+local function dreamersShow()
+	eachDreamer(function(m)
+		m.spoke = false
+		m.rotY = 0
+		m.pos = VecCopy(m.t0.pos)
+		if damaged(m) then              -- one that was shot to pieces does not come back
+			m.dead = true
+			return
+		end
+		m.dead = false
+		m.hidden = false
+		SetBodyTransform(m.body, m.t0)
+	end)
 end
 
 local function missionInit()
@@ -682,18 +714,15 @@ local function missionInit()
 			a = Vec(s[1] or t0.pos[1], t0.pos[2], s[2] or t0.pos[3]), b = Vec(s[3] or t0.pos[1], t0.pos[2], s[4] or t0.pos[3]),
 			h0 = heading(tagNum(b, "fx", 0), tagNum(b, "fz", -1)), line = DREAMER_LINES[(i - 1) % #DREAMER_LINES + 1] }
 	end
-end
-
-local function mqBroken(m)
-	if m.dead then return true end
-	if not IsHandleValid(m.body) then return true end
-	local count = 0
-	for j = 1, #m.shapes do
-		if not IsHandleValid(m.shapes[j]) then return true end
-		if IsShapeBroken(m.shapes[j]) then return true end
-		count = count + GetShapeVoxelCount(m.shapes[j])
+	local db = FindBodies("dreamdecor", true)
+	for i = 1, #db do
+		local shapes = GetBodyShapes(db[i])
+		local count = 0
+		for j = 1, #shapes do count = count + GetShapeVoxelCount(shapes[j]) end
+		local t0 = GetBodyTransform(db[i])
+		decor[#decor + 1] = { body = db[i], shapes = shapes, voxels = count, t0 = t0, pos = VecCopy(t0.pos), rotY = 0, still = true }
 	end
-	return count < m.voxels * 0.92
+	dreamersHide()
 end
 
 local function closestOnSeg(a, b, p)
@@ -719,9 +748,22 @@ local function missionStart()
 	M.state = "active"
 	M.keys = 0
 	M.found = {}
+	M.woke = false
 	cardsShow()
-	mqReset()
+	dreamersShow()
 	say("SWEET DREAMS\nYou left six memories in this hotel, one on every floor.\nThe dreamers in the hallways will show you the way.\nBring them back and ring the bell.", 9)
+end
+
+-- stop the mission at any time (M key or the pause menu): everything quietly goes away
+local function missionStop()
+	if M.state ~= "active" then return end
+	M.state = "idle"
+	M.keys = 0
+	M.found = {}
+	cardsHide()
+	dreamersHide()
+	PlaySound(snd.hum, GetCameraTransform().pos, 0.5)
+	say("You woke up early.\nRing the bell to dream again.", 5)
 end
 
 local function missionInteract(s)
@@ -733,12 +775,13 @@ local function missionInteract(s)
 			elseif M.state == "active" then
 				if M.keys >= #cards then
 					M.state = "won"
+					M.woke = false
 					M.t = 0
 					PlaySound(snd.checkout, GetCameraTransform().pos, 0.9)
 					say("GOOD MORNING\nYou can wake up now. Sweet dreams.", 10)
 				else
 					local n = #cards - M.keys
-					say(n .. " memor" .. (n == 1 and "y is" or "ies are") .. " still waiting for you.\nThe dreamers will show you the way.", 4)
+					say(n .. " memor" .. (n == 1 and "y is" or "ies are") .. " still waiting for you.\nThe dreamers will show you the way.  (M: wake up early)", 4)
 				end
 			end
 			return true
@@ -808,13 +851,15 @@ end
 
 local function missionTick(dt)
 	if M.msgT > 0 then M.msgT = M.msgT - dt end
-	-- a shot-up dreamer just falls over (sandbox), mission or not
-	for i = 1, #mqs do
-		local m = mqs[i]
-		if not m.dead and mqBroken(m) then
+	-- a shot-up dreamer just falls over (sandbox)
+	eachDreamer(function(m)
+		if not m.dead and not m.hidden and damaged(m) then
 			m.dead = true
 			if IsHandleValid(m.body) and not IsBodyDynamic(m.body) then SetBodyDynamic(m.body, true) end
 		end
+	end)
+	if M.state == "active" and (InputPressed("m") or (PauseMenuButton and PauseMenuButton("Stop Sweet Dreams"))) then
+		missionStop()
 	end
 	local want = (M.state == "active") and 1 or 0
 	if M.dream ~= want then
@@ -826,6 +871,10 @@ local function missionTick(dt)
 		dreamersTick(dt)
 	elseif M.state == "won" then
 		M.t = M.t + dt
+		if M.t > 1.5 and not M.woke then       -- they fade away with the morning light
+			M.woke = true
+			dreamersHide()
+		end
 	end
 end
 
@@ -841,7 +890,7 @@ local function drawMission()
 			UiAlign("center top")
 			UiTranslate(UiCenter(), 18)
 			UiColor(1, 0.92, 0.97, 0.35)
-			UiRect(420, 64)
+			UiRect(420, 86)
 			UiTranslate(0, 8)
 			UiFont("bold.ttf", 24)
 			UiColor(0.95, 0.5, 0.78, 1)
@@ -855,6 +904,10 @@ local function drawMission()
 			UiColor(0.55, 0.5, 0.85, 1)
 			if #left > 0 then
 				UiText("floors: " .. table.concat(left, "  ") .. "   -  follow the dreamers")
+				UiTranslate(0, 22)
+				UiFont("regular.ttf", 15)
+				UiColor(0.55, 0.5, 0.85, 0.75)
+				UiText("M: wake up (stop)")
 			else
 				UiText("ring the bell at the front desk")
 			end

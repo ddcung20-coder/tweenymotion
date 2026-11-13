@@ -333,6 +333,15 @@ for i, m in enumerate(ns["MANNEQUINS"]):
     if hit:
         mq_bad.append((i, m["floor"], hit))
 report(f"all {len(ns['MANNEQUINS'])} dreamers have a clear corridor path", not mq_bad, str(mq_bad[:6]))
+dec_bad = []
+door_xz = {(x, z) for (x, _, z) in door_occ}
+for i, m in enumerate(ns["DECOR_MQ"]):
+    gx, gy, gz = m["gmin"]; arr = m["arr"]
+    feet = arr[:, 0, :] > 0
+    if body_hits(arr, m["gmin"]) or not (FULL[gx:gx + arr.shape[0], gy - 1, gz:gz + arr.shape[2]][feet] > 0).all() \
+            or any((c[0], c[2]) in door_xz for c in cells_of(arr, m["gmin"])):
+        dec_bad.append(i)
+report(f"all {len(ns['DECOR_MQ'])} decorative dreamers stand clear on the floor", not dec_bad and len(ns["DECOR_MQ"]) >= 2, str(dec_bad))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
