@@ -164,3 +164,35 @@ mus = lowpass(mus[idx], 3500) + 0.02 * lowpass(loop_noise(L, 1.0), 6000)
 save("muzak.ogg", mus, 0.7)
 
 print("sounds written to", OUT, sorted(os.listdir(OUT)))
+
+# --- indoor pool ambience: lapping water + drips with a tiled-room echo (seamless 10 s loop) -----
+L = 10.0
+n = int(L * SR)
+tt = t(L)
+lap = bandpass(loop_noise(L, 1.2), 150, 1200) * (0.55 + 0.45 * np.sin(2 * np.pi * 0.3 * tt) * np.sin(2 * np.pi * 0.1 * tt))
+lap += 0.25 * bandpass(loop_noise(L, 0.8), 2000, 6000) * (0.5 + 0.5 * np.sin(2 * np.pi * 0.7 * tt))
+drips = np.zeros(n)
+for k in range(9):
+    s0 = int(rng.uniform(0, L - 0.4) * SR)
+    f = rng.uniform(900, 1800)
+    m = int(0.25 * SR)
+    d = np.sin(2 * np.pi * (f + 600 * np.exp(-t(0.25) / 0.02)) * t(0.25)) * env(m, 0.001, 0.05)
+    drips[s0:s0 + m] += d * rng.uniform(0.4, 1.0)
+echo = drips.copy()
+for delay, g in ((0.11, 0.5), (0.23, 0.35), (0.37, 0.25), (0.61, 0.15)):   # hard tiled room
+    echo += g * np.roll(drips, int(delay * SR))
+save("pool_ambience.ogg", lap * 0.6 + echo * 0.5, 0.6)
+
+# --- spa bubbles (seamless 4 s loop) ------------------------------------------------------------
+L = 4.0
+n = int(L * SR)
+bub = 0.4 * bandpass(loop_noise(L, 1.0), 200, 900)
+for k in range(140):
+    s0 = int(rng.uniform(0, L) * SR)
+    f = rng.uniform(300, 1400)
+    m = int(0.06 * SR)
+    b = np.sin(2 * np.pi * (f * (1 + 2.5 * t(0.06))) * t(0.06)) * env(m, 0.002, 0.015)
+    idx = (np.arange(m) + s0) % n
+    bub[idx] += b * rng.uniform(0.2, 0.7)
+save("spa_bubbles.ogg", bub, 0.6)
+print("pool sounds written")

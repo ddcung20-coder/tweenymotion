@@ -65,6 +65,7 @@ PICFRAME   = P(67, (150, 118, 60))
 PLANTER    = P(68, (70, 50, 36))
 TRUNK      = P(69, (78, 60, 44))
 PARQUET    = P(70, (140, 98, 62)); PARQUET2 = P(71, (126, 88, 56))
+LOUNGER    = P(72, (234, 230, 222))
 # concrete (73-88)
 SLAB       = P(73, (128, 126, 122))
 FLOOR_STN  = P(74, (150, 124, 96)); FLOOR_STN2 = P(75, (142, 117, 90)); FLOOR_STN3 = P(76, (158, 132, 103))
@@ -83,6 +84,11 @@ BRICK      = P(89, (128, 72, 58)); BRICK2 = P(90, (116, 64, 52)); BRICK3 = P(91,
 EXT_TRIM   = P(93, (176, 166, 150)); EXT_TRIM2 = P(94, (165, 156, 141))
 PAVER      = P(95, (120, 116, 110)); PAVER2 = P(96, (108, 104, 99))
 LINTEL     = P(97, (186, 176, 160))
+GROUT_TILE = P(92, (184, 194, 198))
+WHITE_TILE = P(99, (236, 240, 240)); WHITE_TILE2 = P(100, (225, 231, 232))
+POOL_TILE  = P(101, (122, 198, 224)); POOL_TILE2 = P(102, (104, 182, 212))
+POOL_LINE  = P(103, (30, 60, 124))
+COPING     = P(104, (214, 208, 196))
 EXT_WALL   = P(98, (172, 162, 148))
 # plaster (105-120)
 ATR_WALL   = P(105, (216, 210, 224)); ATR_WALL2 = P(106, (209, 203, 218)); ATR_WALL3 = P(107, (222, 217, 230))
@@ -129,6 +135,7 @@ ART1       = P(167, (60, 92, 122)); ART2 = P(168, (172, 112, 70))
 RED        = P(169, (176, 30, 30), "metal", rough=0.4, metal=0.3)
 TIRE       = P(170, (24, 24, 24), "metal", rough=0.9, metal=0.0)
 DUMPSTER   = P(171, (40, 82, 52), "metal", rough=0.6, metal=0.4)
+POOL_LAMP  = P(172, (150, 232, 255), "emit", flux=2, weight=0.8)
 BASE_STONE = P(177, (122, 118, 112)); BASE_STONE2 = P(178, (110, 106, 100))
 PILLAR     = P(179, (196, 188, 172))
 
@@ -154,6 +161,9 @@ bx0, bz0 = M, M
 bx1, bz1 = M + BX, M + BZ
 ax0, az0 = bx0 + T, bz0 + T
 ax1, az1 = ax0 + AX, az0 + AZ
+AZ0 = bz1 + 40                        # pool annex (north of the hotel)
+AZ1 = AZ0 + 200
+D = AZ1 + 30
 
 G = np.zeros((W, H, D), dtype=np.uint8)
 LIGHTS = []   # (gx, gy, gz, rgb, scale, size)
@@ -297,6 +307,22 @@ def steel_door(a, b, c, A, B, C):
 def elev_door(a, b, c, A, B, C):
     return FRAME if a == 0 else ELEV_DOOR
 
+def keep_connected(mask, seeds):
+    """boolean 3D mask -> only the part face-connected to any seed (list of index tuples)."""
+    reach = np.zeros_like(mask)
+    for sd in seeds:
+        if mask[sd]:
+            reach[sd] = True
+    while True:
+        grow = reach.copy()
+        grow[1:] |= reach[:-1]; grow[:-1] |= reach[1:]
+        grow[:, 1:] |= reach[:, :-1]; grow[:, :-1] |= reach[:, 1:]
+        grow[:, :, 1:] |= reach[:, :, :-1]; grow[:, :, :-1] |= reach[:, :, 1:]
+        grow &= mask
+        if (grow == reach).all():
+            return reach
+        reach = grow
+
 # ============================================================================
 # 1. Site: ground, sidewalk, lawns, trees, parking
 # ============================================================================
@@ -321,18 +347,21 @@ def tree(x, z, h=None):
     h = h or rng.randint(42, 58)
     box(x - 1, x + 1, G0 + 2, G0 + h, z - 1, z + 1, TRUNK)
     cy = G0 + h
+    R = 16
+    xs = np.arange(x - R, x + R); ys = np.arange(cy - R, cy + R); zs = np.arange(z - R, z + R)
+    X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
+    canopy = np.zeros(X.shape, bool)
     for _ in range(9):
-        ox, oy, oz = rng.randint(-7, 7), rng.randint(-5, 6), rng.randint(-7, 7)
+        ox, oy, oz = rng.randint(-6, 6), rng.randint(-4, 5), rng.randint(-6, 6)
         r = rng.randint(5, 8)
-        xs = np.arange(x + ox - r, x + ox + r + 1); ys = np.arange(cy + oy - r, cy + oy + r + 1); zs = np.arange(z + oz - r, z + oz + r + 1)
-        X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
-        m = ((X - x - ox) ** 2 + (Y - cy - oy) ** 2 * 1.3 + (Z - z - oz) ** 2) <= r * r
-        m &= hash3(X, Y, Z, 5) > 0.18
-        X, Y, Z = X[m], Y[m], Z[m]
-        ok = (X >= 0) & (X < W) & (Y >= 0) & (Y < H) & (Z >= 0) & (Z < D)
-        X, Y, Z = X[ok], Y[ok], Z[ok]
-        t = hash3(X, Y, Z, 9)
-        G[X, Y, Z] = np.where(t < 0.4, LEAF, np.where(t < 0.75, LEAF3, LEAF2))
+        canopy |= ((X - x - ox) ** 2 + (Y - cy - oy) ** 2 * 1.3 + (Z - z - oz) ** 2) <= r * r
+    canopy &= hash3(X, Y, Z, 5) > 0.18
+    # the trunk top is the anchor: only foliage connected to it survives (no floating leaves)
+    canopy[R - 1:R + 1, :R + 1, R - 1:R + 1] = True
+    canopy = keep_connected(canopy, [(R, R - 1, R)])
+    ok = (X >= 0) & (X < W) & (Y >= 0) & (Y < H) & (Z >= 0) & (Z < D) & canopy
+    t = hash3(X[ok], Y[ok], Z[ok], 9)
+    G[X[ok], Y[ok], Z[ok]] = np.where(t < 0.4, LEAF, np.where(t < 0.75, LEAF3, LEAF2))
 
 for z in range(bz0 + 50, bz1 - 40, 70):
     tree(bx0 - SW // 2 - 2, z); tree(bx1 + SW // 2 + 2, z)
@@ -380,7 +409,9 @@ for k in range(1, FLOORS):
     outer(0, 0, fy(k) - 3, fy(k) - 1, 1, EXT_TRIM)          # string course at each floor
 outer(0, 0, ROOF_Y - 4, ROOF_Y, 1, EXT_TRIM)                # cornice (stepped)
 outer(0, 0, ROOF_Y, ROOF_Y + 2, 2, EXT_TRIM)
-outer(0, 0, ROOF_Y + PAR, ROOF_Y + PAR + 1, 1, LINTEL)      # parapet coping
+for (x0, x1, z0, z1) in [(bx0 - 1, bx1 + 1, bz0 - 1, bz0 + T_EXT), (bx0 - 1, bx1 + 1, bz1 - T_EXT, bz1 + 1),
+                         (bx0 - 1, bx0 + T_EXT, bz0 - 1, bz1 + 1), (bx1 - T_EXT, bx1 + 1, bz0 - 1, bz1 + 1)]:
+    box(x0, x1, ROOF_Y + PAR, ROOF_Y + PAR + 1, z0, z1, LINTEL)                     # parapet coping (caps the wall)
 # corner quoins (alternating long / short stones)
 for west in (True, False):
     for south in (True, False):
@@ -506,16 +537,23 @@ for (bxx, bzz) in [(ax0 + 14, czA - 6), (ax1 - 20, czA - 6)]:
     box(bxx, bxx + 1, G0, G0 + 3, bzz, bzz + 12, DARK_METAL)
     box(bxx + 5, bxx + 6, G0, G0 + 3, bzz, bzz + 12, DARK_METAL)
 
+def leaf_blob(cx_, cy_, cz_, r, seed, col=LEAF, anchor=None, squash=1.4, keep=0.35):
+    xs = np.arange(cx_ - r - 1, cx_ + r + 2); ys = np.arange(cy_ - r - 1, cy_ + r + 2); zs = np.arange(cz_ - r - 1, cz_ + r + 2)
+    X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
+    m = (((X - cx_) ** 2 + ((Y - cy_) * squash) ** 2 + (Z - cz_) ** 2) <= r * r) & (hash3(X, Y, Z, seed) > keep)
+    ax_, ay_, az_ = anchor if anchor else (cx_, cy_ - r, cz_)
+    sd = (ax_ - xs[0], ay_ - ys[0], az_ - zs[0])
+    if 0 <= sd[0] < m.shape[0] and 0 <= sd[1] < m.shape[1] and 0 <= sd[2] < m.shape[2]:
+        m[sd] = True
+        m = keep_connected(m, [sd])
+    G[X[m], Y[m], Z[m]] = col
+
 def potted_plant(x, z, h=28, pot=8):
     box(x - pot // 2, x + pot // 2, G0, G0 + 8, z - pot // 2, z + pot // 2, PLANTER)
     box(x - pot // 2 + 1, x + pot // 2 - 1, G0 + 7, G0 + 8, z - pot // 2 + 1, z + pot // 2 - 1, SOIL)
     box(x, x + 1, G0 + 8, G0 + h - 6, z, z + 1, TRUNK)
     cy = G0 + h - 6
-    xs = np.arange(x - 8, x + 9); ys = np.arange(cy - 8, cy + 9); zs = np.arange(z - 8, z + 9)
-    X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
-    m = (((X - x) ** 2 + (Y - cy) ** 2 * 1.4 + (Z - z) ** 2) <= 49) & (hash3(X, Y, Z, 11) > 0.35)
-    t = hash3(X, Y, Z, 12)
-    G[X[m], Y[m], Z[m]] = np.where(t[m] < 0.5, LEAF, LEAF2)
+    leaf_blob(x, cy, z, 7, 11, LEAF, anchor=(x, G0 + h - 7, z))
 
 for (px, pz) in [(ax0 + 10, az0 + 10), (ax1 - 10, az0 + 10), (ax1 - 10, az1 - 12)]:
     potted_plant(px, pz)
@@ -531,8 +569,8 @@ for i in range(3):
 # cove strip: a light every bay, just in front of the glowing strip, so it reads as one continuous line
 for fr, L, bw, name in atrium_face_frames():
     for u in range(bw // 2, L, bw):
-        x, z = fr.pt(u, -2)
-        light(x + 0.5, ATR_TOP - 3.5, z + 0.5, (0.85, 0.7, 1.0), 1.1, 0.15)
+        x, z = fr.pt(u, -3)
+        light(x + 0.5, ATR_TOP - 4.5, z + 0.5, (0.85, 0.7, 1.0), 1.1, 0.15)
 
 # ============================================================================
 # 4. Hotel rooms
@@ -572,12 +610,12 @@ def window_in_facade(fr, bw, y):
 def curtains(fr, u0, y, state):
     cu0, cu1 = u0 - 4, u0 + WIN_W + 4
     top, bot = y + SILL + WIN_H + 3, y + SILL - 3
-    fr.box(cu0 - 1, cu1 + 1, top, top + 1, 1, 2, BRASS)
+    fr.box(cu0 - 1, cu1 + 1, top, top + 1, 1, 3, BRASS)
     fr.box(cu0 - 2, cu0 - 1, top - 1, top + 2, 1, 2, BRASS)
     fr.box(cu1 + 1, cu1 + 2, top - 1, top + 2, 1, 2, BRASS)
     if state == "dark_blinds":
         for yy in range(y + SILL + 1, y + SILL + WIN_H - 1, 2):
-            fr.box(u0 + 1, u0 + WIN_W - 1, yy, yy + 1, 0, 1, SWITCH)
+            fr.box(u0 - 1, u0 + WIN_W + 1, yy, yy + 1, 0, 1, SWITCH)
         spans = [(cu0, cu0 + 5), (cu1 - 5, cu1)]
         a, b = CURT_DARK, CURT_DARK2
     else:
@@ -585,9 +623,10 @@ def curtains(fr, u0, y, state):
         a, b = (CURT_LIT, CURT_LIT2) if lit else (CURT_DARK, CURT_DARK2)
         spans = [(cu0, cu1)] if state.endswith("closed") else [(cu0, cu0 + 6), (cu1 - 6, cu1)]
     for s0, s1 in spans:
+        fr.box(s0, s1, bot, top + 1, 2, 3, b)                       # continuous back layer (holds the folds)
         for u in range(s0, s1):
-            fold = (u // 2) % 2
-            fr.box(u, u + 1, bot, top, 1 + fold, 2 + fold, a if fold == 0 else b)
+            if (u // 2) % 2 == 0:
+                fr.box(u, u + 1, bot, top, 1, 2, a)                 # front folds
         # tie-back sag at the bottom of open panels
         if len(spans) == 2:
             fr.box(s0, s1, bot, bot + 1, 1, 2, 0)
@@ -654,9 +693,10 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
         fr.box(U1 - 5, U1 - 4, y + 2, y + 3, nv, nv + nw, WOOD_DARK)          # drawer line
         fr.box(U1 - 3, U1 - 2, y + 6, y + 9, nv + 1, nv + 2, BRASS)
         fr.box(U1 - 4, U1 - 1, y + 9, y + 12, nv, nv + 3, LAMPSHADE if lit else UPHOL2)
+        fr.box(U1 - 3, U1 - 2, y + 10, y + 11, nv + 1, nv + 2, 0)            # hollow: the bulb lives here
     fr.box(U1 - 5, U1 - 3, y + 6, y + 7, stands[0][0] + 2, stands[0][0] + 4, TV_BODY)   # phone
     if lit:
-        fr.light(U1 - 2.5, y + 10.5, stands[0][0] + 1.5, (1.0, 0.78, 0.45), 1.6, 0.15)
+        fr.light(U1 - 3, y + 10.5, stands[0][0] + 1, (1.0, 0.78, 0.45), 1.6, 0.1)
     # art above the bed(s)
     wall_art(fr, U1 - 1 + 1, y + 16, beds[0][0] + (1 if not twin else 4), 14, 7)
     # ---- desk + TV + mirror on the opposite wall (u = U0)
@@ -667,7 +707,7 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
     fr.box(U0 + 5, U0 + 6, y + 4, y + 5, 25, 28, CHROME)
     fr.box(U0, U0 + 1, y + 10, y + 19, 15, 28, TV_BODY)
     fr.box(U0 + 1, U0 + 2, y + 11, y + 18, 16, 27, TV_SCREEN if state == "tv" else TV_BODY)
-    fr.box(U0 + 1, U0 + 3, y + 8, y + 10, 20, 23, TV_BODY)                    # stand
+    fr.box(U0, U0 + 3, y + 8, y + 10, 20, 23, TV_BODY)                        # stand (touches the TV)
     if state == "tv":
         fr.light(U0 + 3, y + 14, 21.5, (0.45, 0.6, 1.0), 1.0, 0.2)
     fr.box(U0 + 2, U0 + 4, y + 8, y + 9, 14, 17, CERAMIC)                     # kettle tray
@@ -716,7 +756,7 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
     # bathtub along the back wall + shower
     fr.box(bu0b + 1, bu0b + 10, y, y + 6, v0b + 6, ROOM_D - 1, CERAMIC)
     fr.box(bu0b + 2, bu0b + 9, y + 2, y + 6, v0b + 7, ROOM_D - 2, 0)
-    fr.box(bu0b + 5, bu0b + 6, y + 18, y + 22, ROOM_D - 2, ROOM_D - 1, CHROME)   # shower head
+    fr.box(bu0b + 5, bu0b + 6, y + 18, y + 22, ROOM_D - 1, ROOM_D, CHROME)       # shower head (on the wall)
     fr.box(bu0b + 1, bu0b + 10, y + 23, y + 24, v0b + 6, v0b + 7, CHROME)        # curtain rod
     fr.box(bu0b + 1, bu0b + 4, y + 7, y + 23, v0b + 6, v0b + 7, TOWEL)           # shower curtain (pulled aside)
     fr.box(bu0b + 1, bu0b + 2, y + 16, y + 17, v0b + 7, ROOM_D - 2, CHROME)      # towel bar over the tub
@@ -813,6 +853,9 @@ cor_frames = [
 ]
 COR_PAINTABLE = [COR_WALL, ROOM_WALL, STAIR_WALL, EXT_WALL]
 
+SEAMS_X = [ax0 + 2 * SHORT_BAY_W]                     # shape seams (see export)
+SEAMS_Z = [az0 + 2 * LONG_BAY_W, az0 + 6 * LONG_BAY_W, AZ0 - 6]
+
 def build_corridors():
     for name, fr, L in cor_frames:
         for k in range(FLOORS):
@@ -850,7 +893,14 @@ def build_corridors():
                 fr.paint(0, L, y, y + 1, side, side + 1, WOOD_DARK, COR_PAINTABLE + [COR_STRIPE, WAINS, WAINS2])
             # wall sconces on the exterior side (between the windows)
             for u in range(12, L - 6, 34):
-                fr.box(u, u + 2, y + 14, y + 16, COR_W - 1, COR_W, BRASS)
+                xa_, za_ = fr.pt(u, 0); xb_, zb_ = fr.pt(u + 1, 0)
+                if any(min(xa_, xb_) < sx_ <= max(xa_, xb_) for sx_ in SEAMS_X) or \
+                   any(min(za_, zb_) < sz_ <= max(za_, zb_) for sz_ in SEAMS_Z):
+                    u += 3                                                         # keep it inside one shape
+                xs_, zs_ = fr.pt(u, 0)
+                if k == 0 and name in ("S", "N") and abs(xs_ - (ax0 + 2 * SHORT_BAY_W)) < 22:
+                    continue                                                       # entrance / pool connector doorway
+                fr.box(u, u + 2, y + 14, y + 16, COR_W - 2, COR_W, BRASS)         # bracket under the shade
                 fr.box(u, u + 2, y + 16, y + 19, COR_W - 2, COR_W - 1, LAMPSHADE)
             # small exterior windows with stone lintel + sill
             for u in range(30, L - 20, 68):
@@ -924,12 +974,10 @@ box(lx1 - 26, lx1 - 14, y + 3, y + 4, lz0 + 19, lz0 + 25, GLASS_DOOR)
 box(lx1 - 26, lx1 - 14, y, y + 3, lz0 + 21, lz0 + 23, BRASS)
 for (ppx, ppz) in [(lx0 + 4, lz1 - 12), (lx1 - 6, lz1 - 12), (lx1 - 6, lz0 + 6)]:   # corners, out of the walkway
     box(ppx - 3, ppx + 3, y, y + 8, ppz - 3, ppz + 3, PLANTER)
-    xs = np.arange(ppx - 6, ppx + 7); ys = np.arange(y + 8, y + 22); zs = np.arange(ppz - 6, ppz + 7)
-    X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
-    mm = (((X - ppx) ** 2 + ((Y - y - 14) * 0.8) ** 2 + (Z - ppz) ** 2) <= 30) & (hash3(X, Y, Z, 21) > 0.4)
-    G[X[mm], Y[mm], Z[mm]] = LEAF
+    box(ppx, ppx + 1, y + 8, y + 10, ppz, ppz + 1, TRUNK)
+    leaf_blob(ppx, y + 15, ppz, 6, 21, LEAF, anchor=(ppx, y + 9, ppz), squash=0.8, keep=0.4)
 box(lx0 + 2, lx1 - 2, y + 26, y + 27, lz0 + 2, lz1 - 6, CEIL)
-ccx, ccz = cx, lz0 + 24
+ccx, ccz = cx + 12, lz0 + 24          # off the shape seam at cx so the whole chandelier is one piece
 box(ccx, ccx + 1, y + 23, y + 27, ccz, ccz + 1, BRASS)      # short stem: chandelier sits high (2.2 m+)
 for (ox_, oz_) in [(-6, 0), (6, 0), (0, -6), (0, 6), (-4, -4), (4, 4), (-4, 4), (4, -4)]:
     box(ccx + ox_, ccx + ox_ + 1, y + 22, y + 24, ccz + oz_, ccz + oz_ + 1, CEIL_LAMP)
@@ -964,10 +1012,7 @@ light(cx + 0.5, y + 29, bz0 - 12, (1.0, 0.85, 0.65), 4.0, 0.4)
 for sx in (-26, 22):
     box(cx + sx, cx + sx + 6, G0, G0 + 7, bz0 - 8, bz0 - 2, BASE_STONE)
     box(cx + sx + 1, cx + sx + 5, G0 + 6, G0 + 7, bz0 - 7, bz0 - 3, SOIL)
-    xs = np.arange(cx + sx - 1, cx + sx + 8); ys = np.arange(G0 + 7, G0 + 15); zs = np.arange(bz0 - 10, bz0)
-    X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
-    mm = (((X - cx - sx - 3) ** 2 + ((Y - G0 - 9) * 1.2) ** 2 + (Z - bz0 + 5) ** 2) <= 14) & (hash3(X, Y, Z, 31) > 0.3)
-    G[X[mm], Y[mm], Z[mm]] = LEAF2
+    leaf_blob(cx + sx + 3, G0 + 10, bz0 - 5, 4, 31, LEAF2, anchor=(cx + sx + 3, G0 + 7, bz0 - 5), squash=1.2, keep=0.3)
 
 # ============================================================================
 # 7. Corner blocks: SW & NE stairwells, NW & SE elevators + utility room
@@ -1032,12 +1077,12 @@ def stairwell(fr):
             hB = y + 30 - int((p - 15) / 3) * 2 if p >= 15 else y + 30
             fr.box(p, p + 1, hB, hB + 9, 24, 25, STEEL)
         for p in range(12, 36):
-            fr.box(p, p + 1, y + int((p - 12) / 3) * 2 + 11, y + int((p - 12) / 3) * 2 + 12, 21, 22, STEEL)
+            fr.box(p, p + 1, y + int((p - 12) / 3) * 2 + 10, y + int((p - 12) / 3) * 2 + 13, 21, 22, STEEL)
         for p in range(15, 36):
-            fr.box(p, p + 1, y + 30 - int((p - 15) / 3) * 2 + 9, y + 30 - int((p - 15) / 3) * 2 + 10, 24, 25, STEEL)
+            fr.box(p, p + 1, y + 30 - int((p - 15) / 3) * 2 + 8, y + 30 - int((p - 15) / 3) * 2 + 11, 24, 25, STEEL)
         # wall handrail
         for p in range(12, 36):
-            fr.box(p, p + 1, y + int((p - 12) / 3) * 2 + 10, y + int((p - 12) / 3) * 2 + 11, 0, 1, WOOD_MED)
+            fr.box(p, p + 1, y + int((p - 12) / 3) * 2 + 9, y + int((p - 12) / 3) * 2 + 12, 0, 1, WOOD_MED)
     y = ROOF_Y
     fr.box(-T_PART, CB, y, y + 28, -T_PART, CB, STAIR_WALL)
     fr.paint(-T_PART, CB, y, y + 28, -T_PART, CB, BRICK, [STAIR_WALL])
@@ -1212,7 +1257,7 @@ FONT = {
 word = "HOTEL"
 sx0 = (bx0 + bx1) // 2 - (len(word) * 12) // 2
 sz_ = bz0 + 8
-box(sx0 - 4, sx0 + len(word) * 12, ROOF_Y, ROOF_Y + 6, sz_ + 2, sz_ + 3, DARK_METAL)
+box(sx0 - 4, sx0 + len(word) * 12, ROOF_Y, ROOF_Y + 22, sz_ + 2, sz_ + 3, DARK_METAL)   # backing panel holds the letters
 for i in range(sx0 - 2, sx0 + len(word) * 12, 10):
     box(i, i + 1, ROOF_Y, ROOF_Y + 22, sz_ + 3, sz_ + 4, DARK_METAL)
 for li, ch in enumerate(word):
@@ -1232,7 +1277,7 @@ for (sx, sz) in [(bx0 - 14, bz0 - 14), (bx1 + 12, bz0 - 14), (bx0 - 14, bz1 + 12
     box(sx, sx + 2, G0, G0 + 50, sz, sz + 2, DARK_METAL)
     box(sx - 2, sx + 4, G0 + 50, G0 + 52, sz - 2, sz + 4, DARK_METAL)
     box(sx - 1, sx + 3, G0 + 49, G0 + 50, sz - 1, sz + 3, STREET_LMP)
-    light(sx + 1, G0 + 47, sz + 1, (1.0, 0.75, 0.45), 6.0, 0.3)
+    light(sx + 1, G0 + 48.5, sz - 0.5, (1.0, 0.75, 0.45), 6.0, 0.3)
 # dumpster + fire hydrant by the north-east
 box(bx1 + 8, bx1 + 22, G0 + 1, G0 + 12, bz1 - 40, bz1 - 22, DUMPSTER)
 box(bx1 + 7, bx1 + 23, G0 + 12, G0 + 13, bz1 - 41, bz1 - 21, DARK_METAL)
@@ -1245,6 +1290,223 @@ PROPS.append(("car_a", bx0 + 5, G0, CAR_Z, 0))
 PROPS.append(("car_b", bx0 + 65, G0, CAR_Z, 0))
 PROPS.append(("car_c", bx1 - 55, G0, CAR_Z, 0))
 PROPS.append(("car_b", bx1 + 5, G0, CAR_Z, 0))
+
+# ============================================================================
+# 8b. Pool annex ("poolrooms"): glazed connector from the ground-floor north
+#     corridor, tiled hall with a real water pool, spa, loungers, lifeguard chair
+# ============================================================================
+cxN = (ax0 + ax1) // 2
+A_X0, A_X1 = cxN - 100, cxN + 100            # 20 m wide
+DY = G0 + 20                                  # pool deck level (2 m up, the basin sits below it)
+HALL_H = 60
+POOLS = []                                    # water polygons: (surface_y_grid, depth_grid, [(x, z), ...])
+
+def tile_face(x0, x1, y0, y1, z0, z1, base=WHITE_TILE, alt=WHITE_TILE2, grout=GROUT_TILE, size=6, only=None):
+    """paint existing voxels in a box as square tiles with grout lines (works on any face orientation)."""
+    xa, xb = sorted((x0, x1)); ya, yb = sorted((y0, y1)); za, zb = sorted((z0, z1))
+    sub = G[xa:xb, ya:yb, za:zb]
+    X, Y, Z = np.meshgrid(np.arange(xa, xb), np.arange(ya, yb), np.arange(za, zb), indexing="ij")
+    mask = sub > 0 if only is None else np.isin(sub, only)
+    grout_m = ((X % size == 0) & (xb - xa > 1)) | ((Y % size == 0) & (yb - ya > 1)) | ((Z % size == 0) & (zb - za > 1))
+    t = hash3(X // size, Y // size, Z // size, 77)
+    col = np.where(grout_m, grout, np.where(t < 0.8, base, alt)).astype(np.uint8)
+    sub[mask] = col[mask]
+
+# --- site: clear a strip through the north lawn and build the connector -----------------------
+CW = 14                                        # half width of the connector (outer)
+box(cxN - CW - 2, cxN + CW + 2, G0, G0 + 60, bz1, AZ0 + T_EXT, 0)        # outside the hotel wall only
+box(cxN - CW, cxN + CW, 1, G0, bz1, AZ0, SLAB)
+# door through the hotel's north exterior wall (ground floor corridor)
+box(cxN - 12, cxN + 12, G0, G0 + 22, bz1 - T_EXT - 1, bz1 + 1, 0)
+box(cxN - 13, cxN + 13, G0 + 22, G0 + 24, bz1 - T_EXT - 1, bz1, LINTEL)
+# stairs: 10 risers of 2 voxels, treads 3 voxels -> +2.0 m to the pool deck
+for s in range(10):
+    zs = bz1 + 6 + s * 3
+    box(cxN - CW + 2, cxN + CW - 2, G0, G0 + 2 * (s + 1), zs, AZ0, STAIR_CONC)
+    box(cxN - CW + 2, cxN + CW - 2, G0 + 2 * (s + 1) - 1, G0 + 2 * (s + 1), zs, zs + 1, DARK_METAL)   # nosing
+box(cxN - CW + 2, cxN + CW - 2, G0 - 1, G0, bz1, bz1 + 6, WHITE_TILE)
+tile_face(cxN - CW + 2, cxN + CW - 2, DY - 1, DY, bz1 + 36, AZ0)
+# glazed side walls: mullions every 8, glass between, solid base following the stairs
+for z in range(bz1, AZ0):
+    s_top = G0 + min(10, max(0, (z - (bz1 + 6)) // 3 + 1)) * 2
+    for xw in (cxN - CW, cxN + CW - 2):
+        box(xw, xw + 2, G0, s_top + 3, z, z + 1, EXT_WALL)
+        c = FRAME if (z - bz1) % 8 == 0 else GLASS_EXT
+        box(xw, xw + 2, s_top + 3, DY + 26, z, z + 1, FRAME if c == FRAME else 0)
+        if c != FRAME:
+            box(xw + 1 if xw < cxN else xw, xw + 2 if xw < cxN else xw + 1, s_top + 3, DY + 26, z, z + 1, GLASS_EXT)
+    # handrails along the stairs
+    box(cxN - CW + 2, cxN - CW + 3, s_top + 9, s_top + 10, z, z + 1, CHROME)
+    box(cxN + CW - 3, cxN + CW - 2, s_top + 9, s_top + 10, z, z + 1, CHROME)
+box(cxN - CW, cxN + CW, DY + 26, DY + 28, bz1, AZ0 + T_EXT, ROOF)
+box(cxN - CW + 2, cxN + CW - 2, DY + 25, DY + 26, bz1, AZ0, CEIL)
+for z in range(bz1 + 8, AZ0, 12):
+    box(cxN - 3, cxN + 3, DY + 25, DY + 26, z, z + 3, CEIL_LAMP)
+light(cxN, DY + 22, bz1 + 14, (0.9, 0.95, 1.0), 2.0, 0.3)
+light(cxN, DY + 22, bz1 + 32, (0.9, 0.95, 1.0), 2.0, 0.3)
+
+# --- hall shell ---------------------------------------------------------------------------------
+box(A_X0, A_X1, 1, DY, AZ0, AZ1, SLAB)                                  # podium / basin structure
+box(A_X0, A_X1, G0, DY + HALL_H + 4, AZ0, AZ1, EXT_WALL)                # walls + roof block
+box(A_X0 + T_EXT, A_X1 - T_EXT, DY, DY + HALL_H, AZ0 + T_EXT, AZ1 - T_EXT, 0)
+box(A_X0 - 1, A_X1 + 1, G0, DY, AZ0 - 1, AZ1 + 1, BASE_STONE)          # stone podium skin (outside only)
+box(A_X0, A_X1, G0, DY, AZ0, AZ1, SLAB)
+box(A_X0 - 2, A_X1 + 2, DY + HALL_H + 4, DY + HALL_H + 6, AZ0 - 2, AZ1 + 2, LINTEL)   # roof coping
+box(A_X0, A_X1, DY + HALL_H + 3, DY + HALL_H + 4, AZ0, AZ1, ROOF)
+# connector opening into the hall
+box(cxN - 12, cxN + 12, DY, DY + 24, AZ0, AZ0 + T_EXT, 0)
+# interior tiling: walls (white with a blue band), floor, ceiling
+ix0, ix1, iz0, iz1 = A_X0 + T_EXT, A_X1 - T_EXT, AZ0 + T_EXT, AZ1 - T_EXT
+for (x0, x1, z0, z1) in [(ix0 - 1, ix0, iz0, iz1), (ix1, ix1 + 1, iz0, iz1), (ix0, ix1, iz0 - 1, iz0), (ix0, ix1, iz1, iz1 + 1)]:
+    tile_face(x0, x1, DY, DY + HALL_H, z0, z1)
+    tile_face(x0, x1, DY + 12, DY + 18, z0, z1, POOL_TILE, POOL_TILE2, POOL_LINE, size=3)
+    tile_face(x0, x1, DY, DY + 2, z0, z1, POOL_LINE, POOL_LINE, POOL_LINE)
+tile_face(ix0, ix1, DY - 1, DY, iz0, iz1)
+tile_face(ix0, ix1, DY + HALL_H, DY + HALL_H + 1, iz0, iz1, WHITE_TILE, WHITE_TILE, GROUT_TILE, size=12)
+# ceiling light boxes (the bright, shadowless poolrooms look)
+for x in range(ix0 + 16, ix1 - 10, 32):
+    for z in range(iz0 + 16, iz1 - 10, 32):
+        box(x, x + 12, DY + HALL_H - 1, DY + HALL_H, z, z + 12, CEIL_LAMP)
+        box(x - 1, x + 13, DY + HALL_H - 1, DY + HALL_H, z - 1, z, CHROME)
+        box(x - 1, x + 13, DY + HALL_H - 1, DY + HALL_H, z + 12, z + 13, CHROME)
+        light(x + 6, DY + HALL_H - 3, z + 6, (0.92, 0.97, 1.0), 2.4, 0.5)
+# clerestory windows on the long walls
+for z in range(iz0 + 10, iz1 - 14, 24):
+    for (xw0, xw1) in ((A_X0, A_X0 + T_EXT), (A_X1 - T_EXT, A_X1)):
+        box(xw0, xw1, DY + 40, DY + 54, z, z + 14, FRAME)
+        box(xw0, xw1, DY + 41, DY + 53, z + 1, z + 13, 0)
+        box(xw0 + 1, xw0 + 2, DY + 41, DY + 53, z + 1, z + 13, GLASS_EXT)
+        box(xw0 + 1, xw0 + 2, DY + 41, DY + 53, z + 7, z + 8, FRAME)
+
+# --- main pool ------------------------------------------------------------------------------------
+px0, px1 = cxN - 60, cxN + 60                 # 12 m
+pz0, pz1 = iz0 + 56, iz0 + 126                # 7 m
+SHALLOW, DEEP = 9, 16
+box(px0, px1, DY - DEEP - 1, DY, pz0, pz1, 0)
+box(px0, px1, DY - DEEP - 1, DY - DEEP, pz0, pz1, POOL_TILE)            # floor (deep end)
+for z in range(pz0, pz1):                                                # shallow end + slope
+    t_ = (z - pz0) / (pz1 - pz0)
+    depth = SHALLOW if t_ < 0.35 else (DEEP if t_ > 0.6 else int(SHALLOW + (DEEP - SHALLOW) * (t_ - 0.35) / 0.25))
+    box(px0, px1, DY - DEEP - 1, DY - depth, z, z + 1, SLAB)
+    box(px0, px1, DY - depth - 1, DY - depth, z, z + 1, POOL_TILE)
+# tile the basin (walls + floor) and add lane lines
+tile_face(px0 - 1, px1 + 1, DY - DEEP - 1, DY, pz0 - 1, pz1 + 1, POOL_TILE, POOL_TILE2, GROUT_TILE, size=4,
+          only=[SLAB, POOL_TILE, WHITE_TILE, WHITE_TILE2, GROUT_TILE])
+for lane in range(1, 5):
+    lx = px0 + lane * 24
+    for z in range(pz0 + 6, pz1 - 6):
+        t_ = (z - pz0) / (pz1 - pz0)
+        depth = SHALLOW if t_ < 0.35 else (DEEP if t_ > 0.6 else int(SHALLOW + (DEEP - SHALLOW) * (t_ - 0.35) / 0.25))
+        box(lx - 1, lx + 1, DY - depth - 1, DY - depth, z, z + 1, POOL_LINE)
+    box(lx - 3, lx + 3, DY - DEEP - 1, DY - DEEP, pz1 - 8, pz1 - 6, POOL_LINE)        # T at the deep end
+    box(lx - 1, lx + 1, DY - 8, DY - 3, pz1, pz1 + 1, POOL_LINE)                       # wall target
+    box(lx - 3, lx + 3, DY - 6, DY - 5, pz1, pz1 + 1, POOL_LINE)
+# coping + overflow grate around the pool
+box(px0 - 4, px1 + 4, DY - 1, DY, pz0 - 4, pz1 + 4, COPING)
+box(px0, px1, DY - 1, DY, pz0, pz1, 0)
+for (x0, x1, z0, z1) in [(px0 - 3, px1 + 3, pz0 - 3, pz0 - 2), (px0 - 3, px1 + 3, pz1 + 2, pz1 + 3),
+                         (px0 - 3, px0 - 2, pz0 - 3, pz1 + 3), (px1 + 2, px1 + 3, pz0 - 3, pz1 + 3)]:
+    box(x0, x1, DY - 1, DY, z0, z1, DARK_METAL)
+# underwater lights (emissive tiles + real lights) along the long walls
+for z in range(pz0 + 10, pz1 - 4, 18):
+    for xw in (px0 - 1, px1):
+        box(xw, xw + 1, DY - 7, DY - 4, z, z + 3, POOL_LAMP)
+        light(xw + (1.5 if xw < cxN else -0.5), DY - 5.5, z + 1.5, (0.45, 0.85, 1.0), 1.6, 0.2)
+# ladders: two chrome rails + rungs at the four corners
+for (lx, lz, dz) in [(px0 + 8, pz0, 1), (px1 - 12, pz0, 1), (px0 + 8, pz1 - 1, -1), (px1 - 12, pz1 - 1, -1)]:
+    for rx in (lx, lx + 4):
+        box(rx, rx + 1, DY - 12, DY + 9, lz, lz + 1, CHROME)                         # against the pool wall
+        box(rx, rx + 1, DY + 8, DY + 9, min(lz - dz * 3, lz + dz), max(lz - dz * 3, lz + dz) + 1, CHROME)
+        box(rx, rx + 1, DY - 1, DY + 9, lz - dz * 3, lz - dz * 3 + 1, CHROME)
+    for ry in range(DY - 11, DY, 3):
+        box(lx, lx + 5, ry, ry + 1, lz + dz, lz + dz + 1, CHROME)
+# starting blocks at the deep end
+for lane in range(5):
+    sx_ = px0 + 6 + lane * 24
+    box(sx_, sx_ + 12, DY, DY + 7, pz1 + 4, pz1 + 12, LOUNGER)
+    box(sx_, sx_ + 12, DY + 7, DY + 8, pz1 + 3, pz1 + 12, POOL_TILE)
+    box(sx_ + 5, sx_ + 7, DY + 3, DY + 6, pz1 + 3, pz1 + 4, POOL_LINE)        # lane number plate
+POOLS.append((DY - 2, DEEP - 2, [(px0, pz0), (px1, pz0), (px1, pz1), (px0, pz1)]))
+
+# --- spa (round hot tub with raised rim) near the entrance --------------------------------------
+scx, scz, sr = cxN + 66, iz0 + 26, 13
+X, Z = np.meshgrid(np.arange(scx - sr - 4, scx + sr + 4), np.arange(scz - sr - 4, scz + sr + 4), indexing="ij")
+rr = np.sqrt((X - scx + 0.5) ** 2 + (Z - scz + 0.5) ** 2)
+rim = (rr <= sr + 3) & (rr > sr)
+inner = rr <= sr
+G[X[rim], DY:DY + 4, Z[rim]] = COPING
+for yy in range(DY - 6, DY + 4):
+    G[X[inner], yy, Z[inner]] = 0
+G[X[inner], DY - 7, Z[inner]] = POOL_TILE2
+seat = inner & (rr > sr - 4)
+G[X[seat], DY - 3, Z[seat]] = POOL_TILE
+for a in range(0, 360, 45):
+    gx_ = int(round(scx - 0.5 + (sr + 1.0) * np.cos(np.radians(a)))); gz_ = int(round(scz - 0.5 + (sr + 1.0) * np.sin(np.radians(a))))
+    G[gx_, DY - 5, gz_] = POOL_LAMP
+light(scx, DY - 2, scz, (0.5, 0.9, 1.0), 1.4, 0.3)
+POOLS.append((DY + 2, 8, [(scx + sr * np.cos(np.radians(a)), scz + sr * np.sin(np.radians(a))) for a in range(0, 360, 30)]))
+
+# --- deck furniture --------------------------------------------------------------------------------
+def lounger(x, z, back=True):
+    box(x, x + 7, DY + 3, DY + 4, z, z + 18, LOUNGER)
+    for k in range(z + 1, z + 18, 2):
+        box(x, x + 7, DY + 4, DY + 5, k, k + 1, LOUNGER)
+    for (lx, lz) in ((x, z + 1), (x + 6, z + 1), (x, z + 16), (x + 6, z + 16)):
+        box(lx, lx + 1, DY, DY + 3, lz, lz + 1, CHROME)
+    if back:
+        for i in range(6):
+            box(x, x + 7, DY + 5 + i, DY + 6 + i, z + 16 - i, z + 18 - i, LOUNGER)
+    if rng.random() < 0.5:
+        box(x + 1, x + 6, DY + 5, DY + 6, z + 2, z + 12, rng.choice([TOWEL, ART1, BLANKET_B]))
+for i in range(8):
+    lounger(px0 + 4 + i * 14, pz1 + 22)
+for i in range(4):
+    lounger(px0 - 26, pz0 + 6 + i * 20, back=False)
+# lifeguard chair (east side, mid pool)
+lgx, lgz = px1 + 12, (pz0 + pz1) // 2
+for (lx, lz) in ((lgx, lgz - 4), (lgx + 6, lgz - 4), (lgx, lgz + 4), (lgx + 6, lgz + 4)):
+    box(lx, lx + 1, DY, DY + 22, lz, lz + 1, LOUNGER)
+for ry in range(DY + 3, DY + 21, 4):
+    box(lgx, lgx + 7, ry, ry + 1, lgz + 4, lgz + 5, LOUNGER)
+box(lgx - 1, lgx + 8, DY + 22, DY + 23, lgz - 5, lgz + 6, LOUNGER)
+box(lgx + 6, lgx + 8, DY + 23, DY + 32, lgz - 5, lgz + 6, LOUNGER)
+box(lgx + 3, lgx + 4, DY + 23, DY + 40, lgz, lgz + 1, CHROME)                 # umbrella pole
+box(lgx - 4, lgx + 11, DY + 40, DY + 41, lgz - 7, lgz + 8, RED)
+box(lgx - 2, lgx + 9, DY + 41, DY + 42, lgz - 5, lgz + 6, CERAMIC)
+box(lgx - 1, lgx, DY + 8, DY + 20, lgz - 4, lgz + 2, RED)                     # rescue tube (hangs on the leg)
+# wall clock, changing-room doors (to nowhere), signs, drinking fountain, plants
+ckx, cky = cxN + 40, DY + 34
+for dx in range(-5, 6):
+    for dy in range(-5, 6):
+        r_ = (dx * dx + dy * dy) ** 0.5
+        if r_ <= 5:
+            box(ckx + dx, ckx + dx + 1, cky + dy, cky + dy + 1, iz1, iz1 + 1, TV_BODY if r_ > 4.2 else CERAMIC)
+box(ckx, ckx + 1, cky, cky + 4, iz1 - 1, iz1, TV_BODY); box(ckx, ckx + 3, cky, cky + 1, iz1 - 1, iz1, TV_BODY)
+for i, dxs in enumerate((-70, -50)):
+    dx_ = cxN + dxs
+    box(dx_ - 1, dx_ + 11, DY, DY + 23, iz0 - 1, iz0, FRAME)
+    box(dx_, dx_ + 10, DY, DY + 22, iz0 - 1, iz0, WOOD_DOOR)
+    box(dx_ + 8, dx_ + 9, DY + 10, DY + 12, iz0, iz0 + 1, BRASS)
+    box(dx_ + 3, dx_ + 7, DY + 25, DY + 29, iz0 - 1, iz0, ART1 if i == 0 else BLANKET_B)    # pictogram plate
+box(ix0, ix0 + 4, DY, DY + 10, iz0 + 40, iz0 + 46, CHROME)                         # drinking fountain
+box(ix0, ix0 + 5, DY + 10, DY + 11, iz0 + 39, iz0 + 47, CHROME)
+for (sx_, sz_) in ((px0 - 6, pz0 - 12), (px1 - 4, pz0 - 12)):                      # NO DIVING signs (red/white)
+    box(sx_, sx_ + 10, DY, DY + 1, sz_, sz_ + 6, RED)
+for (ppx, ppz) in ((ix0 + 8, iz1 - 10), (ix1 - 10, iz1 - 10), (ix0 + 8, iz0 + 10)):
+    box(ppx - 3, ppx + 3, DY, DY + 8, ppz - 3, ppz + 3, CERAMIC)
+    box(ppx, ppx + 1, DY + 8, DY + 10, ppz, ppz + 1, TRUNK)
+    leaf_blob(ppx, DY + 16, ppz, 6, 61, LEAF2, anchor=(ppx, DY + 9, ppz), squash=0.7, keep=0.42)
+# roof plant on the annex
+box(cxN - 20, cxN + 20, DY + HALL_H + 4, DY + HALL_H + 14, AZ1 - 50, AZ1 - 30, HVAC)
+box(cxN - 18, cxN + 18, DY + HALL_H + 14, DY + HALL_H + 15, AZ1 - 48, AZ1 - 32, DARK_METAL)
+# floating toys (dynamic: plastic floats in Teardown water)
+PROPS.append(("beach_ball", cxN - 30, DY - 6, pz0 + 30, 0))
+PROPS.append(("beach_ball", cxN + 34, DY - 6, pz0 + 52, 0))
+PROPS.append(("swim_ring", cxN - 6, DY - 4, pz0 + 18, 0))
+PROPS.append(("swim_ring", cxN + 14, DY - 4, pz0 + 44, 30))
+PROPS.append(("kickboard", cxN - 44, DY - 3, pz0 + 46, 20))
+PROPS.append(("kickboard", cxN + 46, DY - 3, pz0 + 20, -15))
+SOUND_SPOTS = [("pool", cxN, DY, (pz0 + pz1) // 2), ("spa", scx, DY, scz)]
 
 # ============================================================================
 # 9. Texture pass: per-voxel / per-panel colour variation
@@ -1316,7 +1578,39 @@ def make_cart():
     a[0, 0, 0] = TIRE; a[11, 0, 0] = TIRE; a[0, 0, 6] = TIRE; a[11, 0, 6] = TIRE
     return a
 
-PROP_SHAPES = {"car_a": make_car(CAR_A), "car_b": make_car(CAR_B), "car_c": make_car(CAR_C), "luggage_cart": make_cart()}
+def make_ball(r=4):
+    n = 2 * r + 1
+    a = np.zeros((n, n, n), np.uint8)
+    cols = [BLANKET_B, CERAMIC, BLANKET_C, ART2, CERAMIC, ART1]
+    for x in range(n):
+        for y in range(n):
+            for z in range(n):
+                if (x - r) ** 2 + (y - r) ** 2 + (z - r) ** 2 <= r * r + 1:
+                    ang = (np.degrees(np.arctan2(z - r, x - r)) + 360) % 360
+                    a[x, y, z] = cols[int(ang // 60)] if abs(y - r) < r - 0.5 else CERAMIC
+    return a
+
+def make_ring(R=6, t=2):
+    n = 2 * (R + t) + 1
+    a = np.zeros((n, 2 * t + 1, n), np.uint8)
+    c = R + t
+    for x in range(n):
+        for z in range(n):
+            d = ((x - c) ** 2 + (z - c) ** 2) ** 0.5
+            for y in range(2 * t + 1):
+                if (d - R) ** 2 + (y - t) ** 2 <= t * t + 0.5:
+                    ang = (np.degrees(np.arctan2(z - c, x - c)) + 360) % 360
+                    a[x, y, z] = BLANKET_B if int(ang // 45) % 2 == 0 else PILLOW
+    return a
+
+def make_kickboard():
+    a = np.zeros((8, 1, 12), np.uint8)
+    a[:, :, :] = ART1
+    a[0, :, 0] = a[7, :, 0] = 0
+    return a
+
+PROP_SHAPES = {"car_a": make_car(CAR_A), "car_b": make_car(CAR_B), "car_c": make_car(CAR_C), "luggage_cart": make_cart(),
+               "beach_ball": make_ball(), "swim_ring": make_ring(), "kickboard": make_kickboard()}
 
 # ============================================================================
 # 11. Export: chunks -> .vox, main.xml
@@ -1379,16 +1673,19 @@ def export():
     # Few, large shapes (<= 256 per axis), split only along party-wall planes and never
     # horizontally: Teardown judges support per shape, so seams through structure make
     # whole slabs of wall drop off when something near a seam is shot.
-    XS = [0, ax0 + 2 * SHORT_BAY_W, W]
+    XS_MAIN = [0, ax0 + 2 * SHORT_BAY_W, W]
+    XS_ANNEX = [0, A_X0 - 16, A_X1 + 16, W]          # the pool hall stays in one shape
+    BANDS = [(0, az0 + 2 * LONG_BAY_W, XS_MAIN), (az0 + 2 * LONG_BAY_W, az0 + 6 * LONG_BAY_W, XS_MAIN),
+             (az0 + 6 * LONG_BAY_W, AZ0 - 6, XS_MAIN), (AZ0 - 6, D, XS_ANNEX)]
     YS = [0, H]
-    ZS = [0, az0 + 2 * LONG_BAY_W, az0 + 6 * LONG_BAY_W, D]
-    for edges in (XS, YS, ZS):
-        assert all(0 < b_ - a_ <= 256 for a_, b_ in zip(edges, edges[1:])), edges
+    for (z0b, z1b, XS) in BANDS:
+        assert 0 < z1b - z0b <= 256, (z0b, z1b)
+        assert all(0 < b_ - a_ <= 256 for a_, b_ in zip(XS, XS[1:])), XS
     voxes = []
     total = 0
-    for xi, (x0, x1_) in enumerate(zip(XS, XS[1:])):
-        for yi, (y0, y1_) in enumerate(zip(YS, YS[1:])):
-            for zi, (z0, z1_) in enumerate(zip(ZS, ZS[1:])):
+    for zi, (z0, z1_, XS) in enumerate(BANDS):
+        for xi, (x0, x1_) in enumerate(zip(XS, XS[1:])):
+            for yi, (y0, y1_) in enumerate(zip(YS, YS[1:])):
                 sub = G[x0:x1_, y0:y1_, z0:z1_]
                 nz = np.nonzero(sub)
                 if len(nz[0]) == 0:
@@ -1483,6 +1780,13 @@ def export():
     for (wx, wy, wz, rgb, scale, size, ltags) in loose:
         xml.append(light_xml((wx, wy, wz), rgb, scale, size, "\t\t", ltags))
     xml.append('\t</group>\n')
+    for (sy_, dep, pts) in POOLS:
+        xml.append(f'\t<water pos="0 {sy_ * 0.1:.2f} 0" depth="{dep * 0.1:.2f}" wave="0.02" ripple="0.25" motion="0.05" foam="0">\n')
+        for (vx, vz) in pts:
+            xml.append(f'\t\t<vertex pos="{vx * 0.1 - CX:.3f} {vz * 0.1 - CZ:.3f}"/>\n')
+        xml.append('\t</water>\n')
+    for (kind, sx_, sy_, sz_) in SOUND_SPOTS:
+        xml.append(f'\t<location tags="ambsound kind={kind}" pos="{f3((sx_ * 0.1 - CX, sy_ * 0.1, sz_ * 0.1 - CZ))}"/>\n')
     xml.append('\t<group name="props" pos="0 0 0">\n')
     for i, (pname, gx, gy, gz, roty) in enumerate(PROPS):
         sx, sy, sz = PROP_SHAPES[pname].shape
@@ -1574,6 +1878,15 @@ if __name__ == "__main__":
         for arr, (gx, gy, gz) in stamps:
             sx, sy, sz = arr.shape
             Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz][arr > 0] = arr[arr > 0]
+        for (sy_, dep, pts) in POOLS:
+            xs_ = [p_[0] for p_ in pts]; zs_ = [p_[1] for p_ in pts]
+            for x in range(int(min(xs_)), int(max(xs_))):
+                for z in range(int(min(zs_)), int(max(zs_))):
+                    # point-in-polygon (convex, counter-clockwise or clockwise)
+                    sgn = [np.sign((pts[(i + 1) % len(pts)][0] - pts[i][0]) * (z + 0.5 - pts[i][1]) -
+                                   (pts[(i + 1) % len(pts)][1] - pts[i][1]) * (x + 0.5 - pts[i][0])) for i in range(len(pts))]
+                    if (all(v >= 0 for v in sgn) or all(v <= 0 for v in sgn)) and Gp[x, int(sy_) - 1, z] == 0:
+                        Gp[x, int(sy_) - 1, z] = GLASS
         for d in DOORS:
             arr = d["arr"]; gx, gy, gz = d["gmin"]; sx, sy, sz = arr.shape
             Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz][arr > 0] = arr[arr > 0]

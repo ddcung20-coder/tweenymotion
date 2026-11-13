@@ -41,6 +41,8 @@ local function loadSounds()
 	snd.muzak     = LoadLoop("MOD/snd/muzak.ogg")
 	snd.ambience  = LoadLoop("MOD/snd/ambience.ogg")
 	snd.buzz      = LoadLoop("MOD/snd/buzz.ogg")
+	snd.pool      = LoadLoop("MOD/snd/pool_ambience.ogg")
+	snd.spa       = LoadLoop("MOD/snd/spa_bubbles.ogg")
 end
 
 local function dist(a, b)
@@ -358,6 +360,30 @@ local function flickerTick(dt, cam)
 end
 
 ----------------------------------------------------------------------------------------------------
+-- positional ambience (pool hall, spa)
+----------------------------------------------------------------------------------------------------
+local spots = {}
+
+local function spotsInit()
+	local locs = FindLocations("ambsound", true)
+	for i = 1, #locs do
+		spots[#spots + 1] = { pos = GetLocationTransform(locs[i]).pos, kind = GetTagValue(locs[i], "kind") }
+	end
+end
+
+local function spotsTick(cam)
+	for i = 1, #spots do
+		local sp = spots[i]
+		local d = dist(sp.pos, cam)
+		if sp.kind == "pool" and d < 45 then
+			PlayLoop(snd.pool, sp.pos, 0.7)
+		elseif sp.kind == "spa" and d < 18 then
+			PlayLoop(snd.spa, sp.pos, 0.5)
+		end
+	end
+end
+
+----------------------------------------------------------------------------------------------------
 -- callbacks
 ----------------------------------------------------------------------------------------------------
 local toolTimer = 0
@@ -378,6 +404,7 @@ function init()
 	doorsInit()
 	elevInit()
 	flickerInit()
+	spotsInit()
 end
 
 function tick(dt)
@@ -392,6 +419,7 @@ function tick(dt)
 	doorsTick(cam)
 	elevTick(dt)
 	flickerTick(dt, cam)
+	spotsTick(cam)
 end
 
 function update(dt)
