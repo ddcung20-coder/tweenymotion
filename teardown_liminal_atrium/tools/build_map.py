@@ -212,6 +212,73 @@ def hash3(x, y, z, seed=0):
     h = (h ^ (h >> 13)) * 1274126177
     return ((h ^ (h >> 16)) & 0xFFFF) / 65535.0
 
+# ----------------------------------------------------------------------------
+# Interactive doors: separate static bodies animated by MOD/doors.lua (press E).
+# ----------------------------------------------------------------------------
+DOORS = []
+WORLD = Frame(0, 0, 1, 0, 0, 1)
+
+def cont(fr, U, V):
+    """continuous frame point -> continuous grid point (x, z)."""
+    return (fr.ox + 0.5 + fr.ux * (U - 0.5) + fr.vx * (V - 0.5),
+            fr.oz + 0.5 + fr.uz * (U - 0.5) + fr.vz * (V - 0.5))
+
+def add_door(fr, u0, u1, y0, y1, v0, v1, style, hinge=None, open_dir=None, slide=None, start_open=False):
+    """door leaf occupying a frame box; style(a, b, c, A, B, C) colours local cell
+    (a along u, b up, c along v).  Swing: hinge = frame corner (U, V), open_dir = (du, dv).
+    Slide: slide = (du, dv) frame offset in voxels."""
+    x0, x1, z0, z1 = fr._rect(u0, u1, v0, v1)
+    arr = np.zeros((x1 - x0, y1 - y0, z1 - z0), np.uint8)
+    A, B, C = u1 - u0, y1 - y0, v1 - v0
+    for u in range(u0, u1):
+        for v in range(v0, v1):
+            x, z = fr.pt(u, v)
+            for yy in range(y0, y1):
+                arr[x - x0, yy - y0, z - z0] = style(u - u0, yy - y0, v - v0, A, B, C)
+    box(x0, x1, y0, y1, z0, z1, 0)       # keep the opening clear in the world grid
+    d = dict(arr=arr, gmin=(x0, y0, z0), start_open=start_open)
+    if slide is not None:
+        d["kind"] = "slide"
+        d["slide"] = (fr.ux * slide[0] + fr.vx * slide[1], fr.uz * slide[0] + fr.vz * slide[1])
+    else:
+        d["kind"] = "swing"
+        px, pz = cont(fr, *hinge)
+        cxm, czm = cont(fr, (u0 + u1) / 2, (v0 + v1) / 2)
+        want = (fr.ux * open_dir[0] + fr.vx * open_dir[1], fr.uz * open_dir[0] + fr.vz * open_dir[1])
+        best = None
+        for ang in (90, -90):
+            a = np.radians(ang)
+            rx = (cxm - px) * np.cos(a) + (czm - pz) * np.sin(a)      # Teardown QuatEuler(0,a,0):
+            rz = -(cxm - px) * np.sin(a) + (czm - pz) * np.cos(a)     # +X -> -Z for +90
+            score = rx * want[0] + rz * want[1]
+            if best is None or score > best[0]:
+                best = (score, ang)
+        d["pivot"] = (px, pz)
+        d["ang"] = best[1]
+    DOORS.append(d)
+
+def wood_door(a, b, c, A, B, C):
+    if (a, b) in ((A - 2, 10), (A - 2, 11)):
+        return BRASS                                   # handle
+    if (a in (1, A - 2) or b in (1, 2, B - 2, 10)) and 0 < a < A - 1:
+        return WOOD_DARK                               # stiles / rails (panel look)
+    return WOOD_DOOR
+
+def glass_door(a, b, c, A, B, C):
+    if a in (0, A - 1) or b in (0, 1, B - 1):
+        return FRAME
+    if b in (9, 10) and a in (1, A - 2):
+        return BRASS
+    return GLASS_DOOR
+
+def steel_door(a, b, c, A, B, C):
+    if b in (10, 11) and a == A - 2:
+        return STEEL
+    return DARK_METAL if a in (0, A - 1) or b in (0, B - 1) else HVAC
+
+def elev_door(a, b, c, A, B, C):
+    return FRAME if a == 0 else ELEV_DOOR
+
 # ============================================================================
 # 1. Site: ground, sidewalk, lawns, trees, parking
 # ============================================================================
@@ -610,7 +677,8 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
     v0b = ROOM_D - 13
     fr.box(bu0b, bu0b + 1, y, y + FH - SLAB_T, v0b, ROOM_D, ROOM_WALL)
     fr.box(bu0b, U1, y, y + FH - SLAB_T, v0b, v0b + 1, ROOM_WALL)
-    fr.box(bu0b, bu0b + 1, y, y + 21, v0b + 2, v0b + 10, 0)                     # doorway
+    add_door(fr, bu0b, bu0b + 1, y, y + 21, v0b + 2, v0b + 10, lambda a, b, c, A, B, C: wood_door(c, b, a, C, B, A),
+             hinge=(bu0b, v0b + 2), open_dir=(-1, 0), start_open=rng.random() < 0.6)
     fr.box(bu0b, bu0b + 1, y + 21, y + 22, v0b + 1, v0b + 11, WOOD_DARK)
     fr.box(bu0b + 1, U1, y - 1, y, v0b + 1, ROOM_D, TILE)
     for uu in range(bu0b + 1, U1, 3):                                           # floor tile grout
@@ -652,13 +720,10 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
     fr.box(U0 + 1, U0 + 6, y + 6, y + 7, ROOM_D - 11, ROOM_D - 2, WOOD_MED)        # shelf
     fr.box(U0 + 6, U0 + 7, y, y + 22, ROOM_D - 12, ROOM_D - 7, WOOD_MED)          # one door closed
     fr.box(U0 + 6, U0 + 7, y + 10, y + 12, ROOM_D - 8, ROOM_D - 7, BRASS)
-    if rng.random() < 0.45:   # suitcase on a luggage rack
-        sv = rng.choice([31, 33])
-        fr.box(U0 + 8, U0 + 9, y, y + 5, sv - 6, sv + 1, WOOD_DARK)
-        fr.box(U0 + 15, U0 + 16, y, y + 5, sv - 6, sv + 1, WOOD_DARK)
-        fr.box(U0 + 8, U0 + 16, y + 5, y + 6, sv - 6, sv + 1, WOOD_DARK)
-        fr.box(U0 + 8, U0 + 16, y + 6, y + 11, sv - 5, sv, rng.choice([TV_BODY, CAR_C, CAR_A, UPHOL]))
-        fr.box(U0 + 11, U0 + 13, y + 11, y + 12, sv - 4, sv - 1, CHROME)
+    if rng.random() < 0.4:    # suitcase lying at the foot of the bed
+        sb = beds[0][0]
+        fr.box(bu0 + 1, bu0 + 9, y + 7, y + 10, sb + 2, sb + 8, rng.choice([TV_BODY, CAR_C, CAR_A, UPHOL]))
+        fr.box(bu0 + 4, bu0 + 6, y + 10, y + 11, sb + 3, sb + 7, CHROME)
     # ---- entrance door (corridor partition: v in [ROOM_D, ROOM_D+T_PART))
     du0 = U0 + 8
     fr.box(du0, du0 + 9, y, y + 21, ROOM_D, ROOM_D + T_PART, 0)
@@ -666,13 +731,9 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
     fr.box(du0 - 1, du0, y, y + 21, ROOM_D + T_PART, ROOM_D + T_PART + 1, WOOD_DARK)
     fr.box(du0 + 9, du0 + 10, y, y + 21, ROOM_D + T_PART, ROOM_D + T_PART + 1, WOOD_DARK)
     fr.box(du0, du0 + 9, y - 1, y, ROOM_D, ROOM_D + T_PART, WOOD_DARK)          # threshold
-    ajar = rng.random() < 0.5
-    if ajar:   # swung fully open against the wardrobe
-        fr.box(du0, du0 + 1, y, y + 21, ROOM_D - 10, ROOM_D - 1, WOOD_DOOR)
-        fr.box(du0 + 1, du0 + 2, y + 10, y + 11, ROOM_D - 3, ROOM_D - 2, BRASS)
-    else:      # half open (diagonal approximated by 3 steps)
-        for i in range(3):
-            fr.box(du0 + i * 3, du0 + i * 3 + 3, y, y + 21, ROOM_D - 1 - (i + 1) * 2, ROOM_D - 1 - i * 2, WOOD_DOOR)
+    # real door leaf in the room-side layer of the partition, hinged on the wardrobe side, opens inward
+    add_door(fr, du0, du0 + 9, y, y + 21, ROOM_D, ROOM_D + 1, wood_door,
+             hinge=(du0, ROOM_D), open_dir=(0, -1), start_open=rng.random() < 0.25)
     fr.box(du0 + 11, du0 + 14, y + 15, y + 17, ROOM_D + T_PART, ROOM_D + T_PART + 1, BRASS)   # number plate
     fr.box(du0 - 3, du0 - 2, y + 11, y + 13, ROOM_D - 1, ROOM_D, SWITCH)         # light switch (inside)
     fr.box(du0 - 3, du0 - 2, y + 15, y + 17, ROOM_D - 1, ROOM_D, SWITCH)         # thermostat
@@ -816,12 +877,9 @@ for px_ in (lx0 + 22, lx1 - 24):
 # glass double doors to the atrium
 box(cx - 14, cx + 14, y, y + 22, az0 - T_FAC, az0, FRAME)
 box(cx - 13, cx + 13, y, y + 21, az0 - T_FAC, az0, 0)
-box(cx - 13, cx + 13, y, y + 21, az0 - 3, az0 - 2, GLASS_DOOR)
-box(cx - 1, cx + 1, y, y + 21, az0 - 3, az0 - 2, FRAME)
-box(cx - 13, cx + 13, y, y + 1, az0 - 3, az0 - 2, FRAME)
-box(cx - 13, cx + 13, y + 20, y + 21, az0 - 3, az0 - 2, FRAME)
-box(cx - 3, cx - 2, y + 8, y + 13, az0 - 4, az0 - 3, BRASS)
-box(cx + 2, cx + 3, y + 8, y + 13, az0 - 4, az0 - 3, BRASS)
+add_door(WORLD, cx - 13, cx, y, y + 21, az0 - 3, az0 - 2, glass_door, hinge=(cx - 13, az0 - 2), open_dir=(0, 1))
+add_door(WORLD, cx, cx + 13, y, y + 21, az0 - 3, az0 - 2, lambda a, b, c, A, B, C: glass_door(A - 1 - a, b, c, A, B, C),
+         hinge=(cx + 13, az0 - 2), open_dir=(0, 1))
 box(cx - 4, cx + 4, y + 23, y + 26, az0 - 5, az0 - 4, EXIT_SIGN)
 # reception desk with key cubbies behind it
 box(lx0 + 8, lx0 + 36, y, y + 11, lz0 + 14, lz0 + 20, WOOD_DARK)
@@ -866,11 +924,9 @@ box(cx - 14, cx + 14, y, y + 22, lz0 - T_PART, lz0 + 1, 0)
 box(cx - 15, cx + 15, y + 22, y + 23, lz0 - T_PART, lz0 + 1, WOOD_DARK)
 box(cx - 16, cx + 16, y, y + 25, bz0 - 1, bz0 + T_EXT, LINTEL)
 box(cx - 15, cx + 15, y, y + 23, bz0 - 1, bz0 + T_EXT, 0)
-box(cx - 15, cx + 15, y, y + 23, bz0 + 1, bz0 + 2, GLASS_DOOR)
-box(cx - 1, cx + 1, y, y + 23, bz0 + 1, bz0 + 2, FRAME)
-box(cx - 15, cx + 15, y, y + 1, bz0 + 1, bz0 + 2, FRAME)
-box(cx - 15, cx + 15, y + 22, y + 23, bz0 + 1, bz0 + 2, FRAME)
-box(cx - 15, cx - 14, y, y + 23, bz0 + 1, bz0 + 2, FRAME); box(cx + 14, cx + 15, y, y + 23, bz0 + 1, bz0 + 2, FRAME)
+add_door(WORLD, cx - 15, cx, y, y + 23, bz0 + 1, bz0 + 2, glass_door, hinge=(cx - 15, bz0 + 1), open_dir=(0, -1))
+add_door(WORLD, cx, cx + 15, y, y + 23, bz0 + 1, bz0 + 2, lambda a, b, c, A, B, C: glass_door(A - 1 - a, b, c, A, B, C),
+         hinge=(cx + 15, bz0 + 1), open_dir=(0, -1))
 box(cx - 20, cx + 20, G0, G0 + 1, bz0 - 14, bz0, RUG_BRD)                    # door mat
 box(cx - 8, cx + 8, G0, G0 + 1, bz0 - 12, bz0 - 2, COR_CARP)
 # entrance canopy with brass posts, lamps and sign
@@ -927,8 +983,8 @@ def stairwell(fr):
             fr.box(-T_PART, 0, y, y + 21, 26, 36, 0)
             fr.box(-T_PART - 1, -T_PART, y + 22, y + 25, 28, 34, EXIT_SIGN)
             fr.box(0, 1, y + 21, y + 22, 25, 37, DARK_METAL)
-            fr.box(1, 2, y, y + 21, 36, 37, DARK_METAL)             # door leaf swung open
-            fr.box(1, 10, y, y + 21, 36, 37, DARK_METAL)
+            add_door(fr, -1, 0, y, y + 21, 26, 36, lambda a, b, c, A, B, C: steel_door(c, b, a, C, B, A),
+                     hinge=(0, 36), open_dir=(1, 0))
             fr.light(4, y + 24, 22, (1.0, 0.95, 0.85), 1.6, 0.2)
             fr.box(2, 6, y + 26, y + 27, 20, 24, CEIL_LAMP)
             # big painted floor number (simple 3x5 digit font scaled x2)
@@ -1010,12 +1066,13 @@ def elevators(fr):
     for k in range(FLOORS):
         y = fy(k)
         for q0 in (2, 24):
-            fr.box(-T_PART, 0, y, y + 22, q0 + 4, q0 + 14, ELEV_DOOR)
+            fr.box(-T_PART, 0, y, y + 22, q0 + 4, q0 + 14, 0)
+            add_door(fr, -T_PART, -T_PART + 1, y, y + 22, q0 + 4, q0 + 14,
+                     lambda a, b, c, A, B, C: elev_door(c, b, a, C, B, A), slide=(0, 10))
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 3, q0 + 4, BRASS)
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 14, q0 + 15, BRASS)
             fr.box(-T_PART - 1, -T_PART, y + 22, y + 23, q0 + 3, q0 + 15, BRASS)
             fr.box(-T_PART - 1, -T_PART, y + 24, y + 26, q0 + 7, q0 + 11, CEIL_LAMP)
-            fr.box(-T_PART - 1, -T_PART, y, y + 22, q0 + 8, q0 + 9, FRAME)
         fr.box(-T_PART - 1, -T_PART, y + 10, y + 14, 21, 23, BRASS)
         fr.box(-T_PART - 2, -T_PART - 1, y + 11, y + 12, 21, 22, CEIL_LAMP)
         # utility / ice machine room
@@ -1261,6 +1318,13 @@ def export():
                 voxes.append(dict(name=name, gmin=(gx0, gy0, gz0), size=(sx, sy, sz), pos=(ox, oy, oz), lights=[], n=n))
     for pname, arr in PROP_SHAPES.items():
         write_vox(os.path.join(VOXDIR, pname + ".vox"), arr)
+    door_files = {}
+    for d in DOORS:
+        key = (d["arr"].shape, d["arr"].tobytes())
+        if key not in door_files:
+            door_files[key] = f"door_{len(door_files)}"
+            write_vox(os.path.join(VOXDIR, door_files[key] + ".vox"), d["arr"])
+        d["file"] = door_files[key]
 
     def owner(gx, gy, gz):
         for v in voxes:
@@ -1292,6 +1356,8 @@ def export():
                'wetness="0" puddleamount="0" puddlesize="0.5" rain="0"/>\n')
     xml.append('\t<postprocessing saturation="0.92" colorbalance="1.0 0.94 1.1" brightness="1.05" gamma="1" bloom="1.3"/>\n')
     xml.append(f'\t<spawnpoint pos="{f3(spawn)}" rot="0 180 0"/>\n')
+    xml.append('\t<script file="main.lua"/>\n')            # base game: gives the player their unlocked tools
+    xml.append('\t<script file="MOD/doors.lua"/>\n')       # E to open / close doors
     xml.append('\t<boundary>\n')
     for (bx_, bz_) in [(-half_w, -half_d), (half_w, -half_d), (half_w, half_d), (-half_w, half_d)]:
         xml.append(f'\t\t<vertex pos="{bx_:.1f} {bz_:.1f}"/>\n')
@@ -1316,6 +1382,21 @@ def export():
         xml.append(f'\t\t<body name="{pname}_{i}" pos="{f3((ox, oy, oz))}" rot="0 {roty} 0" dynamic="true">\n'
                    f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{pname}.vox" object="shape"/>\n\t\t</body>\n')
     xml.append('\t</group>\n')
+    xml.append('\t<group name="doors" pos="0 0 0">\n')
+    for i, d in enumerate(DOORS):
+        sx, sy, sz = d["arr"].shape
+        gx, gy, gz = d["gmin"]
+        ox = (gx + sx // 2) * 0.1 - CX; oy = gy * 0.1; oz = (gz + sz - sz // 2) * 0.1 - CZ
+        tags = "hoteldoor"
+        if d["kind"] == "swing":
+            tags += f" px={d['pivot'][0] * 0.1 - CX:.3f} pz={d['pivot'][1] * 0.1 - CZ:.3f} ang={d['ang']}"
+        else:
+            tags += f" slide sx={d['slide'][0] * 0.1:.2f} sz={d['slide'][1] * 0.1:.2f}"
+        if d["start_open"]:
+            tags += " startopen"
+        xml.append(f'\t\t<body name="door{i}" tags="{tags}" pos="{f3((ox, oy, oz))}">\n'
+                   f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{d["file"]}.vox" object="shape"/>\n\t\t</body>\n')
+    xml.append('\t</group>\n')
     xml.append('</scene>\n')
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
@@ -1326,6 +1407,7 @@ def export():
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
+                 doors=len(DOORS), door_files=len(door_files),
                  rooms=len(room_log), lit=sum(1 for r in room_log if r[3].startswith("lit")),
                  tv=sum(1 for r in room_log if r[3] == "tv"))
     print(json.dumps(stats))
@@ -1340,6 +1422,9 @@ if __name__ == "__main__":
             arr = PROP_SHAPES[pname]; sx, sy, sz = arr.shape
             reg = Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz]
             reg[arr > 0] = arr[arr > 0]
+        for d in DOORS:
+            arr = d["arr"]; gx, gy, gz = d["gmin"]; sx, sy, sz = arr.shape
+            Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz][arr > 0] = arr[arr > 0]
         np.save(p, Gp)
         meta = dict(W=W, H=H, D=D, ax0=ax0, ax1=ax1, az0=az0, az1=az1, bx0=bx0, bx1=bx1, bz0=bz0, bz1=bz1,
                     G0=G0, FH=FH, ATR_TOP=ATR_TOP, ROOF_Y=ROOF_Y,
