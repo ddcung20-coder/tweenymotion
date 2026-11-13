@@ -1,7 +1,12 @@
 -- Liminal Atrium - runs automatically when the map is played (mod-root main.lua).
--- 1) gives the player the base-game tools with plenty of ammo
--- 2) interactive doors (E)          3) working elevators (call / floor buttons, E)
+--  1) gives the player the base-game tools with plenty of ammo
+--  2) working elevators (call buttons / floor buttons with E) with chime, motor hum, door and music sounds
+--  3) building ambience, flickering corridor lights with fluorescent buzz
+--  4) creak / thud sounds for the physical (grab-and-pull) doors
 
+----------------------------------------------------------------------------------------------------
+-- tools
+----------------------------------------------------------------------------------------------------
 local TOOLS = { "sledge", "spraycan", "extinguisher", "blowtorch", "shotgun", "plank", "pipebomb",
 	"gun", "bomb", "wire", "rocket", "booster", "leafblower", "turbo", "explosive", "rifle", "steroid" }
 
@@ -12,114 +17,99 @@ local function giveTools()
 end
 
 local function topUpAmmo()
+	-- always keep every tool loaded (the key may not exist yet on a fresh custom level)
 	for i = 1, #TOOLS do
 		local key = "game.tool." .. TOOLS[i] .. ".ammo"
-		if HasKey(key) and GetFloat(key) < 50 then
+		if GetFloat(key) < 50 then
 			SetFloat(key, 99)
 		end
 	end
 end
 
--- ===================== doors =====================
--- Liminal Atrium: interactive doors.
--- Every body tagged "hoteldoor" becomes a door the player can open / close with
--- the interact key (E).  Swing doors rotate about a vertical axis through the
--- world point (px, pz) by `ang` degrees; sliding doors move by (sx, 0, sz).
+----------------------------------------------------------------------------------------------------
+-- sounds
+----------------------------------------------------------------------------------------------------
+local snd = {}
 
-local doorList = {}
-local byBody = {}
-local SPEED = 1.6          -- full open/close per second (fraction of the motion)
-
-local function doorNum(body, tag, default)
-	local v = tonumber(GetTagValue(body, tag))
-	if v == nil then return default end
-	return v
+local function loadSounds()
+	snd.ding      = LoadSound("MOD/snd/elev_ding.ogg")
+	snd.elevDoor  = LoadSound("MOD/snd/elev_door.ogg")
+	snd.click     = LoadSound("MOD/snd/btn_click.ogg")
+	snd.doorOpen  = LoadSound("MOD/snd/door_open.ogg")
+	snd.doorClose = LoadSound("MOD/snd/door_close.ogg")
+	snd.hum       = LoadLoop("MOD/snd/elev_hum.ogg")
+	snd.muzak     = LoadLoop("MOD/snd/muzak.ogg")
+	snd.ambience  = LoadLoop("MOD/snd/ambience.ogg")
+	snd.buzz      = LoadLoop("MOD/snd/buzz.ogg")
 end
 
-local function apply(d)
-	local t = d.t0
-	if d.kind == "slide" then
-		SetBodyTransform(d.body, Transform(VecAdd(t.pos, VecScale(d.slide, d.amount)), t.rot))
-	else
-		local q = QuatEuler(0, d.ang * d.amount, 0)
-		local rel = VecSub(t.pos, d.pivot)
-		SetBodyTransform(d.body, Transform(VecAdd(d.pivot, QuatRotateVec(q, rel)), QuatRotateQuat(q, t.rot)))
-	end
+local function dist(a, b)
+	return VecLength(VecSub(a, b))
 end
 
-local function tagShapes(d)
-	local shapes = GetBodyShapes(d.body)
-	for j = 1, #shapes do
-		SetTag(shapes[j], "interact", "Open / Close")
-	end
+----------------------------------------------------------------------------------------------------
+-- physical doors: only sounds (opening / closing is done by hand, physics does the rest)
+----------------------------------------------------------------------------------------------------
+local doors = {}
+
+local function quatAngle(a, b)
+	local d = math.abs(a[1] * b[1] + a[2] * b[2] + a[3] * b[3] + a[4] * b[4])
+	if d > 1 then d = 1 end
+	return math.deg(2 * math.acos(d))
 end
 
 local function doorsInit()
 	local bodies = FindBodies("hoteldoor", true)
 	for i = 1, #bodies do
 		local b = bodies[i]
-		local d = { body = b, t0 = GetBodyTransform(b), amount = 0, target = 0 }
-		if HasTag(b, "slide") then
-			d.kind = "slide"
-			d.slide = Vec(doorNum(b, "sx", 0), 0, doorNum(b, "sz", 0))
-		else
-			d.kind = "swing"
-			d.pivot = Vec(doorNum(b, "px", d.t0.pos[1]), d.t0.pos[2], doorNum(b, "pz", d.t0.pos[3]))
-			d.ang = doorNum(b, "ang", 90)
+		local t = GetBodyTransform(b)
+		local closedRot = t.rot
+		local open = false
+		-- doors that start open were placed rotated: their closed orientation is identity
+		if quatAngle(t.rot, Quat()) > 5 then
+			closedRot = Quat()
+			open = true
 		end
-		if HasTag(b, "startopen") then
-			d.amount = 1
-			d.target = 1
-			apply(d)
-		end
-		tagShapes(d)
-		doorList[#doorList + 1] = d
-		byBody[b] = d
+		doors[#doors + 1] = { body = b, closed = closedRot, open = open }
 	end
 end
 
-local function doorsTick(dt)
-	if InputPressed("interact") then
-		local s = GetPlayerInteractShape()
-		if s ~= 0 then
-			local d = byBody[GetShapeBody(s)]
-			if d then
-				d.target = 1 - d.target
-				tagShapes(d)   -- pieces broken off keep working
+local function doorsTick(cam)
+	for i = 1, #doors do
+		local d = doors[i]
+		if IsHandleValid(d.body) then
+			local t = GetBodyTransform(d.body)
+			if dist(t.pos, cam) < 25 then
+				local ang = quatAngle(t.rot, d.closed)
+				if not d.open and ang > 8 then
+					d.open = true
+					PlaySound(snd.doorOpen, t.pos, 0.7)
+				elseif d.open and ang < 3 then
+					d.open = false
+					PlaySound(snd.doorClose, t.pos, 0.9)
+				end
 			end
-		end
-	end
-	for i = 1, #doorList do
-		local d = doorList[i]
-		if d.amount ~= d.target then
-			if d.amount < d.target then
-				d.amount = math.min(d.target, d.amount + dt * SPEED)
-			else
-				d.amount = math.max(d.target, d.amount - dt * SPEED)
-			end
-			apply(d)
 		end
 	end
 end
 
--- ===================== elevators =====================
--- Liminal Atrium: working elevators.
---  * "elevcar"  bodies  : the cabs (dynamic). Tags: shaft=<id> floor=<start floor>
---  * "elevbtn"  shapes  : buttons inside a cab.  Tag: floor=<n>
---  * "elevcall" shapes  : call buttons on the landings. Tags: shaft=<id> floor=<n>
---  * "elevdoor" bodies  : landing doors (static, sliding). Tags: shaft floor sx sz
--- Press E on a button. The landing door closes, the cab travels, the door opens.
-
-local FLOOR_H   = 3.0     -- metres between floors
-local CAB_SPEED = 1.2     -- cab speed m/s
-local DOOR_RATE = 1.0     -- door open/close per second
-local HOLD_TIME = 6.0     -- door stays open this long when idle
+----------------------------------------------------------------------------------------------------
+-- elevators
+--  "elevcar" bodies (dynamic cabs)   tags: shaft floor
+--  "elevbtn" shapes (in a cab)       tag : floor
+--  "elevcall" shapes (landings)      tags: shaft floor
+--  "elevdoor" bodies (landing doors) tags: shaft floor sx sz
+----------------------------------------------------------------------------------------------------
+local FLOOR_H   = 3.0
+local CAB_SPEED = 1.2
+local DOOR_RATE = 0.8
+local HOLD_TIME = 6.0
 
 local cars = {}
 local carByShaft = {}
 local carByBody = {}
 
-local function elevTagNum(h, t, def)
+local function tagNum(h, t, def)
 	local v = tonumber(GetTagValue(h, t))
 	if v == nil then return def end
 	return v
@@ -130,12 +120,16 @@ local function setDoor(door, amount)
 	SetBodyTransform(door.body, Transform(VecAdd(door.t0.pos, VecScale(door.slide, amount)), door.t0.rot))
 end
 
+local function cabCenter(c)
+	return VecAdd(GetBodyTransform(c.body).pos, Vec(0, 1.4, 0))
+end
+
 local function elevInit()
 	local bodies = FindBodies("elevcar", true)
 	for i = 1, #bodies do
 		local b = bodies[i]
 		local t = GetBodyTransform(b)
-		local f = elevTagNum(b, "floor", 0)
+		local f = tagNum(b, "floor", 0)
 		local c = {
 			body = b, shaft = GetTagValue(b, "shaft"), floor = f, target = f,
 			x = t.pos[1], z = t.pos[3], rot = t.rot, y = t.pos[2],
@@ -145,19 +139,18 @@ local function elevInit()
 		carByShaft[c.shaft] = c
 		carByBody[b] = c
 	end
-	local doors = FindBodies("elevdoor", true)
-	for i = 1, #doors do
-		local b = doors[i]
+	local doorBodies = FindBodies("elevdoor", true)
+	for i = 1, #doorBodies do
+		local b = doorBodies[i]
 		local c = carByShaft[GetTagValue(b, "shaft")]
 		if c then
-			local d = { body = b, t0 = GetBodyTransform(b), amount = 0,
-				slide = Vec(elevTagNum(b, "sx", 0), 0, elevTagNum(b, "sz", 0)) }
-			c.doors[elevTagNum(b, "floor", 0)] = d
+			c.doors[tagNum(b, "floor", 0)] = { body = b, t0 = GetBodyTransform(b), amount = 0,
+				slide = Vec(tagNum(b, "sx", 0), 0, tagNum(b, "sz", 0)) }
 		end
 	end
 	local btns = FindShapes("elevbtn", true)
 	for i = 1, #btns do
-		SetTag(btns[i], "interact", "Floor " .. (elevTagNum(btns[i], "floor", 0) + 1))
+		SetTag(btns[i], "interact", "Floor " .. (tagNum(btns[i], "floor", 0) + 1))
 	end
 	local calls = FindShapes("elevcall", true)
 	for i = 1, #calls do
@@ -165,11 +158,26 @@ local function elevInit()
 	end
 end
 
+local function setState(c, state)
+	c.state = state
+	local door = c.doors[c.floor]
+	if state == "closing" or state == "autoclose" or state == "opening" then
+		if door and IsHandleValid(door.body) then
+			PlaySound(snd.elevDoor, GetBodyTransform(door.body).pos, 0.8)
+		end
+	end
+	if state == "opening" then
+		local p = door and GetBodyTransform(door.body).pos or cabCenter(c)
+		PlaySound(snd.ding, p, 0.9)
+		PlaySound(snd.ding, cabCenter(c), 0.5)
+	end
+end
+
 local function request(c, floor)
 	if c == nil or floor == nil then return end
 	c.target = floor
 	if (c.state == "idle" or c.state == "autoclose") and floor == c.floor then
-		c.state = "opening"
+		setState(c, "opening")
 	end
 	c.hold = HOLD_TIME
 end
@@ -179,10 +187,23 @@ local function elevTick(dt)
 		local s = GetPlayerInteractShape()
 		if s ~= 0 then
 			if HasTag(s, "elevbtn") then
-				request(carByBody[GetShapeBody(s)], elevTagNum(s, "floor", nil))
+				PlaySound(snd.click, GetShapeWorldTransform(s).pos, 0.8)
+				request(carByBody[GetShapeBody(s)], tagNum(s, "floor", nil))
 			elseif HasTag(s, "elevcall") then
-				request(carByShaft[GetTagValue(s, "shaft")], elevTagNum(s, "floor", nil))
+				PlaySound(snd.click, GetShapeWorldTransform(s).pos, 0.8)
+				request(carByShaft[GetTagValue(s, "shaft")], tagNum(s, "floor", nil))
 			end
+		end
+	end
+	-- continuous sounds: motor hum while travelling, music inside every cab
+	for i = 1, #cars do
+		local c = cars[i]
+		if IsHandleValid(c.body) then
+			local p = cabCenter(c)
+			if c.state == "moving" then
+				PlayLoop(snd.hum, p, 0.55)
+			end
+			PlayLoop(snd.muzak, p, 0.28)
 		end
 	end
 end
@@ -193,10 +214,10 @@ local function elevUpdate(dt)
 		local door = c.doors[c.floor]
 		if c.state == "idle" then
 			if c.target ~= c.floor then
-				c.state = "closing"
+				setState(c, "closing")
 			elseif door and door.amount > 0 then
 				c.hold = c.hold - dt
-				if c.hold <= 0 then c.state = "autoclose" end
+				if c.hold <= 0 then setState(c, "autoclose") end
 			end
 		elseif c.state == "closing" or c.state == "autoclose" then
 			if door and door.amount > 0 then
@@ -210,7 +231,7 @@ local function elevUpdate(dt)
 			if math.abs(goal - c.y) <= step then
 				c.y = goal
 				c.floor = c.target
-				c.state = "opening"
+				setState(c, "opening")
 			else
 				c.y = c.y + (goal > c.y and step or -step)
 			end
@@ -222,7 +243,6 @@ local function elevUpdate(dt)
 				c.hold = HOLD_TIME
 			end
 		end
-		-- drive the cab: hold it on its rail at the commanded height, keep it upright
 		if IsHandleValid(c.body) then
 			local t = GetBodyTransform(c.body)
 			ConstrainPosition(c.body, 0, t.pos, Vec(c.x, c.y, c.z), 4)
@@ -231,26 +251,80 @@ local function elevUpdate(dt)
 	end
 end
 
+----------------------------------------------------------------------------------------------------
+-- flickering corridor lights
+----------------------------------------------------------------------------------------------------
+local flick = {}
 
+local function flickerInit()
+	local lights = FindLights("flicker", true)
+	for i = 1, #lights do
+		flick[#flick + 1] = { light = lights[i], timer = math.random() * 4, on = true }
+	end
+end
+
+local function flickerTick(dt, cam)
+	local nearest, nd = nil, 12
+	for i = 1, #flick do
+		local f = flick[i]
+		f.timer = f.timer - dt
+		if f.timer <= 0 then
+			if f.on then
+				f.on = false
+				f.timer = 0.03 + math.random() * 0.12                -- short drop-out
+			else
+				f.on = true
+				f.timer = (math.random() < 0.35) and (0.05 + math.random() * 0.1) or (1.5 + math.random() * 5)
+			end
+			SetLightEnabled(f.light, f.on)
+		end
+		local p = GetLightTransform(f.light).pos
+		local d = dist(p, cam)
+		if d < nd then nearest, nd = f, d end
+	end
+	if nearest then
+		PlayLoop(snd.buzz, GetLightTransform(nearest.light).pos, nearest.on and 0.35 or 0.12)
+	end
+end
+
+----------------------------------------------------------------------------------------------------
+-- callbacks
+----------------------------------------------------------------------------------------------------
 local toolTimer = 0
 
+local active = true
+
 function init()
+	-- run only once even if the level XML also loads this file
+	if GetBool("level.liminal.running") then
+		active = false
+		return
+	end
+	SetBool("level.liminal.running", true)
+	SetBool("level.sandbox", true)          -- sandbox level (spawn menu etc.)
+	SetBool("level.unlimitedammo", true)
+	loadSounds()
 	giveTools()
 	doorsInit()
 	elevInit()
+	flickerInit()
 end
 
 function tick(dt)
-	-- re-apply tools for the first seconds (in case the game resets the inventory after init)
+	if not active then return end
 	if toolTimer < 3 then
 		toolTimer = toolTimer + dt
 		giveTools()
 	end
 	topUpAmmo()
-	doorsTick(dt)
+	local cam = GetCameraTransform().pos
+	PlayLoop(snd.ambience, cam, 0.3)
+	doorsTick(cam)
 	elevTick(dt)
+	flickerTick(dt, cam)
 end
 
 function update(dt)
+	if not active then return end
 	elevUpdate(dt)
 end

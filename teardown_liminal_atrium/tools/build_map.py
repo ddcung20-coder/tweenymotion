@@ -171,8 +171,8 @@ def paint(x0, x1, y0, y1, z0, z1, c, only=None):
     m = s > 0 if only is None else np.isin(s, only)
     s[m] = c
 
-def light(gx, gy, gz, rgb, scale=1.0, size=0.1):
-    LIGHTS.append((gx, gy, gz, rgb, scale, size))
+def light(gx, gy, gz, rgb, scale=1.0, size=0.1, tags=""):
+    LIGHTS.append((gx, gy, gz, rgb, scale, size, tags))
 
 def fy(k):
     return G0 + k * FH
@@ -199,9 +199,9 @@ class Frame:
             return
         x0, x1, z0, z1 = self._rect(u0, u1, v0, v1)
         paint(x0, x1, y0, y1, z0, z1, c, only)
-    def light(self, u, y, v, rgb, scale=1.0, size=0.1):
+    def light(self, u, y, v, rgb, scale=1.0, size=0.1, tags=""):
         x, z = self.pt(u, v)
-        light(x + 0.5, y, z + 0.5, rgb, scale, size)
+        light(x + 0.5, y, z + 0.5, rgb, scale, size, tags)
     def mirrored(self, a, b):
         """frame with u' = a + b - 1 - u (mirror across the range [a, b))."""
         x, z = self.pt(a + b - 1, 0)
@@ -251,6 +251,9 @@ def add_door(fr, u0, u1, y0, y1, v0, v1, style, hinge=None, open_dir=None, slide
             for yy in range(y0, y1):
                 arr[x - x0, yy - y0, z - z0] = style(u - u0, yy - y0, v - v0, A, B, C)
     box(x0, x1, y0, y1, z0, z1, 0)       # keep the opening clear in the world grid
+    if slide is None:                    # physical swing door: 10 cm clearance under and over the leaf
+        arr = arr[:, 1:-1, :]
+        y0 += 1
     d = dict(arr=arr, gmin=(x0, y0, z0), start_open=start_open, tag=tag)
     if slide is not None:
         d["kind"] = "slide"
@@ -834,7 +837,7 @@ def build_corridors():
             for u in range(0, L, 17):
                 fr.box(u, u + 1, y + 23, y + 24, 3, 4, CHROME)
             for u in range(51, L - 5, 68):          # aligned with a ceiling lamp
-                fr.light(u, y + 21, 9, (1.0, 0.86, 0.62), 2.0, 0.25)
+                fr.light(u, y + 21, 9, (1.0, 0.86, 0.62), 2.0, 0.25, "flicker" if rng.random() < 0.18 else "")
             # both walls: striped wallpaper above a wood wainscot with chair rail
             for side in (-1, COR_W):
                 for u in range(0, L, 6):
@@ -919,7 +922,7 @@ for sz, back in ((lz0 + 10, lz0 + 10), (lz0 + 28, lz0 + 34)):
     box(lx1 - 31, lx1 - 30, y, y + 8, sz, sz + 7, UPHOL); box(lx1 - 10, lx1 - 9, y, y + 8, sz, sz + 7, UPHOL)
 box(lx1 - 26, lx1 - 14, y + 3, y + 4, lz0 + 19, lz0 + 25, GLASS_DOOR)
 box(lx1 - 26, lx1 - 14, y, y + 3, lz0 + 21, lz0 + 23, BRASS)
-for (ppx, ppz) in [(lx0 + 4, lz1 - 12), (lx1 - 6, lz1 - 12), (lx0 + 42, lz0 + 6)]:
+for (ppx, ppz) in [(lx0 + 4, lz1 - 12), (lx1 - 6, lz1 - 12), (lx1 - 6, lz0 + 6)]:   # corners, out of the walkway
     box(ppx - 3, ppx + 3, y, y + 8, ppz - 3, ppz + 3, PLANTER)
     xs = np.arange(ppx - 6, ppx + 7); ys = np.arange(y + 8, y + 22); zs = np.arange(ppz - 6, ppz + 7)
     X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
@@ -927,11 +930,11 @@ for (ppx, ppz) in [(lx0 + 4, lz1 - 12), (lx1 - 6, lz1 - 12), (lx0 + 42, lz0 + 6)
     G[X[mm], Y[mm], Z[mm]] = LEAF
 box(lx0 + 2, lx1 - 2, y + 26, y + 27, lz0 + 2, lz1 - 6, CEIL)
 ccx, ccz = cx, lz0 + 24
-box(ccx, ccx + 1, y + 20, y + 27, ccz, ccz + 1, BRASS)
+box(ccx, ccx + 1, y + 23, y + 27, ccz, ccz + 1, BRASS)      # short stem: chandelier sits high (2.2 m+)
 for (ox_, oz_) in [(-6, 0), (6, 0), (0, -6), (0, 6), (-4, -4), (4, 4), (-4, 4), (4, -4)]:
-    box(ccx + ox_, ccx + ox_ + 1, y + 19, y + 21, ccz + oz_, ccz + oz_ + 1, CEIL_LAMP)
-    box(min(ccx, ccx + ox_), max(ccx, ccx + ox_) + 1, y + 21, y + 22, min(ccz, ccz + oz_), max(ccz, ccz + oz_) + 1, BRASS)
-light(ccx + 0.5, y + 18, ccz + 0.5, (1.0, 0.85, 0.6), 3.5, 0.4)
+    box(ccx + ox_, ccx + ox_ + 1, y + 22, y + 24, ccz + oz_, ccz + oz_ + 1, CEIL_LAMP)
+    box(min(ccx, ccx + ox_), max(ccx, ccx + ox_) + 1, y + 24, y + 25, min(ccz, ccz + oz_), max(ccz, ccz + oz_) + 1, BRASS)
+light(ccx + 0.5, y + 21, ccz + 0.5, (1.0, 0.85, 0.6), 3.5, 0.4)
 for i in (0, 2):
     xx = lx0 + 14 + i * 26
     box(xx - 2, xx + 2, y + 26, y + 27, lz0 + 20, lz0 + 24, CEIL_LAMP)
@@ -940,7 +943,7 @@ for i in (0, 2):
 box(cx - 14, cx + 14, y, y + 22, lz0 - T_PART, lz0 + 1, 0)
 box(cx - 15, cx + 15, y + 22, y + 23, lz0 - T_PART, lz0 + 1, WOOD_DARK)
 box(cx - 16, cx + 16, y, y + 25, bz0 - 1, bz0 + T_EXT, LINTEL)
-box(cx - 15, cx + 15, y, y + 23, bz0 - 1, bz0 + T_EXT, 0)
+box(cx - 15, cx + 15, y, y + 23, bz0 - 3, bz0 + T_EXT, 0)   # also cut the plinth / plinth cap in front of the door
 add_door(WORLD, cx - 15, cx, y, y + 23, bz0 + 1, bz0 + 2, glass_door, hinge=(cx - 15, bz0 + 1), open_dir=(0, -1))
 add_door(WORLD, cx, cx + 15, y, y + 23, bz0 + 1, bz0 + 2, lambda a, b, c, A, B, C: glass_door(A - 1 - a, b, c, A, B, C),
          hinge=(cx + 15, bz0 + 1), open_dir=(0, -1))
@@ -1415,7 +1418,7 @@ def export():
     loose = []
     snapped = 0
     R = 4
-    for (gx, gy, gz, rgb, scale, size) in LIGHTS:
+    for (gx, gy, gz, rgb, scale, size, ltags) in LIGHTS:
         ix, iy, iz = int(gx), int(gy), int(gz)
         x0, y0, z0 = max(ix - R, 0), max(iy - R, 0), max(iz - R, 0)
         win = G[x0:ix + R + 1, y0:iy + R + 1, z0:iz + R + 1]
@@ -1426,19 +1429,20 @@ def export():
             lx, ly, lz = X[j] + x0, Y[j] + y0, Z[j] + z0
             v = owner(lx, ly, lz)
             wx, wy, wz = (lx + 0.5) * 0.1 - CX, (ly + 0.5) * 0.1, (lz + 0.5) * 0.1 - CZ
-            v["lights"].append((wx - v["pos"][0], wy - v["pos"][1], wz - v["pos"][2], rgb, scale, size))
+            v["lights"].append((wx - v["pos"][0], wy - v["pos"][1], wz - v["pos"][2], rgb, scale, size, ltags))
             snapped += 1
         else:
-            loose.append((gx * 0.1 - CX, gy * 0.1, gz * 0.1 - CZ, rgb, scale, size))
+            loose.append((gx * 0.1 - CX, gy * 0.1, gz * 0.1 - CZ, rgb, scale, size, ltags))
 
-    def f3(a): return " ".join(f"{t:.2f}".rstrip("0").rstrip(".") if abs(t) > 1e-9 else "0" for t in a)
-    def light_xml(p, rgb, scale, size, ind="\t\t\t"):
-        return f'{ind}<light pos="{f3(p)}" type="sphere" color="{f3(rgb)}" scale="{scale:g}" size="{size:g}"/>\n'
+    def f3(a): return " ".join(f"{t:.3f}".rstrip("0").rstrip(".") if abs(t) > 1e-9 else "0" for t in a)
+    def light_xml(p, rgb, scale, size, ind="\t\t\t", ltags=""):
+        t_ = f' tags="{ltags}"' if ltags else ""
+        return f'{ind}<light{t_} pos="{f3(p)}" type="sphere" color="{f3(rgb)}" scale="{scale:g}" size="{size:g}"/>\n'
 
     spawn = ((ax0 + ax1) / 2 * 0.1 - CX, G0 * 0.1 + 0.1, (az0 + 18) * 0.1 - CZ)
     half_w, half_d = W / 2 * 0.1, D / 2 * 0.1
     xml = []
-    xml.append('<scene version="6" shadowVolume="%d 30 %d">\n' % (int(W * 0.1) + 4, int(D * 0.1) + 4))
+    xml.append('<scene version="2.0.0" shadowVolume="%d 30 %d">\n' % (int(W * 0.1) + 4, int(D * 0.1) + 4))
     xml.append('\t<environment skybox="cloudy.dds" skyboxtint="0.35 0.3 0.5" skyboxbrightness="0.12" skyboxrot="0" '
                'constant="0.004 0.003 0.006" ambient="0.25" ambientexponent="1.6" fogColor="0.07 0.06 0.1" '
                'fogParams="30 160 0.9 4" sunBrightness="0" sunColorTint="0.6 0.6 1" sunDir="auto" sunSpread="0" '
@@ -1446,7 +1450,10 @@ def export():
                'wetness="0" puddleamount="0" puddlesize="0.5" rain="0"/>\n')
     xml.append('\t<postprocessing saturation="0.92" colorbalance="1.0 0.94 1.1" brightness="1.05" gamma="1" bloom="1.3"/>\n')
     xml.append(f'\t<spawnpoint pos="{f3(spawn)}" rot="0 180 0"/>\n')
-    # scripts: the mod-root main.lua runs automatically when the map is played (tools, doors, elevators)
+    # base-game main.lua: player tools / spawn menu like the official sandbox levels.
+    # (our own logic lives in the mod-root main.lua, which the game runs automatically;
+    #  it guards itself so it never runs twice even if "main.lua" resolves to it)
+    xml.append('\t<script file="main.lua"/>\n')
     xml.append('\t<boundary>\n')
     for (bx_, bz_) in [(-half_w, -half_d), (half_w, -half_d), (half_w, half_d), (-half_w, half_d)]:
         xml.append(f'\t\t<vertex pos="{bx_:.1f} {bz_:.1f}"/>\n')
@@ -1455,13 +1462,13 @@ def export():
     for v in voxes:
         if v["lights"]:
             xml.append(f'\t\t<vox name="{v["name"]}" pos="{f3(v["pos"])}" file="MOD/vox/{v["name"]}.vox" object="shape">\n')
-            for (lx, ly, lz, rgb, scale, size) in v["lights"]:
-                xml.append(light_xml((lx, ly, lz), rgb, scale, size))
+            for (lx, ly, lz, rgb, scale, size, ltags) in v["lights"]:
+                xml.append(light_xml((lx, ly, lz), rgb, scale, size, ltags=ltags))
             xml.append('\t\t</vox>\n')
         else:
             xml.append(f'\t\t<vox name="{v["name"]}" pos="{f3(v["pos"])}" file="MOD/vox/{v["name"]}.vox" object="shape"/>\n')
-    for (wx, wy, wz, rgb, scale, size) in loose:
-        xml.append(light_xml((wx, wy, wz), rgb, scale, size, "\t\t"))
+    for (wx, wy, wz, rgb, scale, size, ltags) in loose:
+        xml.append(light_xml((wx, wy, wz), rgb, scale, size, "\t\t", ltags))
     xml.append('\t</group>\n')
     xml.append('\t<group name="props" pos="0 0 0">\n')
     for i, (pname, gx, gy, gz, roty) in enumerate(PROPS):
@@ -1502,15 +1509,27 @@ def export():
         sx, sy, sz = d["arr"].shape
         gx, gy, gz = d["gmin"]
         ox = (gx + sx // 2) * 0.1 - CX; oy = gy * 0.1; oz = (gz + sz - sz // 2) * 0.1 - CZ
-        tags = d["tag"]
-        if d["kind"] == "swing":
-            tags += f" px={d['pivot'][0] * 0.1 - CX:.3f} pz={d['pivot'][1] * 0.1 - CZ:.3f} ang={d['ang']}"
-        else:
-            tags += f" slide sx={d['slide'][0] * 0.1:.2f} sz={d['slide'][1] * 0.1:.2f}"
+        if d["kind"] == "slide":   # elevator landing doors: moved by main.lua
+            tags = d["tag"] + f" slide sx={d['slide'][0] * 0.1:.2f} sz={d['slide'][1] * 0.1:.2f}"
+            xml.append(f'\t\t<body name="door{i}" tags="{tags}" pos="{f3((ox, oy, oz))}">\n'
+                       f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{d["file"]}.vox" object="shape"/>\n\t\t</body>\n')
+            continue
+        # physical door: dynamic body + two ball joints on the vertical hinge line (= a hinge whose
+        # axis does not depend on any joint-axis convention). collide=true lets the frame stop it.
+        px, pz = d["pivot"][0] * 0.1 - CX, d["pivot"][1] * 0.1 - CZ
+        rel = [(px - ox, 0.1 * 2, pz - oz), (px - ox, sy * 0.1 - 0.2, pz - oz)]
+        rot = 0
+        bpos = (ox, oy, oz)
         if d["start_open"]:
-            tags += " startopen"
-        xml.append(f'\t\t<body name="door{i}" tags="{tags}" pos="{f3((ox, oy, oz))}">\n'
-                   f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{d["file"]}.vox" object="shape"/>\n\t\t</body>\n')
+            rot = d["ang"] * 0.85
+            a = np.radians(rot)
+            dx, dz = ox - px, oz - pz
+            bpos = (px + dx * np.cos(a) + dz * np.sin(a), oy, pz - dx * np.sin(a) + dz * np.cos(a))
+        xml.append(f'\t\t<body name="door{i}" tags="hoteldoor" pos="{f3(bpos)}" rot="0 {rot:g} 0" dynamic="true">\n'
+                   f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{d["file"]}.vox" object="shape"/>\n')
+        for r_ in rel:
+            xml.append(f'\t\t\t<joint pos="{f3(r_)}" type="ball" size="0.1" collide="true"/>\n')
+        xml.append('\t\t</body>\n')
     xml.append('\t</group>\n')
     xml.append('</scene>\n')
     with open(os.path.join(OUT, "main.xml"), "w") as f:
@@ -1551,6 +1570,6 @@ if __name__ == "__main__":
                     pal={i: list(v[0]) for i, v in PAL.items()},
                     emit=[i for i, v in PAL.items() if v[1] == "emit"],
                     glass=[i for i, v in PAL.items() if v[1] == "glass"],
-                    lights=[(l[0], l[1], l[2], l[3], l[4]) for l in LIGHTS])
+                    lights=[(l[0], l[1], l[2], l[3], l[4]) for l in LIGHTS])  # tags not needed for preview
         with open(p + ".json", "w") as f:
             json.dump(meta, f)

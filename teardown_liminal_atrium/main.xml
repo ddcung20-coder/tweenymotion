@@ -1,7 +1,8 @@
-<scene version="6" shadowVolume="51 30 62">
+<scene version="2.0.0" shadowVolume="51 30 62">
 	<environment skybox="cloudy.dds" skyboxtint="0.35 0.3 0.5" skyboxbrightness="0.12" skyboxrot="0" constant="0.004 0.003 0.006" ambient="0.25" ambientexponent="1.6" fogColor="0.07 0.06 0.1" fogParams="30 160 0.9 4" sunBrightness="0" sunColorTint="0.6 0.6 1" sunDir="auto" sunSpread="0" sunLength="32" sunFogScale="1" sunGlare="0" exposure="1 6" brightness="1" nightlight="true" wetness="0" puddleamount="0" puddlesize="0.5" rain="0"/>
 	<postprocessing saturation="0.92" colorbalance="1.0 0.94 1.1" brightness="1.05" gamma="1" bloom="1.3"/>
 	<spawnpoint pos="0 0.5 -11.8" rot="0 180 0"/>
+	<script file="main.lua"/>
 	<boundary>
 		<vertex pos="-23.6 -29.2"/>
 		<vertex pos="23.6 -29.2"/>
@@ -191,9 +192,9 @@
 		<light pos="-13.95 2.5 18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 5.5 -15.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 5.5 -8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 5.5 -1.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 5.5 5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 5.5 11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-13.95 5.5 -1.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-13.95 5.5 5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-13.95 5.5 11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 5.5 18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 8.5 -15.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 8.5 -8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
@@ -202,7 +203,7 @@
 		<light pos="-13.95 8.5 11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 8.5 18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 11.5 -15.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 11.5 -8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-13.95 11.5 -8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 11.5 -1.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 11.5 5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 11.5 11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
@@ -212,12 +213,12 @@
 		<light pos="-13.95 14.5 -1.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 14.5 5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 14.5 11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 14.5 18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-13.95 14.5 18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 17.5 -15.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 17.5 -8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 17.5 -1.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 17.5 5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 17.5 11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-13.95 17.5 11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-13.95 17.5 18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 2.5 15.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 2.5 8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
@@ -225,7 +226,7 @@
 		<light pos="13.95 2.5 -5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 2.5 -11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 2.5 -18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 5.5 15.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="13.95 5.5 15.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 5.5 8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 5.5 1.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 5.5 -5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
@@ -233,18 +234,18 @@
 		<light pos="13.95 5.5 -18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 8.5 15.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 8.5 8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 8.5 1.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 8.5 -5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="13.95 8.5 1.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="13.95 8.5 -5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 8.5 -11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 8.5 -18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 11.5 15.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 11.5 8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 11.5 1.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 11.5 -5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 11.5 -11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="13.95 11.5 -11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 11.5 -18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 14.5 15.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 14.5 8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="13.95 14.5 8.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 14.5 1.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 14.5 -5.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 14.5 -11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
@@ -256,7 +257,7 @@
 		<light pos="13.95 17.5 -11.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="13.95 17.5 -18.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="9.65 2.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="2.85 2.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="2.85 2.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-3.95 2.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-10.75 2.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="9.65 5.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
@@ -266,18 +267,18 @@
 		<light pos="9.65 8.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="2.85 8.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-3.95 8.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-10.75 8.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="9.65 11.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-10.75 8.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="9.65 11.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="2.85 11.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-3.95 11.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-10.75 11.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-10.75 11.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="9.65 14.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="2.85 14.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-3.95 14.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-10.75 14.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="9.65 17.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="2.85 17.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-3.95 17.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-3.95 17.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-10.75 17.5 -19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-9.65 2.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-2.85 2.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
@@ -289,21 +290,21 @@
 		<light pos="10.75 5.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-9.65 8.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-2.85 8.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="3.95 8.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="3.95 8.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="10.75 8.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-9.65 11.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-9.65 11.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-2.85 11.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="3.95 11.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="10.75 11.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-9.65 14.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="3.95 11.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="10.75 11.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="-9.65 14.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-2.85 14.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="3.95 14.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="10.75 14.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-9.65 17.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="-2.85 17.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="3.95 17.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker" pos="3.95 17.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		<light pos="10.75 17.5 19.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="0.05 2.2 -15.95" type="sphere" color="1 0.85 0.6" scale="3.5" size="0.4"/>
+		<light pos="0.05 2.5 -15.95" type="sphere" color="1 0.85 0.6" scale="3.5" size="0.4"/>
 		<light pos="-2.55 2.8 -16.15" type="sphere" color="1 0.85 0.65" scale="2" size="0.3"/>
 		<light pos="2.65 2.8 -16.15" type="sphere" color="1 0.85 0.65" scale="2" size="0.3"/>
 		<light pos="0.05 3.3 -22" type="sphere" color="1 0.85 0.65" scale="4" size="0.4"/>
@@ -359,7 +360,7 @@
 		</body>
 	</group>
 	<group name="elevators" pos="0 0 0">
-		<body name="car_NW0" tags="elevcar shaft=NW0 floor=2" pos="-11.9 6.2 17.3" dynamic="true">
+		<body name="car_NW0" tags="elevcar shaft=NW0 floor=4" pos="-11.9 12.2 17.3" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/elev_car_NW0.vox" object="shape">
 				<light pos="0.05 2.55 0.05" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>
 			</vox>
@@ -370,7 +371,7 @@
 			<vox tags="elevbtn floor=4" pos="-0.6 1.8 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
 			<vox tags="elevbtn floor=5" pos="-0.6 2 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
 		</body>
-		<body name="car_NW1" tags="elevcar shaft=NW1 floor=2" pos="-11.9 6.2 15.1" dynamic="true">
+		<body name="car_NW1" tags="elevcar shaft=NW1 floor=4" pos="-11.9 12.2 15.1" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/elev_car_NW1.vox" object="shape">
 				<light pos="0.05 2.55 0.05" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>
 			</vox>
@@ -381,7 +382,7 @@
 			<vox tags="elevbtn floor=4" pos="-0.6 1.8 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
 			<vox tags="elevbtn floor=5" pos="-0.6 2 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
 		</body>
-		<body name="car_SE0" tags="elevcar shaft=SE0 floor=2" pos="11.8 6.2 -17.3" dynamic="true">
+		<body name="car_SE0" tags="elevcar shaft=SE0 floor=1" pos="11.8 3.2 -17.3" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/elev_car_SE0.vox" object="shape">
 				<light pos="0.05 2.55 0.05" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>
 			</vox>
@@ -392,7 +393,7 @@
 			<vox tags="elevbtn floor=4" pos="0.6 1.8 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
 			<vox tags="elevbtn floor=5" pos="0.6 2 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
 		</body>
-		<body name="car_SE1" tags="elevcar shaft=SE1 floor=4" pos="11.8 12.2 -15.1" dynamic="true">
+		<body name="car_SE1" tags="elevcar shaft=SE1 floor=0" pos="11.8 0.2 -15.1" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/elev_car_SE1.vox" object="shape">
 				<light pos="0.05 2.55 0.05" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>
 			</vox>
@@ -429,905 +430,1505 @@
 		<vox tags="elevcall shaft=SE1 floor=5" pos="13.1 16.5 -14.4" file="MOD/vox/elev_btn.vox" object="shape"/>
 	</group>
 	<group name="doors" pos="0 0 0">
-		<body name="door0" tags="hoteldoor px=-11.700 pz=-12.100 ang=90 startopen" pos="-12.1 0.4 -12.1">
+		<body name="door0" tags="hoteldoor" pos="-11.793 0.5 -11.711" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door1" tags="hoteldoor px=-12.800 pz=-11.000 ang=-90" pos="-12.9 0.4 -11.4">
+		<body name="door1" tags="hoteldoor" pos="-12.9 0.5 -11.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door2" tags="hoteldoor px=-11.700 pz=-12.100 ang=90" pos="-12.1 3.4 -12.1">
+		<body name="door2" tags="hoteldoor" pos="-12.1 3.5 -12.1" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door3" tags="hoteldoor px=-12.800 pz=-11.000 ang=-90 startopen" pos="-12.9 3.4 -11.4">
+		<body name="door3" tags="hoteldoor" pos="-12.434 3.5 -11.191" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door4" tags="hoteldoor px=-11.700 pz=-12.100 ang=90 startopen" pos="-12.1 6.4 -12.1">
+		<body name="door4" tags="hoteldoor" pos="-11.793 6.5 -11.711" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door5" tags="hoteldoor px=-12.800 pz=-11.000 ang=-90" pos="-12.9 6.4 -11.4">
+		<body name="door5" tags="hoteldoor" pos="-12.9 6.5 -11.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door6" tags="hoteldoor px=-11.700 pz=-12.100 ang=90 startopen" pos="-12.1 9.4 -12.1">
+		<body name="door6" tags="hoteldoor" pos="-11.793 9.5 -11.711" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door7" tags="hoteldoor px=-12.800 pz=-11.000 ang=-90" pos="-12.9 9.4 -11.4">
+		<body name="door7" tags="hoteldoor" pos="-12.9 9.5 -11.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door8" tags="hoteldoor px=-11.700 pz=-12.100 ang=90 startopen" pos="-12.1 12.4 -12.1">
+		<body name="door8" tags="hoteldoor" pos="-11.793 12.5 -11.711" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door9" tags="hoteldoor px=-12.800 pz=-11.000 ang=-90" pos="-12.9 12.4 -11.4">
+		<body name="door9" tags="hoteldoor" pos="-12.9 12.5 -11.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door10" tags="hoteldoor px=-11.700 pz=-11.500 ang=-90" pos="-12.1 15.4 -11.4">
+		<body name="door10" tags="hoteldoor" pos="-12.1 15.5 -11.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door11" tags="hoteldoor px=-12.800 pz=-12.600 ang=90" pos="-12.9 15.4 -12.1">
+		<body name="door11" tags="hoteldoor" pos="-12.9 15.5 -12.1" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door12" tags="hoteldoor px=-11.700 pz=-8.700 ang=90" pos="-12.1 0.4 -8.7">
+		<body name="door12" tags="hoteldoor" pos="-12.1 0.5 -8.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door13" tags="hoteldoor px=-12.800 pz=-7.600 ang=-90" pos="-12.9 0.4 -8">
+		<body name="door13" tags="hoteldoor" pos="-12.9 0.5 -8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door14" tags="hoteldoor px=-11.700 pz=-8.100 ang=-90 startopen" pos="-12.1 3.4 -8">
+		<body name="door14" tags="hoteldoor" pos="-11.891 3.5 -8.466" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door15" tags="hoteldoor px=-12.800 pz=-9.200 ang=90" pos="-12.9 3.4 -8.7">
+		<body name="door15" tags="hoteldoor" pos="-12.9 3.5 -8.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door16" tags="hoteldoor px=-11.700 pz=-8.100 ang=-90 startopen" pos="-12.1 6.4 -8">
+		<body name="door16" tags="hoteldoor" pos="-11.891 6.5 -8.466" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door17" tags="hoteldoor px=-12.800 pz=-9.200 ang=90" pos="-12.9 6.4 -8.7">
+		<body name="door17" tags="hoteldoor" pos="-12.9 6.5 -8.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door18" tags="hoteldoor px=-11.700 pz=-8.700 ang=90 startopen" pos="-12.1 9.4 -8.7">
+		<body name="door18" tags="hoteldoor" pos="-11.793 9.5 -8.311" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door19" tags="hoteldoor px=-12.800 pz=-7.600 ang=-90" pos="-12.9 9.4 -8">
+		<body name="door19" tags="hoteldoor" pos="-12.9 9.5 -8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door20" tags="hoteldoor px=-11.700 pz=-8.100 ang=-90 startopen" pos="-12.1 12.4 -8">
+		<body name="door20" tags="hoteldoor" pos="-11.891 12.5 -8.466" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door21" tags="hoteldoor px=-12.800 pz=-9.200 ang=90" pos="-12.9 12.4 -8.7">
+		<body name="door21" tags="hoteldoor" pos="-12.9 12.5 -8.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door22" tags="hoteldoor px=-11.700 pz=-8.100 ang=-90 startopen" pos="-12.1 15.4 -8">
+		<body name="door22" tags="hoteldoor" pos="-11.891 15.5 -8.466" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door23" tags="hoteldoor px=-12.800 pz=-9.200 ang=90" pos="-12.9 15.4 -8.7">
+		<body name="door23" tags="hoteldoor" pos="-12.9 15.5 -8.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door24" tags="hoteldoor px=-11.700 pz=-5.300 ang=90" pos="-12.1 0.4 -5.3">
+		<body name="door24" tags="hoteldoor" pos="-12.1 0.5 -5.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door25" tags="hoteldoor px=-12.800 pz=-4.200 ang=-90 startopen" pos="-12.9 0.4 -4.6">
+		<body name="door25" tags="hoteldoor" pos="-12.434 0.5 -4.391" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door26" tags="hoteldoor px=-11.700 pz=-4.700 ang=-90 startopen" pos="-12.1 3.4 -4.6">
+		<body name="door26" tags="hoteldoor" pos="-11.891 3.5 -5.066" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door27" tags="hoteldoor px=-12.800 pz=-5.800 ang=90" pos="-12.9 3.4 -5.3">
+		<body name="door27" tags="hoteldoor" pos="-12.9 3.5 -5.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door28" tags="hoteldoor px=-11.700 pz=-5.300 ang=90" pos="-12.1 6.4 -5.3">
+		<body name="door28" tags="hoteldoor" pos="-12.1 6.5 -5.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door29" tags="hoteldoor px=-12.800 pz=-4.200 ang=-90" pos="-12.9 6.4 -4.6">
+		<body name="door29" tags="hoteldoor" pos="-12.9 6.5 -4.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door30" tags="hoteldoor px=-11.700 pz=-5.300 ang=90" pos="-12.1 9.4 -5.3">
+		<body name="door30" tags="hoteldoor" pos="-12.1 9.5 -5.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door31" tags="hoteldoor px=-12.800 pz=-4.200 ang=-90 startopen" pos="-12.9 9.4 -4.6">
+		<body name="door31" tags="hoteldoor" pos="-12.434 9.5 -4.391" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door32" tags="hoteldoor px=-11.700 pz=-4.700 ang=-90 startopen" pos="-12.1 12.4 -4.6">
+		<body name="door32" tags="hoteldoor" pos="-11.891 12.5 -5.066" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door33" tags="hoteldoor px=-12.800 pz=-5.800 ang=90" pos="-12.9 12.4 -5.3">
+		<body name="door33" tags="hoteldoor" pos="-12.9 12.5 -5.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door34" tags="hoteldoor px=-11.700 pz=-4.700 ang=-90 startopen" pos="-12.1 15.4 -4.6">
+		<body name="door34" tags="hoteldoor" pos="-11.891 15.5 -5.066" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door35" tags="hoteldoor px=-12.800 pz=-5.800 ang=90" pos="-12.9 15.4 -5.3">
+		<body name="door35" tags="hoteldoor" pos="-12.9 15.5 -5.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door36" tags="hoteldoor px=-11.700 pz=-1.900 ang=90 startopen" pos="-12.1 0.4 -1.9">
+		<body name="door36" tags="hoteldoor" pos="-11.793 0.5 -1.511" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door37" tags="hoteldoor px=-12.800 pz=-0.800 ang=-90" pos="-12.9 0.4 -1.2">
+		<body name="door37" tags="hoteldoor" pos="-12.9 0.5 -1.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door38" tags="hoteldoor px=-11.700 pz=-1.900 ang=90 startopen" pos="-12.1 3.4 -1.9">
+		<body name="door38" tags="hoteldoor" pos="-11.793 3.5 -1.511" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door39" tags="hoteldoor px=-12.800 pz=-0.800 ang=-90" pos="-12.9 3.4 -1.2">
+		<body name="door39" tags="hoteldoor" pos="-12.9 3.5 -1.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door40" tags="hoteldoor px=-11.700 pz=-1.900 ang=90 startopen" pos="-12.1 6.4 -1.9">
+		<body name="door40" tags="hoteldoor" pos="-11.793 6.5 -1.511" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door41" tags="hoteldoor px=-12.800 pz=-0.800 ang=-90" pos="-12.9 6.4 -1.2">
+		<body name="door41" tags="hoteldoor" pos="-12.9 6.5 -1.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door42" tags="hoteldoor px=-11.700 pz=-1.300 ang=-90" pos="-12.1 9.4 -1.2">
+		<body name="door42" tags="hoteldoor" pos="-12.1 9.5 -1.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door43" tags="hoteldoor px=-12.800 pz=-2.400 ang=90" pos="-12.9 9.4 -1.9">
+		<body name="door43" tags="hoteldoor" pos="-12.9 9.5 -1.9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door44" tags="hoteldoor px=-11.700 pz=-1.900 ang=90" pos="-12.1 12.4 -1.9">
+		<body name="door44" tags="hoteldoor" pos="-12.1 12.5 -1.9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door45" tags="hoteldoor px=-12.800 pz=-0.800 ang=-90" pos="-12.9 12.4 -1.2">
+		<body name="door45" tags="hoteldoor" pos="-12.9 12.5 -1.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door46" tags="hoteldoor px=-11.700 pz=-1.300 ang=-90 startopen" pos="-12.1 15.4 -1.2">
+		<body name="door46" tags="hoteldoor" pos="-11.891 15.5 -1.666" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door47" tags="hoteldoor px=-12.800 pz=-2.400 ang=90" pos="-12.9 15.4 -1.9">
+		<body name="door47" tags="hoteldoor" pos="-12.9 15.5 -1.9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door48" tags="hoteldoor px=-11.700 pz=2.100 ang=-90" pos="-12.1 0.4 2.2">
+		<body name="door48" tags="hoteldoor" pos="-12.1 0.5 2.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door49" tags="hoteldoor px=-12.800 pz=1.000 ang=90" pos="-12.9 0.4 1.5">
+		<body name="door49" tags="hoteldoor" pos="-12.9 0.5 1.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door50" tags="hoteldoor px=-11.700 pz=1.500 ang=90 startopen" pos="-12.1 3.4 1.5">
+		<body name="door50" tags="hoteldoor" pos="-11.793 3.5 1.889" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door51" tags="hoteldoor px=-12.800 pz=2.600 ang=-90" pos="-12.9 3.4 2.2">
+		<body name="door51" tags="hoteldoor" pos="-12.9 3.5 2.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door52" tags="hoteldoor px=-11.700 pz=2.100 ang=-90" pos="-12.1 6.4 2.2">
+		<body name="door52" tags="hoteldoor" pos="-12.1 6.5 2.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door53" tags="hoteldoor px=-12.800 pz=1.000 ang=90" pos="-12.9 6.4 1.5">
+		<body name="door53" tags="hoteldoor" pos="-12.9 6.5 1.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door54" tags="hoteldoor px=-11.700 pz=2.100 ang=-90 startopen" pos="-12.1 9.4 2.2">
+		<body name="door54" tags="hoteldoor" pos="-11.891 9.5 1.734" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door55" tags="hoteldoor px=-12.800 pz=1.000 ang=90" pos="-12.9 9.4 1.5">
+		<body name="door55" tags="hoteldoor" pos="-12.9 9.5 1.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door56" tags="hoteldoor px=-11.700 pz=2.100 ang=-90" pos="-12.1 12.4 2.2">
+		<body name="door56" tags="hoteldoor" pos="-12.1 12.5 2.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door57" tags="hoteldoor px=-12.800 pz=1.000 ang=90" pos="-12.9 12.4 1.5">
+		<body name="door57" tags="hoteldoor" pos="-12.9 12.5 1.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door58" tags="hoteldoor px=-11.700 pz=1.500 ang=90" pos="-12.1 15.4 1.5">
+		<body name="door58" tags="hoteldoor" pos="-12.1 15.5 1.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door59" tags="hoteldoor px=-12.800 pz=2.600 ang=-90 startopen" pos="-12.9 15.4 2.2">
+		<body name="door59" tags="hoteldoor" pos="-12.434 15.5 2.409" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door60" tags="hoteldoor px=-11.700 pz=4.900 ang=90 startopen" pos="-12.1 0.4 4.9">
+		<body name="door60" tags="hoteldoor" pos="-11.793 0.5 5.289" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door61" tags="hoteldoor px=-12.800 pz=6.000 ang=-90" pos="-12.9 0.4 5.6">
+		<body name="door61" tags="hoteldoor" pos="-12.9 0.5 5.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door62" tags="hoteldoor px=-11.700 pz=5.500 ang=-90 startopen" pos="-12.1 3.4 5.6">
+		<body name="door62" tags="hoteldoor" pos="-11.891 3.5 5.134" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door63" tags="hoteldoor px=-12.800 pz=4.400 ang=90 startopen" pos="-12.9 3.4 4.9">
+		<body name="door63" tags="hoteldoor" pos="-12.337 3.5 4.614" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door64" tags="hoteldoor px=-11.700 pz=4.900 ang=90" pos="-12.1 6.4 4.9">
+		<body name="door64" tags="hoteldoor" pos="-12.1 6.5 4.9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door65" tags="hoteldoor px=-12.800 pz=6.000 ang=-90" pos="-12.9 6.4 5.6">
+		<body name="door65" tags="hoteldoor" pos="-12.9 6.5 5.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door66" tags="hoteldoor px=-11.700 pz=5.500 ang=-90 startopen" pos="-12.1 9.4 5.6">
+		<body name="door66" tags="hoteldoor" pos="-11.891 9.5 5.134" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door67" tags="hoteldoor px=-12.800 pz=4.400 ang=90" pos="-12.9 9.4 4.9">
+		<body name="door67" tags="hoteldoor" pos="-12.9 9.5 4.9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door68" tags="hoteldoor px=-11.700 pz=4.900 ang=90 startopen" pos="-12.1 12.4 4.9">
+		<body name="door68" tags="hoteldoor" pos="-11.793 12.5 5.289" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door69" tags="hoteldoor px=-12.800 pz=6.000 ang=-90 startopen" pos="-12.9 12.4 5.6">
+		<body name="door69" tags="hoteldoor" pos="-12.434 12.5 5.809" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door70" tags="hoteldoor px=-11.700 pz=4.900 ang=90 startopen" pos="-12.1 15.4 4.9">
+		<body name="door70" tags="hoteldoor" pos="-11.793 15.5 5.289" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door71" tags="hoteldoor px=-12.800 pz=6.000 ang=-90" pos="-12.9 15.4 5.6">
+		<body name="door71" tags="hoteldoor" pos="-12.9 15.5 5.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door72" tags="hoteldoor px=-11.700 pz=8.300 ang=90" pos="-12.1 0.4 8.3">
+		<body name="door72" tags="hoteldoor" pos="-12.1 0.5 8.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door73" tags="hoteldoor px=-12.800 pz=9.400 ang=-90" pos="-12.9 0.4 9">
+		<body name="door73" tags="hoteldoor" pos="-12.9 0.5 9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door74" tags="hoteldoor px=-11.700 pz=8.300 ang=90 startopen" pos="-12.1 3.4 8.3">
+		<body name="door74" tags="hoteldoor" pos="-11.793 3.5 8.689" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door75" tags="hoteldoor px=-12.800 pz=9.400 ang=-90" pos="-12.9 3.4 9">
+		<body name="door75" tags="hoteldoor" pos="-12.9 3.5 9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door76" tags="hoteldoor px=-11.700 pz=8.900 ang=-90 startopen" pos="-12.1 6.4 9">
+		<body name="door76" tags="hoteldoor" pos="-11.891 6.5 8.534" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door77" tags="hoteldoor px=-12.800 pz=7.800 ang=90 startopen" pos="-12.9 6.4 8.3">
+		<body name="door77" tags="hoteldoor" pos="-12.337 6.5 8.014" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door78" tags="hoteldoor px=-11.700 pz=8.900 ang=-90 startopen" pos="-12.1 9.4 9">
+		<body name="door78" tags="hoteldoor" pos="-11.891 9.5 8.534" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door79" tags="hoteldoor px=-12.800 pz=7.800 ang=90" pos="-12.9 9.4 8.3">
+		<body name="door79" tags="hoteldoor" pos="-12.9 9.5 8.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door80" tags="hoteldoor px=-11.700 pz=8.900 ang=-90 startopen" pos="-12.1 12.4 9">
+		<body name="door80" tags="hoteldoor" pos="-11.891 12.5 8.534" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door81" tags="hoteldoor px=-12.800 pz=7.800 ang=90 startopen" pos="-12.9 12.4 8.3">
+		<body name="door81" tags="hoteldoor" pos="-12.337 12.5 8.014" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door82" tags="hoteldoor px=-11.700 pz=8.300 ang=90 startopen" pos="-12.1 15.4 8.3">
+		<body name="door82" tags="hoteldoor" pos="-11.793 15.5 8.689" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door83" tags="hoteldoor px=-12.800 pz=9.400 ang=-90" pos="-12.9 15.4 9">
+		<body name="door83" tags="hoteldoor" pos="-12.9 15.5 9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door84" tags="hoteldoor px=-11.700 pz=11.700 ang=90 startopen" pos="-12.1 0.4 11.7">
+		<body name="door84" tags="hoteldoor" pos="-11.793 0.5 12.089" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door85" tags="hoteldoor px=-12.800 pz=12.800 ang=-90" pos="-12.9 0.4 12.4">
+		<body name="door85" tags="hoteldoor" pos="-12.9 0.5 12.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door86" tags="hoteldoor px=-11.700 pz=12.300 ang=-90" pos="-12.1 3.4 12.4">
+		<body name="door86" tags="hoteldoor" pos="-12.1 3.5 12.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door87" tags="hoteldoor px=-12.800 pz=11.200 ang=90" pos="-12.9 3.4 11.7">
+		<body name="door87" tags="hoteldoor" pos="-12.9 3.5 11.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door88" tags="hoteldoor px=-11.700 pz=12.300 ang=-90" pos="-12.1 6.4 12.4">
+		<body name="door88" tags="hoteldoor" pos="-12.1 6.5 12.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door89" tags="hoteldoor px=-12.800 pz=11.200 ang=90" pos="-12.9 6.4 11.7">
+		<body name="door89" tags="hoteldoor" pos="-12.9 6.5 11.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door90" tags="hoteldoor px=-11.700 pz=12.300 ang=-90" pos="-12.1 9.4 12.4">
+		<body name="door90" tags="hoteldoor" pos="-12.1 9.5 12.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door91" tags="hoteldoor px=-12.800 pz=11.200 ang=90" pos="-12.9 9.4 11.7">
+		<body name="door91" tags="hoteldoor" pos="-12.9 9.5 11.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door92" tags="hoteldoor px=-11.700 pz=12.300 ang=-90 startopen" pos="-12.1 12.4 12.4">
+		<body name="door92" tags="hoteldoor" pos="-11.891 12.5 11.934" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door93" tags="hoteldoor px=-12.800 pz=11.200 ang=90" pos="-12.9 12.4 11.7">
+		<body name="door93" tags="hoteldoor" pos="-12.9 12.5 11.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door94" tags="hoteldoor px=-11.700 pz=12.300 ang=-90" pos="-12.1 15.4 12.4">
+		<body name="door94" tags="hoteldoor" pos="-12.1 15.5 12.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_0.vox" object="shape"/>
+			<joint pos="0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door95" tags="hoteldoor px=-12.800 pz=11.200 ang=90" pos="-12.9 15.4 11.7">
+		<body name="door95" tags="hoteldoor" pos="-12.9 15.5 11.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door96" tags="hoteldoor px=11.700 pz=11.500 ang=-90" pos="12.1 0.4 11.5">
+		<body name="door96" tags="hoteldoor" pos="12.1 0.5 11.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door97" tags="hoteldoor px=12.800 pz=12.600 ang=90" pos="12.8 0.4 12.2">
+		<body name="door97" tags="hoteldoor" pos="12.8 0.5 12.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door98" tags="hoteldoor px=11.700 pz=11.500 ang=-90 startopen" pos="12.1 3.4 11.5">
+		<body name="door98" tags="hoteldoor" pos="11.793 3.5 11.889" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door99" tags="hoteldoor px=12.800 pz=12.600 ang=90" pos="12.8 3.4 12.2">
+		<body name="door99" tags="hoteldoor" pos="12.8 3.5 12.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door100" tags="hoteldoor px=11.700 pz=12.100 ang=90" pos="12.1 6.4 12.2">
+		<body name="door100" tags="hoteldoor" pos="12.1 6.5 12.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door101" tags="hoteldoor px=12.800 pz=11.000 ang=-90" pos="12.8 6.4 11.5">
+		<body name="door101" tags="hoteldoor" pos="12.8 6.5 11.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door102" tags="hoteldoor px=11.700 pz=12.100 ang=90 startopen" pos="12.1 9.4 12.2">
+		<body name="door102" tags="hoteldoor" pos="11.891 9.5 11.734" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door103" tags="hoteldoor px=12.800 pz=11.000 ang=-90 startopen" pos="12.8 9.4 11.5">
+		<body name="door103" tags="hoteldoor" pos="12.314 9.5 11.117" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door104" tags="hoteldoor px=11.700 pz=12.100 ang=90 startopen" pos="12.1 12.4 12.2">
+		<body name="door104" tags="hoteldoor" pos="11.891 12.5 11.734" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door105" tags="hoteldoor px=12.800 pz=11.000 ang=-90" pos="12.8 12.4 11.5">
+		<body name="door105" tags="hoteldoor" pos="12.8 12.5 11.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door106" tags="hoteldoor px=11.700 pz=11.500 ang=-90" pos="12.1 15.4 11.5">
+		<body name="door106" tags="hoteldoor" pos="12.1 15.5 11.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door107" tags="hoteldoor px=12.800 pz=12.600 ang=90" pos="12.8 15.4 12.2">
+		<body name="door107" tags="hoteldoor" pos="12.8 15.5 12.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door108" tags="hoteldoor px=11.700 pz=8.100 ang=-90" pos="12.1 0.4 8.1">
+		<body name="door108" tags="hoteldoor" pos="12.1 0.5 8.1" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door109" tags="hoteldoor px=12.800 pz=9.200 ang=90" pos="12.8 0.4 8.8">
+		<body name="door109" tags="hoteldoor" pos="12.8 0.5 8.8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door110" tags="hoteldoor px=11.700 pz=8.100 ang=-90 startopen" pos="12.1 3.4 8.1">
+		<body name="door110" tags="hoteldoor" pos="11.793 3.5 8.489" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door111" tags="hoteldoor px=12.800 pz=9.200 ang=90" pos="12.8 3.4 8.8">
+		<body name="door111" tags="hoteldoor" pos="12.8 3.5 8.8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door112" tags="hoteldoor px=11.700 pz=8.700 ang=90 startopen" pos="12.1 6.4 8.8">
+		<body name="door112" tags="hoteldoor" pos="11.891 6.5 8.334" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door113" tags="hoteldoor px=12.800 pz=7.600 ang=-90 startopen" pos="12.8 6.4 8.1">
+		<body name="door113" tags="hoteldoor" pos="12.314 6.5 7.717" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door114" tags="hoteldoor px=11.700 pz=8.700 ang=90" pos="12.1 9.4 8.8">
+		<body name="door114" tags="hoteldoor" pos="12.1 9.5 8.8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door115" tags="hoteldoor px=12.800 pz=7.600 ang=-90 startopen" pos="12.8 9.4 8.1">
+		<body name="door115" tags="hoteldoor" pos="12.314 9.5 7.717" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door116" tags="hoteldoor px=11.700 pz=8.100 ang=-90" pos="12.1 12.4 8.1">
+		<body name="door116" tags="hoteldoor" pos="12.1 12.5 8.1" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door117" tags="hoteldoor px=12.800 pz=9.200 ang=90" pos="12.8 12.4 8.8">
+		<body name="door117" tags="hoteldoor" pos="12.8 12.5 8.8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door118" tags="hoteldoor px=11.700 pz=8.100 ang=-90 startopen" pos="12.1 15.4 8.1">
+		<body name="door118" tags="hoteldoor" pos="11.793 15.5 8.489" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door119" tags="hoteldoor px=12.800 pz=9.200 ang=90" pos="12.8 15.4 8.8">
+		<body name="door119" tags="hoteldoor" pos="12.8 15.5 8.8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door120" tags="hoteldoor px=11.700 pz=4.700 ang=-90" pos="12.1 0.4 4.7">
+		<body name="door120" tags="hoteldoor" pos="12.1 0.5 4.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door121" tags="hoteldoor px=12.800 pz=5.800 ang=90" pos="12.8 0.4 5.4">
+		<body name="door121" tags="hoteldoor" pos="12.8 0.5 5.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door122" tags="hoteldoor px=11.700 pz=5.300 ang=90 startopen" pos="12.1 3.4 5.4">
+		<body name="door122" tags="hoteldoor" pos="11.891 3.5 4.934" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door123" tags="hoteldoor px=12.800 pz=4.200 ang=-90" pos="12.8 3.4 4.7">
+		<body name="door123" tags="hoteldoor" pos="12.8 3.5 4.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door124" tags="hoteldoor px=11.700 pz=4.700 ang=-90 startopen" pos="12.1 6.4 4.7">
+		<body name="door124" tags="hoteldoor" pos="11.793 6.5 5.089" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door125" tags="hoteldoor px=12.800 pz=5.800 ang=90" pos="12.8 6.4 5.4">
+		<body name="door125" tags="hoteldoor" pos="12.8 6.5 5.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door126" tags="hoteldoor px=11.700 pz=4.700 ang=-90" pos="12.1 9.4 4.7">
+		<body name="door126" tags="hoteldoor" pos="12.1 9.5 4.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door127" tags="hoteldoor px=12.800 pz=5.800 ang=90" pos="12.8 9.4 5.4">
+		<body name="door127" tags="hoteldoor" pos="12.8 9.5 5.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door128" tags="hoteldoor px=11.700 pz=5.300 ang=90 startopen" pos="12.1 12.4 5.4">
+		<body name="door128" tags="hoteldoor" pos="11.891 12.5 4.934" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door129" tags="hoteldoor px=12.800 pz=4.200 ang=-90 startopen" pos="12.8 12.4 4.7">
+		<body name="door129" tags="hoteldoor" pos="12.314 12.5 4.317" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door130" tags="hoteldoor px=11.700 pz=4.700 ang=-90" pos="12.1 15.4 4.7">
+		<body name="door130" tags="hoteldoor" pos="12.1 15.5 4.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door131" tags="hoteldoor px=12.800 pz=5.800 ang=90" pos="12.8 15.4 5.4">
+		<body name="door131" tags="hoteldoor" pos="12.8 15.5 5.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door132" tags="hoteldoor px=11.700 pz=1.300 ang=-90 startopen" pos="12.1 0.4 1.3">
+		<body name="door132" tags="hoteldoor" pos="11.793 0.5 1.689" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door133" tags="hoteldoor px=12.800 pz=2.400 ang=90 startopen" pos="12.8 0.4 2">
+		<body name="door133" tags="hoteldoor" pos="12.411 0.5 2.307" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door134" tags="hoteldoor px=11.700 pz=1.900 ang=90" pos="12.1 3.4 2">
+		<body name="door134" tags="hoteldoor" pos="12.1 3.5 2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door135" tags="hoteldoor px=12.800 pz=0.800 ang=-90" pos="12.8 3.4 1.3">
+		<body name="door135" tags="hoteldoor" pos="12.8 3.5 1.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door136" tags="hoteldoor px=11.700 pz=1.900 ang=90 startopen" pos="12.1 6.4 2">
+		<body name="door136" tags="hoteldoor" pos="11.891 6.5 1.534" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door137" tags="hoteldoor px=12.800 pz=0.800 ang=-90" pos="12.8 6.4 1.3">
+		<body name="door137" tags="hoteldoor" pos="12.8 6.5 1.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door138" tags="hoteldoor px=11.700 pz=1.300 ang=-90 startopen" pos="12.1 9.4 1.3">
+		<body name="door138" tags="hoteldoor" pos="11.793 9.5 1.689" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door139" tags="hoteldoor px=12.800 pz=2.400 ang=90" pos="12.8 9.4 2">
+		<body name="door139" tags="hoteldoor" pos="12.8 9.5 2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door140" tags="hoteldoor px=11.700 pz=1.300 ang=-90 startopen" pos="12.1 12.4 1.3">
+		<body name="door140" tags="hoteldoor" pos="11.793 12.5 1.689" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door141" tags="hoteldoor px=12.800 pz=2.400 ang=90" pos="12.8 12.4 2">
+		<body name="door141" tags="hoteldoor" pos="12.8 12.5 2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door142" tags="hoteldoor px=11.700 pz=1.900 ang=90" pos="12.1 15.4 2">
+		<body name="door142" tags="hoteldoor" pos="12.1 15.5 2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door143" tags="hoteldoor px=12.800 pz=0.800 ang=-90" pos="12.8 15.4 1.3">
+		<body name="door143" tags="hoteldoor" pos="12.8 15.5 1.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door144" tags="hoteldoor px=11.700 pz=-2.100 ang=-90" pos="12.1 0.4 -2.1">
+		<body name="door144" tags="hoteldoor" pos="12.1 0.5 -2.1" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door145" tags="hoteldoor px=12.800 pz=-1.000 ang=90" pos="12.8 0.4 -1.4">
+		<body name="door145" tags="hoteldoor" pos="12.8 0.5 -1.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door146" tags="hoteldoor px=11.700 pz=-1.500 ang=90 startopen" pos="12.1 3.4 -1.4">
+		<body name="door146" tags="hoteldoor" pos="11.891 3.5 -1.866" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door147" tags="hoteldoor px=12.800 pz=-2.600 ang=-90" pos="12.8 3.4 -2.1">
+		<body name="door147" tags="hoteldoor" pos="12.8 3.5 -2.1" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door148" tags="hoteldoor px=11.700 pz=-2.100 ang=-90" pos="12.1 6.4 -2.1">
+		<body name="door148" tags="hoteldoor" pos="12.1 6.5 -2.1" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door149" tags="hoteldoor px=12.800 pz=-1.000 ang=90" pos="12.8 6.4 -1.4">
+		<body name="door149" tags="hoteldoor" pos="12.8 6.5 -1.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door150" tags="hoteldoor px=11.700 pz=-2.100 ang=-90 startopen" pos="12.1 9.4 -2.1">
+		<body name="door150" tags="hoteldoor" pos="11.793 9.5 -1.711" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door151" tags="hoteldoor px=12.800 pz=-1.000 ang=90" pos="12.8 9.4 -1.4">
+		<body name="door151" tags="hoteldoor" pos="12.8 9.5 -1.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door152" tags="hoteldoor px=11.700 pz=-1.500 ang=90" pos="12.1 12.4 -1.4">
+		<body name="door152" tags="hoteldoor" pos="12.1 12.5 -1.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door153" tags="hoteldoor px=12.800 pz=-2.600 ang=-90" pos="12.8 12.4 -2.1">
+		<body name="door153" tags="hoteldoor" pos="12.8 12.5 -2.1" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door154" tags="hoteldoor px=11.700 pz=-1.500 ang=90" pos="12.1 15.4 -1.4">
+		<body name="door154" tags="hoteldoor" pos="12.1 15.5 -1.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door155" tags="hoteldoor px=12.800 pz=-2.600 ang=-90" pos="12.8 15.4 -2.1">
+		<body name="door155" tags="hoteldoor" pos="12.8 15.5 -2.1" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door156" tags="hoteldoor px=11.700 pz=-4.900 ang=90 startopen" pos="12.1 0.4 -4.8">
+		<body name="door156" tags="hoteldoor" pos="11.891 0.5 -5.266" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door157" tags="hoteldoor px=12.800 pz=-6.000 ang=-90" pos="12.8 0.4 -5.5">
+		<body name="door157" tags="hoteldoor" pos="12.8 0.5 -5.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door158" tags="hoteldoor px=11.700 pz=-5.500 ang=-90 startopen" pos="12.1 3.4 -5.5">
+		<body name="door158" tags="hoteldoor" pos="11.793 3.5 -5.111" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door159" tags="hoteldoor px=12.800 pz=-4.400 ang=90" pos="12.8 3.4 -4.8">
+		<body name="door159" tags="hoteldoor" pos="12.8 3.5 -4.8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door160" tags="hoteldoor px=11.700 pz=-5.500 ang=-90 startopen" pos="12.1 6.4 -5.5">
+		<body name="door160" tags="hoteldoor" pos="11.793 6.5 -5.111" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door161" tags="hoteldoor px=12.800 pz=-4.400 ang=90" pos="12.8 6.4 -4.8">
+		<body name="door161" tags="hoteldoor" pos="12.8 6.5 -4.8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door162" tags="hoteldoor px=11.700 pz=-5.500 ang=-90 startopen" pos="12.1 9.4 -5.5">
+		<body name="door162" tags="hoteldoor" pos="11.793 9.5 -5.111" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door163" tags="hoteldoor px=12.800 pz=-4.400 ang=90 startopen" pos="12.8 9.4 -4.8">
+		<body name="door163" tags="hoteldoor" pos="12.411 9.5 -4.493" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door164" tags="hoteldoor px=11.700 pz=-5.500 ang=-90" pos="12.1 12.4 -5.5">
+		<body name="door164" tags="hoteldoor" pos="12.1 12.5 -5.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door165" tags="hoteldoor px=12.800 pz=-4.400 ang=90" pos="12.8 12.4 -4.8">
+		<body name="door165" tags="hoteldoor" pos="12.8 12.5 -4.8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door166" tags="hoteldoor px=11.700 pz=-5.500 ang=-90 startopen" pos="12.1 15.4 -5.5">
+		<body name="door166" tags="hoteldoor" pos="11.793 15.5 -5.111" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door167" tags="hoteldoor px=12.800 pz=-4.400 ang=90 startopen" pos="12.8 15.4 -4.8">
+		<body name="door167" tags="hoteldoor" pos="12.411 15.5 -4.493" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door168" tags="hoteldoor px=11.700 pz=-8.300 ang=90 startopen" pos="12.1 0.4 -8.2">
+		<body name="door168" tags="hoteldoor" pos="11.891 0.5 -8.666" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door169" tags="hoteldoor px=12.800 pz=-9.400 ang=-90 startopen" pos="12.8 0.4 -8.9">
+		<body name="door169" tags="hoteldoor" pos="12.314 0.5 -9.283" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door170" tags="hoteldoor px=11.700 pz=-8.900 ang=-90 startopen" pos="12.1 3.4 -8.9">
+		<body name="door170" tags="hoteldoor" pos="11.793 3.5 -8.511" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door171" tags="hoteldoor px=12.800 pz=-7.800 ang=90" pos="12.8 3.4 -8.2">
+		<body name="door171" tags="hoteldoor" pos="12.8 3.5 -8.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door172" tags="hoteldoor px=11.700 pz=-8.300 ang=90" pos="12.1 6.4 -8.2">
+		<body name="door172" tags="hoteldoor" pos="12.1 6.5 -8.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door173" tags="hoteldoor px=12.800 pz=-9.400 ang=-90" pos="12.8 6.4 -8.9">
+		<body name="door173" tags="hoteldoor" pos="12.8 6.5 -8.9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door174" tags="hoteldoor px=11.700 pz=-8.300 ang=90" pos="12.1 9.4 -8.2">
+		<body name="door174" tags="hoteldoor" pos="12.1 9.5 -8.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door175" tags="hoteldoor px=12.800 pz=-9.400 ang=-90" pos="12.8 9.4 -8.9">
+		<body name="door175" tags="hoteldoor" pos="12.8 9.5 -8.9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door176" tags="hoteldoor px=11.700 pz=-8.300 ang=90" pos="12.1 12.4 -8.2">
+		<body name="door176" tags="hoteldoor" pos="12.1 12.5 -8.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door177" tags="hoteldoor px=12.800 pz=-9.400 ang=-90 startopen" pos="12.8 12.4 -8.9">
+		<body name="door177" tags="hoteldoor" pos="12.314 12.5 -9.283" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door178" tags="hoteldoor px=11.700 pz=-8.900 ang=-90 startopen" pos="12.1 15.4 -8.9">
+		<body name="door178" tags="hoteldoor" pos="11.793 15.5 -8.511" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door179" tags="hoteldoor px=12.800 pz=-7.800 ang=90 startopen" pos="12.8 15.4 -8.2">
+		<body name="door179" tags="hoteldoor" pos="12.411 15.5 -7.893" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door180" tags="hoteldoor px=11.700 pz=-11.700 ang=90" pos="12.1 0.4 -11.6">
+		<body name="door180" tags="hoteldoor" pos="12.1 0.5 -11.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door181" tags="hoteldoor px=12.800 pz=-12.800 ang=-90" pos="12.8 0.4 -12.3">
+		<body name="door181" tags="hoteldoor" pos="12.8 0.5 -12.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_2.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door182" tags="hoteldoor px=11.700 pz=-12.300 ang=-90" pos="12.1 3.4 -12.3">
+		<body name="door182" tags="hoteldoor" pos="12.1 3.5 -12.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door183" tags="hoteldoor px=12.800 pz=-11.200 ang=90" pos="12.8 3.4 -11.6">
+		<body name="door183" tags="hoteldoor" pos="12.8 3.5 -11.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door184" tags="hoteldoor px=11.700 pz=-12.300 ang=-90 startopen" pos="12.1 6.4 -12.3">
+		<body name="door184" tags="hoteldoor" pos="11.793 6.5 -11.911" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door185" tags="hoteldoor px=12.800 pz=-11.200 ang=90" pos="12.8 6.4 -11.6">
+		<body name="door185" tags="hoteldoor" pos="12.8 6.5 -11.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door186" tags="hoteldoor px=11.700 pz=-12.300 ang=-90 startopen" pos="12.1 9.4 -12.3">
+		<body name="door186" tags="hoteldoor" pos="11.793 9.5 -11.911" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door187" tags="hoteldoor px=12.800 pz=-11.200 ang=90" pos="12.8 9.4 -11.6">
+		<body name="door187" tags="hoteldoor" pos="12.8 9.5 -11.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door188" tags="hoteldoor px=11.700 pz=-12.300 ang=-90 startopen" pos="12.1 12.4 -12.3">
+		<body name="door188" tags="hoteldoor" pos="11.793 12.5 -11.911" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door189" tags="hoteldoor px=12.800 pz=-11.200 ang=90 startopen" pos="12.8 12.4 -11.6">
+		<body name="door189" tags="hoteldoor" pos="12.411 12.5 -11.293" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door190" tags="hoteldoor px=11.700 pz=-12.300 ang=-90 startopen" pos="12.1 15.4 -12.3">
+		<body name="door190" tags="hoteldoor" pos="11.793 15.5 -11.911" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_3.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door191" tags="hoteldoor px=12.800 pz=-11.200 ang=90 startopen" pos="12.8 15.4 -11.6">
+		<body name="door191" tags="hoteldoor" pos="12.411 15.5 -11.293" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_1.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door192" tags="hoteldoor px=5.300 pz=-17.300 ang=-90" pos="5.2 0.4 -17.7">
+		<body name="door192" tags="hoteldoor" pos="5.2 0.5 -17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door193" tags="hoteldoor px=7.000 pz=-18.400 ang=90" pos="6.5 0.4 -18.4">
+		<body name="door193" tags="hoteldoor" pos="6.5 0.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door194" tags="hoteldoor px=6.500 pz=-17.300 ang=90" pos="6.5 3.4 -17.7">
+		<body name="door194" tags="hoteldoor" pos="6.5 3.5 -17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door195" tags="hoteldoor px=4.800 pz=-18.400 ang=-90" pos="5.2 3.4 -18.4">
+		<body name="door195" tags="hoteldoor" pos="5.2 3.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door196" tags="hoteldoor px=6.500 pz=-17.300 ang=90 startopen" pos="6.5 6.4 -17.7">
+		<body name="door196" tags="hoteldoor" pos="6.111 6.5 -17.393" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door197" tags="hoteldoor px=4.800 pz=-18.400 ang=-90" pos="5.2 6.4 -18.4">
+		<body name="door197" tags="hoteldoor" pos="5.2 6.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door198" tags="hoteldoor px=5.300 pz=-17.300 ang=-90 startopen" pos="5.2 9.4 -17.7">
+		<body name="door198" tags="hoteldoor" pos="5.666 9.5 -17.491" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door199" tags="hoteldoor px=7.000 pz=-18.400 ang=90 startopen" pos="6.5 9.4 -18.4">
+		<body name="door199" tags="hoteldoor" pos="6.883 9.5 -17.914" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door200" tags="hoteldoor px=6.500 pz=-17.300 ang=90" pos="6.5 12.4 -17.7">
+		<body name="door200" tags="hoteldoor" pos="6.5 12.5 -17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door201" tags="hoteldoor px=4.800 pz=-18.400 ang=-90" pos="5.2 12.4 -18.4">
+		<body name="door201" tags="hoteldoor" pos="5.2 12.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door202" tags="hoteldoor px=5.300 pz=-17.300 ang=-90" pos="5.2 15.4 -17.7">
+		<body name="door202" tags="hoteldoor" pos="5.2 15.5 -17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door203" tags="hoteldoor px=7.000 pz=-18.400 ang=90" pos="6.5 15.4 -18.4">
+		<body name="door203" tags="hoteldoor" pos="6.5 15.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door204" tags="hoteldoor px=2.500 pz=-17.300 ang=90" pos="2.5 3.4 -17.7">
+		<body name="door204" tags="hoteldoor" pos="2.5 3.5 -17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door205" tags="hoteldoor px=0.800 pz=-18.400 ang=-90" pos="1.2 3.4 -18.4">
+		<body name="door205" tags="hoteldoor" pos="1.2 3.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door206" tags="hoteldoor px=2.500 pz=-17.300 ang=90 startopen" pos="2.5 6.4 -17.7">
+		<body name="door206" tags="hoteldoor" pos="2.111 6.5 -17.393" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door207" tags="hoteldoor px=0.800 pz=-18.400 ang=-90 startopen" pos="1.2 6.4 -18.4">
+		<body name="door207" tags="hoteldoor" pos="0.893 6.5 -18.011" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door208" tags="hoteldoor px=2.500 pz=-17.300 ang=90 startopen" pos="2.5 9.4 -17.7">
+		<body name="door208" tags="hoteldoor" pos="2.111 9.5 -17.393" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door209" tags="hoteldoor px=0.800 pz=-18.400 ang=-90 startopen" pos="1.2 9.4 -18.4">
+		<body name="door209" tags="hoteldoor" pos="0.893 9.5 -18.011" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door210" tags="hoteldoor px=2.500 pz=-17.300 ang=90" pos="2.5 12.4 -17.7">
+		<body name="door210" tags="hoteldoor" pos="2.5 12.5 -17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door211" tags="hoteldoor px=0.800 pz=-18.400 ang=-90" pos="1.2 12.4 -18.4">
+		<body name="door211" tags="hoteldoor" pos="1.2 12.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door212" tags="hoteldoor px=2.500 pz=-17.300 ang=90 startopen" pos="2.5 15.4 -17.7">
+		<body name="door212" tags="hoteldoor" pos="2.111 15.5 -17.393" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door213" tags="hoteldoor px=0.800 pz=-18.400 ang=-90" pos="1.2 15.4 -18.4">
+		<body name="door213" tags="hoteldoor" pos="1.2 15.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door214" tags="hoteldoor px=-1.500 pz=-17.300 ang=90" pos="-1.5 3.4 -17.7">
+		<body name="door214" tags="hoteldoor" pos="-1.5 3.5 -17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door215" tags="hoteldoor px=-3.200 pz=-18.400 ang=-90" pos="-2.8 3.4 -18.4">
+		<body name="door215" tags="hoteldoor" pos="-2.8 3.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door216" tags="hoteldoor px=-2.700 pz=-17.300 ang=-90 startopen" pos="-2.8 6.4 -17.7">
+		<body name="door216" tags="hoteldoor" pos="-2.334 6.5 -17.491" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door217" tags="hoteldoor px=-1.000 pz=-18.400 ang=90" pos="-1.5 6.4 -18.4">
+		<body name="door217" tags="hoteldoor" pos="-1.5 6.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door218" tags="hoteldoor px=-1.500 pz=-17.300 ang=90 startopen" pos="-1.5 9.4 -17.7">
+		<body name="door218" tags="hoteldoor" pos="-1.889 9.5 -17.393" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door219" tags="hoteldoor px=-3.200 pz=-18.400 ang=-90" pos="-2.8 9.4 -18.4">
+		<body name="door219" tags="hoteldoor" pos="-2.8 9.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door220" tags="hoteldoor px=-1.500 pz=-17.300 ang=90" pos="-1.5 12.4 -17.7">
+		<body name="door220" tags="hoteldoor" pos="-1.5 12.5 -17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door221" tags="hoteldoor px=-3.200 pz=-18.400 ang=-90" pos="-2.8 12.4 -18.4">
+		<body name="door221" tags="hoteldoor" pos="-2.8 12.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door222" tags="hoteldoor px=-1.500 pz=-17.300 ang=90 startopen" pos="-1.5 15.4 -17.7">
+		<body name="door222" tags="hoteldoor" pos="-1.889 15.5 -17.393" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door223" tags="hoteldoor px=-3.200 pz=-18.400 ang=-90" pos="-2.8 15.4 -18.4">
+		<body name="door223" tags="hoteldoor" pos="-2.8 15.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door224" tags="hoteldoor px=-5.500 pz=-17.300 ang=90 startopen" pos="-5.5 0.4 -17.7">
+		<body name="door224" tags="hoteldoor" pos="-5.889 0.5 -17.393" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door225" tags="hoteldoor px=-7.200 pz=-18.400 ang=-90" pos="-6.8 0.4 -18.4">
+		<body name="door225" tags="hoteldoor" pos="-6.8 0.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door226" tags="hoteldoor px=-5.500 pz=-17.300 ang=90" pos="-5.5 3.4 -17.7">
+		<body name="door226" tags="hoteldoor" pos="-5.5 3.5 -17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door227" tags="hoteldoor px=-7.200 pz=-18.400 ang=-90" pos="-6.8 3.4 -18.4">
+		<body name="door227" tags="hoteldoor" pos="-6.8 3.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door228" tags="hoteldoor px=-5.500 pz=-17.300 ang=90 startopen" pos="-5.5 6.4 -17.7">
+		<body name="door228" tags="hoteldoor" pos="-5.889 6.5 -17.393" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door229" tags="hoteldoor px=-7.200 pz=-18.400 ang=-90" pos="-6.8 6.4 -18.4">
+		<body name="door229" tags="hoteldoor" pos="-6.8 6.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door230" tags="hoteldoor px=-6.700 pz=-17.300 ang=-90" pos="-6.8 9.4 -17.7">
+		<body name="door230" tags="hoteldoor" pos="-6.8 9.5 -17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door231" tags="hoteldoor px=-5.000 pz=-18.400 ang=90" pos="-5.5 9.4 -18.4">
+		<body name="door231" tags="hoteldoor" pos="-5.5 9.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door232" tags="hoteldoor px=-5.500 pz=-17.300 ang=90 startopen" pos="-5.5 12.4 -17.7">
+		<body name="door232" tags="hoteldoor" pos="-5.889 12.5 -17.393" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door233" tags="hoteldoor px=-7.200 pz=-18.400 ang=-90" pos="-6.8 12.4 -18.4">
+		<body name="door233" tags="hoteldoor" pos="-6.8 12.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door234" tags="hoteldoor px=-6.700 pz=-17.300 ang=-90 startopen" pos="-6.8 15.4 -17.7">
+		<body name="door234" tags="hoteldoor" pos="-6.334 15.5 -17.491" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_4.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door235" tags="hoteldoor px=-5.000 pz=-18.400 ang=90" pos="-5.5 15.4 -18.4">
+		<body name="door235" tags="hoteldoor" pos="-5.5 15.5 -18.4" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door236" tags="hoteldoor px=-5.300 pz=17.300 ang=-90 startopen" pos="-5.3 0.4 17.7">
+		<body name="door236" tags="hoteldoor" pos="-5.689 0.5 17.393" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door237" tags="hoteldoor px=-7.000 pz=18.400 ang=90" pos="-6.6 0.4 18.5">
+		<body name="door237" tags="hoteldoor" pos="-6.6 0.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door238" tags="hoteldoor px=-5.300 pz=17.300 ang=-90 startopen" pos="-5.3 3.4 17.7">
+		<body name="door238" tags="hoteldoor" pos="-5.689 3.5 17.393" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door239" tags="hoteldoor px=-7.000 pz=18.400 ang=90" pos="-6.6 3.4 18.5">
+		<body name="door239" tags="hoteldoor" pos="-6.6 3.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door240" tags="hoteldoor px=-5.300 pz=17.300 ang=-90" pos="-5.3 6.4 17.7">
+		<body name="door240" tags="hoteldoor" pos="-5.3 6.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door241" tags="hoteldoor px=-7.000 pz=18.400 ang=90" pos="-6.6 6.4 18.5">
+		<body name="door241" tags="hoteldoor" pos="-6.6 6.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door242" tags="hoteldoor px=-5.300 pz=17.300 ang=-90 startopen" pos="-5.3 9.4 17.7">
+		<body name="door242" tags="hoteldoor" pos="-5.689 9.5 17.393" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door243" tags="hoteldoor px=-7.000 pz=18.400 ang=90 startopen" pos="-6.6 9.4 18.5">
+		<body name="door243" tags="hoteldoor" pos="-6.809 9.5 18.034" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door244" tags="hoteldoor px=-6.500 pz=17.300 ang=90" pos="-6.6 12.4 17.7">
+		<body name="door244" tags="hoteldoor" pos="-6.6 12.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door245" tags="hoteldoor px=-4.800 pz=18.400 ang=-90 startopen" pos="-5.3 12.4 18.5">
+		<body name="door245" tags="hoteldoor" pos="-5.014 12.5 17.937" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door246" tags="hoteldoor px=-5.300 pz=17.300 ang=-90 startopen" pos="-5.3 15.4 17.7">
+		<body name="door246" tags="hoteldoor" pos="-5.689 15.5 17.393" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door247" tags="hoteldoor px=-7.000 pz=18.400 ang=90" pos="-6.6 15.4 18.5">
+		<body name="door247" tags="hoteldoor" pos="-6.6 15.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door248" tags="hoteldoor px=-1.300 pz=17.300 ang=-90 startopen" pos="-1.3 0.4 17.7">
+		<body name="door248" tags="hoteldoor" pos="-1.689 0.5 17.393" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door249" tags="hoteldoor px=-3.000 pz=18.400 ang=90" pos="-2.6 0.4 18.5">
+		<body name="door249" tags="hoteldoor" pos="-2.6 0.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door250" tags="hoteldoor px=-2.500 pz=17.300 ang=90" pos="-2.6 3.4 17.7">
+		<body name="door250" tags="hoteldoor" pos="-2.6 3.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door251" tags="hoteldoor px=-0.800 pz=18.400 ang=-90 startopen" pos="-1.3 3.4 18.5">
+		<body name="door251" tags="hoteldoor" pos="-1.014 3.5 17.937" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door252" tags="hoteldoor px=-2.500 pz=17.300 ang=90 startopen" pos="-2.6 6.4 17.7">
+		<body name="door252" tags="hoteldoor" pos="-2.134 6.5 17.491" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door253" tags="hoteldoor px=-0.800 pz=18.400 ang=-90" pos="-1.3 6.4 18.5">
+		<body name="door253" tags="hoteldoor" pos="-1.3 6.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door254" tags="hoteldoor px=-1.300 pz=17.300 ang=-90" pos="-1.3 9.4 17.7">
+		<body name="door254" tags="hoteldoor" pos="-1.3 9.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door255" tags="hoteldoor px=-3.000 pz=18.400 ang=90" pos="-2.6 9.4 18.5">
+		<body name="door255" tags="hoteldoor" pos="-2.6 9.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door256" tags="hoteldoor px=-1.300 pz=17.300 ang=-90" pos="-1.3 12.4 17.7">
+		<body name="door256" tags="hoteldoor" pos="-1.3 12.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door257" tags="hoteldoor px=-3.000 pz=18.400 ang=90" pos="-2.6 12.4 18.5">
+		<body name="door257" tags="hoteldoor" pos="-2.6 12.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door258" tags="hoteldoor px=-2.500 pz=17.300 ang=90" pos="-2.6 15.4 17.7">
+		<body name="door258" tags="hoteldoor" pos="-2.6 15.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door259" tags="hoteldoor px=-0.800 pz=18.400 ang=-90 startopen" pos="-1.3 15.4 18.5">
+		<body name="door259" tags="hoteldoor" pos="-1.014 15.5 17.937" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door260" tags="hoteldoor px=2.700 pz=17.300 ang=-90" pos="2.7 0.4 17.7">
+		<body name="door260" tags="hoteldoor" pos="2.7 0.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door261" tags="hoteldoor px=1.000 pz=18.400 ang=90" pos="1.4 0.4 18.5">
+		<body name="door261" tags="hoteldoor" pos="1.4 0.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door262" tags="hoteldoor px=2.700 pz=17.300 ang=-90" pos="2.7 3.4 17.7">
+		<body name="door262" tags="hoteldoor" pos="2.7 3.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door263" tags="hoteldoor px=1.000 pz=18.400 ang=90" pos="1.4 3.4 18.5">
+		<body name="door263" tags="hoteldoor" pos="1.4 3.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door264" tags="hoteldoor px=2.700 pz=17.300 ang=-90 startopen" pos="2.7 6.4 17.7">
+		<body name="door264" tags="hoteldoor" pos="2.311 6.5 17.393" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door265" tags="hoteldoor px=1.000 pz=18.400 ang=90" pos="1.4 6.4 18.5">
+		<body name="door265" tags="hoteldoor" pos="1.4 6.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door266" tags="hoteldoor px=1.500 pz=17.300 ang=90" pos="1.4 9.4 17.7">
+		<body name="door266" tags="hoteldoor" pos="1.4 9.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door267" tags="hoteldoor px=3.200 pz=18.400 ang=-90 startopen" pos="2.7 9.4 18.5">
+		<body name="door267" tags="hoteldoor" pos="2.986 9.5 17.937" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door268" tags="hoteldoor px=1.500 pz=17.300 ang=90" pos="1.4 12.4 17.7">
+		<body name="door268" tags="hoteldoor" pos="1.4 12.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door269" tags="hoteldoor px=3.200 pz=18.400 ang=-90 startopen" pos="2.7 12.4 18.5">
+		<body name="door269" tags="hoteldoor" pos="2.986 12.5 17.937" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door270" tags="hoteldoor px=2.700 pz=17.300 ang=-90" pos="2.7 15.4 17.7">
+		<body name="door270" tags="hoteldoor" pos="2.7 15.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door271" tags="hoteldoor px=1.000 pz=18.400 ang=90 startopen" pos="1.4 15.4 18.5">
+		<body name="door271" tags="hoteldoor" pos="1.191 15.5 18.034" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door272" tags="hoteldoor px=5.500 pz=17.300 ang=90 startopen" pos="5.4 0.4 17.7">
+		<body name="door272" tags="hoteldoor" pos="5.866 0.5 17.491" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door273" tags="hoteldoor px=7.200 pz=18.400 ang=-90 startopen" pos="6.7 0.4 18.5">
+		<body name="door273" tags="hoteldoor" pos="6.986 0.5 17.937" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door274" tags="hoteldoor px=5.500 pz=17.300 ang=90" pos="5.4 3.4 17.7">
+		<body name="door274" tags="hoteldoor" pos="5.4 3.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door275" tags="hoteldoor px=7.200 pz=18.400 ang=-90" pos="6.7 3.4 18.5">
+		<body name="door275" tags="hoteldoor" pos="6.7 3.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door276" tags="hoteldoor px=6.700 pz=17.300 ang=-90 startopen" pos="6.7 6.4 17.7">
+		<body name="door276" tags="hoteldoor" pos="6.311 6.5 17.393" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door277" tags="hoteldoor px=5.000 pz=18.400 ang=90 startopen" pos="5.4 6.4 18.5">
+		<body name="door277" tags="hoteldoor" pos="5.191 6.5 18.034" rot="0 76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door278" tags="hoteldoor px=6.700 pz=17.300 ang=-90 startopen" pos="6.7 9.4 17.7">
+		<body name="door278" tags="hoteldoor" pos="6.311 9.5 17.393" rot="0 -76.5 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door279" tags="hoteldoor px=5.000 pz=18.400 ang=90" pos="5.4 9.4 18.5">
+		<body name="door279" tags="hoteldoor" pos="5.4 9.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door280" tags="hoteldoor px=5.500 pz=17.300 ang=90" pos="5.4 12.4 17.7">
+		<body name="door280" tags="hoteldoor" pos="5.4 12.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0.1 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door281" tags="hoteldoor px=7.200 pz=18.400 ang=-90" pos="6.7 12.4 18.5">
+		<body name="door281" tags="hoteldoor" pos="6.7 12.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_5.vox" object="shape"/>
+			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door282" tags="hoteldoor px=6.700 pz=17.300 ang=-90" pos="6.7 15.4 17.7">
+		<body name="door282" tags="hoteldoor" pos="6.7 15.5 17.7" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_7.vox" object="shape"/>
+			<joint pos="0 0.2 -0.4" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.4" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door283" tags="hoteldoor px=5.000 pz=18.400 ang=90" pos="5.4 15.4 18.5">
+		<body name="door283" tags="hoteldoor" pos="5.4 15.5 18.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_6.vox" object="shape"/>
+			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.4 1.7 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door284" tags="hoteldoor px=-1.300 pz=-13.800 ang=-90" pos="-0.7 0.4 -13.8">
+		<body name="door284" tags="hoteldoor" pos="-0.7 0.5 -13.8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_8.vox" object="shape"/>
+			<joint pos="-0.6 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.6 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door285" tags="hoteldoor px=1.300 pz=-13.800 ang=90" pos="0.6 0.4 -13.8">
+		<body name="door285" tags="hoteldoor" pos="0.6 0.5 -13.8" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_8.vox" object="shape"/>
+			<joint pos="0.7 0.2 0" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.7 1.7 0" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door286" tags="hoteldoor px=-1.500 pz=-20.700 ang=90" pos="-0.8 0.4 -20.6">
+		<body name="door286" tags="hoteldoor" pos="-0.8 0.5 -20.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_9.vox" object="shape"/>
+			<joint pos="-0.7 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="-0.7 1.9 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door287" tags="hoteldoor px=1.500 pz=-20.700 ang=-90" pos="0.7 0.4 -20.6">
+		<body name="door287" tags="hoteldoor" pos="0.7 0.5 -20.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_9.vox" object="shape"/>
+			<joint pos="0.8 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.8 1.9 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door288" tags="hoteldoor px=-12.800 pz=-14.800 ang=-90" pos="-12.9 0.4 -15.3">
+		<body name="door288" tags="hoteldoor" pos="-12.9 0.5 -15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_10.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door289" tags="hoteldoor px=-12.800 pz=-14.800 ang=-90" pos="-12.9 3.4 -15.3">
+		<body name="door289" tags="hoteldoor" pos="-12.9 3.5 -15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_10.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door290" tags="hoteldoor px=-12.800 pz=-14.800 ang=-90" pos="-12.9 6.4 -15.3">
+		<body name="door290" tags="hoteldoor" pos="-12.9 6.5 -15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_10.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door291" tags="hoteldoor px=-12.800 pz=-14.800 ang=-90" pos="-12.9 9.4 -15.3">
+		<body name="door291" tags="hoteldoor" pos="-12.9 9.5 -15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_10.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door292" tags="hoteldoor px=-12.800 pz=-14.800 ang=-90" pos="-12.9 12.4 -15.3">
+		<body name="door292" tags="hoteldoor" pos="-12.9 12.5 -15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_10.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door293" tags="hoteldoor px=-12.800 pz=-14.800 ang=-90" pos="-12.9 15.4 -15.3">
+		<body name="door293" tags="hoteldoor" pos="-12.9 15.5 -15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_10.vox" object="shape"/>
+			<joint pos="0.1 0.2 0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.1 1.7 0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door294" tags="hoteldoor px=12.800 pz=14.800 ang=-90" pos="12.8 0.4 15.3">
+		<body name="door294" tags="hoteldoor" pos="12.8 0.5 15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_11.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door295" tags="hoteldoor px=12.800 pz=14.800 ang=-90" pos="12.8 3.4 15.3">
+		<body name="door295" tags="hoteldoor" pos="12.8 3.5 15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_11.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door296" tags="hoteldoor px=12.800 pz=14.800 ang=-90" pos="12.8 6.4 15.3">
+		<body name="door296" tags="hoteldoor" pos="12.8 6.5 15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_11.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door297" tags="hoteldoor px=12.800 pz=14.800 ang=-90" pos="12.8 9.4 15.3">
+		<body name="door297" tags="hoteldoor" pos="12.8 9.5 15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_11.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door298" tags="hoteldoor px=12.800 pz=14.800 ang=-90" pos="12.8 12.4 15.3">
+		<body name="door298" tags="hoteldoor" pos="12.8 12.5 15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_11.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door299" tags="hoteldoor px=12.800 pz=14.800 ang=-90" pos="12.8 15.4 15.3">
+		<body name="door299" tags="hoteldoor" pos="12.8 15.5 15.3" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_11.vox" object="shape"/>
+			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
+			<joint pos="0 1.7 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
 		<body name="door300" tags="elevdoor shaft=NW0 floor=0 slide sx=0.00 sz=-1.00" pos="-13 0.4 17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
