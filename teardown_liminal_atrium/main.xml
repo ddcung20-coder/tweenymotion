@@ -4,6 +4,7 @@
 	<spawnpoint pos="0 0.5 -11.8" rot="0 180 0"/>
 	<script file="main.lua"/>
 	<script file="MOD/doors.lua"/>
+	<script file="MOD/elevator.lua"/>
 	<boundary>
 		<vertex pos="-23.6 -29.2"/>
 		<vertex pos="23.6 -29.2"/>
@@ -362,6 +363,76 @@
 		<body name="car_b_4" pos="16.7 0.42 -26.5" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/car_b.vox" object="shape"/>
 		</body>
+	</group>
+	<group name="elevators" pos="0 0 0">
+		<body name="car_NW0" tags="elevcar shaft=NW0 floor=2" pos="-11.9 6.2 17.3" dynamic="true">
+			<vox pos="0 0 0" file="MOD/vox/elev_car_NW0.vox" object="shape">
+				<light pos="0.05 2.3 0" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>
+			</vox>
+			<vox tags="elevbtn floor=0" pos="-0.6 1 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=1" pos="-0.6 1.2 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=2" pos="-0.6 1.4 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=3" pos="-0.6 1.6 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=4" pos="-0.6 1.8 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=5" pos="-0.6 2 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+		</body>
+		<body name="car_NW1" tags="elevcar shaft=NW1 floor=2" pos="-11.9 6.2 15.1" dynamic="true">
+			<vox pos="0 0 0" file="MOD/vox/elev_car_NW1.vox" object="shape">
+				<light pos="0.05 2.3 0" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>
+			</vox>
+			<vox tags="elevbtn floor=0" pos="-0.6 1 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=1" pos="-0.6 1.2 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=2" pos="-0.6 1.4 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=3" pos="-0.6 1.6 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=4" pos="-0.6 1.8 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=5" pos="-0.6 2 -0.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+		</body>
+		<body name="car_SE0" tags="elevcar shaft=SE0 floor=2" pos="11.8 6.2 -17.3" dynamic="true">
+			<vox pos="0 0 0" file="MOD/vox/elev_car_SE0.vox" object="shape">
+				<light pos="0.05 2.3 0" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>
+			</vox>
+			<vox tags="elevbtn floor=0" pos="0.6 1 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=1" pos="0.6 1.2 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=2" pos="0.6 1.4 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=3" pos="0.6 1.6 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=4" pos="0.6 1.8 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=5" pos="0.6 2 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+		</body>
+		<body name="car_SE1" tags="elevcar shaft=SE1 floor=4" pos="11.8 12.2 -15.1" dynamic="true">
+			<vox pos="0 0 0" file="MOD/vox/elev_car_SE1.vox" object="shape">
+				<light pos="0.05 2.3 0" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>
+			</vox>
+			<vox tags="elevbtn floor=0" pos="0.6 1 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=1" pos="0.6 1.2 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=2" pos="0.6 1.4 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=3" pos="0.6 1.6 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=4" pos="0.6 1.8 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+			<vox tags="elevbtn floor=5" pos="0.6 2 0.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+		</body>
+		<vox tags="elevcall shaft=NW0 floor=0" pos="-13.2 1.5 16.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW0 floor=1" pos="-13.2 4.5 16.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW0 floor=2" pos="-13.2 7.5 16.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW0 floor=3" pos="-13.2 10.5 16.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW0 floor=4" pos="-13.2 13.5 16.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW0 floor=5" pos="-13.2 16.5 16.7" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW1 floor=0" pos="-13.2 1.5 14.5" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW1 floor=1" pos="-13.2 4.5 14.5" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW1 floor=2" pos="-13.2 7.5 14.5" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW1 floor=3" pos="-13.2 10.5 14.5" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW1 floor=4" pos="-13.2 13.5 14.5" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=NW1 floor=5" pos="-13.2 16.5 14.5" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE0 floor=0" pos="13.1 1.5 -16.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE0 floor=1" pos="13.1 4.5 -16.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE0 floor=2" pos="13.1 7.5 -16.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE0 floor=3" pos="13.1 10.5 -16.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE0 floor=4" pos="13.1 13.5 -16.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE0 floor=5" pos="13.1 16.5 -16.6" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE1 floor=0" pos="13.1 1.5 -14.4" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE1 floor=1" pos="13.1 4.5 -14.4" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE1 floor=2" pos="13.1 7.5 -14.4" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE1 floor=3" pos="13.1 10.5 -14.4" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE1 floor=4" pos="13.1 13.5 -14.4" file="MOD/vox/elev_btn.vox" object="shape"/>
+		<vox tags="elevcall shaft=SE1 floor=5" pos="13.1 16.5 -14.4" file="MOD/vox/elev_btn.vox" object="shape"/>
 	</group>
 	<group name="doors" pos="0 0 0">
 		<body name="door0" tags="hoteldoor px=-11.700 pz=-12.100 ang=90 startopen" pos="-12.1 0.4 -12.1">
@@ -1264,76 +1335,76 @@
 		<body name="door299" tags="hoteldoor px=12.800 pz=14.800 ang=-90" pos="12.8 15.4 15.3">
 			<vox pos="0 0 0" file="MOD/vox/door_11.vox" object="shape"/>
 		</body>
-		<body name="door300" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 0.4 17.3">
+		<body name="door300" tags="elevdoor shaft=NW0 floor=0 slide sx=0.00 sz=-1.00" pos="-13 0.4 17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door301" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 0.4 15.1">
+		<body name="door301" tags="elevdoor shaft=NW0 floor=1 slide sx=0.00 sz=-1.00" pos="-13 3.4 17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door302" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 3.4 17.3">
+		<body name="door302" tags="elevdoor shaft=NW0 floor=2 slide sx=0.00 sz=-1.00" pos="-13 6.4 17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door303" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 3.4 15.1">
+		<body name="door303" tags="elevdoor shaft=NW0 floor=3 slide sx=0.00 sz=-1.00" pos="-13 9.4 17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door304" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 6.4 17.3">
+		<body name="door304" tags="elevdoor shaft=NW0 floor=4 slide sx=0.00 sz=-1.00" pos="-13 12.4 17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door305" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 6.4 15.1">
+		<body name="door305" tags="elevdoor shaft=NW0 floor=5 slide sx=0.00 sz=-1.00" pos="-13 15.4 17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door306" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 9.4 17.3">
+		<body name="door306" tags="elevdoor shaft=NW1 floor=0 slide sx=0.00 sz=-1.00" pos="-13 0.4 15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door307" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 9.4 15.1">
+		<body name="door307" tags="elevdoor shaft=NW1 floor=1 slide sx=0.00 sz=-1.00" pos="-13 3.4 15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door308" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 12.4 17.3">
+		<body name="door308" tags="elevdoor shaft=NW1 floor=2 slide sx=0.00 sz=-1.00" pos="-13 6.4 15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door309" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 12.4 15.1">
+		<body name="door309" tags="elevdoor shaft=NW1 floor=3 slide sx=0.00 sz=-1.00" pos="-13 9.4 15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door310" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 15.4 17.3">
+		<body name="door310" tags="elevdoor shaft=NW1 floor=4 slide sx=0.00 sz=-1.00" pos="-13 12.4 15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door311" tags="hoteldoor slide sx=0.00 sz=-1.00" pos="-13 15.4 15.1">
+		<body name="door311" tags="elevdoor shaft=NW1 floor=5 slide sx=0.00 sz=-1.00" pos="-13 15.4 15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>
 		</body>
-		<body name="door312" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 0.4 -17.3">
+		<body name="door312" tags="elevdoor shaft=SE0 floor=0 slide sx=0.00 sz=1.00" pos="12.9 0.4 -17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door313" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 0.4 -15.1">
+		<body name="door313" tags="elevdoor shaft=SE0 floor=1 slide sx=0.00 sz=1.00" pos="12.9 3.4 -17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door314" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 3.4 -17.3">
+		<body name="door314" tags="elevdoor shaft=SE0 floor=2 slide sx=0.00 sz=1.00" pos="12.9 6.4 -17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door315" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 3.4 -15.1">
+		<body name="door315" tags="elevdoor shaft=SE0 floor=3 slide sx=0.00 sz=1.00" pos="12.9 9.4 -17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door316" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 6.4 -17.3">
+		<body name="door316" tags="elevdoor shaft=SE0 floor=4 slide sx=0.00 sz=1.00" pos="12.9 12.4 -17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door317" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 6.4 -15.1">
+		<body name="door317" tags="elevdoor shaft=SE0 floor=5 slide sx=0.00 sz=1.00" pos="12.9 15.4 -17.3">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door318" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 9.4 -17.3">
+		<body name="door318" tags="elevdoor shaft=SE1 floor=0 slide sx=0.00 sz=1.00" pos="12.9 0.4 -15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door319" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 9.4 -15.1">
+		<body name="door319" tags="elevdoor shaft=SE1 floor=1 slide sx=0.00 sz=1.00" pos="12.9 3.4 -15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door320" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 12.4 -17.3">
+		<body name="door320" tags="elevdoor shaft=SE1 floor=2 slide sx=0.00 sz=1.00" pos="12.9 6.4 -15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door321" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 12.4 -15.1">
+		<body name="door321" tags="elevdoor shaft=SE1 floor=3 slide sx=0.00 sz=1.00" pos="12.9 9.4 -15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door322" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 15.4 -17.3">
+		<body name="door322" tags="elevdoor shaft=SE1 floor=4 slide sx=0.00 sz=1.00" pos="12.9 12.4 -15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
-		<body name="door323" tags="hoteldoor slide sx=0.00 sz=1.00" pos="12.9 15.4 -15.1">
+		<body name="door323" tags="elevdoor shaft=SE1 floor=5 slide sx=0.00 sz=1.00" pos="12.9 15.4 -15.1">
 			<vox pos="0 0 0" file="MOD/vox/door_13.vox" object="shape"/>
 		</body>
 	</group>

@@ -223,7 +223,22 @@ def cont(fr, U, V):
     return (fr.ox + 0.5 + fr.ux * (U - 0.5) + fr.vx * (V - 0.5),
             fr.oz + 0.5 + fr.uz * (U - 0.5) + fr.vz * (V - 0.5))
 
-def add_door(fr, u0, u1, y0, y1, v0, v1, style, hinge=None, open_dir=None, slide=None, start_open=False):
+def frame_shape(fr, u0, u1, y0, y1, v0, v1, style):
+    """build a separate shape for a frame box: style(a, b, c, A, B, C) -> colour (0 = empty)."""
+    x0, x1, z0, z1 = fr._rect(u0, u1, v0, v1)
+    arr = np.zeros((x1 - x0, y1 - y0, z1 - z0), np.uint8)
+    A, B, C = u1 - u0, y1 - y0, v1 - v0
+    for u in range(u0, u1):
+        for v in range(v0, v1):
+            x, z = fr.pt(u, v)
+            for yy in range(y0, y1):
+                arr[x - x0, yy - y0, z - z0] = style(u - u0, yy - y0, v - v0, A, B, C)
+    return arr, (x0, y0, z0)
+
+ELEVATORS = []     # dynamic cars driven by MOD/elevator.lua
+CALLS = []         # landing call buttons (static shapes)
+
+def add_door(fr, u0, u1, y0, y1, v0, v1, style, hinge=None, open_dir=None, slide=None, start_open=False, tag="hoteldoor"):
     """door leaf occupying a frame box; style(a, b, c, A, B, C) colours local cell
     (a along u, b up, c along v).  Swing: hinge = frame corner (U, V), open_dir = (du, dv).
     Slide: slide = (du, dv) frame offset in voxels."""
@@ -236,7 +251,7 @@ def add_door(fr, u0, u1, y0, y1, v0, v1, style, hinge=None, open_dir=None, slide
             for yy in range(y0, y1):
                 arr[x - x0, yy - y0, z - z0] = style(u - u0, yy - y0, v - v0, A, B, C)
     box(x0, x1, y0, y1, z0, z1, 0)       # keep the opening clear in the world grid
-    d = dict(arr=arr, gmin=(x0, y0, z0), start_open=start_open)
+    d = dict(arr=arr, gmin=(x0, y0, z0), start_open=start_open, tag=tag)
     if slide is not None:
         d["kind"] = "slide"
         d["slide"] = (fr.ux * slide[0] + fr.vx * slide[1], fr.uz * slide[0] + fr.vz * slide[1])
@@ -1035,46 +1050,102 @@ DIGITS = {
     "5": ["###", "#..", "##.", "..#", "##."], "6": [".##", "#..", "###", "#.#", "###"],
 }
 
-def elevators(fr):
+CAR_P0, CAR_P1 = 1, 18          # car footprint inside a shaft (p), 1-voxel running clearance
+CAR_H = 28                      # floor (2) + cabin (24) + roof (2)
+
+def car_style(a, b, c, A, B, C):
+    """elevator cab, local a = depth (0 = door side), b = height, c = width."""
+    floor_top, roof = 2, B - 2
+    inside_a = 1 <= a <= A - 2
+    inside_c = 1 <= c <= C - 2
+    if b < floor_top:                                       # floor: steel pan + carpet inlay
+        if b == 1 and inside_a and inside_c:
+            return COR_GOLD if (a in (1, A - 2) or c in (1, C - 2)) else COR_CARP
+        return DARK_METAL
+    if b >= roof:                                           # roof with hoist beam
+        if b == B - 1 and 7 <= c <= C - 8:
+            return ELEV_RAIL
+        return DARK_METAL
+    if b == roof - 1:                                       # ceiling: light panel in a brass frame
+        if 5 <= a <= A - 5 and 5 <= c <= C - 6:
+            return CEIL_LAMP if (6 <= a <= A - 6 and 6 <= c <= C - 7) else BRASS
+        return CEIL if (inside_a and inside_c) else WAINS2
+    if a == A - 1:                                          # back wall: big mirror over wood
+        if 3 <= c <= C - 4 and 9 <= b <= 22:
+            return MIRROR
+        return WAINS if b != 8 else CHAIR_RAIL
+    if c in (0, C - 1):                                     # side walls: raised wood panels
+        if b == 8:
+            return CHAIR_RAIL
+        if (b - 3) % 7 in (0,) or a % 5 == 0:
+            return WAINS2
+        return WAINS
+    if a == 0:                                              # front wall around the open doorway
+        if 3 <= c <= C - 4 and b < 24:
+            return 0
+        if c in (2, C - 3) or b == 24:
+            return BRASS
+        return ELEV_DOOR
+    if b == 11 and c in (1, C - 2) and 2 <= a <= A - 3:     # brass handrails (inside)
+        return BRASS
+    if a == 1 and c == C - 2 and 7 <= b <= 20:              # button panel next to the door
+        return CHROME
+    if a == 1 and b == 23 and 5 <= c <= C - 6:              # floor indicator strip
+        return TV_BODY
+    return 0
+
+def elevators(fr, key):
     for k in range(FLOORS):
         y = fy(k)
         fr.box(0, CB - T_FAC, y, y + FH - SLAB_T, 0, CB - T_FAC, 0)
         fr.box(0, CB - T_FAC, y - 1, y, 0, CB - T_FAC, TILE_DARK)
     fr.box(0, 22, G0, ROOF_Y + 12, 0, CB - T_FAC, SLAB)
-    for q0 in (2, 24):
-        fr.box(0, 20, G0 - 2, ROOF_Y + 10, q0, q0 + 18, 0)
-        fr.box(2, 4, G0 - 2, ROOF_Y + 10, q0 + 3, q0 + 4, ELEV_RAIL)
-        fr.box(2, 4, G0 - 2, ROOF_Y + 10, q0 + 14, q0 + 15, ELEV_RAIL)
-        fr.box(9, 10, G0 + 30, ROOF_Y + 10, q0 + 8, q0 + 9, CABLE)
-        fr.box(11, 12, G0 + 30, ROOF_Y + 10, q0 + 8, q0 + 9, CABLE)
-    fr.box(-T_PART, 22, ROOF_Y + 10, ROOF_Y + 14, -T_PART, CB - T_FAC, SLAB)
-    for q0, kk in ((2, 2), (24, 0)):
-        y = fy(kk)
-        fr.box(1, 19, y - 2, y, q0 + 1, q0 + 17, DARK_METAL)
-        fr.box(1, 19, y + 24, y + 26, q0 + 1, q0 + 17, DARK_METAL)
-        fr.box(18, 19, y, y + 24, q0 + 1, q0 + 17, MIRROR)
-        fr.box(1, 19, y, y + 24, q0 + 1, q0 + 2, WAINS)
-        fr.box(1, 19, y, y + 24, q0 + 16, q0 + 17, WAINS)
-        fr.box(1, 18, y + 10, y + 11, q0 + 2, q0 + 3, BRASS)                 # handrails
-        fr.box(1, 18, y + 10, y + 11, q0 + 15, q0 + 16, BRASS)
-        fr.box(8, 12, y + 23, y + 24, q0 + 7, q0 + 11, CEIL_LAMP)
-        fr.box(2, 18, y - 1, y, q0 + 2, q0 + 16, COR_CARP)
-        fr.box(2, 3, y + 9, y + 15, q0 + 13, q0 + 15, CHROME)                 # button panel
-        fr.box(9, 11, y + 26, y + 30, q0 + 7, q0 + 11, CABLE)
-        fr.box(9, 10, y + 30, fy(FLOORS) + 10, q0 + 8, q0 + 9, CABLE)
-        fr.box(11, 12, y + 30, fy(FLOORS) + 10, q0 + 8, q0 + 9, CABLE)
-    for k in range(FLOORS):
-        y = fy(k)
-        for q0 in (2, 24):
+    for qi, q0 in enumerate((2, 24)):
+        shaft = f"{key}{qi}"
+        fr.box(0, 20, 1, ROOF_Y, q0, q0 + 18, 0)                                  # hollow shaft + pit
+        # guide rails + brackets on the back wall (behind the car, not touching it)
+        for qq in (q0 + 3, q0 + 14):
+            fr.box(19, 20, 1, ROOF_Y, qq, qq + 1, ELEV_RAIL)
+            for yy in range(G0, ROOF_Y, 15):
+                fr.box(19, 20, yy, yy + 1, qq - 1, qq + 2, ELEV_RAIL)
+        for qq in (q0 + 2, q0 + 15):                                            # pit buffers (outside the car footprint)
+            fr.box(19, 20, 1, 3, qq, qq + 1, RED)
+        # counterweight hint + hoist sheave at the top
+        fr.box(6, 14, ROOF_Y - 3, ROOF_Y - 1, q0 + 7, q0 + 11, DARK_METAL)
+        fr.box(9, 11, ROOF_Y - 1, ROOF_Y, q0 + 8, q0 + 10, ELEV_RAIL)
+        start = rng.randrange(FLOORS)
+        yb = fy(start) - 2
+        arr, gmin = frame_shape(fr, CAR_P0, CAR_P1, yb, yb + CAR_H, q0 + 1, q0 + 17, car_style)
+        # car buttons: one per floor, stacked on the chrome panel (separate shapes)
+        buttons = []
+        for f in range(FLOORS):
+            by = yb + 2 + 8 + f * 2
+            barr, bmin = frame_shape(fr, CAR_P0 + 2, CAR_P0 + 3, by, by + 1, q0 + 1 + 14, q0 + 1 + 15,
+                                     lambda *a_: CEIL_LAMP)
+            buttons.append((barr, bmin, f))
+        cxl, czl = cont(fr, (CAR_P0 + CAR_P1) / 2, q0 + 9)
+        ELEVATORS.append(dict(arr=arr, gmin=gmin, shaft=shaft, floor=start, buttons=buttons,
+                              light=(cxl, yb + CAR_H - 5, czl)))
+        for k in range(FLOORS):
+            y = fy(k)
             fr.box(-T_PART, 0, y, y + 22, q0 + 4, q0 + 14, 0)
             add_door(fr, -T_PART, -T_PART + 1, y, y + 22, q0 + 4, q0 + 14,
-                     lambda a, b, c, A, B, C: elev_door(c, b, a, C, B, A), slide=(0, 10))
+                     lambda a, b, c, A, B, C: elev_door(c, b, a, C, B, A), slide=(0, 10),
+                     tag=f"elevdoor shaft={shaft} floor={k}")
+            # brass portal, lantern and call button panel
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 3, q0 + 4, BRASS)
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 14, q0 + 15, BRASS)
             fr.box(-T_PART - 1, -T_PART, y + 22, y + 23, q0 + 3, q0 + 15, BRASS)
-            fr.box(-T_PART - 1, -T_PART, y + 24, y + 26, q0 + 7, q0 + 11, CEIL_LAMP)
-        fr.box(-T_PART - 1, -T_PART, y + 10, y + 14, 21, 23, BRASS)
-        fr.box(-T_PART - 2, -T_PART - 1, y + 11, y + 12, 21, 22, CEIL_LAMP)
+            fr.box(-T_PART - 1, -T_PART, y + 23, y + 26, q0 + 6, q0 + 12, DARK_METAL)
+            for f in range(FLOORS):                                              # floor dial dots
+                fr.box(-T_PART - 2, -T_PART - 1, y + 24, y + 25, q0 + 6 + f, q0 + 7 + f, CEIL_LAMP if f == k else BRASS)
+            fr.box(-T_PART - 1, -T_PART, y + 9, y + 15, q0 + 15, q0 + 17, BRASS)
+            barr, bmin = frame_shape(fr, -T_PART - 2, -T_PART - 1, y + 11, y + 13, q0 + 15, q0 + 16,
+                                     lambda *a_: CEIL_LAMP)
+            CALLS.append((barr, bmin, shaft, k))
+    fr.box(-T_PART, 22, ROOF_Y + 10, ROOF_Y + 14, -T_PART, CB - T_FAC, SLAB)
+    for k in range(FLOORS):
+        y = fy(k)
         # utility / ice machine room
         fr.box(26, 35, y, y + 21, -T_PART, 0, 0)
         fr.box(28, 44, y, y + 18, 34, 42, RADIATOR)
@@ -1092,12 +1163,12 @@ def elevators(fr):
         fr.box(30, 34, y + 26, y + 27, 18, 22, CEIL_LAMP)
         fr.light(32, y + 24, 20, (0.85, 0.95, 1.0), 1.2, 0.2)
     y = ROOF_Y
-    fr.box(-T_PART, 24, y, y + 14, -T_PART, CB - T_FAC + 2, BRICK)
+    fr.box(-T_PART, 24, y, y + 14, -T_PART, CB - T_FAC + 2, BRICK)              # machine room
     fr.box(-T_PART - 1, 25, y + 14, y + 16, -T_PART - 1, CB - T_FAC + 3, EXT_TRIM)
     fr.box(4, 14, y, y + 18, CB - T_FAC + 2, CB - T_FAC + 3, DARK_METAL)
 
 stairwell(corner["SW"]); stairwell(corner["NE"])
-elevators(corner["NW"]); elevators(corner["SE"])
+elevators(corner["NW"], "NW"); elevators(corner["SE"], "SE")
 
 # ============================================================================
 # 8. Roof: HVAC, ducts, vents, rooftop sign
@@ -1318,6 +1389,9 @@ def export():
                 voxes.append(dict(name=name, gmin=(gx0, gy0, gz0), size=(sx, sy, sz), pos=(ox, oy, oz), lights=[], n=n))
     for pname, arr in PROP_SHAPES.items():
         write_vox(os.path.join(VOXDIR, pname + ".vox"), arr)
+    write_vox(os.path.join(VOXDIR, "elev_btn.vox"), np.full((1, 1, 1), CEIL_LAMP, np.uint8))
+    for e in ELEVATORS:
+        write_vox(os.path.join(VOXDIR, f"elev_car_{e['shaft']}.vox"), e["arr"])
     door_files = {}
     for d in DOORS:
         key = (d["arr"].shape, d["arr"].tobytes())
@@ -1358,6 +1432,7 @@ def export():
     xml.append(f'\t<spawnpoint pos="{f3(spawn)}" rot="0 180 0"/>\n')
     xml.append('\t<script file="main.lua"/>\n')            # base game: gives the player their unlocked tools
     xml.append('\t<script file="MOD/doors.lua"/>\n')       # E to open / close doors
+    xml.append('\t<script file="MOD/elevator.lua"/>\n')    # working elevators
     xml.append('\t<boundary>\n')
     for (bx_, bz_) in [(-half_w, -half_d), (half_w, -half_d), (half_w, half_d), (-half_w, half_d)]:
         xml.append(f'\t\t<vertex pos="{bx_:.1f} {bz_:.1f}"/>\n')
@@ -1382,12 +1457,35 @@ def export():
         xml.append(f'\t\t<body name="{pname}_{i}" pos="{f3((ox, oy, oz))}" rot="0 {roty} 0" dynamic="true">\n'
                    f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{pname}.vox" object="shape"/>\n\t\t</body>\n')
     xml.append('\t</group>\n')
+    def origin(arr, gmin):
+        sx, sy, sz = arr.shape
+        gx, gy, gz = gmin
+        return ((gx + sx // 2) * 0.1 - CX, gy * 0.1, (gz + sz - sz // 2) * 0.1 - CZ)
+    xml.append('\t<group name="elevators" pos="0 0 0">\n')
+    for e in ELEVATORS:
+        bo = origin(e["arr"], e["gmin"])
+        xml.append(f'\t\t<body name="car_{e["shaft"]}" tags="elevcar shaft={e["shaft"]} floor={e["floor"]}" '
+                   f'pos="{f3(bo)}" dynamic="true">\n')
+        lx, ly, lz = e["light"]
+        lrel = (lx * 0.1 - CX - bo[0], ly * 0.1 - bo[1], lz * 0.1 - CZ - bo[2])
+        xml.append(f'\t\t\t<vox pos="0 0 0" file="MOD/vox/elev_car_{e["shaft"]}.vox" object="shape">\n'
+                   f'\t\t\t\t<light pos="{f3(lrel)}" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>\n'
+                   f'\t\t\t</vox>\n')
+        for (barr, bmin, f) in e["buttons"]:
+            o = origin(barr, bmin)
+            rel = (o[0] - bo[0], o[1] - bo[1], o[2] - bo[2])
+            xml.append(f'\t\t\t<vox tags="elevbtn floor={f}" pos="{f3(rel)}" file="MOD/vox/elev_btn.vox" object="shape"/>\n')
+        xml.append('\t\t</body>\n')
+    for (barr, bmin, shaft, k) in CALLS:
+        xml.append(f'\t\t<vox tags="elevcall shaft={shaft} floor={k}" pos="{f3(origin(barr, bmin))}" '
+                   f'file="MOD/vox/elev_btn.vox" object="shape"/>\n')
+    xml.append('\t</group>\n')
     xml.append('\t<group name="doors" pos="0 0 0">\n')
     for i, d in enumerate(DOORS):
         sx, sy, sz = d["arr"].shape
         gx, gy, gz = d["gmin"]
         ox = (gx + sx // 2) * 0.1 - CX; oy = gy * 0.1; oz = (gz + sz - sz // 2) * 0.1 - CZ
-        tags = "hoteldoor"
+        tags = d["tag"]
         if d["kind"] == "swing":
             tags += f" px={d['pivot'][0] * 0.1 - CX:.3f} pz={d['pivot'][1] * 0.1 - CZ:.3f} ang={d['ang']}"
         else:
@@ -1407,7 +1505,7 @@ def export():
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
-                 doors=len(DOORS), door_files=len(door_files),
+                 doors=len(DOORS), door_files=len(door_files), elevators=len(ELEVATORS), calls=len(CALLS),
                  rooms=len(room_log), lit=sum(1 for r in room_log if r[3].startswith("lit")),
                  tv=sum(1 for r in room_log if r[3] == "tv"))
     print(json.dumps(stats))
@@ -1422,6 +1520,11 @@ if __name__ == "__main__":
             arr = PROP_SHAPES[pname]; sx, sy, sz = arr.shape
             reg = Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz]
             reg[arr > 0] = arr[arr > 0]
+        stamps = [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
+            + [(c_[0], c_[1]) for c_ in CALLS]
+        for arr, (gx, gy, gz) in stamps:
+            sx, sy, sz = arr.shape
+            Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz][arr > 0] = arr[arr > 0]
         for d in DOORS:
             arr = d["arr"]; gx, gy, gz = d["gmin"]; sx, sy, sz = arr.shape
             Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz][arr > 0] = arr[arr > 0]
