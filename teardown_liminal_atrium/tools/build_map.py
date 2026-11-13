@@ -166,7 +166,8 @@ AZ1 = AZ0 + 200
 D = AZ1 + 30
 
 G = np.zeros((W, H, D), dtype=np.uint8)
-LIGHTS = []   # (gx, gy, gz, rgb, scale, size)
+LIGHTS = []   # (gx, gy, gz, rgb, scale, size, tags)
+LAMPS = []    # filled by export(): lamp shapes cut out of the world
 PROPS = []    # (name, gx, gy, gz, rot_y)
 
 def box(x0, x1, y0, y1, z0, z1, c):
@@ -261,10 +262,9 @@ def add_door(fr, u0, u1, y0, y1, v0, v1, style, hinge=None, open_dir=None, slide
             for yy in range(y0, y1):
                 arr[x - x0, yy - y0, z - z0] = style(u - u0, yy - y0, v - v0, A, B, C)
     box(x0, x1, y0, y1, z0, z1, 0)       # keep the opening clear in the world grid
-    if slide is None:                    # physical swing door: 10 cm clearance under and over the leaf
-        arr = arr[:, 1:-1, :]
-        y0 += 1
-    d = dict(arr=arr, gmin=(x0, y0, z0), start_open=start_open, tag=tag)
+    if slide is None:                    # physical swing door: leaf one row shorter than the opening,
+        arr = arr[:, :-1, :]             # hung 5 cm up -> 5 cm clearance under and over it
+    d = dict(arr=arr, gmin=(x0, y0, z0), start_open=start_open, tag=tag, yoff=0.05 if slide is None else 0.0)
     if slide is not None:
         d["kind"] = "slide"
         d["slide"] = (fr.ux * slide[0] + fr.vx * slide[1], fr.uz * slide[0] + fr.vz * slide[1])
@@ -737,9 +737,9 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
     v0b = ROOM_D - 13
     fr.box(bu0b, bu0b + 1, y, y + FH - SLAB_T, v0b, ROOM_D, ROOM_WALL)
     fr.box(bu0b, U1, y, y + FH - SLAB_T, v0b, v0b + 1, ROOM_WALL)
-    add_door(fr, bu0b, bu0b + 1, y, y + 21, v0b + 2, v0b + 10, lambda a, b, c, A, B, C: wood_door(c, b, a, C, B, A),
+    add_door(fr, bu0b, bu0b + 1, y, y + 22, v0b + 2, v0b + 10, lambda a, b, c, A, B, C: wood_door(c, b, a, C, B, A),
              hinge=(bu0b, v0b + 2), open_dir=(-1, 0), start_open=rng.random() < 0.6)
-    fr.box(bu0b, bu0b + 1, y + 21, y + 22, v0b + 1, v0b + 11, WOOD_DARK)
+    fr.box(bu0b, bu0b + 1, y + 22, y + 23, v0b + 1, v0b + 11, WOOD_DARK)
     fr.box(bu0b + 1, U1, y - 1, y, v0b + 1, ROOM_D, TILE)
     for uu in range(bu0b + 1, U1, 3):                                           # floor tile grout
         fr.box(uu, uu + 1, y - 1, y, v0b + 1, ROOM_D, TILE_DARK)
@@ -786,13 +786,13 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
         fr.box(bu0 + 4, bu0 + 6, y + 10, y + 11, sb + 3, sb + 7, CHROME)
     # ---- entrance door (corridor partition: v in [ROOM_D, ROOM_D+T_PART))
     du0 = U0 + 8
-    fr.box(du0, du0 + 9, y, y + 21, ROOM_D, ROOM_D + T_PART, 0)
-    fr.box(du0 - 1, du0 + 10, y + 21, y + 22, ROOM_D, ROOM_D + T_PART + 1, WOOD_DARK)
-    fr.box(du0 - 1, du0, y, y + 21, ROOM_D + T_PART, ROOM_D + T_PART + 1, WOOD_DARK)
-    fr.box(du0 + 9, du0 + 10, y, y + 21, ROOM_D + T_PART, ROOM_D + T_PART + 1, WOOD_DARK)
+    fr.box(du0, du0 + 9, y, y + 22, ROOM_D, ROOM_D + T_PART, 0)
+    fr.box(du0 - 1, du0 + 10, y + 22, y + 23, ROOM_D, ROOM_D + T_PART + 1, WOOD_DARK)
+    fr.box(du0 - 1, du0, y, y + 22, ROOM_D + T_PART, ROOM_D + T_PART + 1, WOOD_DARK)
+    fr.box(du0 + 9, du0 + 10, y, y + 22, ROOM_D + T_PART, ROOM_D + T_PART + 1, WOOD_DARK)
     fr.box(du0, du0 + 9, y - 1, y, ROOM_D, ROOM_D + T_PART, WOOD_DARK)          # threshold
     # real door leaf in the room-side layer of the partition, hinged on the wardrobe side, opens inward
-    add_door(fr, du0, du0 + 9, y, y + 21, ROOM_D, ROOM_D + 1, wood_door,
+    add_door(fr, du0, du0 + 9, y, y + 22, ROOM_D, ROOM_D + 1, wood_door,
              hinge=(du0, ROOM_D), open_dir=(0, -1), start_open=rng.random() < 0.25)
     fr.box(du0 + 11, du0 + 14, y + 15, y + 17, ROOM_D + T_PART, ROOM_D + T_PART + 1, BRASS)   # number plate
     fr.box(du0 - 3, du0 - 2, y + 11, y + 13, ROOM_D - 1, ROOM_D, SWITCH)         # light switch (inside)
@@ -945,10 +945,10 @@ for px_ in (lx0 + 22, lx1 - 24):
         box(px_ - 1, px_ + 5, y, y + 2, pz_ - 1, pz_ + 5, BASE_STONE)
         box(px_ - 1, px_ + 5, y + 24, y + 26, pz_ - 1, pz_ + 5, CORNICE)
 # glass double doors to the atrium
-box(cx - 14, cx + 14, y, y + 22, az0 - T_FAC, az0, FRAME)
-box(cx - 13, cx + 13, y, y + 21, az0 - T_FAC, az0, 0)
-add_door(WORLD, cx - 13, cx, y, y + 21, az0 - 3, az0 - 2, glass_door, hinge=(cx - 13, az0 - 2), open_dir=(0, 1))
-add_door(WORLD, cx, cx + 13, y, y + 21, az0 - 3, az0 - 2, lambda a, b, c, A, B, C: glass_door(A - 1 - a, b, c, A, B, C),
+box(cx - 14, cx + 14, y, y + 23, az0 - T_FAC, az0, FRAME)
+box(cx - 13, cx + 13, y, y + 22, az0 - T_FAC, az0, 0)
+add_door(WORLD, cx - 13, cx, y, y + 22, az0 - 3, az0 - 2, glass_door, hinge=(cx - 13, az0 - 2), open_dir=(0, 1))
+add_door(WORLD, cx, cx + 13, y, y + 22, az0 - 3, az0 - 2, lambda a, b, c, A, B, C: glass_door(A - 1 - a, b, c, A, B, C),
          hinge=(cx + 13, az0 - 2), open_dir=(0, 1))
 box(cx - 4, cx + 4, y + 23, y + 26, az0 - 5, az0 - 4, EXIT_SIGN)
 # reception desk with key cubbies behind it
@@ -1045,10 +1045,10 @@ def stairwell(fr):
         fr.box(0, 15, y - 1, y, 0, CB - T_FAC, STAIR_CONC)
         fr.box(0, 15, y - 1, y, 0, 1, RED)           # safety line
         if k < FLOORS:
-            fr.box(-T_PART, 0, y, y + 21, 26, 36, 0)
+            fr.box(-T_PART, 0, y, y + 22, 26, 36, 0)
             fr.box(-T_PART - 1, -T_PART, y + 22, y + 25, 28, 34, EXIT_SIGN)
             fr.box(0, 1, y + 21, y + 22, 25, 37, DARK_METAL)
-            add_door(fr, -1, 0, y, y + 21, 26, 36, lambda a, b, c, A, B, C: steel_door(c, b, a, C, B, A),
+            add_door(fr, -1, 0, y, y + 22, 26, 36, lambda a, b, c, A, B, C: steel_door(c, b, a, C, B, A),
                      hinge=(0, 36), open_dir=(1, 0))
             fr.light(4, y + 24, 22, (1.0, 0.95, 0.85), 1.6, 0.2)
             fr.box(2, 6, y + 26, y + 27, 20, 24, CEIL_LAMP)
@@ -1181,13 +1181,16 @@ def elevators(fr, key):
             fr.box(-T_PART, 0, y, y + 22, q0 + 4, q0 + 14, 0)
             # support points inside the wall (left jamb, right of the pocket, above the header):
             # main.lua drops the door when these are blown away
+            # support probes: start 6 cm in front of the corridor face of the wall (left jamb, right of the
+            # pocket, above the header) and look 20 cm into the wall; no hit = wall gone -> door drops
             sup = []
-            for (P, Q, Y) in ((-1, q0 + 2, y + 11), (-1, q0 + 19, y + 11), (-1, q0 + 9, y + 25)):
-                wx_, wz_ = cont(fr, P + 0.5, Q + 0.5)
+            for (Q, Y) in ((q0 + 2, y + 11), (q0 + 19, y + 11), (q0 + 13, y + 25)):
+                wx_, wz_ = cont(fr, -T_PART - 0.6, Q + 0.5)
                 sup.append(f"{wx_ * 0.1 - W * 0.05:.3f},{(Y + 0.5) * 0.1:.3f},{wz_ * 0.1 - D * 0.05:.3f}")
+            sdx, sdz = fr.ux, fr.uz
             add_door(fr, -T_PART, -T_PART + 1, y, y + 22, q0 + 4, q0 + 14,
                      lambda a, b, c, A, B, C: elev_door(c, b, a, C, B, A), slide=(0, 10),
-                     tag=f"elevdoor shaft={shaft} floor={k} s1={sup[0]} s2={sup[1]} s3={sup[2]}")
+                     tag=f"elevdoor shaft={shaft} floor={k} s1={sup[0]} s2={sup[1]} s3={sup[2]} sdir={sdx},{sdz}")
             # brass portal, lantern and call button panel
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 3, q0 + 4, BRASS)
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 14, q0 + 15, BRASS)
@@ -1274,9 +1277,9 @@ light((bx0 + bx1) / 2, ROOF_Y + 14, sz_ - 4, (1.0, 0.75, 0.45), 5.0, 0.5)
 for (sx, sz) in [(bx0 - 14, bz0 - 14), (bx1 + 12, bz0 - 14), (bx0 - 14, bz1 + 12), (bx1 + 12, bz1 + 12),
                  (bx0 - 14, (bz0 + bz1) // 2), (bx1 + 12, (bz0 + bz1) // 2)]:
     box(sx - 1, sx + 3, G0, G0 + 3, sz - 1, sz + 3, DARK_METAL)
+    box(sx - 1, sx + 3, G0 + 49, G0 + 50, sz - 1, sz + 3, STREET_LMP)
     box(sx, sx + 2, G0, G0 + 50, sz, sz + 2, DARK_METAL)
     box(sx - 2, sx + 4, G0 + 50, G0 + 52, sz - 2, sz + 4, DARK_METAL)
-    box(sx - 1, sx + 3, G0 + 49, G0 + 50, sz - 1, sz + 3, STREET_LMP)
     light(sx + 1, G0 + 48.5, sz - 0.5, (1.0, 0.75, 0.45), 6.0, 0.3)
 # dumpster + fire hydrant by the north-east
 box(bx1 + 8, bx1 + 22, G0 + 1, G0 + 12, bz1 - 40, bz1 - 22, DUMPSTER)
@@ -1714,6 +1717,58 @@ def export():
         if fn.endswith(".vox"):
             os.remove(os.path.join(VOXDIR, fn))
     CX, CZ = (W / 2) * 0.1, (D / 2) * 0.1
+    # ---- lamps become their own small shapes, each carrying its light(s) --------------------------
+    # Teardown turns a shape's lights off when that shape is damaged. With every lamp a separate shape,
+    # shooting a lamp kills exactly its light, and damage anywhere else never touches it.
+    EMIT = np.array([i for i, v in PAL.items() if v[1] == "emit" and i not in (CURT_LIT, CURT_LIT2)], np.uint8)
+    claimed = np.zeros(G.shape, np.int32)          # lamp id + 1
+    lamps = []                                     # dict(vox=set, lights=[...])
+    loose = []
+    R, B = 4, 7
+    for (gx, gy, gz, rgb, scale, size, ltags) in LIGHTS:
+        ix, iy, iz = int(gx), int(gy), int(gz)
+        x0, y0, z0 = max(ix - R, 0), max(iy - R, 0), max(iz - R, 0)
+        win = G[x0:ix + R + 1, y0:iy + R + 1, z0:iz + R + 1]
+        X, Y, Z = np.nonzero(np.isin(win, EMIT) | (claimed[x0:ix + R + 1, y0:iy + R + 1, z0:iz + R + 1] > 0))
+        if not len(X):
+            loose.append((gx * 0.1 - CX, gy * 0.1, gz * 0.1 - CZ, rgb, scale, size, ltags))
+            continue
+        d2 = (X + x0 + 0.5 - gx) ** 2 + (Y + y0 + 0.5 - gy) ** 2 + (Z + z0 + 0.5 - gz) ** 2
+        j = int(np.argmin(d2))
+        lv = (X[j] + x0, Y[j] + y0, Z[j] + z0)
+        if claimed[lv]:
+            lamps[claimed[lv] - 1]["lights"].append((gx, gy, gz, rgb, scale, size, ltags))
+            continue
+        # flood the lamp's emissive voxels (bounded box around the lamp, unclaimed only)
+        lid = len(lamps)
+        comp, stack = [], [lv]
+        claimed[lv] = lid + 1
+        while stack:
+            c = stack.pop()
+            comp.append(c)
+            for d in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)):
+                n_ = (c[0] + d[0], c[1] + d[1], c[2] + d[2])
+                if all(abs(n_[k] - lv[k]) <= B for k in range(3)) and 0 <= n_[0] < W and 0 <= n_[1] < H and 0 <= n_[2] < D \
+                        and not claimed[n_] and G[n_] in EMIT:
+                    claimed[n_] = lid + 1
+                    stack.append(n_)
+        lamps.append(dict(vox=comp, lights=[(gx, gy, gz, rgb, scale, size, ltags)]))
+    lamp_files = {}
+    for L in lamps:
+        V = np.array(L["vox"])
+        mn = V.min(0); mx = V.max(0) + 1
+        arr = np.zeros(tuple(mx - mn), np.uint8)
+        arr[V[:, 0] - mn[0], V[:, 1] - mn[1], V[:, 2] - mn[2]] = G[V[:, 0], V[:, 1], V[:, 2]]
+        G[V[:, 0], V[:, 1], V[:, 2]] = 0                       # removed from the world chunks
+        key = (arr.shape, arr.tobytes())
+        if key not in lamp_files:
+            lamp_files[key] = f"lamp_{len(lamp_files)}"
+            write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr)
+        L["file"] = lamp_files[key]
+        sx, sy, sz = arr.shape
+        L["pos"] = ((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)
+        L["arr"] = arr; L["gmin"] = tuple(int(v) for v in mn)
+    LAMPS[:] = lamps
     # Few, large shapes (<= 256 per axis), split only along party-wall planes and never
     # horizontally: Teardown judges support per shape, so seams through structure make
     # whole slabs of wall drop off when something near a seam is shot.
@@ -1776,29 +1831,6 @@ def export():
             if a <= gx < a + sx and b <= gy < b + sy and c <= gz < c + sz:
                 return v
         return None
-    # Teardown switches a shape-attached light off when the voxel at its position is gone.
-    # So: put each light INSIDE the nearest lamp voxel (then only breaking that lamp kills it);
-    # lights with no lamp within reach stay unattached (always on).
-    EMIT = np.array([i for i, v in PAL.items() if v[1] == "emit" and i not in (CURT_LIT, CURT_LIT2)], np.uint8)
-    loose = []
-    snapped = 0
-    R = 4
-    for (gx, gy, gz, rgb, scale, size, ltags) in LIGHTS:
-        ix, iy, iz = int(gx), int(gy), int(gz)
-        x0, y0, z0 = max(ix - R, 0), max(iy - R, 0), max(iz - R, 0)
-        win = G[x0:ix + R + 1, y0:iy + R + 1, z0:iz + R + 1]
-        X, Y, Z = np.nonzero(np.isin(win, EMIT))
-        # lights stay unattached (attached lights die on ANY damage to their shape); instead each light
-        # remembers its lamp voxel and main.lua switches it off when that lamp is shot / smashed
-        if len(X):
-            d2 = (X + x0 + 0.5 - gx) ** 2 + (Y + y0 + 0.5 - gy) ** 2 + (Z + z0 + 0.5 - gz) ** 2
-            j = int(np.argmin(d2))
-            lx, ly, lz = X[j] + x0, Y[j] + y0, Z[j] + z0
-            lamp = f"{(lx + 0.5) * 0.1 - CX:.3f},{(ly + 0.5) * 0.1:.3f},{(lz + 0.5) * 0.1 - CZ:.3f}"
-            ltags = (ltags + " " if ltags else "") + "lamp=" + lamp
-            snapped += 1
-        loose.append((gx * 0.1 - CX, gy * 0.1, gz * 0.1 - CZ, rgb, scale, size, ltags))
-
     def f3(a): return " ".join(f"{t:.3f}".rstrip("0").rstrip(".") if abs(t) > 1e-9 else "0" for t in a)
     def light_xml(p, rgb, scale, size, ind="\t\t\t", ltags=""):
         t_ = f' tags="{ltags}"' if ltags else ""
@@ -1833,6 +1865,15 @@ def export():
             xml.append(f'\t\t<vox name="{v["name"]}" pos="{f3(v["pos"])}" file="MOD/vox/{v["name"]}.vox" object="shape"/>\n')
     for (wx, wy, wz, rgb, scale, size, ltags) in loose:
         xml.append(light_xml((wx, wy, wz), rgb, scale, size, "\t\t", ltags))
+    xml.append('\t</group>\n')
+    xml.append('\t<group name="lamps" pos="0 0 0">\n')
+    for i, L in enumerate(lamps):
+        px_, py_, pz_ = L["pos"]
+        xml.append(f'\t\t<vox name="lamp{i}" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape">\n')
+        for (gx, gy, gz, rgb, scale, size, ltags) in L["lights"]:
+            rel = (gx * 0.1 - CX - px_, gy * 0.1 - py_, gz * 0.1 - CZ - pz_)
+            xml.append(light_xml(rel, rgb, scale, size, ltags=ltags))
+        xml.append('\t\t</vox>\n')
     xml.append('\t</group>\n')
     for (sy_, dep, pts) in POOLS:
         # polygon water anchored at the pool centre; vertices relative to it (like every child node).
@@ -1894,6 +1935,7 @@ def export():
         # physical door: dynamic body + two ball joints on the vertical hinge line (= a hinge whose
         # axis does not depend on any joint-axis convention). collide=true lets the frame stop it.
         px, pz = d["pivot"][0] * 0.1 - CX, d["pivot"][1] * 0.1 - CZ
+        oy += d["yoff"]
         rel = [(px - ox, 0.1 * 2, pz - oz), (px - ox, sy * 0.1 - 0.2, pz - oz)]
         rot = 0
         bpos = (ox, oy, oz)
@@ -1912,13 +1954,13 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.7\n"
+        f.write("name = Liminal Atrium v3.8\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
-                 doors=len(DOORS), door_files=len(door_files), lights_with_lamp=snapped, lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
+                 doors=len(DOORS), door_files=len(door_files), lamp_shapes=len(lamps), lamp_files=len(lamp_files), lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
                  rooms=len(room_log), lit=sum(1 for r in room_log if r[3].startswith("lit")),
                  tv=sum(1 for r in room_log if r[3] == "tv"))
     print(json.dumps(stats))
@@ -1933,7 +1975,7 @@ if __name__ == "__main__":
             arr = PROP_SHAPES[pname]; sx, sy, sz = arr.shape
             reg = Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz]
             reg[arr > 0] = arr[arr > 0]
-        stamps = [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
+        stamps = [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
             + [(c_[0], c_[1]) for c_ in CALLS]
         for arr, (gx, gy, gz) in stamps:
             sx, sy, sz = arr.shape

@@ -2,7 +2,7 @@
 import numpy as np, runpy, sys, collections
 from scipy import ndimage
 sys.argv = ['x']
-ns = runpy.run_path('tools/build_map.py', run_name='chk')
+ns = runpy.run_path("tools/build_map.py", run_name="chk"); ns["export"]()   # audit the world as exported (lamps cut out)
 G = ns['G']; W, H, D = G.shape; PAL = ns['PAL']
 inv = {}
 for k, v in ns.items():

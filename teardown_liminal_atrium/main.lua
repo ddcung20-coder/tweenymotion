@@ -18,10 +18,27 @@ local function giveTools()
 	end
 end
 
-local function topUpAmmo()
-	-- keep every tool loaded: registry (1.x) and SetToolAmmo (2.x, ammo is per player there)
+-- every tool the game knows about (base game + tool mods): the registry lists them under game.tool
+local function allTools()
+	local ids = {}
+	local seen = {}
+	if ListKeys then
+		local keys = ListKeys("game.tool")
+		for i = 1, #keys do
+			if not seen[keys[i]] then seen[keys[i]] = true; ids[#ids + 1] = keys[i] end
+		end
+	end
 	for i = 1, #TOOLS do
-		local id = TOOLS[i]
+		if not seen[TOOLS[i]] then seen[TOOLS[i]] = true; ids[#ids + 1] = TOOLS[i] end
+	end
+	return ids
+end
+
+local function topUpAmmo()
+	-- keep every tool loaded, base and modded: registry (1.x / most tool mods) and SetToolAmmo (2.x)
+	local ids = allTools()
+	for i = 1, #ids do
+		local id = ids[i]
 		local key = "game.tool." .. id .. ".ammo"
 		if GetFloat(key) < 50 then
 			SetFloat(key, 999)
@@ -151,11 +168,14 @@ local function supportCheck(c, dt)
 	for _, door in pairs(c.doors) do
 		if not door.loose then
 			local gone = 0
-			for k = 1, #door.supports do
-				local hit = QueryClosestPoint(door.supports[k], 0.06)
-				if not hit then gone = gone + 1 end
+			if door.sdir then
+				for k = 1, #door.supports do
+					-- short ray from just in front of the wall into it: the wall voxel is there or it is not
+					local hit, d = QueryRaycast(door.supports[k], door.sdir, 0.2)
+					if not hit then gone = gone + 1 end
+				end
 			end
-			if doorBroken(door) or (#door.supports > 0 and gone >= 2) then
+			if doorBroken(door) or (door.sdir and gone >= 2) then
 				releaseDoor(door)
 			end
 		end
@@ -207,6 +227,9 @@ local function elevInit()
 					d.supports[#d.supports + 1] = Vec(p[1], p[2], p[3])
 				end
 			end
+			local sd = {}
+			for num in string.gmatch(GetTagValue(b, "sdir"), "[^,]+") do sd[#sd + 1] = tonumber(num) end
+			d.sdir = (#sd == 2) and Vec(sd[1], 0, sd[2]) or nil
 			c.doors[tagNum(b, "floor", 0)] = d
 		end
 	end
@@ -335,38 +358,15 @@ local function elevUpdate(dt)
 end
 
 ----------------------------------------------------------------------------------------------------
--- lamps: every light knows its lamp voxel; when that lamp is shot/smashed the light goes out
+-- lamps: every lamp is its own small shape carrying its light, so the engine switches a light off
+-- exactly when its lamp is shot. We only need to know which lights are broken (for the flicker).
 ----------------------------------------------------------------------------------------------------
-local lamps = {}
-local lampIdx = 1
-local deadLight = {}
-
-local function lampsInit()
-	local ls = FindLights("lamp", true)
-	for i = 1, #ls do
-		local v = GetTagValue(ls[i], "lamp")
-		local p = {}
-		for num in string.gmatch(v, "[^,]+") do p[#p + 1] = tonumber(num) end
-		if #p == 3 then
-			lamps[#lamps + 1] = { light = ls[i], pos = Vec(p[1], p[2], p[3]) }
-		end
+local function lightBroken(l)
+	if GetLightShape and IsShapeBroken then
+		local sh = GetLightShape(l)
+		if sh and sh ~= 0 and IsShapeBroken(sh) then return true end
 	end
-end
-
-local function lampsTick()
-	local n = #lamps
-	if n == 0 then return end
-	for k = 1, math.min(40, n) do                 -- round robin: ~40 checks per frame
-		local L = lamps[lampIdx]
-		lampIdx = lampIdx % n + 1
-		if not deadLight[L.light] then
-			-- a lamp voxel centre is 5 cm from its neighbours: nothing within 4 cm means it is gone
-			if not QueryClosestPoint(L.pos, 0.04) then
-				deadLight[L.light] = true
-				SetLightEnabled(L.light, false)
-			end
-		end
-	end
+	return false
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -385,7 +385,8 @@ local function flickerTick(dt, cam)
 	local nearest, nd = nil, 12
 	for i = 1, #flick do
 		local f = flick[i]
-		if deadLight[f.light] then f.on = false end
+		local dead = lightBroken(f.light)
+		if dead then f.on = false end
 		f.timer = f.timer - dt
 		if f.timer <= 0 then
 			if f.on then
@@ -395,7 +396,7 @@ local function flickerTick(dt, cam)
 				f.on = true
 				f.timer = (math.random() < 0.35) and (0.05 + math.random() * 0.1) or (1.5 + math.random() * 5)
 			end
-			if not deadLight[f.light] then SetLightEnabled(f.light, f.on) end
+			if not dead then SetLightEnabled(f.light, f.on) end
 		end
 		local p = GetLightTransform(f.light).pos
 		local d = dist(p, cam)
@@ -505,7 +506,6 @@ function init()
 	elevInit()
 	flickerInit()
 	spotsInit()
-	lampsInit()
 end
 
 function tick(dt)
@@ -516,7 +516,7 @@ function tick(dt)
 	end
 	ammoTimer = (ammoTimer or 0) - dt
 	if ammoTimer <= 0 then
-		ammoTimer = 1
+		ammoTimer = 0.5
 		giveTools()
 		topUpAmmo()
 	end
@@ -526,7 +526,6 @@ function tick(dt)
 	elevTick(dt)
 	flickerTick(dt, cam)
 	spotsTick(cam)
-	lampsTick()
 	spawnMenuTick()
 end
 
