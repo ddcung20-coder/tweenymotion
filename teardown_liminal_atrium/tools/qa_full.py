@@ -162,6 +162,20 @@ for (nm_, kind_, sx_, sz_) in ns["SHOPS"]:
     checks[f"B1 {kind_} '{nm_}' (inside)"] = (sx_, YB, sz_)
 for nm, (x, y, z) in checks.items():
     report(f"reachable: {nm}", reachable(int(x), int(y), int(z), r=8))
+# each stairwell on its own (nothing outside the core counts) joins the B1 landing to the ground floor
+for key in ("SW", "NE"):
+    fr = ns["corner"][key]
+    xa, xb, za, zb = fr._rect(-ns["T_PART"] - 1, ns["CB"], -ns["T_PART"] - 1, ns["CB"])
+    ya, yb_ = YB - 3, G0 + 20
+    sub = lab[xa:xb, ya:yb_, za:zb] > 0
+    sl, _ = ndimage.label(sub, structure=np.ones((3, 3, 3), bool))
+    def comp(u, v, y):
+        x, z = fr.pt(u, v)
+        w = sl[max(x - xa - 3, 0):x - xa + 4, y - ya - 2:y - ya + 6, max(z - za - 3, 0):z - za + 4]
+        st = stand[xa:xb, ya:yb_, za:zb][max(x - xa - 3, 0):x - xa + 4, y - ya - 2:y - ya + 6, max(z - za - 3, 0):z - za + 4]
+        return set(np.unique(w[st & (w > 0)]).tolist())
+    b1, g = comp(6, 30, YB), comp(6, 30, G0)
+    report(f"{key} stairwell walks from B1 up to the ground floor", bool(b1 & g), f"B1 {b1} ground {g}")
 
 # 5b. both sides of every swing door are reachable (rooms, bathrooms, stairwells, lobby, entrance)
 side_bad = []

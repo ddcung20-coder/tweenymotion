@@ -2153,7 +2153,7 @@ shop(PX1 + 2, PRM0, 428, IZ1, "E", "cafe", "CAFE")
 shop(PRM1, IX1, 176, 246, "W", "fashion", "MAISON")
 shop(PRM1, IX1, 246, 316, "W", "shoes", "SOLE")
 shop(PRM1, IX1, 316, 386, "W", "gallery", "LUNE")
-shop(PRM1, IX1, 386, 456, "W", "florist", "FLEUR")
+shop(PRM1, IX1, 386, 426, "W", "florist", "FLEUR")
 
 # ---- restaurant LUMIERE (north arcade, front faces south onto the arcade corridor)
 rfr, RW, RD = shop(132, PX1 + 2, 428, IZ1, "S", "restaurant", "LUMIERE", sign=CEIL_LAMP)
@@ -2198,22 +2198,21 @@ POOLS.append((YB + 3, 3, [(FX0 + 2, FZ0 + 2), (FX1 - 2, FZ0 + 2), (FX1 - 2, FZ1 
 pfr_w = Frame(PRM0, IZ0, 0, 1, 1, 0)       # u along +z, v into the promenade from its west edge
 pfr_e = Frame(PRM1 - 1, IZ0, 0, 1, -1, 0)  # from its east edge
 for z in (140, 380, 476):
-    bench(pfr_w, z - IZ0, z - IZ0 + 12, 2); bench(pfr_e, z - IZ0, z - IZ0 + 12, 2)
+    bench(pfr_w, z - IZ0, z - IZ0 + 12, 2)
+    if z < 420:
+        bench(pfr_e, z - IZ0, z - IZ0 + 12, 2)
 planter(PRM0 + 6, 318, 301); planter(PRM1 - 7, 318, 302)
-planter(PRM0 + 6, 438, 303); planter(PRM1 - 7, 438, 304); planter(PRM1 - 7, 254, 305)
+planter(PRM0 + 6, 438, 303); planter(PRM1 - 7, 254, 305)
 # SE elevator hall, NW elevator lobby, arcade corridor
 pendant(335, 130); pendant(374, 165); planter(374, 98, 306)
 pendant(96, 452); pendant(96, 485); planter(118, 488, 307)
 for x in (110, 150, 210, 262):
     pendant(x, 414)
 bench(Frame(IX0, PZ1 + 2, 1, 0, 0, 1), 26, 38, 1)
-# lounge at the north end of the east row: two sofas, a coffee table
-for (z0_, back) in ((462, 462), (485, 488)):
-    box(358, 374, YB, YB + 4, z0_, z0_ + 5, UPHOL)
-    box(358, 374, YB + 4, YB + 10, back, back + 2, UPHOL)
-    box(358, 360, YB + 4, YB + 7, z0_, z0_ + 5, UPHOL); box(372, 374, YB + 4, YB + 7, z0_, z0_ + 5, UPHOL)
-box(361, 371, YB, YB + 4, 472, 480, WOOD_DARK); box(361, 371, YB + 4, YB + 5, 472, 480, MARBLE_B)
-pendant(366, 476)
+# north-east corner: the stairwell comes down here; small seating by its door
+box(366, 382, YB, YB + 4, 486, 491, UPHOL); box(366, 382, YB + 4, YB + 10, 489, 491, UPHOL)
+box(366, 368, YB + 4, YB + 7, 486, 491, UPHOL); box(380, 382, YB + 4, YB + 7, 486, 491, UPHOL)
+pendant(374, 470)
 
 # ---- automatic sliding glass doors between the car park and the arcade
 def autodoor_style(a, b, c, A, B, C):
@@ -2259,8 +2258,16 @@ for z in range(IZ0, PZ1, 26):
 for z in range(IZ0, PZ1, 12):
     box((AISLE0 + AISLE1) // 2 - 1, (AISLE0 + AISLE1) // 2 + 1, YB - 1, YB, z, z + 6, YELLOW_PAINT)
 box(AISLE0, AISLE0 + 1, YB - 1, YB, IZ0, PZ1, YELLOW_PAINT); box(AISLE1 - 1, AISLE1, YB - 1, YB, IZ0, PZ1, YELLOW_PAINT)
+STAIR_RECTS = []
+for key_ in ("SW", "NE"):
+    xa_, xb_, za_, zb_ = corner[key_]._rect(-T_PART, CB, -T_PART, CB)
+    STAIR_RECTS.append((xa_ - 1, xb_ + 1, za_ - 1, zb_ + 1))
+def in_stair(x, z, m=4):
+    return any(a - m <= x < b + m and c - m <= z < d + m for (a, b, c, d) in STAIR_RECTS)
 for cxc in (AISLE0 - 3, AISLE1 + 3):
     for czc in (150, 220, 340):
+        if in_stair(cxc, czc):
+            continue
         box(cxc - 3, cxc + 3, YB, YC, czc - 3, czc + 3, SLAB)
         for yy in range(YB, YB + 8, 2):
             paint(cxc - 3, cxc + 3, yy, yy + 1, czc - 3, czc + 3, YELLOW_PAINT)
@@ -2274,11 +2281,65 @@ def tube(x, z):
 for z in (100, 170, 240, 320, 375):
     tube((AISLE0 + AISLE1) // 2, z)
 for z in (130, 210, 350):
-    tube(IX0 + 23, z); tube(PX1 - 23, z)
+    for tx in (IX0 + 23, PX1 - 23):
+        if not in_stair(tx, z + 5, 8):
+            tube(tx, z)
 box(IX0 + 10, IX0 + 12, YC - 2, YC, IZ0, PZ1, STEEL); box(PX1 - 12, PX1 - 10, YC - 2, YC, IZ0, PZ1, STEEL)
 ftext(Frame(IX0 - 1, TZ1 - 1, 0, -1, -1, 0), "EXIT", (TZ1 - TZ0) // 2, YC - 1, -1, EXIT_SIGN)
-for (pn, px_, pz_) in (("car_a", IX0 + 8, 100), ("car_c", IX0 + 8, 180), ("car_b", AISLE1 + 14, 300)):
+for (pn, px_, pz_) in (("car_a", AISLE1 + 14, 100), ("car_c", IX0 + 8, 180), ("car_b", AISLE1 + 14, 300)):
     PROPS.append((pn, px_, YB, pz_, 0))
+# ---- both stairwells continue down to B1 (SW -> car park, NE -> arcade)
+B_GLYPH = ["##.", "#.#", "##.", "#.#", "##."]
+def b1_stairs(fr):
+    W4 = CB - T_FAC
+    fr.box(-T_PART, CB, 1, YC, -T_PART, CB, STAIR_WALL)                 # core walls under the ground slab
+    fr.box(0, W4, YB, YC, 0, W4, 0)
+    fr.box(15, W4, YC, G0, 0, W4, 0)                                     # stair opening through the ground slab
+    fr.box(0, W4, YB - 1, YB, 0, W4, STAIR_CONC)
+    fr.box(0, 15, YB - 1, YB, 0, 1, RED)
+    fr.paint(-1, 0, YB, YB + 10, 0, W4, STAIR_WALL2, [STAIR_WALL]); fr.paint(W4, W4 + 1, YB, YB + 10, 0, W4, STAIR_WALL2, [STAIR_WALL])
+    fr.paint(0, W4, YB, YB + 10, -1, 0, STAIR_WALL2, [STAIR_WALL]); fr.paint(0, W4, YB, YB + 10, W4, W4 + 1, STAIR_WALL2, [STAIR_WALL])
+    # flight A (8 steps up to the half landing), half landing, flight B (10 steps up to the ground floor)
+    for s_ in range(8):
+        p0 = 12 + s_ * 3
+        fr.box(p0, p0 + 3, YB + s_ * 2 - 2, YB + s_ * 2 + 2, 2, 22, STAIR_CONC)
+        fr.box(p0, p0 + 1, YB + s_ * 2 + 1, YB + s_ * 2 + 2, 2, 22, DARK_METAL)
+    fr.box(36, W4, YB + 14, YB + 16, 0, W4, STAIR_CONC)
+    def topB(u):
+        if u >= 33:
+            return YB + 18
+        return YB + 16 + 2 * (1 + (32 - u) // 2 + 1)
+    for u in range(15, 36):
+        t_ = topB(u)
+        fr.box(u, u + 1, t_ - 4, t_, 24, 44, STAIR_CONC)
+        if u in (15, 17, 19, 21, 23, 25, 27, 29, 31, 33):
+            fr.box(u, u + 1, t_ - 1, t_, 24, 44, DARK_METAL)
+    # balustrades on the stairwell side of both flights
+    for u in range(12, 36):
+        tA = YB + (int((u - 12) / 3) + 1) * 2
+        fr.box(u, u + 1, tA + 8, tA + 11, 21, 22, STEEL)
+        if u % 4 == 0:
+            fr.box(u, u + 1, tA, tA + 8, 21, 22, STEEL)
+        if u >= 15:
+            tB = topB(u)
+            fr.box(u, u + 1, tB + 8, tB + 11, 24, 25, STEEL)
+            if u % 4 == 0:
+                fr.box(u, u + 1, tB, tB + 8, 24, 25, STEEL)
+    # door to the basement, sign, light, painted "B1"
+    fr.box(-T_PART, 0, YB, YB + 22, 26, 36, 0)
+    fr.box(-T_PART - 1, -T_PART, YB + 22, YB + 25, 28, 34, EXIT_SIGN)
+    fr.box(0, 1, YB + 22, YB + 23, 25, 37, DARK_METAL)
+    add_door(fr, -1, 0, YB, YB + 22, 26, 36, lambda a, b, c, A, B, C: steel_door(C - 1 - c, b, a, C, B, A),
+             hinge=(0, 36), open_dir=(1, 0), stop=DARK_METAL)
+    fr.light(4, YB + 30, 22, (1.0, 0.95, 0.85), 1.6, 0.2)
+    fr.box(2, 6, YC - 1, YC, 20, 24, CEIL_LAMP)
+    for gi, glyph in enumerate((B_GLYPH, DIGITS["1"])):
+        for r_, row in enumerate(glyph):
+            for c_, ch in enumerate(row):
+                if ch == "#":
+                    fr.box(W4, W4 + 1, YB + 20 - r_ * 2, YB + 22 - r_ * 2, 4 + gi * 8 + c_ * 2, 6 + gi * 8 + c_ * 2, RED)
+b1_stairs(corner["SW"]); b1_stairs(corner["NE"])
+
 # music for the arcade (the player's song, looped from the nearest speaker)
 for (sx_, sz_) in ((310, 140), (310, 260), (310, 380), (310, 470), (185, 462), (180, 414), (372, 130)):
     SOUND_SPOTS.append(("mall", sx_, YB + 15, sz_))
@@ -2777,7 +2838,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.20\n"
+        f.write("name = Liminal Atrium v3.21\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
