@@ -1,6 +1,3 @@
-prefab/car_a.xml : Liminal Atrium/Car (blue)
-prefab/car_b.xml : Liminal Atrium/Car (silver)
-prefab/car_c.xml : Liminal Atrium/Car (red)
 prefab/luggage_cart.xml : Liminal Atrium/Luggage cart
 prefab/beach_ball.xml : Liminal Atrium/Beach ball
 prefab/swim_ring.xml : Liminal Atrium/Swim ring

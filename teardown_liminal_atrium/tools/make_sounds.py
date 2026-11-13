@@ -276,3 +276,14 @@ for delay, g in ((0.09, 0.55), (0.21, 0.4), (0.38, 0.3), (0.62, 0.2), (0.95, 0.1
     echo_ += g * np.roll(drips_, int(delay * SR))
 save("garage_drips.ogg", hum_ * 0.7 + lowpass(echo_, 5000) * 0.6, 0.55)
 print("garage sound written")
+
+# --- fountain: water falling into the basin (seamless 6 s loop) ------------------------------------
+L = 6.0; n = int(L * SR); tt = t(L)
+fall = bandpass(loop_noise(L, 0.6), 400, 6000) * (0.8 + 0.2 * np.sin(2 * np.pi * 3 * tt / L))
+spl = np.zeros(n)
+for k in range(220):
+    s0 = int(rng.uniform(0, L) * SR); f = rng.uniform(500, 2500); m = int(0.04 * SR)
+    b = np.sin(2 * np.pi * f * (1 + 1.5 * t(0.04)) * t(0.04)) * env(m, 0.001, 0.01)
+    spl[(np.arange(m) + s0) % n] += b * rng.uniform(0.1, 0.5)
+save("fountain.ogg", 0.6 * fall + 0.5 * spl, 0.55)
+print("fountain sound written")

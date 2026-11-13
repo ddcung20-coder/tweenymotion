@@ -409,11 +409,20 @@ for (c_, f_, txt) in ns["SIGN_CELLS"]:
     if FULL[c_] == 0 or FULL[f_] != 0:
         hidden[txt] += 1
 report(f"all {len(set(t for _, _, t in ns['SIGN_CELLS']))} wall signs readable (every letter there, nothing in front of it)", not hidden, str(dict(hidden)))
+car_bad = []
+for (kind_, fb_, gx_, gy_, gz_, ry_) in ns["CAR_SPOTS"]:
+    # room for the biggest pick (2.4 x 2.2 x 5.2 m) around the bay centre, solid ground below it
+    cx_, cz_ = gx_ + 10, gz_ + 22
+    reg = FULL[cx_ - 12:cx_ + 12, gy_ + 1:gy_ + 22, cz_ - 26:cz_ + 26]
+    ground = FULL[cx_ - 8:cx_ + 8, gy_ - 1, cz_ - 18:cz_ + 18]
+    if (reg > 0).any() or not (ground > 0).all() or cx_ - 12 < 0 or cz_ - 26 < 0:
+        car_bad.append(kind_)
+report(f"{len(ns['CAR_SPOTS'])} car spots: free space + ground for a base-game vehicle", not car_bad and len(ns["CAR_SPOTS"]) >= 7, str(car_bad))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
-LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg"}
+LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "fountain.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)
     peak = float(np.abs(x).max())

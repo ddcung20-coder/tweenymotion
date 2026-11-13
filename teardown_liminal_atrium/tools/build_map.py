@@ -1618,10 +1618,13 @@ box(bx0 - 8, bx0 - 5, G0 + 1, G0 + 8, bz0 + 20, bz0 + 23, RED)
 box(bx0 - 9, bx0 - 4, G0 + 5, G0 + 6, bz0 + 21, bz0 + 22, RED)
 # parked cars (dynamic props)
 CAR_Z = bz0 - SW - 9 - 44
-PROPS.append(("car_a", bx0 + 5, G0, CAR_Z, 0))
-PROPS.append(("car_b", bx0 + 65, G0, CAR_Z, 0))
-PROPS.append(("car_c", bx1 - 55, G0, CAR_Z, 0))
-PROPS.append(("car_b", bx1 + 5, G0, CAR_Z, 0))
+# parked cars: base-game drivable vehicles spawned by main.lua (builtin asset pack); kind, fallback prop,
+# footprint min corner (x, y, z) of a 2.0 x 4.4 m bay, yaw. Vehicles face -Z.
+CAR_SPOTS = []
+CAR_SPOTS.append(("salooncar", "car_a", bx0 + 5, G0, CAR_Z, 0))
+CAR_SPOTS.append(("stationwagon", "car_b", bx0 + 65, G0, CAR_Z, 0))
+CAR_SPOTS.append(("suv1", "car_c", bx1 - 55, G0, CAR_Z, 0))
+CAR_SPOTS.append(("castanet-500l-gt", "car_b", bx1 + 5, G0, CAR_Z, 0))
 
 # ============================================================================
 # 8b. Pool annex ("poolrooms"): glazed connector from the ground-floor north
@@ -2196,15 +2199,19 @@ box(PRM0, PRM0 + 1, YC - 1, YC, IZ0, IZ1, BRASS); box(PRM1 - 1, PRM1, YC - 1, YC
 for z in (IZ0 + 50, IZ0 + 120, 244, 330, 400, 466):          # (clear of the shape seams at z 224 / 360)
     chandelier((PRM0 + PRM1) // 2, z)
 FX0, FX1, FZ0, FZ1 = PRM0 + 8, PRM1 - 8, 270, 302
-box(FX0, FX1, YB, YB + 4, FZ0, FZ1, MARBLE_W)
-box(FX0 + 2, FX1 - 2, YB, YB + 4, FZ0 + 2, FZ1 - 2, 0)
+box(FX0, FX1, YB, YB + 5, FZ0, FZ1, MARBLE_W)
+box(FX0 + 2, FX1 - 2, YB, YB + 5, FZ0 + 2, FZ1 - 2, 0)
 paint(FX0 + 2, FX1 - 2, YB - 1, YB, FZ0 + 2, FZ1 - 2, POOL_TILE)
 fcx, fcz = (FX0 + FX1) // 2, (FZ0 + FZ1) // 2
 box(fcx - 1, fcx + 1, YB, YB + 11, fcz - 1, fcz + 1, MARBLE_W)
 box(fcx - 3, fcx + 3, YB + 11, YB + 12, fcz - 3, fcz + 3, BRASS)
 box(fcx - 2, fcx + 2, YB + 12, YB + 13, fcz - 2, fcz + 2, BRASS)
 box(fcx - 1, fcx + 1, YB + 13, YB + 15, fcz - 1, fcz + 1, MARBLE_W)
-POOLS.append((YB + 3, 3, [(FX0 + 2, FZ0 + 2), (FX1 - 2, FZ0 + 2), (FX1 - 2, FZ1 - 2), (FX0 + 2, FZ1 - 2)]))
+POOLS.append((YB + 4.5, 4.5, [(FX0 + 2, FZ0 + 2), (FX1 - 2, FZ0 + 2), (FX1 - 2, FZ1 - 2), (FX0 + 2, FZ1 - 2)],
+              dict(wave=0.06, ripple=0.9, motion=0.5, foam=0.6)))
+for (sx_, sz_) in ((fcx - 3, fcz - 3), (fcx + 2, fcz - 3), (fcx - 3, fcz + 2), (fcx + 2, fcz + 2), (fcx - 3, fcz), (fcx + 2, fcz - 1)):
+    box(sx_, sx_ + 1, YB, YB + 11, sz_, sz_ + 1, GLASS)                         # water falling from the bowl
+SOUND_SPOTS.append(("fountain", fcx, YB + 6, fcz))
 pfr_w = Frame(PRM0, IZ0, 0, 1, 1, 0)       # u along +z, v into the promenade from its west edge
 pfr_e = Frame(PRM1 - 1, IZ0, 0, 1, -1, 0)  # from its east edge
 for z in (140, 380, 476):
@@ -2303,8 +2310,9 @@ for z in (130, 210, 350):
             tube(tx, z)
 box(IX0 + 10, IX0 + 12, YC - 2, YC, IZ0, PZ1, STEEL); box(PX1 - 12, PX1 - 10, YC - 2, YC, IZ0, PZ1, STEEL)
 ftext(Frame(IX0 - 1, TZ1 - 1, 0, -1, -1, 0), "EXIT", (TZ1 - TZ0) // 2, YC - 1, -1, EXIT_SIGN)
-for (pn, px_, pz_) in (("car_a", AISLE1 + 14, 100), ("car_c", IX0 + 8, 180), ("car_b", AISLE1 + 14, 300)):
-    PROPS.append((pn, px_, YB, pz_, 0))
+for (kind_, pn, px_, pz_) in (("salooncar", "car_a", AISLE1 + 14, 100), ("stationwagon", "car_c", IX0 + 8, 180),
+                              ("suv1", "car_b", AISLE1 + 14, 300)):
+    CAR_SPOTS.append((kind_, pn, px_, YB, pz_, 0))
 # ---- car park detail pass: standing water, ceiling services, paint, signage, clutter
 for ch_, rows_ in {"0": ["###", "#.#", "#.#", "#.#", "###"], "2": ["##.", "..#", ".#.", "#..", "###"],
                    "3": ["##.", "..#", ".#.", "..#", "##."], "4": ["#.#", "#.#", "###", "..#", "..#"],
@@ -2880,7 +2888,8 @@ def export():
         with open(os.path.join(pdir, pname + ".xml"), "w") as f:
             f.write(f'<prefab version="1.6.0">\n\t<group name="{pname}">\n\t\t<body dynamic="true">\n'
                     f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{pname}.vox" object="shape"/>\n\t\t</body>\n\t</group>\n</prefab>\n')
-        lines.append(f"prefab/{pname}.xml : Liminal Atrium/{label}")
+        if not pname.startswith("car_"):
+            lines.append(f"prefab/{pname}.xml : Liminal Atrium/{label}")
     with open(os.path.join(OUT, "spawn.txt"), "w") as f:
         f.write("\n".join(lines) + "\n")
     write_vox(os.path.join(VOXDIR, "elev_btn.vox"), np.full((1, 1, 1), CEIL_LAMP, np.uint8))
@@ -2993,17 +3002,23 @@ def export():
             xml.append(light_xml(rel, rgb, scale, size, ltags=ltags))
         xml.append('\t\t</vox>\n')
     xml.append('\t</group>\n')
-    for (sy_, dep, pts) in POOLS:
+    for pool_ in POOLS:
+        sy_, dep, pts = pool_[:3]
+        wa = dict(wave=0.02, ripple=0.25, motion=0.05, foam=0); wa.update(pool_[3] if len(pool_) > 3 else {})
         # polygon water anchored at the pool centre; vertices relative to it (like every child node).
         # 'size' is given too, so even a box interpretation stays inside the pool.
         xs_ = [q[0] for q in pts]; zs_ = [q[1] for q in pts]
         pcx, pcz = (min(xs_) + max(xs_)) / 2, (min(zs_) + max(zs_)) / 2
         wx_, wz_ = pcx * 0.1 - CX, pcz * 0.1 - CZ
         xml.append(f'\t<water type="polygon" pos="{wx_:.3f} {sy_ * 0.1:.2f} {wz_:.3f}" size="{(max(xs_) - min(xs_)) * 0.1:.2f} '
-                   f'{(max(zs_) - min(zs_)) * 0.1:.2f}" depth="{dep * 0.1:.2f}" wave="0.02" ripple="0.25" motion="0.05" foam="0">\n')
+                   f'{(max(zs_) - min(zs_)) * 0.1:.2f}" depth="{dep * 0.1:.2f}" wave="{wa["wave"]:g}" ripple="{wa["ripple"]:g}" '
+                   f'motion="{wa["motion"]:g}" foam="{wa["foam"]:g}">\n')
         for (vx, vz) in pts:
             xml.append(f'\t\t<vertex pos="{(vx - pcx) * 0.1:.3f} {(vz - pcz) * 0.1:.3f}"/>\n')
         xml.append('\t</water>\n')
+    for (kind_, fb_, gx_, gy_, gz_, ry_) in CAR_SPOTS:
+        cxp, czp = (gx_ + 10) * 0.1 - CX, (gz_ + 22) * 0.1 - CZ                   # bay centre on the ground
+        xml.append(f'\t<location tags="carspawn kind={kind_} fallback={fb_}" pos="{cxp:.2f} {gy_ * 0.1 + 0.05:.2f} {czp:.2f}" rot="0 {ry_} 0"/>\n')
     for (kind, sx_, sy_, sz_) in SOUND_SPOTS:
         xml.append(f'\t<location tags="ambsound kind={kind}" pos="{f3((sx_ * 0.1 - CX, sy_ * 0.1, sz_ * 0.1 - CZ))}"/>\n')
     xml.append('\t<group name="props" pos="0 0 0">\n')
@@ -3072,7 +3087,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.26\n"
+        f.write("name = Liminal Atrium v3.27\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
@@ -3102,7 +3117,7 @@ if __name__ == "__main__":
         for arr, (gx, gy, gz) in stamps:
             sx, sy, sz = arr.shape
             Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz][arr > 0] = arr[arr > 0]
-        for (sy_, dep, pts) in POOLS:
+        for (sy_, dep, pts) in [p_[:3] for p_ in POOLS]:
             xs_ = [p_[0] for p_ in pts]; zs_ = [p_[1] for p_ in pts]
             for x in range(int(min(xs_)), int(max(xs_))):
                 for z in range(int(min(zs_)), int(max(zs_))):

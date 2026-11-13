@@ -3386,7 +3386,7 @@
 		<vertex pos="0.650 -1.126"/>
 		<vertex pos="1.126 -0.650"/>
 	</water>
-	<water type="polygon" pos="7.400 0.70 -9.900" size="2.00 2.80" depth="0.30" wave="0.02" ripple="0.25" motion="0.05" foam="0">
+	<water type="polygon" pos="7.400 0.85 -9.900" size="2.00 2.80" depth="0.45" wave="0.06" ripple="0.9" motion="0.5" foam="0.6">
 		<vertex pos="-1.000 -1.400"/>
 		<vertex pos="1.000 -1.400"/>
 		<vertex pos="1.000 1.400"/>
@@ -3486,8 +3486,16 @@
 		<vertex pos="-0.015 0.780"/>
 		<vertex pos="-0.555 0.640"/>
 	</water>
+	<location tags="carspawn kind=salooncar fallback=car_a" pos="-13.70 4.05 -35.80" rot="0 0 0"/>
+	<location tags="carspawn kind=stationwagon fallback=car_b" pos="-7.70 4.05 -35.80" rot="0 0 0"/>
+	<location tags="carspawn kind=suv1 fallback=car_c" pos="10.70 4.05 -35.80" rot="0 0 0"/>
+	<location tags="carspawn kind=castanet-500l-gt fallback=car_b" pos="16.70 4.05 -35.80" rot="0 0 0"/>
+	<location tags="carspawn kind=salooncar fallback=car_a" pos="-2.20 0.45 -26.30" rot="0 0 0"/>
+	<location tags="carspawn kind=stationwagon fallback=car_c" pos="-13.00 0.45 -18.30" rot="0 0 0"/>
+	<location tags="carspawn kind=suv1 fallback=car_b" pos="-2.20 0.45 -6.30" rot="0 0 0"/>
 	<location tags="ambsound kind=pool" pos="0 6 25"/>
 	<location tags="ambsound kind=spa" pos="6.6 6 18.5"/>
+	<location tags="ambsound kind=fountain" pos="7.4 1 -9.9"/>
 	<location tags="ambsound kind=garage" pos="-7.4 1.9 -23.5"/>
 	<location tags="ambsound kind=garage" pos="-7.4 1.9 -8.5"/>
 	<location tags="ambsound kind=garage" pos="-12.6 1.9 -8.9"/>
@@ -3502,44 +3510,23 @@
 		<body name="luggage_cart_0" pos="-2.8 4.02 3.3" rot="0 15 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/luggage_cart.vox" object="shape"/>
 		</body>
-		<body name="car_a_1" pos="-13.7 4.02 -35.8" rot="0 0 0" dynamic="true">
-			<vox pos="0 0 0" file="MOD/vox/car_a.vox" object="shape"/>
-		</body>
-		<body name="car_b_2" pos="-7.7 4.02 -35.8" rot="0 0 0" dynamic="true">
-			<vox pos="0 0 0" file="MOD/vox/car_b.vox" object="shape"/>
-		</body>
-		<body name="car_c_3" pos="10.7 4.02 -35.8" rot="0 0 0" dynamic="true">
-			<vox pos="0 0 0" file="MOD/vox/car_c.vox" object="shape"/>
-		</body>
-		<body name="car_b_4" pos="16.7 4.02 -35.8" rot="0 0 0" dynamic="true">
-			<vox pos="0 0 0" file="MOD/vox/car_b.vox" object="shape"/>
-		</body>
-		<body name="beach_ball_5" pos="-2.6 5.42 25" rot="0 0 0" dynamic="true">
+		<body name="beach_ball_1" pos="-2.6 5.42 25" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/beach_ball.vox" object="shape"/>
 		</body>
-		<body name="beach_ball_6" pos="3.8 5.42 27.2" rot="0 0 0" dynamic="true">
+		<body name="beach_ball_2" pos="3.8 5.42 27.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/beach_ball.vox" object="shape"/>
 		</body>
-		<body name="swim_ring_7" pos="0.2 5.62 24.2" rot="0 0 0" dynamic="true">
+		<body name="swim_ring_3" pos="0.2 5.62 24.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/swim_ring.vox" object="shape"/>
 		</body>
-		<body name="swim_ring_8" pos="2.2 5.62 26.8" rot="0 30 0" dynamic="true">
+		<body name="swim_ring_4" pos="2.2 5.62 26.8" rot="0 30 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/swim_ring.vox" object="shape"/>
 		</body>
-		<body name="kickboard_9" pos="-4 5.72 26.7" rot="0 20 0" dynamic="true">
+		<body name="kickboard_5" pos="-4 5.72 26.7" rot="0 20 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/kickboard.vox" object="shape"/>
 		</body>
-		<body name="kickboard_10" pos="5 5.72 24.1" rot="0 -15 0" dynamic="true">
+		<body name="kickboard_6" pos="5 5.72 24.1" rot="0 -15 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/kickboard.vox" object="shape"/>
-		</body>
-		<body name="car_a_11" pos="-2.2 0.42 -26.3" rot="0 0 0" dynamic="true">
-			<vox pos="0 0 0" file="MOD/vox/car_a.vox" object="shape"/>
-		</body>
-		<body name="car_c_12" pos="-13 0.42 -18.3" rot="0 0 0" dynamic="true">
-			<vox pos="0 0 0" file="MOD/vox/car_c.vox" object="shape"/>
-		</body>
-		<body name="car_b_13" pos="-2.2 0.42 -6.3" rot="0 0 0" dynamic="true">
-			<vox pos="0 0 0" file="MOD/vox/car_b.vox" object="shape"/>
 		</body>
 	</group>
 	<group name="elevators" pos="0 0 0">

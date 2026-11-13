@@ -104,6 +104,7 @@ local function loadSounds()
 	snd.autodoor  = LoadSound("MOD/snd/autodoor.ogg")
 	snd.mall      = LoadLoop("MOD/snd/mall_song.ogg")
 	snd.garage    = LoadLoop("MOD/snd/garage_drips.ogg")
+	snd.fountain  = LoadLoop("MOD/snd/fountain.ogg")
 	snd.deskbell  = LoadSound("MOD/snd/deskbell.ogg")
 	snd.musicbox  = LoadSound("MOD/snd/musicbox.ogg")
 	snd.hum       = LoadSound("MOD/snd/dream_hum.ogg")
@@ -513,6 +514,8 @@ local function spotsTick(cam)
 			PlayLoop(snd.pool, sp.pos, 0.45)
 		elseif sp.kind == "spa" and d < 18 then
 			PlayLoop(snd.spa, sp.pos, 0.5)
+		elseif sp.kind == "fountain" and d < 22 then
+			PlayLoop(snd.fountain, sp.pos, 0.55)
 		end
 	end
 end
@@ -644,10 +647,22 @@ local function autoTick(dt)
 		local dx, dz = pp[1] - g.center[1], pp[3] - g.center[3]
 		local near = math.sqrt(dx * dx + dz * dz) < 3.2 and math.abs(pp[2] - g.center[2]) < 2.5
 		if near then g.hold = 1.2 else g.hold = g.hold - dt end
+		local intact = 0
+		for i = 1, #g.leaves do
+			local l = g.leaves[i]
+			local ok = IsHandleValid(l.body)
+			for j = 1, #l.shapes do
+				if not IsHandleValid(l.shapes[j]) or IsShapeBroken(l.shapes[j]) then ok = false end
+			end
+			l.ok = ok
+			if ok then intact = intact + 1 end
+		end
 		local want = g.hold > 0 and 1 or 0
 		if want ~= g.target then
 			g.target = want
-			PlaySound(snd.autodoor, VecAdd(g.center, Vec(0, 1.2, 0)), 0.6)
+			if intact > 0 then        -- a smashed door has no motor left to hear
+				PlaySound(snd.autodoor, VecAdd(g.center, Vec(0, 1.2, 0)), 0.6)
+			end
 		end
 		if g.amount ~= g.target then
 			if g.amount < g.target then g.amount = math.min(1, g.amount + dt * 1.8)
@@ -655,11 +670,7 @@ local function autoTick(dt)
 			local e = g.amount * g.amount * (3 - 2 * g.amount)
 			for i = 1, #g.leaves do
 				local l = g.leaves[i]
-				local ok = IsHandleValid(l.body)
-				for j = 1, #l.shapes do
-					if not IsHandleValid(l.shapes[j]) or IsShapeBroken(l.shapes[j]) then ok = false end
-				end
-				if ok then     -- a smashed glass leaf stays where it is
+				if l.ok then     -- a smashed glass leaf stays where it is
 					SetBodyTransform(l.body, Transform(VecAdd(l.t0.pos, VecScale(l.slide, e)), l.t0.rot))
 				end
 			end
@@ -1107,23 +1118,57 @@ local function drawMission()
 end
 
 ----------------------------------------------------------------------------------------------------
+-- parked cars: the base game's drivable vehicles (built-in asset pack), spawned at "carspawn" locations.
+-- If the asset pack cannot be found, the map's own (push-only) car is placed instead.
+----------------------------------------------------------------------------------------------------
+local VEHICLE_PACK = "builtin-assetpack:assets/vehicles/land/"
+local carsSpawned = false
+carStats = { builtin = 0, fallback = 0 }
+
+local function spawnVehicle(kind, t)
+	local ok, ents = pcall(Spawn, VEHICLE_PACK .. kind .. ".xml", t)
+	if ok and type(ents) == "table" and #ents > 0 then return true end
+	return false
+end
+
+local function carsTick()
+	if carsSpawned then return end
+	carsSpawned = true
+	local locs = FindLocations("carspawn", true)
+	for i = 1, #locs do
+		local t = GetLocationTransform(locs[i])
+		if spawnVehicle(GetTagValue(locs[i], "kind"), t) then
+			carStats.builtin = carStats.builtin + 1
+		else
+			local fb = GetTagValue(locs[i], "fallback")
+			if fb ~= "" then pcall(Spawn, "MOD/prefab/" .. fb .. ".xml", t) end
+			carStats.fallback = carStats.fallback + 1
+		end
+	end
+end
+
+----------------------------------------------------------------------------------------------------
 -- the map's own spawn menu (N key, or "Liminal Spawn" in the pause menu)
 ----------------------------------------------------------------------------------------------------
 local SPAWN_ITEMS = {
-	{ "Car (blue)", "car_a" }, { "Car (silver)", "car_b" }, { "Car (red)", "car_c" },
+	{ "Saloon car (drivable)", "car_a", "salooncar" }, { "Station wagon (drivable)", "car_b", "stationwagon" },
+	{ "SUV (drivable)", "car_c", "suv1" }, { "Van (drivable)", "car_a", "van" },
 	{ "Luggage cart", "luggage_cart" }, { "Beach ball", "beach_ball" }, { "Swim ring", "swim_ring" },
 	{ "Kickboard", "kickboard" }, { "Wooden crate", "crate" }, { "Red barrel", "barrel" },
 	{ "Lobby sofa", "sofa" }, { "Old TV", "crt_tv" },
 }
 local menuOpen = false
 
-local function spawnItem(id)
+local function spawnItem(id, kind)
 	local ct = GetCameraTransform()
 	local fwd = TransformToParentVec(ct, Vec(0, 0, -1))
 	local pos = VecAdd(ct.pos, VecScale(fwd, 4))
 	pos[2] = pos[2] + 0.5
 	local yaw = math.deg(math.atan2(-fwd[1], -fwd[3]))
-	Spawn("MOD/prefab/" .. id .. ".xml", Transform(pos, QuatEuler(0, yaw, 0)))
+	local t = Transform(pos, QuatEuler(0, yaw, 0))
+	if not (kind and spawnVehicle(kind, t)) then
+		Spawn("MOD/prefab/" .. id .. ".xml", t)
+	end
 	PlaySound(snd.click, ct.pos, 0.6)
 end
 
@@ -1147,6 +1192,7 @@ local function drawAmmoDebug()
 	local key = "game.tool." .. id .. ".ammo"
 	lines[#lines + 1] = key .. " = " .. (HasKey(key) and tostring(GetFloat(key)) or "(none)")
 	lines[#lines + 1] = "level.unlimitedammo = " .. tostring(GetBool("level.unlimitedammo"))
+	lines[#lines + 1] = "cars: base-game " .. carStats.builtin .. "  /  map fallback " .. carStats.fallback
 	UiPush()
 		UiTranslate(20, 20)
 		UiColor(0, 0, 0, 0.6)
@@ -1182,7 +1228,7 @@ function draw()
 		for i = 1, #SPAWN_ITEMS do
 			UiColor(0.85, 0.8, 1, 1)
 			if UiTextButton(SPAWN_ITEMS[i][1], w - 40, rowH - 6) then
-				spawnItem(SPAWN_ITEMS[i][2])
+				spawnItem(SPAWN_ITEMS[i][2], SPAWN_ITEMS[i][3])
 			end
 			UiTranslate(0, rowH)
 		end
@@ -1240,6 +1286,7 @@ function tick(dt)
 			interactHandled = curtainsInteract(s) or roomsInteract(s) or missionInteract(s)
 		end
 	end
+	carsTick()
 	curtainsTick(dt)
 	autoTick(dt)
 	missionTick(dt)
