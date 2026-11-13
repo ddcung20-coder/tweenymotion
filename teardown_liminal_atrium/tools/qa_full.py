@@ -157,10 +157,16 @@ worst = 0.0
 for d in ns["DOORS"]:
     if d["kind"] != "swing": continue
     a_ = math.radians(d["ang"] * 0.85); px, pz = d["pivot"]; arr = d["arr"]; gx, gy, gz = d["gmin"]
+    # the leaf hangs 5 cm (half a voxel) up: it also reaches into the row above its top row
     X, Y, Z = np.nonzero(arr); cx_ = X + gx + 0.5; cz_ = Z + gz + 0.5
-    rx = (cx_ - px) * math.cos(a_) + (cz_ - pz) * math.sin(a_); rz = -(cx_ - px) * math.sin(a_) + (cz_ - pz) * math.cos(a_)
-    worst = max(worst, float((FULL[np.floor(px + rx).astype(int), Y + gy, np.floor(pz + rz).astype(int)] > 0).mean()))
-report("every swing door opens without hitting walls/furniture", worst < 0.02, f"worst overlap {worst:.3f}")
+    top = Y == Y.max()
+    X = np.concatenate([X, X[top]]); Z = np.concatenate([Z, Z[top]]); Y = np.concatenate([Y, Y[top] + 1])
+    cx_ = X + gx + 0.5; cz_ = Z + gz + 0.5
+    for frac in (0.25, 0.5, 0.85):                 # check the whole swing, not just the end pose
+        a_ = math.radians(d["ang"] * frac)
+        rx = (cx_ - px) * math.cos(a_) + (cz_ - pz) * math.sin(a_); rz = -(cx_ - px) * math.sin(a_) + (cz_ - pz) * math.cos(a_)
+        worst = max(worst, float((FULL[np.floor(px + rx).astype(int), Y + gy, np.floor(pz + rz).astype(int)] > 0).mean()))
+report("every swing door opens without hitting walls/furniture", worst == 0.0, f"worst overlap {worst:.3f}")
 # every hotel room fully enclosed: both party walls, the facade wall and the corridor wall are there
 T_PART, ROOM_D = ns["T_PART"], ns["ROOM_D"]
 open_rooms = []

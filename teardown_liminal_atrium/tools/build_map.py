@@ -1057,7 +1057,7 @@ def stairwell(fr):
         if k < FLOORS:
             fr.box(-T_PART, 0, y, y + 22, 26, 36, 0)
             fr.box(-T_PART - 1, -T_PART, y + 22, y + 25, 28, 34, EXIT_SIGN)
-            fr.box(0, 1, y + 21, y + 22, 25, 37, DARK_METAL)
+            fr.box(0, 1, y + 22, y + 23, 25, 37, DARK_METAL)          # header above the opening (clear of the swing)
             add_door(fr, -1, 0, y, y + 22, 26, 36, lambda a, b, c, A, B, C: steel_door(C - 1 - c, b, a, C, B, A),
                      hinge=(0, 36), open_dir=(1, 0), stop=DARK_METAL)
             fr.light(4, y + 24, 22, (1.0, 0.95, 0.85), 1.6, 0.2)
@@ -1988,7 +1988,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.13\n"
+        f.write("name = Liminal Atrium v3.14\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"

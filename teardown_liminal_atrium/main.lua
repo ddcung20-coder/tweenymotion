@@ -410,7 +410,7 @@ local function flickerInit()
 end
 
 local function flickerTick(dt, cam)
-	local nearest, nd = nil, 12
+	local nearest, nd = nil, 8
 	for i = 1, #flick do
 		local f = flick[i]
 		local dead = lightBroken(f.light)
@@ -431,7 +431,7 @@ local function flickerTick(dt, cam)
 		if d < nd then nearest, nd = f, d end
 	end
 	if nearest then
-		PlayLoop(snd.buzz, GetLightTransform(nearest.light).pos, nearest.on and 0.35 or 0.12)
+		PlayLoop(snd.buzz, GetLightTransform(nearest.light).pos, nearest.on and 0.12 or 0.04)
 	end
 end
 

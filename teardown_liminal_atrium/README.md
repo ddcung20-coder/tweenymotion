@@ -1,4 +1,4 @@
-# Liminal Atrium v3.13 — Teardown 샌드박스 맵
+# Liminal Atrium v3.14 — Teardown 샌드박스 맵
 
 사진 속 보라빛 호텔 아트리움(리미널 스페이스)을 바탕으로 만든 Teardown 커스텀 맵입니다.
 
