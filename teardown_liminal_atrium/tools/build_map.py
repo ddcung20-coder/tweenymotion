@@ -1134,9 +1134,15 @@ def elevators(fr, key):
         for k in range(FLOORS):
             y = fy(k)
             fr.box(-T_PART, 0, y, y + 22, q0 + 4, q0 + 14, 0)
+            # support points inside the wall (left jamb, right of the pocket, above the header):
+            # main.lua drops the door when these are blown away
+            sup = []
+            for (P, Q, Y) in ((-1, q0 + 2, y + 11), (-1, q0 + 19, y + 11), (-1, q0 + 9, y + 25)):
+                wx_, wz_ = cont(fr, P + 0.5, Q + 0.5)
+                sup.append(f"{wx_ * 0.1 - W * 0.05:.3f},{(Y + 0.5) * 0.1:.3f},{wz_ * 0.1 - D * 0.05:.3f}")
             add_door(fr, -T_PART, -T_PART + 1, y, y + 22, q0 + 4, q0 + 14,
                      lambda a, b, c, A, B, C: elev_door(c, b, a, C, B, A), slide=(0, 10),
-                     tag=f"elevdoor shaft={shaft} floor={k}")
+                     tag=f"elevdoor shaft={shaft} floor={k} s1={sup[0]} s2={sup[1]} s3={sup[2]}")
             # brass portal, lantern and call button panel
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 3, q0 + 4, BRASS)
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 14, q0 + 15, BRASS)
@@ -1370,13 +1376,20 @@ def export():
         if fn.endswith(".vox"):
             os.remove(os.path.join(VOXDIR, fn))
     CX, CZ = (W / 2) * 0.1, (D / 2) * 0.1
-    CS = 128
+    # Few, large shapes (<= 256 per axis), split only along party-wall planes and never
+    # horizontally: Teardown judges support per shape, so seams through structure make
+    # whole slabs of wall drop off when something near a seam is shot.
+    XS = [0, ax0 + 2 * SHORT_BAY_W, W]
+    YS = [0, H]
+    ZS = [0, az0 + 2 * LONG_BAY_W, az0 + 6 * LONG_BAY_W, D]
+    for edges in (XS, YS, ZS):
+        assert all(0 < b_ - a_ <= 256 for a_, b_ in zip(edges, edges[1:])), edges
     voxes = []
     total = 0
-    for x0 in range(0, W, CS):
-        for y0 in range(0, H, CS):
-            for z0 in range(0, D, CS):
-                sub = G[x0:x0 + CS, y0:y0 + CS, z0:z0 + CS]
+    for xi, (x0, x1_) in enumerate(zip(XS, XS[1:])):
+        for yi, (y0, y1_) in enumerate(zip(YS, YS[1:])):
+            for zi, (z0, z1_) in enumerate(zip(ZS, ZS[1:])):
+                sub = G[x0:x1_, y0:y1_, z0:z1_]
                 nz = np.nonzero(sub)
                 if len(nz[0]) == 0:
                     continue
@@ -1384,7 +1397,7 @@ def export():
                 sub = sub[bx_[0]:bx_[1], by_[0]:by_[1], bz_[0]:bz_[1]]
                 gx0, gy0, gz0 = x0 + bx_[0], y0 + by_[0], z0 + bz_[0]
                 sx, sy, sz = sub.shape
-                name = f"c_{x0 // CS}_{y0 // CS}_{z0 // CS}"
+                name = f"c_{xi}_{yi}_{zi}"
                 n = write_vox(os.path.join(VOXDIR, name + ".vox"), sub)
                 total += n
                 # Teardown vox origin from the grid min corner: (floor(sx/2), 0, sz - floor(sz/2))

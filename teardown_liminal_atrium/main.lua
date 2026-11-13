@@ -115,8 +115,43 @@ local function tagNum(h, t, def)
 	return v
 end
 
+local function doorBroken(door)
+	if door.loose or not IsHandleValid(door.body) then return true end
+	local shapes = GetBodyShapes(door.body)
+	return #shapes == 0 or IsShapeBroken(shapes[1])
+end
+
+-- turn a landing door into a normal physics object (it will fall / can be knocked around)
+local function releaseDoor(door)
+	if door.loose then return end
+	door.loose = true
+	if IsHandleValid(door.body) then
+		SetBodyDynamic(door.body, true)
+	end
+end
+
+-- every half second: a landing door whose wall support has been blown away, or which got damaged, drops
+local function supportCheck(c, dt)
+	c.supportTimer = (c.supportTimer or 0) - dt
+	if c.supportTimer > 0 then return end
+	c.supportTimer = 0.5
+	for _, door in pairs(c.doors) do
+		if not door.loose then
+			local gone = 0
+			for k = 1, #door.supports do
+				local hit = QueryClosestPoint(door.supports[k], 0.06)
+				if not hit then gone = gone + 1 end
+			end
+			if doorBroken(door) or (#door.supports > 0 and gone >= 2) then
+				releaseDoor(door)
+			end
+		end
+	end
+end
+
 local function setDoor(door, amount)
 	door.amount = amount
+	if doorBroken(door) then return end     -- a damaged landing door stays where it is
 	SetBodyTransform(door.body, Transform(VecAdd(door.t0.pos, VecScale(door.slide, amount)), door.t0.rot))
 end
 
@@ -130,8 +165,12 @@ local function elevInit()
 		local b = bodies[i]
 		local t = GetBodyTransform(b)
 		local f = tagNum(b, "floor", 0)
+		local shapes = GetBodyShapes(b)
+		local count = 0
+		for j = 1, #shapes do count = count + GetShapeVoxelCount(shapes[j]) end
 		local c = {
 			body = b, shaft = GetTagValue(b, "shaft"), floor = f, target = f,
+			vox0 = count, broken = false, checkTimer = 0,
 			x = t.pos[1], z = t.pos[3], rot = t.rot, y = t.pos[2],
 			base = t.pos[2] - f * FLOOR_H, state = "opening", hold = HOLD_TIME, doors = {},
 		}
@@ -144,8 +183,18 @@ local function elevInit()
 		local b = doorBodies[i]
 		local c = carByShaft[GetTagValue(b, "shaft")]
 		if c then
-			c.doors[tagNum(b, "floor", 0)] = { body = b, t0 = GetBodyTransform(b), amount = 0,
-				slide = Vec(tagNum(b, "sx", 0), 0, tagNum(b, "sz", 0)) }
+			local d = { body = b, t0 = GetBodyTransform(b), amount = 0, loose = false,
+				slide = Vec(tagNum(b, "sx", 0), 0, tagNum(b, "sz", 0)), supports = {} }
+			-- support points: world points inside the wall beside / above the door (tags s1..s3 = "x,y,z")
+			for k = 1, 3 do
+				local v = GetTagValue(b, "s" .. k)
+				if v ~= "" then
+					local p = {}
+					for num in string.gmatch(v, "[^,]+") do p[#p + 1] = tonumber(num) end
+					d.supports[#d.supports + 1] = Vec(p[1], p[2], p[3])
+				end
+			end
+			c.doors[tagNum(b, "floor", 0)] = d
 		end
 	end
 	local btns = FindShapes("elevbtn", true)
@@ -174,7 +223,7 @@ local function setState(c, state)
 end
 
 local function request(c, floor)
-	if c == nil or floor == nil then return end
+	if c == nil or floor == nil or c.broken then return end
 	c.target = floor
 	if (c.state == "idle" or c.state == "autoclose") and floor == c.floor then
 		setState(c, "opening")
@@ -186,7 +235,9 @@ local function elevTick(dt)
 	if InputPressed("interact") then
 		local s = GetPlayerInteractShape()
 		if s ~= 0 then
-			if HasTag(s, "elevbtn") then
+			if IsShapeBroken(s) then
+				-- a smashed button does nothing
+			elseif HasTag(s, "elevbtn") then
 				PlaySound(snd.click, GetShapeWorldTransform(s).pos, 0.8)
 				request(carByBody[GetShapeBody(s)], tagNum(s, "floor", nil))
 			elseif HasTag(s, "elevcall") then
@@ -198,7 +249,7 @@ local function elevTick(dt)
 	-- continuous sounds: motor hum while travelling, music inside every cab
 	for i = 1, #cars do
 		local c = cars[i]
-		if IsHandleValid(c.body) then
+		if IsHandleValid(c.body) and not c.broken then
 			local p = cabCenter(c)
 			if c.state == "moving" then
 				PlayLoop(snd.hum, p, 0.55)
@@ -208,9 +259,27 @@ local function elevTick(dt)
 	end
 end
 
+-- a cab that lost more than 12% of its voxels (or its handle) is wrecked: it is released and falls
+local function checkBroken(c, dt)
+	if c.broken then return end
+	c.checkTimer = c.checkTimer - dt
+	if c.checkTimer > 0 then return end
+	c.checkTimer = 0.25
+	if not IsHandleValid(c.body) then c.broken = true return end
+	local shapes = GetBodyShapes(c.body)
+	local count = 0
+	for j = 1, #shapes do count = count + GetShapeVoxelCount(shapes[j]) end
+	if count < c.vox0 * 0.88 then
+		c.broken = true
+	end
+end
+
 local function elevUpdate(dt)
 	for i = 1, #cars do
 		local c = cars[i]
+		checkBroken(c, dt)
+		supportCheck(c, dt)
+		if not c.broken then
 		local door = c.doors[c.floor]
 		if c.state == "idle" then
 			if c.target ~= c.floor then
@@ -248,6 +317,7 @@ local function elevUpdate(dt)
 			ConstrainPosition(c.body, 0, t.pos, Vec(c.x, c.y, c.z), 4)
 			ConstrainOrientation(c.body, 0, t.rot, c.rot)
 		end
+		end -- not broken
 	end
 end
 
