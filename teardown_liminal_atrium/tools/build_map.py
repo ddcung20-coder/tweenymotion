@@ -2934,30 +2934,30 @@ def helicopter_model():
     outer = (C < 52) & (((A - ac) / np.maximum(hw, 0.1)) ** 2 + ((B - ym) / np.maximum(hh, 0.1)) ** 2 <= 1)
     inner = (C < 50) & (C > 3) & (((A - ac) / np.maximum(hw - 1.6, 0.1)) ** 2 + ((B - ym) / np.maximum(hh - 1.6, 0.1)) ** 2 <= 1)
     shell = outer & ~inner
-    m[shell & (B < ym)] = CAR_A
-    m[shell & (B >= ym)] = CEIL
-    m[shell & (np.abs(B - np.round(ym)) < 0.6)] = YELLOW_PAINT
+    m[shell & (B < ym)] = BLANKET_C
+    m[shell & (B >= ym)] = SHEET
+    m[shell & (np.abs(B - np.round(ym)) < 0.6)] = ART2
     m[shell & (B > ym + 1) & (C >= 2) & (C <= 34)] = GLASS                                   # canopy + side windows
-    m[shell & (B > ym + 1) & ((C == 18) | (C == 19))] = CEIL                                  # door pillar
-    m[inner & (B <= np.floor(yb) + 2)] = TV_BODY                                              # cabin floor
+    m[shell & (B > ym + 1) & ((C == 18) | (C == 19))] = SHEET                                  # door pillar
+    m[inner & (B <= np.floor(yb) + 2)] = CURT_DARK                                              # cabin floor
     for (sa, sc) in ((5, 14), (5, 24), (14, 14), (14, 24)):                                   # two pairs of seats
         m[sa:sa + 5, 9:13, sc:sc + 5] = UPHOL; m[sa:sa + 5, 13:19, sc + 4:sc + 5] = UPHOL
-    m[6:18, 16:18, 6:9] = TV_BODY                                                             # instrument panel
+    m[6:18, 16:18, 6:9] = CURT_DARK                                                             # instrument panel
     m[8:10, 18:19, 7:8] = TV_SCREEN; m[14:16, 18:19, 7:8] = TV_SCREEN
     # tail boom, fin, stabiliser
     for c in range(48, 114):
         hs = 4 - (c - 48) / 66 * 2.2; yc = 20 + (c - 48) / 66 * 6
         sel = (np.abs(A[:, :, c] - ac) <= hs) & (np.abs(B[:, :, c] - yc) <= hs)
-        m[:, :, c][sel] = CAR_A
-        m[:, :, c][sel & (B[:, :, c] >= yc + hs - 1)] = CEIL
+        m[:, :, c][sel] = BLANKET_C
+        m[:, :, c][sel & (B[:, :, c] >= yc + hs - 1)] = SHEET
     for c in range(102, 119):
         top = int(24 + (c - 102) * 0.95)
-        m[11:13, 22:min(top, Y_ - 1), c] = CAR_A
-        m[11:13, max(top - 3, 22):min(top, Y_ - 1), c] = YELLOW_PAINT
-    m[2:22, 24:25, 98:105] = CEIL
+        m[11:13, 22:min(top, Y_ - 1), c] = BLANKET_C
+        m[11:13, max(top - 3, 22):min(top, Y_ - 1), c] = ART2
+    m[2:22, 24:25, 98:105] = SHEET
     # engine cowling, exhaust, mast
-    m[7:17, 26:32, 18:44] = ELEV_DOOR
-    m[8:16, 30:32, 22:40] = CEIL
+    m[7:17, 26:32, 18:44] = TOWEL
+    m[8:16, 30:32, 22:40] = SHEET
     m[10:14, 27:30, 44:47] = DARK_METAL
     m[10:14, 32:38, 25:29] = DARK_METAL
     m[10:14, 29:34, 109:116] = DARK_METAL                                                     # tail rotor gearbox on the fin
@@ -2969,7 +2969,7 @@ def helicopter_model():
             m[sa:sa + 2, 2:10, sc:sc + 2] = DARK_METAL
             m[min(sa, 6):max(sa + 2, 18), 8:10, sc:sc + 2] = DARK_METAL
     # nav lights, landing light
-    m[0, 18:20, 26:28] = RED; m[X_ - 1, 18:20, 26:28] = EXIT_SIGN
+    m[0, 18:20, 26:28] = BLANKET_B; m[X_ - 1, 18:20, 26:28] = EXIT_SIGN
     m[10:14, 5:7, 6:9] = CEIL_LAMP
     m = np.where(keep_connected(m > 0, [(12, 7, 30)]), m, 0).astype(np.uint8)
     return m
@@ -2978,9 +2978,9 @@ def rotor_model(R_=50):
     """main rotor = its own body: blades (y 8), hub, and a shaft (y 0..5) that sits inside the mast,
     held there by two ball joints on the shaft axis (= a hinge about the vertical)."""
     r = np.zeros((2 * R_ + 1, 9, 2 * R_ + 1), np.uint8)
-    r[:, 8, R_ - 1:R_ + 2] = TV_BODY; r[R_ - 1:R_ + 2, 8, :] = TV_BODY
-    r[:3, 8, R_ - 1:R_ + 2] = YELLOW_PAINT; r[-3:, 8, R_ - 1:R_ + 2] = YELLOW_PAINT
-    r[R_ - 1:R_ + 2, 8, :3] = YELLOW_PAINT; r[R_ - 1:R_ + 2, 8, -3:] = YELLOW_PAINT
+    r[:, 8, R_ - 1:R_ + 2] = UPHOL; r[R_ - 1:R_ + 2, 8, :] = UPHOL                   # plastic blades
+    r[:3, 8, R_ - 1:R_ + 2] = ART2; r[-3:, 8, R_ - 1:R_ + 2] = ART2
+    r[R_ - 1:R_ + 2, 8, :3] = ART2; r[R_ - 1:R_ + 2, 8, -3:] = ART2
     r[R_ - 3:R_ + 4, 6:9, R_ - 3:R_ + 4] = DARK_METAL
     r[R_ - 1:R_ + 1, 0:6, R_ - 1:R_ + 1] = CHROME
     return r
@@ -2988,7 +2988,7 @@ def rotor_model(R_=50):
 def tail_rotor_model(R_=10):
     """tail rotor body: shaft along x (x 0..4, inside the gearbox) and the blades at x = 4."""
     t = np.zeros((5, 2 * R_ + 1, 2 * R_ + 1), np.uint8)
-    t[4, R_ - 1:R_ + 2, :] = TV_BODY; t[4, :, R_ - 1:R_ + 2] = TV_BODY
+    t[4, R_ - 1:R_ + 2, :] = UPHOL; t[4, :, R_ - 1:R_ + 2] = UPHOL
     t[3:5, R_ - 2:R_ + 3, R_ - 2:R_ + 3] = DARK_METAL
     t[0:4, R_ - 1:R_ + 1, R_ - 1:R_ + 1] = CHROME
     return t
@@ -3307,7 +3307,7 @@ def export():
     bsx, bsy, bsz = HELI_BODY.shape
     def in_body(a, b, c):        # body-array cell -> position relative to the body vox origin
         return ((a + 0.5 - bsx // 2) * 0.1, b * 0.1, (c + 0.5 - (bsz - bsz // 2)) * 0.1)
-    xml.append(f'\t<vehicle name="helicopter" tags="helicopter" pos="0 0 0" driven="false" topspeed="0" acceleration="0" strength="3">\n'
+    xml.append(f'\t<vehicle name="helicopter" tags="helicopter" pos="0 0 0" driven="false" topspeed="0" acceleration="0" strength="1">\n'
                f'\t\t<body tags="helibody" pos="{f3(hb)}" dynamic="true">\n'
                f'\t\t\t<vox pos="0 0 0" file="MOD/vox/heli_body.vox" object="shape" density="0.4">\n'
                f'\t\t\t\t<location tags="player" pos="{f3(in_body(*HELI["seat"]))}" rot="0 0 0"/>\n'
@@ -3427,7 +3427,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.29\n"
+        f.write("name = Liminal Atrium v3.30\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

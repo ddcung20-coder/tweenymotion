@@ -1188,7 +1188,17 @@ end
 
 local function heliTick(dt)
 	if not heli or not IsHandleValid(heli.body) then return end
-	if not heli.broken and bodyVoxels(heli.body) < heli.vox0 * 0.7 then heli.broken = true end
+	if not heli.broken then
+		local wrecked = bodyVoxels(heli.body) < heli.vox0 * 0.75
+		if GetVehicleHealth and IsHandleValid(heli.veh) and GetVehicleHealth(heli.veh) <= 0.0 then wrecked = true end
+		if wrecked then
+			-- wrecked: the engine goes up once, then it is just a burning shell
+			heli.broken = true
+			local p = TransformToParentPoint(GetBodyTransform(heli.body), Vec(0, 2.6, -1))
+			if Explosion then Explosion(p, 1.2) end
+			if SpawnFire then for i = 1, 4 do SpawnFire(VecAdd(p, Vec(math.random() * 2 - 1, 0, math.random() * 2 - 1))) end end
+		end
+	end
 	if not heli.rotorLost and not rotorAttached() then heli.rotorLost = true end
 	local on = heliDriven() and not heli.broken and not heli.rotorLost
 	heli.rpm = on and math.min(1, heli.rpm + dt * 0.45) or math.max(0, heli.rpm - dt * 0.25)

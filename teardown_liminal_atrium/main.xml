@@ -3486,7 +3486,7 @@
 		<vertex pos="-0.015 0.780"/>
 		<vertex pos="-0.555 0.640"/>
 	</water>
-	<vehicle name="helicopter" tags="helicopter" pos="0 0 0" driven="false" topspeed="0" acceleration="0" strength="3">
+	<vehicle name="helicopter" tags="helicopter" pos="0 0 0" driven="false" topspeed="0" acceleration="0" strength="1">
 		<body tags="helibody" pos="0 24.6 -9.3" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/heli_body.vox" object="shape" density="0.4">
 				<location tags="player" pos="-0.45 1.2 -4.35" rot="0 0 0"/>

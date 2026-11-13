@@ -460,6 +460,12 @@ def body_cell(gm, a, b, c):
 def joints_ok(arr_, gm, pts):
     return all(arr_[a, b, c] > 0 and body_cell(gm, a, b, c) for (a, b, c) in pts)
 RO_, TA_ = ns["HELI_ROTOR"], ns["HELI_TAIL"]
+def hard_frac(arr_):
+    v = arr_[arr_ > 0]
+    return float(np.isin(v, list(range(41, 57)) + list(range(121, 153)) + list(range(169, 185))).mean())
+report("helicopter is breakable (mostly plastic / glass: metal only for skids, mast and shafts)",
+       hard_frac(hb_) < 0.15 and hard_frac(ns["HELI_ROTOR"][:, 8, :]) < 0.1 and hard_frac(ns["HELI_TAIL"][4]) < 0.25,          # (the small tail hub is metal)
+       f"body {hard_frac(hb_):.0%} hard, blades {hard_frac(ns['HELI_ROTOR'][:, 8, :]):.0%} hard")
 report("main rotor: shaft in the mast, both joint points inside rotor + mast", joints_ok(RO_, H_["rotor_gmin"], [(50, 2, 50), (50, 5, 50)]))
 report("tail rotor: shaft in the fin gearbox, both joint points inside rotor + gearbox", joints_ok(TA_, H_["tail_gmin"], [(0, 10, 10), (3, 10, 10)]))
 blade_hit = sum(1 for (a, b, c) in zip(*np.nonzero(RO_)) if b >= 8 and body_cell(H_["rotor_gmin"], a, b, c)) + \
