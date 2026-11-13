@@ -1752,7 +1752,7 @@ def export():
     spawn = ((ax0 + ax1) / 2 * 0.1 - CX, G0 * 0.1 + 0.1, (az0 + 18) * 0.1 - CZ)
     half_w, half_d = W / 2 * 0.1, D / 2 * 0.1
     xml = []
-    xml.append('<scene version="2.0.0" shadowVolume="%d 30 %d">\n' % (int(W * 0.1) + 4, int(D * 0.1) + 4))
+    xml.append('<scene version="6" shadowVolume="%d 30 %d">\n' % (int(W * 0.1) + 4, int(D * 0.1) + 4))
     xml.append('\t<environment skybox="cloudy.dds" skyboxtint="0.35 0.3 0.5" skyboxbrightness="0.12" skyboxrot="0" '
                'constant="0.004 0.003 0.006" ambient="0.25" ambientexponent="1.6" fogColor="0.07 0.06 0.1" '
                'fogParams="30 160 0.9 4" sunBrightness="0" sunColorTint="0.6 0.6 1" sunDir="auto" sunSpread="0" '
