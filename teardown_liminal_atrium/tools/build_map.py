@@ -59,10 +59,13 @@ DREAM_LILAC = P(44, (206, 190, 242))
 DREAM_SKY   = P(45, (176, 214, 248))
 DREAM_CLOUD = P(46, (250, 247, 253))
 # basement arcade: polished stone (rock = hard) + car park paint
-MARBLE_W    = P(47, (234, 231, 226)); MARBLE_W2 = P(48, (220, 216, 209))
-MARBLE_B    = P(49, (40, 38, 42))
-MARBLE_BG   = P(50, (198, 184, 162))
+MARBLE_W    = P(47, (234, 231, 226), "metal", rough=0.12, metal=0.05); MARBLE_W2 = P(48, (220, 216, 209), "metal", rough=0.12, metal=0.05)
+MARBLE_B    = P(49, (40, 38, 42), "metal", rough=0.12, metal=0.05)
+MARBLE_BG   = P(50, (198, 184, 162), "metal", rough=0.12, metal=0.05)
 YELLOW_PAINT = P(51, (226, 186, 40))
+MARBLE_VEIN = P(52, (176, 172, 172), "metal", rough=0.12, metal=0.05)    # (texture pass only)
+MARBLE_B2   = P(53, (58, 54, 62), "metal", rough=0.12, metal=0.05)
+MARBLE_BG2  = P(54, (184, 168, 146), "metal", rough=0.12, metal=0.05)
 # per-floor corridor themes (dirt range: soft like carpet / plaster)
 CARP_G  = P(26, (52, 86, 62));  CARP_G2  = P(27, (45, 77, 55))
 CARP_BL = P(28, (40, 58, 100)); CARP_BL2 = P(29, (35, 51, 89))
@@ -86,18 +89,18 @@ CHAIR_RAIL = P(66, (86, 60, 42))
 PICFRAME   = P(67, (150, 118, 60))
 PLANTER    = P(68, (70, 50, 36))
 TRUNK      = P(69, (78, 60, 44))
-PARQUET    = P(70, (140, 98, 62)); PARQUET2 = P(71, (126, 88, 56))
+PARQUET    = P(70, (140, 98, 62), "metal", rough=0.35, metal=0.04); PARQUET2 = P(71, (126, 88, 56), "metal", rough=0.35, metal=0.04)
 LOUNGER    = P(72, (234, 230, 222))
 # concrete (73-88)
 SLAB       = P(73, (128, 126, 122))
-FLOOR_STN  = P(74, (150, 124, 96)); FLOOR_STN2 = P(75, (142, 117, 90)); FLOOR_STN3 = P(76, (158, 132, 103))
-FLOOR_MED  = P(77, (196, 180, 152))
-FLOOR_BRD  = P(78, (112, 92, 72))
+FLOOR_STN  = P(74, (150, 124, 96), "metal", rough=0.25, metal=0.04); FLOOR_STN2 = P(75, (142, 117, 90), "metal", rough=0.25, metal=0.04); FLOOR_STN3 = P(76, (158, 132, 103), "metal", rough=0.25, metal=0.04)
+FLOOR_MED  = P(77, (196, 180, 152), "metal", rough=0.25, metal=0.04)
+FLOOR_BRD  = P(78, (112, 92, 72), "metal", rough=0.25, metal=0.04)
 ASPHALT    = P(79, (52, 52, 56)); ASPHALT2 = P(80, (58, 58, 62))
 PAINT_LINE = P(81, (200, 198, 186))
 ROOF       = P(82, (92, 92, 96)); ROOF2 = P(83, (100, 100, 104))
-STAIR_CONC = P(84, (150, 148, 142))
-TILE       = P(85, (228, 231, 231))
+STAIR_CONC = P(84, (150, 148, 142), "metal", rough=0.45, metal=0.03)
+TILE       = P(85, (228, 231, 231), "metal", rough=0.18, metal=0.05)
 TILE_DARK  = P(86, (150, 158, 160))
 CURB       = P(87, (150, 150, 145))
 GROUT      = P(88, (118, 100, 80))
@@ -107,10 +110,10 @@ EXT_TRIM   = P(93, (176, 166, 150)); EXT_TRIM2 = P(94, (165, 156, 141))
 PAVER      = P(95, (120, 116, 110)); PAVER2 = P(96, (108, 104, 99))
 LINTEL     = P(97, (186, 176, 160))
 GROUT_TILE = P(92, (184, 194, 198))
-WHITE_TILE = P(99, (236, 240, 240)); WHITE_TILE2 = P(100, (225, 231, 232))
-POOL_TILE  = P(101, (122, 198, 224)); POOL_TILE2 = P(102, (104, 182, 212))
+WHITE_TILE = P(99, (236, 240, 240), "metal", rough=0.18, metal=0.05); WHITE_TILE2 = P(100, (225, 231, 232), "metal", rough=0.18, metal=0.05)
+POOL_TILE  = P(101, (122, 198, 224), "metal", rough=0.18, metal=0.05); POOL_TILE2 = P(102, (104, 182, 212), "metal", rough=0.18, metal=0.05)
 POOL_LINE  = P(103, (30, 60, 124))
-COPING     = P(104, (214, 208, 196))
+COPING     = P(104, (214, 208, 196), "metal", rough=0.18, metal=0.05)
 EXT_WALL   = P(98, (172, 162, 148))
 # plaster (105-120)
 ATR_WALL   = P(105, (216, 210, 224)); ATR_WALL2 = P(106, (209, 203, 218)); ATR_WALL3 = P(107, (222, 217, 230))
@@ -149,7 +152,7 @@ SHEET      = P(157, (226, 226, 220))
 BLANKET_A  = P(158, (150, 128, 104)); BLANKET_B = P(159, (120, 40, 48)); BLANKET_C = P(160, (44, 54, 84))
 PILLOW     = P(161, (236, 236, 230))
 UPHOL      = P(162, (72, 80, 96)); UPHOL2 = P(163, (112, 96, 80))
-CERAMIC    = P(164, (236, 236, 236))
+CERAMIC    = P(164, (236, 236, 236), "metal", rough=0.18, metal=0.05)
 LAMPSHADE  = P(165, (250, 226, 172), "emit", flux=2, weight=0.6)
 TOWEL      = P(166, (240, 240, 236))
 ART1       = P(167, (60, 92, 122)); ART2 = P(168, (172, 112, 70))
@@ -2479,6 +2482,17 @@ def b1_stairs(fr):
                 if ch == "#":
                     fr.box(W4, W4 + 1, YB + 20 - r_ * 2, YB + 22 - r_ * 2, 4 + gi * 8 + c_ * 2, 6 + gi * 8 + c_ * 2, RED)
 b1_stairs(corner["SW"]); b1_stairs(corner["NE"])
+def paint_shell(x0, x1, z0, z1, y0, y1, col, only):
+    paint(x0, x1, y0, y1, z0, z0 + 1, col, only); paint(x0, x1, y0, y1, z1 - 1, z1, col, only)
+    paint(x0, x0 + 1, y0, y1, z0, z1, col, only); paint(x1 - 1, x1, y0, y1, z0, z1, col, only)
+# the elevator cores and the NE stair core stand inside the arcade: plaster them like the arcade walls
+for key_ in ("NW", "SE"):
+    xa_, xb_, za_, zb_ = corner[key_]._rect(-T_PART, 22, 0, CB - T_FAC)
+    paint_shell(xa_, xb_, za_, zb_, YB, YC, LOBBY_WALL, [SLAB])
+    paint_shell(xa_, xb_, za_, zb_, YB, YB + 1, WOOD_DARK, [LOBBY_WALL])             # skirting
+xa_, xb_, za_, zb_ = corner["NE"]._rect(-T_PART, CB, -T_PART, CB)
+paint_shell(xa_, xb_, za_, zb_, YB, YC, LOBBY_WALL, [STAIR_WALL, STAIR_WALL2])
+paint_shell(xa_, xb_, za_, zb_, YB, YB + 1, WOOD_DARK, [LOBBY_WALL])
 
 # music for the arcade (the player's song, looped from the nearest speaker)
 for (sx_, sz_) in ((310, 140), (310, 260), (310, 380), (310, 470), (185, 462), (180, 414), (372, 130)):
@@ -2523,6 +2537,98 @@ vary(WOOD_MED, [WOOD_MED, WOOD_MED2], cell=(1, 3, 1), seed=11, weights=[2, 1])
 vary(ROOF, [ROOF, ROOF2], cell=(8, 1, 8), seed=12)
 vary(EXT_TRIM, [EXT_TRIM, EXT_TRIM2], cell=(4, 2, 4), seed=13, weights=[3, 1])
 vary(BASE_STONE, [BASE_STONE, BASE_STONE2], cell=(6, 3, 6), seed=14)
+
+def face_axes(mask):
+    """for each True voxel: which axis has open air next to it (0 = x, 1 = y, 2 = z, -1 = buried)."""
+    X, Y, Z = np.nonzero(mask)
+    ax = np.full(len(X), -1, np.int8)
+    for a_, (dx, dy, dz) in ((1, (0, 1, 0)), (1, (0, -1, 0)), (0, (1, 0, 0)), (0, (-1, 0, 0)), (2, (0, 0, 1)), (2, (0, 0, -1))):
+        nx, ny, nz = (X + dx).clip(0, W - 1), (Y + dy).clip(0, H - 1), (Z + dz).clip(0, D - 1)
+        open_ = (G[nx, ny, nz] == 0) & (ax < 0)
+        ax[open_] = a_
+    return X, Y, Z, ax
+
+def grout(base, line, step):
+    """square tiles with grout lines in the plane of each visible face."""
+    X, Y, Z, ax = face_axes(G == base)
+    on = ((ax == 1) & ((X % step == 0) | (Z % step == 0))) | ((ax == 0) & ((Y % step == 0) | (Z % step == 0))) | \
+         ((ax == 2) & ((X % step == 0) | (Y % step == 0)))
+    G[X[on], Y[on], Z[on]] = line
+
+def speckle(base, specks, seed):
+    """per-voxel noise: specks = [(colour, fraction), ...]."""
+    X, Y, Z = np.nonzero(G == base)
+    t = hash3(X, Y, Z, seed)
+    acc = 0.0
+    for col, frac in specks:
+        m = (t >= acc) & (t < acc + frac)
+        G[X[m], Y[m], Z[m]] = col
+        acc += frac
+
+def blotch(base, col, cell, frac, seed, mix=0.35):
+    """soft patches (stains, weathering): cell-level choice broken up by per-voxel noise."""
+    X, Y, Z = np.nonzero(G == base)
+    t = (1 - mix) * hash3(X // cell, Y // cell, Z // cell, seed) + mix * hash3(X, Y, Z, seed + 7)
+    m = t < frac
+    G[X[m], Y[m], Z[m]] = col
+
+def wallpaper(base, motif, step):
+    """thin diamond trellis in a slightly different tone on wall faces."""
+    X, Y, Z, ax = face_axes(G == base)
+    h = np.where(ax == 0, Z, X)
+    m = (ax != 1) & (ax >= 0) & ((((h + Y) % step) == 0) | (((h - Y) % step) == 0))
+    G[X[m], Y[m], Z[m]] = motif
+
+def marble_veins(bases, vein, n, seed):
+    """meandering veins across polished stone floors (random walks over the floor surface)."""
+    rr = random.Random(seed)
+    X, Y, Z = np.nonzero(np.isin(G, bases))
+    top = G[X, (Y + 1).clip(0, H - 1), Z] == 0
+    X, Y, Z = X[top], Y[top], Z[top]
+    if not len(X):
+        return
+    for _ in range(n):
+        i = rr.randrange(len(X))
+        x, y, z = int(X[i]), int(Y[i]), int(Z[i])
+        ang = rr.uniform(0, 6.283)
+        for _s in range(rr.randint(10, 40)):
+            if G[x, y, z] in bases:
+                G[x, y, z] = vein
+            ang += rr.uniform(-0.6, 0.6)
+            x += int(round(np.cos(ang))); z += int(round(np.sin(ang)))
+            if not (0 <= x < W and 0 <= z < D):
+                break
+
+# concrete: aggregate speckle + damp blotches (structure, car park, stairs)
+speckle(SLAB, [(STAIR_CONC, 0.06), (ROOF2, 0.03), (CURB, 0.03)], 201)
+blotch(SLAB, ROOF2, 5, 0.05, 202, mix=0.55)
+speckle(STAIR_CONC, [(CURB, 0.08), (SLAB, 0.05)], 203)
+# plaster: faint stipple on ceilings and walls; diamond-trellis wallpaper in the rooms
+speckle(CEIL, [(ATR_PANEL, 0.12), (ATR_WALL3, 0.05)], 204)
+wallpaper(ROOM_WALL, COR_WALL, 12)
+wallpaper(ROOM_WALL_B, STAIR_WALL, 12)
+wallpaper(ROOM_WALL_C, ATR_SEAM, 12)
+speckle(LOBBY_WALL, [(COR_WALL, 0.12)], 208)
+speckle(STAIR_WALL, [(ATR_GRID, 0.08), (STAIR_WALL2, 0.03)], 209)
+speckle(ATR_PANEL, [(ATR_WALL3, 0.10)], 210)
+# brick facade: a few darker burnt bricks; stone trim: weathering
+blotch(BRICK2, BRICK3, 1, 0.12, 211, mix=0.0)
+speckle(EXT_WALL, [(EXT_TRIM2, 0.18)], 212)
+speckle(LINTEL, [(EXT_TRIM, 0.15)], 213)
+# outdoors: gravel in the asphalt, oil patches, richer lawn, worn pavers
+speckle(ASPHALT, [(CURB, 0.02), (ROOF, 0.05)], 214)
+blotch(ASPHALT, ROOF, 9, 0.06, 215)
+speckle(LAWN, [(LEAF3, 0.10), (LAWN2, 0.15)], 216)
+speckle(PAVER, [(PAVER2, 0.15), (CURB, 0.04)], 217)
+# floors: bathroom tiles with grout, marble shading + veins, wood with grain noise, stone flooring
+grout(TILE, TILE_DARK, 5)
+speckle(MARBLE_B, [(MARBLE_B2, 0.25)], 218)
+speckle(MARBLE_BG, [(MARBLE_BG2, 0.25)], 219)
+marble_veins([MARBLE_W, MARBLE_W2], MARBLE_VEIN, 260, 220)
+speckle(PARQUET, [(PARQUET2, 0.18)], 221)
+speckle(WOOD_LIGHT, [(WOOD_MED, 0.04)], 222)
+speckle(FLOOR_STN, [(FLOOR_STN3, 0.12)], 223)
+speckle(FLOOR_STN2, [(FLOOR_STN, 0.12)], 224)
 
 # ============================================================================
 # 10. Props (separate dynamic bodies)
@@ -2978,7 +3084,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.22\n"
+        f.write("name = Liminal Atrium v3.23\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
