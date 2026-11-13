@@ -30,27 +30,51 @@ local function giveTools()
 	end
 end
 
+-- write ammo every way the game might read it: 2.x per-player API (no id / host 0 / player 1) and the registry
+local function setAmmo(id, n)
+	if SetToolAmmo then
+		pcall(SetToolAmmo, id, n)
+		pcall(SetToolAmmo, id, n, 0)
+		pcall(SetToolAmmo, id, n, 1)
+	end
+	SetFloat("game.tool." .. id .. ".ammo", n)
+end
+
+-- lowest ammo the game reports for a tool over all the ways of asking (nil if it cannot tell)
+local function readAmmo(id)
+	local low = nil
+	if GetToolAmmo then
+		for _, args in ipairs({ { id }, { id, 0 }, { id, 1 } }) do
+			local ok, v = pcall(GetToolAmmo, unpack(args))
+			if ok and type(v) == "number" then low = (low == nil) and v or math.min(low, v) end
+		end
+	end
+	local key = "game.tool." .. id .. ".ammo"
+	if HasKey(key) then
+		local v = GetFloat(key)
+		low = (low == nil) and v or math.min(low, v)
+	end
+	return low
+end
+
 local function topUpAmmo()
-	-- refill every tool that uses ammo: registry (1.x and most tool mods) and SetToolAmmo (2.x, per player)
 	local ids = allTools()
 	for i = 1, #ids do
 		local id = ids[i]
-		local key = "game.tool." .. id .. ".ammo"
-		local usesAmmo = AMMO_TOOLS[id] or HasKey(key)
-		if usesAmmo then
-			if HasKey(key) and GetFloat(key) < 50 then
-				SetFloat(key, 999)
-			end
-			if SetToolAmmo then
-				local cur = 0
-				if GetToolAmmo then
-					local ok, v = pcall(GetToolAmmo, id)
-					if ok and type(v) == "number" then cur = v end
-				end
-				if cur < 50 then pcall(SetToolAmmo, id, 999) end
-			end
+		if AMMO_TOOLS[id] or HasKey("game.tool." .. id .. ".ammo") then
+			local a = readAmmo(id)
+			if a == nil or a < 200 then setAmmo(id, 999) end
 		end
 	end
+end
+
+-- the tool in the player's hands (2.x API, else 1.x registry)
+local function currentTool()
+	if GetPlayerTool then
+		local ok, v = pcall(GetPlayerTool)
+		if ok and type(v) == "string" and v ~= "" then return v end
+	end
+	return GetString("game.player.tool")
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -461,7 +485,36 @@ local function spawnMenuTick()
 	if menuOpen and InputPressed("esc") then menuOpen = false end
 end
 
+local function drawAmmoDebug()
+	local id = currentTool() or "?"
+	local lines = { "LIMINAL AMMO DEBUG (K)", "tool: " .. tostring(id),
+		"SetToolAmmo: " .. tostring(SetToolAmmo ~= nil) .. "   GetToolAmmo: " .. tostring(GetToolAmmo ~= nil) ..
+		"   GetPlayerTool: " .. tostring(GetPlayerTool ~= nil) }
+	if GetToolAmmo then
+		for _, args in ipairs({ { id }, { id, 0 }, { id, 1 } }) do
+			local ok, v = pcall(GetToolAmmo, unpack(args))
+			lines[#lines + 1] = "GetToolAmmo(" .. (args[2] and tostring(args[2]) or "-") .. ") = " .. tostring(ok and v or "error")
+		end
+	end
+	local key = "game.tool." .. id .. ".ammo"
+	lines[#lines + 1] = key .. " = " .. (HasKey(key) and tostring(GetFloat(key)) or "(none)")
+	lines[#lines + 1] = "level.unlimitedammo = " .. tostring(GetBool("level.unlimitedammo"))
+	UiPush()
+		UiTranslate(20, 20)
+		UiColor(0, 0, 0, 0.6)
+		UiRect(560, 24 * #lines + 16)
+		UiTranslate(10, 26)
+		UiFont("regular.ttf", 20)
+		UiColor(1, 1, 0.6, 1)
+		for i = 1, #lines do
+			UiText(lines[i])
+			UiTranslate(0, 24)
+		end
+	UiPop()
+end
+
 function draw()
+	if ammoDebug then drawAmmoDebug() end
 	if not menuOpen then return end
 	UiMakeInteractive()
 	UiPush()
@@ -495,6 +548,7 @@ end
 ----------------------------------------------------------------------------------------------------
 local toolTimer = 0
 local ammoTimer = 0
+ammoDebug = false
 
 function init()
 	SetBool("level.sandbox", true)          -- sandbox level (spawn menu etc.)
@@ -518,6 +572,12 @@ function tick(dt)
 		giveTools()
 		topUpAmmo()
 	end
+	local held = currentTool()
+	if held and held ~= "" and (AMMO_TOOLS[held] or HasKey("game.tool." .. held .. ".ammo")) then
+		local a = readAmmo(held)
+		if a == nil or a < 200 then setAmmo(held, 999) end
+	end
+	if InputPressed("k") then ammoDebug = not ammoDebug end
 	local cam = GetCameraTransform().pos
 	PlayLoop(snd.ambience, cam, 0.3)
 	doorsTick(cam)

@@ -161,6 +161,23 @@ for d in ns["DOORS"]:
     rx = (cx_ - px) * math.cos(a_) + (cz_ - pz) * math.sin(a_); rz = -(cx_ - px) * math.sin(a_) + (cz_ - pz) * math.cos(a_)
     worst = max(worst, float((FULL[np.floor(px + rx).astype(int), Y + gy, np.floor(pz + rz).astype(int)] > 0).mean()))
 report("every swing door opens without hitting walls/furniture", worst < 0.02, f"worst overlap {worst:.3f}")
+# every hotel room fully enclosed: both party walls, the facade wall and the corridor wall are there
+T_PART, ROOM_D = ns["T_PART"], ns["ROOM_D"]
+open_rooms = []
+for name, b, fr, bw in ns["room_frames"]():
+    for k in range(FLOORS):
+        if k == 0 and name == "S" and b in (1, 2):
+            continue
+        y = fy(k)
+        walls = {"party A": (0, T_PART, 0, ROOM_D), "party B": (bw, bw + T_PART, 0, ROOM_D),
+                 "corridor": (T_PART, bw, ROOM_D, ROOM_D + T_PART)}
+        for wname, (u0, u1, v0, v1) in walls.items():
+            x0, x1, z0, z1 = fr._rect(u0, u1, v0, v1)
+            frac = float((FULL[x0:x1, y + 1:y + 20, z0:z1] > 0).mean())
+            need = 0.6 if wname == "corridor" else 0.97      # the corridor wall has the entrance door in it
+            if frac < need:
+                open_rooms.append((name, b, k + 1, wname, round(frac, 2)))
+report("every hotel room has all its walls", not open_rooms, str(open_rooms[:8]))
 HANDLES = {ns["BRASS"], ns["STEEL"]}
 wrong = []
 for i, d in enumerate(ns["DOORS"]):

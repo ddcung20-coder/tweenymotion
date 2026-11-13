@@ -932,8 +932,10 @@ lx0, lx1 = ax0 + SHORT_BAY_W, ax0 + 3 * SHORT_BAY_W
 lz0, lz1 = az0 - T_FAC - ROOM_D, az0
 y = G0
 cx = (lx0 + lx1) // 2
-box(lx0, lx1, y, y + FH - SLAB_T, lz0, lz1 - T_FAC, 0)
-box(lx0, lx1, y, y + FH - SLAB_T, lz0, lz0 + 1, LOBBY_WALL)
+# lx1 - T_PART: the party wall to the next room (east) belongs to that room -- keep it
+box(lx0, lx1 - T_PART, y, y + FH - SLAB_T, lz0, lz1 - T_FAC, 0)
+box(lx0, lx1 - T_PART, y, y + FH - SLAB_T, lz0, lz0 + 1, LOBBY_WALL)
+paint(lx1 - T_PART, lx1 - T_PART + 1, y, y + FH - SLAB_T, lz0, lz1 - T_FAC, LOBBY_WALL, [ROOM_WALL, ROOM_WALL_B, ROOM_WALL_C])
 for xx in range(lx0, lx1):    # herringbone-ish parquet
     for zz in range(lz0, lz1 - T_FAC):
         G[xx, y - 1, zz] = PARQUET if ((xx // 2 + zz // 6) % 2 == 0) == ((zz // 2 + xx // 6) % 2 == 0) else PARQUET2
@@ -1962,7 +1964,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.11\n"
+        f.write("name = Liminal Atrium v3.12\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"
