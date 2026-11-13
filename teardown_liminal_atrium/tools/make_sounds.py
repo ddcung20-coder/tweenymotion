@@ -196,3 +196,56 @@ for k in range(140):
     bub[idx] += b * rng.uniform(0.2, 0.7)
 save("spa_bubbles.ogg", bub, 0.6)
 print("pool sounds written")
+
+# ================= v3.16: curtains + CHECK-OUT mission =================
+# --- curtain: fabric swoosh + rings rattling on the rod --------------------------------------
+sec = 1.0; n = int(sec * SR); tt = t(sec)
+sw = bandpass(rng.standard_normal(n), 400, 4000) * np.sin(np.pi * np.clip(tt / 0.8, 0, 1)) ** 1.5
+rings = np.zeros(n)
+for k in range(10):
+    s0 = int((0.05 + 0.07 * k + rng.uniform(0, 0.02)) * SR); m = int(0.05 * SR)
+    rings[s0:s0 + m] += np.sin(2 * np.pi * rng.uniform(2600, 3400) * t(0.05)) * env(m, 0.0005, 0.008) * rng.uniform(0.3, 0.6)
+save("curtain.ogg", 0.8 * sw + rings, 0.6)
+
+# --- front-desk bell: one bright ring ------------------------------------------------------------
+db = bell(2093.0, 2.6, 0.7) + 0.3 * bell(2093.0 * 1.003, 2.6, 0.6)
+save("deskbell.ogg", db, 0.8)
+
+# --- key card: card-lock style double beep + click -----------------------------------------------
+sec = 0.45; n = int(sec * SR); kc = np.zeros(n)
+for (f, s0, d) in ((1760, 0.02, 0.07), (2637, 0.11, 0.12)):
+    m = int(d * SR); a = int(s0 * SR)
+    kc[a:a + m] += np.sign(np.sin(2 * np.pi * f * t(d))) * 0.25 * np.minimum(1, (d - t(d)) / 0.01)
+kc = lowpass(kc, 6000)
+m = int(0.03 * SR); kc[:m] += bandpass(rng.standard_normal(m), 1500, 6000) * env(m, 0.0005, 0.006)
+save("keycard.ogg", kc, 0.6)
+
+# --- mannequin step: hollow plastic knock + a tiny creak ------------------------------------------
+sec = 0.3; n = int(sec * SR); tt = t(sec)
+knock = np.sin(2 * np.pi * (240 + 120 * np.exp(-tt / 0.01)) * tt) * env(n, 0.0008, 0.035)
+knock += 0.5 * bandpass(rng.standard_normal(n), 600, 2500) * env(n, 0.0005, 0.015)
+cr = bandpass(rng.standard_normal(n), 1200, 1800) * np.clip((tt - 0.05) / 0.05, 0, 1) * np.exp(-np.clip(tt - 0.1, 0, None) / 0.05) * 0.2
+save("mq_step.ogg", knock + cr, 0.7)
+
+# --- caught: sub drop + rising noise + dull hit ------------------------------------------------
+sec = 3.0; n = int(sec * SR); tt = t(sec)
+f0 = 70 * np.exp(-tt / 1.4) + 28
+sub = np.sin(2 * np.pi * np.cumsum(f0) / SR) * np.exp(-tt / 1.6)
+swell = bandpass(rng.standard_normal(n), 200, 3000) * np.clip(tt / 0.5, 0, 1) * np.exp(-tt / 0.5) * 0.7
+hit = lowpass(rng.standard_normal(n), 300) * env(n, 0.001, 0.25) * 2.0
+save("caught.ogg", np.tanh(1.8 * (sub + swell + hit)), 0.9)
+
+# --- checked out: soft bell chord (C major) -----------------------------------------------------
+sec = 4.0; n = int(sec * SR); co = np.zeros(n)
+for i, mnote in enumerate((60, 64, 67, 72, 76)):
+    a = int(i * 0.12 * SR); b_ = bell(440 * 2 ** ((mnote - 69) / 12), sec, 1.6)
+    co[a:] += b_[:n - a] * 0.5
+save("checkout.ogg", co, 0.75)
+
+# --- mission drone: low, uneasy, seamless 8 s loop --------------------------------------------
+L = 8.0; tt = t(L)
+dr = (np.sin(2 * np.pi * 55 * tt) + 0.8 * np.sin(2 * np.pi * 55.5 * tt) + 0.5 * np.sin(2 * np.pi * 82.5 * tt)
+      + 0.25 * np.sin(2 * np.pi * 116.5 * tt) * (0.5 + 0.5 * np.sin(2 * np.pi * tt / L)))
+dr += 0.4 * lowpass(loop_noise(L, 1.8), 300) + 0.08 * bandpass(loop_noise(L, 1.0), 1800, 2600) * (0.5 + 0.5 * np.sin(2 * np.pi * 2 * tt / L))
+save("mission_drone.ogg", dr, 0.6)
+print("mission sounds written")

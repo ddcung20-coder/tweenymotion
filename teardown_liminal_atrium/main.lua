@@ -3,6 +3,8 @@
 --  2) working elevators (call buttons / floor buttons with E) with chime, motor hum, door and music sounds
 --  3) building ambience, flickering corridor lights with fluorescent buzz
 --  4) creak / thud sounds for the physical (grab-and-pull) doors
+--  5) curtains that open / close with E
+--  6) the "CHECK-OUT" mission: six key cards, and mannequins that only move while unseen
 
 ----------------------------------------------------------------------------------------------------
 -- tools
@@ -98,6 +100,13 @@ local function loadSounds()
 	snd.pool      = LoadLoop("MOD/snd/pool_ambience.ogg")
 	snd.spa       = LoadLoop("MOD/snd/spa_bubbles.ogg")
 	snd.song      = LoadLoop("MOD/snd/radio_song.ogg")
+	snd.curtain   = LoadSound("MOD/snd/curtain.ogg")
+	snd.deskbell  = LoadSound("MOD/snd/deskbell.ogg")
+	snd.keycard   = LoadSound("MOD/snd/keycard.ogg")
+	snd.step      = LoadSound("MOD/snd/mq_step.ogg")
+	snd.caught    = LoadSound("MOD/snd/caught.ogg")
+	snd.checkout  = LoadSound("MOD/snd/checkout.ogg")
+	snd.drone     = LoadLoop("MOD/snd/mission_drone.ogg")
 end
 
 local function dist(a, b)
@@ -297,7 +306,7 @@ end
 local function elevTick(dt)
 	if InputPressed("interact") then
 		local s = GetPlayerInteractShape()
-		if s ~= 0 then
+		if s ~= 0 and not interactHandled then
 			if IsShapeBroken(s) then
 				-- a smashed button does nothing
 			elseif HasTag(s, "elevbtn") then
@@ -480,6 +489,410 @@ local function spotsTick(cam)
 end
 
 ----------------------------------------------------------------------------------------------------
+-- curtains: two panels per window, E on either panel opens / closes both
+--  "curtain" bodies   tags: cid sx sz (slide offset when open) startopen
+----------------------------------------------------------------------------------------------------
+local curtainGroups = {}
+local curtainByShape = {}
+
+local function curtainLabel(g)
+	return g.target > 0.5 and "Close curtains" or "Open curtains"
+end
+
+local function curtainsInit()
+	local bodies = FindBodies("curtain", true)
+	for i = 1, #bodies do
+		local b = bodies[i]
+		local cid = GetTagValue(b, "cid")
+		local g = curtainGroups[cid]
+		if not g then
+			g = { panels = {}, amount = 0, target = 0 }
+			if HasTag(b, "startopen") then g.amount, g.target = 1, 1 end
+			curtainGroups[cid] = g
+		end
+		local p = { body = b, t0 = GetBodyTransform(b), slide = Vec(tagNum(b, "sx", 0), 0, tagNum(b, "sz", 0)) }
+		p.shapes = GetBodyShapes(b)
+		g.panels[#g.panels + 1] = p
+		for j = 1, #p.shapes do curtainByShape[p.shapes[j]] = g end
+	end
+	for _, g in pairs(curtainGroups) do
+		for i = 1, #g.panels do
+			local p = g.panels[i]
+			SetBodyTransform(p.body, Transform(VecAdd(p.t0.pos, VecScale(p.slide, g.amount)), p.t0.rot))
+			for j = 1, #p.shapes do SetTag(p.shapes[j], "interact", curtainLabel(g)) end
+		end
+	end
+end
+
+local function panelBroken(p)
+	if not IsHandleValid(p.body) then return true end
+	for j = 1, #p.shapes do
+		if not IsHandleValid(p.shapes[j]) or IsShapeBroken(p.shapes[j]) then return true end
+	end
+	return false
+end
+
+-- returns true when the pressed shape was a curtain
+local function curtainsInteract(s)
+	local g = curtainByShape[s]
+	if not g then return false end
+	g.target = 1 - g.target
+	g.moving = true
+	local p0 = g.panels[1]
+	PlaySound(snd.curtain, GetBodyTransform(p0.body).pos, 0.7)
+	for i = 1, #g.panels do
+		for j = 1, #g.panels[i].shapes do
+			if IsHandleValid(g.panels[i].shapes[j]) then SetTag(g.panels[i].shapes[j], "interact", curtainLabel(g)) end
+		end
+	end
+	return true
+end
+
+local function curtainsTick(dt)
+	for _, g in pairs(curtainGroups) do
+		if g.moving then
+			local step = dt * 1.6
+			if g.amount < g.target then g.amount = math.min(g.target, g.amount + step)
+			else g.amount = math.max(g.target, g.amount - step) end
+			if g.amount == g.target then g.moving = false end
+			local e = g.amount * g.amount * (3 - 2 * g.amount)          -- ease in / out
+			for i = 1, #g.panels do
+				local p = g.panels[i]
+				if not panelBroken(p) then    -- a shot-up panel stays where it is
+					SetBodyTransform(p.body, Transform(VecAdd(p.t0.pos, VecScale(p.slide, e)), p.t0.rot))
+				end
+			end
+		end
+	end
+end
+
+----------------------------------------------------------------------------------------------------
+-- mission "CHECK-OUT"
+--  ring the front-desk bell -> six key cards appear, one on a room desk on every floor.
+--  the mannequins in the corridors only move while nobody is looking at them.
+--  bring all six back to the desk and ring again to check out. if one reaches you, you never left.
+--  "deskbell" body, "keycard" bodies (floor=), "mannequin" bodies (seg= fx= fz=), "missionstart" location
+----------------------------------------------------------------------------------------------------
+local M = { state = "idle", keys = 0, t = 0, msg = nil, msgT = 0, found = {} }
+LIMINAL_MISSION = M          -- (read by the offline tests)
+local bell = { shapes = {} }
+local cards = {}
+local mqs = {}
+local startT = nil
+local HIDE = Vec(0, -500, 0)
+local MQ_SPEED = 2.4
+local MQ_REACH = 1.3
+
+local function say(text, sec)
+	M.msg, M.msgT = text, sec or 5
+end
+
+local function segNums(s)
+	local out = {}
+	for v in string.gmatch(s or "", "[^,]+") do out[#out + 1] = tonumber(v) end
+	return out
+end
+
+local function heading(x, z)
+	return math.deg(math.atan2(x, z))
+end
+
+local function cardsHide()
+	for i = 1, #cards do
+		local c = cards[i]
+		c.taken = false
+		if IsHandleValid(c.body) then
+			SetBodyTransform(c.body, Transform(VecAdd(c.t0.pos, HIDE), c.t0.rot))
+			for j = 1, #c.shapes do
+				if IsHandleValid(c.shapes[j]) then RemoveTag(c.shapes[j], "interact") end
+			end
+		end
+	end
+end
+
+local function cardsShow()
+	for i = 1, #cards do
+		local c = cards[i]
+		c.taken = false
+		if IsHandleValid(c.body) then
+			SetBodyTransform(c.body, c.t0)
+			for j = 1, #c.shapes do
+				if IsHandleValid(c.shapes[j]) then SetTag(c.shapes[j], "interact", "Take key card") end
+			end
+		end
+	end
+end
+
+local function mqReset()
+	for i = 1, #mqs do
+		local m = mqs[i]
+		if not m.dead and IsHandleValid(m.body) then
+			SetBodyDynamic(m.body, false)
+			SetBodyVelocity(m.body, Vec(0, 0, 0))
+			SetBodyAngularVelocity(m.body, Vec(0, 0, 0))
+			SetBodyTransform(m.body, m.t0)
+			m.pos = VecCopy(m.t0.pos)
+		end
+		m.stepT = 0
+	end
+end
+
+local function missionInit()
+	local bb = FindBody("deskbell", true)
+	if bb ~= 0 then
+		bell.body = bb
+		bell.shapes = GetBodyShapes(bb)
+		for j = 1, #bell.shapes do SetTag(bell.shapes[j], "interact", "Ring the bell") end
+	end
+	local loc = FindLocation("missionstart", true)
+	if loc ~= 0 then startT = GetLocationTransform(loc) end
+	local cb = FindBodies("keycard", true)
+	for i = 1, #cb do
+		cards[#cards + 1] = { body = cb[i], t0 = GetBodyTransform(cb[i]), shapes = GetBodyShapes(cb[i]),
+			floor = tagNum(cb[i], "floor", i) }
+	end
+	cardsHide()
+	local mb = FindBodies("mannequin", true)
+	for i = 1, #mb do
+		local b = mb[i]
+		local s = segNums(GetTagValue(b, "seg"))
+		local shapes = GetBodyShapes(b)
+		local count = 0
+		for j = 1, #shapes do count = count + GetShapeVoxelCount(shapes[j]) end
+		local t0 = GetBodyTransform(b)
+		mqs[#mqs + 1] = { body = b, shapes = shapes, voxels = count, t0 = t0, pos = VecCopy(t0.pos),
+			a = Vec(s[1] or t0.pos[1], t0.pos[2], s[2] or t0.pos[3]), b = Vec(s[3] or t0.pos[1], t0.pos[2], s[4] or t0.pos[3]),
+			h0 = heading(tagNum(b, "fx", 0), tagNum(b, "fz", -1)), stepT = 0 }
+	end
+end
+
+local function mqBroken(m)
+	if m.dead then return true end
+	if not IsHandleValid(m.body) then return true end
+	local count = 0
+	for j = 1, #m.shapes do
+		if not IsHandleValid(m.shapes[j]) then return true end
+		if IsShapeBroken(m.shapes[j]) then return true end
+		count = count + GetShapeVoxelCount(m.shapes[j])
+	end
+	return count < m.voxels * 0.92
+end
+
+-- the mannequin collapses into a normal physics object
+local function mqTopple(m, push)
+	if not IsHandleValid(m.body) then return end
+	SetBodyDynamic(m.body, true)
+	local t = GetBodyTransform(m.body)
+	local dir = push or Vec(math.random() - 0.5, 0, math.random() - 0.5)
+	ApplyBodyImpulse(m.body, VecAdd(t.pos, Vec(0, 1.6, 0)), VecScale(VecNormalize(dir), GetBodyMass(m.body) * 1.2))
+end
+
+local function closestOnSeg(a, b, p)
+	local ab = VecSub(b, a)
+	local l2 = VecDot(ab, ab)
+	local t = 0
+	if l2 > 0 then t = VecDot(VecSub(Vec(p[1], a[2], p[3]), a), ab) / l2 end
+	t = math.max(0, math.min(1, t))
+	return VecAdd(a, VecScale(ab, t))
+end
+
+-- is the mannequin visible from the camera (inside the view cone and not hidden behind anything)?
+local function mqSeen(m, ct)
+	local fwd = TransformToParentVec(ct, Vec(0, 0, -1))
+	for _, hgt in ipairs({ 1.6, 1.0, 0.4 }) do
+		local p = VecAdd(m.pos, Vec(0, hgt, 0))
+		local d = VecSub(p, ct.pos)
+		local len = VecLength(d)
+		if len < 0.01 then return true end
+		local dir = VecScale(d, 1 / len)
+		if VecDot(dir, fwd) > 0.5 then
+			QueryRejectBody(m.body)
+			local hit = QueryRaycast(ct.pos, dir, len - 0.15)
+			if not hit then return true end
+		end
+	end
+	return false
+end
+
+local function caught()
+	M.state = "caught"
+	M.t = 0
+	PlaySound(snd.caught, GetCameraTransform().pos, 1.0)
+end
+
+local function missionStart()
+	M.state = "active"
+	M.keys = 0
+	M.found = {}
+	M.time = 0
+	cardsShow()
+	mqReset()
+	say("CHECK-OUT\nYour six key cards are somewhere upstairs, one on every floor.\nBring them back and ring the bell.\nDo not let them reach you.", 9)
+end
+
+local function missionInteract(s)
+	for j = 1, #bell.shapes do
+		if s == bell.shapes[j] then
+			PlaySound(snd.deskbell, GetShapeWorldTransform(s).pos, 1.0)
+			if M.state == "idle" or M.state == "won" then
+				missionStart()
+			elseif M.state == "active" then
+				if M.keys >= #cards then
+					M.state = "won"
+					M.t = 0
+					PlaySound(snd.checkout, GetCameraTransform().pos, 0.9)
+					local cam = GetCameraTransform().pos
+					for i = 1, #mqs do
+						if not mqs[i].dead then mqTopple(mqs[i], VecSub(mqs[i].pos, cam)) end
+					end
+					say("CHECKED OUT\nThank you for staying with us.", 10)
+				else
+					say("You still have " .. (#cards - M.keys) .. " key card" .. ((#cards - M.keys) == 1 and "" or "s") .. " to find.", 4)
+				end
+			end
+			return true
+		end
+	end
+	if M.state ~= "active" then return false end
+	for i = 1, #cards do
+		local c = cards[i]
+		for j = 1, #c.shapes do
+			if s == c.shapes[j] and not c.taken then
+				c.taken = true
+				M.keys = M.keys + 1
+				M.found[c.floor] = true
+				PlaySound(snd.keycard, GetShapeWorldTransform(s).pos, 0.9)
+				SetBodyTransform(c.body, Transform(VecAdd(c.t0.pos, HIDE), c.t0.rot))
+				for k = 1, #c.shapes do
+					if IsHandleValid(c.shapes[k]) then RemoveTag(c.shapes[k], "interact") end
+				end
+				if M.keys >= #cards then
+					say("All key cards found.\nReturn to the front desk and ring the bell.", 6)
+				else
+					say("Key card " .. M.keys .. " / " .. #cards, 2.5)
+				end
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function missionTick(dt)
+	if M.msgT > 0 then M.msgT = M.msgT - dt end
+	-- shot mannequins stop for good (and fall over), mission or not
+	for i = 1, #mqs do
+		local m = mqs[i]
+		if not m.dead and mqBroken(m) then
+			m.dead = true
+			if IsHandleValid(m.body) and not IsBodyDynamic(m.body) then mqTopple(m) end
+		end
+	end
+	if M.state == "active" then
+		M.time = M.time + dt
+		PlayLoop(snd.drone, GetCameraTransform().pos, 0.35)
+		local ct = GetCameraTransform()
+		local pt = GetPlayerTransform().pos
+		for i = 1, #mqs do
+			local m = mqs[i]
+			if not m.dead then
+				local dy = math.abs(pt[2] - m.pos[2])
+				if dy < 1.6 then
+					local goal = closestOnSeg(m.a, m.b, pt)
+					local flat = Vec(pt[1] - m.pos[1], 0, pt[3] - m.pos[3])
+					if VecLength(flat) < MQ_REACH then
+						caught()
+						return
+					end
+					if VecLength(VecSub(goal, pt)) < 14 and not mqSeen(m, ct) then
+						local to = VecSub(goal, m.pos)
+						local d = VecLength(to)
+						if d > 0.05 then
+							local step = math.min(d, MQ_SPEED * dt)
+							m.pos = VecAdd(m.pos, VecScale(to, step / d))
+							m.stepT = m.stepT - dt
+							if m.stepT <= 0 then
+								m.stepT = 0.42
+								PlaySound(snd.step, m.pos, 0.45)
+							end
+						end
+						local yaw = heading(flat[1], flat[3]) - m.h0
+						SetBodyTransform(m.body, Transform(m.pos, QuatEuler(0, yaw, 0)))
+					end
+				end
+			end
+		end
+	elseif M.state == "caught" then
+		M.t = M.t + dt
+		if M.t > 1.2 and not M.moved then
+			M.moved = true
+			if startT then SetPlayerTransform(startT) end
+			cardsHide()
+			mqReset()
+			M.keys = 0
+			M.found = {}
+		end
+		if M.t > 4.0 then
+			M.state = "idle"
+			M.moved = false
+			say("Ring the bell to try again.", 5)
+		end
+	elseif M.state == "won" then
+		M.t = M.t + dt
+	end
+end
+
+local function drawMission()
+	UiPush()
+	if M.state == "active" then
+		UiPush()
+			UiAlign("center top")
+			UiTranslate(UiCenter(), 18)
+			UiColor(0, 0, 0, 0.55)
+			UiRect(420, 64)
+			UiTranslate(0, 8)
+			UiFont("bold.ttf", 24)
+			UiColor(1, 0.85, 0.55, 1)
+			UiText("KEY CARDS  " .. M.keys .. " / " .. #cards)
+			UiTranslate(0, 30)
+			UiFont("regular.ttf", 18)
+			local left = {}
+			for i = 1, #cards do
+				if not cards[i].taken then left[#left + 1] = tostring(cards[i].floor) end
+			end
+			UiColor(0.85, 0.8, 1, 0.9)
+			if #left > 0 then
+				UiText("floors left: " .. table.concat(left, "  ") .. "     " .. string.format("%d:%02d", math.floor(M.time / 60), math.floor(M.time % 60)))
+			else
+				UiText("return to the front desk")
+			end
+		UiPop()
+	end
+	if M.state == "caught" then
+		local a = math.min(1, M.t / 0.6)
+		if M.t > 3.2 then a = math.max(0, 1 - (M.t - 3.2) / 0.8) end
+		UiColor(0, 0, 0, a)
+		UiRect(UiWidth(), UiHeight())
+		UiAlign("center middle")
+		UiTranslate(UiCenter(), UiMiddle())
+		UiFont("bold.ttf", 54)
+		UiColor(0.85, 0.15, 0.2, a)
+		UiText("YOU NEVER LEFT")
+	end
+	if M.msg and M.msgT > 0 then
+		UiPush()
+			UiAlign("center middle")
+			UiTranslate(UiCenter(), UiHeight() * 0.72)
+			UiFont("regular.ttf", 26)
+			UiColor(1, 0.95, 0.85, math.min(1, M.msgT))
+			UiTextShadow(0, 0, 0, 0.8, 2)
+			UiText(M.msg)
+		UiPop()
+	end
+	UiPop()
+end
+
+----------------------------------------------------------------------------------------------------
 -- the map's own spawn menu (N key, or "Liminal Spawn" in the pause menu)
 ----------------------------------------------------------------------------------------------------
 local SPAWN_ITEMS = {
@@ -535,6 +948,7 @@ local function drawAmmoDebug()
 end
 
 function draw()
+	drawMission()
 	if ammoDebug then drawAmmoDebug() end
 	if not menuOpen then return end
 	UiMakeInteractive()
@@ -570,6 +984,7 @@ end
 local toolTimer = 0
 local ammoTimer = 0
 ammoDebug = false
+interactHandled = false
 
 function init()
 	SetBool("level.sandbox", true)          -- sandbox level (spawn menu etc.)
@@ -580,6 +995,9 @@ function init()
 	elevInit()
 	flickerInit()
 	spotsInit()
+	curtainsInit()
+	missionInit()
+	say("Front desk: ring the bell to check out.", 7)
 end
 
 function tick(dt)
@@ -599,6 +1017,15 @@ function tick(dt)
 		if a == nil or a < 200 then setAmmo(held, 999) end
 	end
 	if InputPressed("k") then ammoDebug = not ammoDebug end
+	interactHandled = false
+	if InputPressed("interact") then
+		local s = GetPlayerInteractShape()
+		if s ~= 0 then
+			interactHandled = curtainsInteract(s) or missionInteract(s)
+		end
+	end
+	curtainsTick(dt)
+	missionTick(dt)
 	local cam = GetCameraTransform().pos
 	PlayLoop(snd.ambience, cam, 0.3)
 	doorsTick(cam)

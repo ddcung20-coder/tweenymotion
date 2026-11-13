@@ -276,16 +276,75 @@ for e in ns["ELEVATORS"]:
     cab += int((FULL[gx:gx + sx, lo:hi, gz:gz + sz] > 0).sum())
 report("elevator cabs travel floor 1-6 without touching anything", cab == 0, f"{cab} voxels in the way")
 
+# 6b. mission + curtains (separate static bodies moved by main.lua)
+def body_hits(arr, gmin, dx=0, dz=0, world=FULL):
+    gx, gy, gz = gmin; sx, sy, sz = arr.shape
+    gx += dx; gz += dz
+    reg = world[gx:gx + sx, gy:gy + sy, gz:gz + sz]
+    return int(((reg > 0) & (arr > 0)).sum())
+door_occ = set()
+for d in ns["DOORS"]:
+    if d["kind"] != "swing": continue
+    for frac in (0.0, 0.25, 0.5, 0.85):
+        door_occ |= door_cells(d, frac)
+def cells_of(arr, gmin, dx=0, dz=0):
+    X, Y, Z = np.nonzero(arr); gx, gy, gz = gmin
+    return set(zip((X + gx + dx).tolist(), (Y + gy).tolist(), (Z + gz + dz).tolist()))
+cur_bad, cur_cells = [], {}
+for i, c in enumerate(ns["CURTAINS"]):
+    for (dx, dz) in ((0, 0), c["slide"]):
+        if body_hits(c["arr"], c["gmin"], dx, dz):
+            cur_bad.append((i, (dx, dz)))
+    for cc in cells_of(c["arr"], c["gmin"]) | cells_of(c["arr"], c["gmin"], *c["slide"]):
+        if cc in cur_cells and cur_cells[cc] // 2 != i // 2:
+            cur_bad.append((i, "overlaps curtain", cur_cells[cc])); break
+        cur_cells[cc] = i
+groups = collections.Counter(c["cid"] for c in ns["CURTAINS"])
+report(f"all {len(ns['CURTAINS'])} curtain panels slide open/shut without hitting anything", not cur_bad, str(cur_bad[:6]))
+report("every window has exactly two curtain panels", set(groups.values()) == {2} and len(groups) == len(ns["room_log"]))
+kc_bad = []
+for i, k_ in enumerate(ns["KEYCARDS"]):
+    arr, (gx, gy, gz) = k_["arr"], k_["gmin"]
+    under = FULL[gx:gx + arr.shape[0], gy - 1, gz:gz + arr.shape[2]]
+    if body_hits(arr, k_["gmin"]) or not (under[arr[:, 0, :] > 0] > 0).all():
+        kc_bad.append(i)
+report("6 key cards (one per floor) lie clear on a desk", not kc_bad and sorted(k_["floor"] for k_ in ns["KEYCARDS"]) == list(range(FLOORS)), str(kc_bad))
+bell = ns["BELL"]; bx_, by_, bz_ = bell["gmin"]
+report("front-desk bell sits clear on the desk", body_hits(bell["arr"], bell["gmin"]) == 0 and FULL[bx_, by_ - 1, bz_] > 0)
+ms = ns["MISSION_START"]
+report("mission start / respawn point is walkable and reachable", reachable(int(ms[0]), int(ms[1]), int(ms[2]), r=3, dy=6))
+mq_bad = []
+for i, m in enumerate(ns["MANNEQUINS"]):
+    (ax_, az_), (bx2, bz2) = m["seg"]
+    arr, (gx, gy, gz) = m["arr"], m["gmin"]
+    sx, sy, sz = arr.shape
+    # the body is moved (and turned) along the segment: test a 6x6 footprint column around each point
+    nstep = int(max(abs(bx2 - ax_), abs(bz2 - az_))) + 1
+    hit = 0
+    for t in np.linspace(0, 1, nstep):
+        px_, pz_ = ax_ + (bx2 - ax_) * t, az_ + (bz2 - az_) * t
+        x0, z0 = int(math.floor(px_ - 2.5)), int(math.floor(pz_ - 2.5))
+        hit += int((FULL[x0:x0 + 5, gy:gy + sy, z0:z0 + 5] > 0).sum())
+        if any((x, y, z) in door_occ for x in range(x0, x0 + 5) for z in range(z0, z0 + 5) for y in (gy + 5, gy + 15)):
+            hit += 1
+    for (px_, pz_) in ((ax_, az_), (bx2, bz2)):
+        if not reachable(int(px_), gy, int(pz_), r=2, dy=6):
+            hit += 1000
+    if hit:
+        mq_bad.append((i, m["floor"], hit))
+report(f"all {len(ns['MANNEQUINS'])} mission mannequins have a clear corridor path", not mq_bad, str(mq_bad[:6]))
+report("two mission mannequins per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
+
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
-LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg"}
+LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "mission_drone.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)
     peak = float(np.abs(x).max())
     ok = sr == 44100 and 0.05 < peak <= 1.0
     detail = f"{len(x) / sr:.1f}s peak {peak:.2f}"
     if f in LOOPS:
-        jump = abs(x[0] - x[-1]); step = np.abs(np.diff(x)).max() * 1.15 + 1e-3   # seam no bigger than the signal's own steps
+        jump = abs(x[0] - x[-1]); step = max(np.abs(np.diff(x)).max() * 1.15 + 1e-3, 0.012)   # seam no bigger than the signal's own steps (Vorbis edge error ~0.005)
         ok = ok and jump < step
         detail += f" loop-seam {jump:.3f}"
     report(f"sound {f}", ok, detail)

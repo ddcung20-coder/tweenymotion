@@ -52,6 +52,17 @@ LAWN       = P(22, (58, 84, 44));  LAWN2 = P(23, (66, 92, 48))
 BATHMAT    = P(24, (200, 200, 195))
 # dirt / rock
 SOIL       = P(25, (70, 52, 38))
+# per-floor corridor themes (dirt range: soft like carpet / plaster)
+CARP_G  = P(26, (52, 86, 62));  CARP_G2  = P(27, (45, 77, 55))
+CARP_BL = P(28, (40, 58, 100)); CARP_BL2 = P(29, (35, 51, 89))
+CARP_DK = P(30, (50, 46, 50));  CARP_DK2 = P(31, (43, 39, 43))
+CARP_PK = P(32, (128, 74, 96)); CARP_PK2 = P(33, (115, 65, 86))
+CARP_OR = P(34, (152, 94, 44)); CARP_OR2 = P(35, (137, 83, 39))
+WALL_GREEN  = P(36, (146, 176, 134))
+WALL_BLUE   = P(37, (132, 156, 196))
+WALL_GREY   = P(38, (112, 108, 116))
+WALL_MAUVE  = P(39, (192, 150, 170))
+WALL_ORANGE = P(40, (214, 166, 112))
 BEDROCK    = P(41, (80, 78, 75))
 # wood (57-72)
 WOOD_DARK  = P(57, (88, 60, 42));  WOOD_DARK2 = P(58, (80, 54, 38))
@@ -247,6 +258,26 @@ def frame_shape(fr, u0, u1, y0, y1, v0, v1, style):
     return arr, (x0, y0, z0)
 
 ELEVATORS = []     # dynamic cars driven by MOD/elevator.lua
+CURTAINS = []      # curtain panels (static bodies slid open / shut by main.lua)
+KEYCARDS = []      # mission key cards (one per floor)
+MANNEQUINS = []    # mission mannequins (static bodies moved by main.lua along a corridor)
+MQ_DECOR = []      # decorative mannequins stamped into the world after the rooms
+MRNG = random.Random(4242)   # separate RNG: the new features never shift the rest of the map
+
+def mannequin_model():
+    """5 wide (a) x 18 tall (b) x 3 deep (c); front is c = 0. Faceless shop-window dummy."""
+    m = np.zeros((5, 18, 3), np.uint8)
+    for a in (1, 3):
+        m[a, 1:9, 1] = SHEET                     # legs
+        m[a, 0, 0:3] = SHEET                     # feet
+    m[1:4, 8:10, 1] = SHEET                      # hips
+    m[1:4, 10:15, 0:3] = SHEET                   # torso
+    m[0:5, 14, 1] = SHEET                        # shoulders
+    m[0, 8:14, 1] = SHEET; m[4, 8:14, 1] = SHEET # arms
+    m[2, 15, 1] = SHEET                          # neck
+    m[1:4, 16:18, 0:3] = PILLOW                  # head
+    return m
+MQ_MODEL = mannequin_model()
 CALLS = []         # landing call buttons (static shapes)
 
 def add_door(fr, u0, u1, y0, y1, v0, v1, style, hinge=None, open_dir=None, slide=None, start_open=False, tag="hoteldoor",
@@ -614,28 +645,28 @@ def window_in_facade(fr, bw, y):
     return u0
 
 def curtains(fr, u0, y, state):
-    cu0, cu1 = u0 - 4, u0 + WIN_W + 4
+    """two curtain panels per window: separate static bodies that main.lua slides open / shut (E)."""
+    cu0, cu1 = u0 - 2, u0 + WIN_W + 2
+    mid = (cu0 + cu1) // 2
     top, bot = y + SILL + WIN_H + 3, y + SILL - 3
-    fr.box(cu0 - 1, cu1 + 1, top, top + 1, 1, 3, BRASS)
-    fr.box(cu0 - 2, cu0 - 1, top - 1, top + 2, 1, 2, BRASS)
-    fr.box(cu1 + 1, cu1 + 2, top - 1, top + 2, 1, 2, BRASS)
+    fr.box(cu0 - 6, cu1 + 6, top, top + 1, 1, 3, BRASS)          # rod (long enough for the open panels)
+    fr.box(cu0 - 6, cu0 - 5, top, top + 1, 0, 3, BRASS)          # end brackets to the window wall
+    fr.box(cu1 + 5, cu1 + 6, top, top + 1, 0, 3, BRASS)
     if state == "dark_blinds":
         for yy in range(y + SILL + 1, y + SILL + WIN_H - 1, 2):
             fr.box(u0 - 1, u0 + WIN_W + 1, yy, yy + 1, 0, 1, SWITCH)
-        spans = [(cu0, cu0 + 5), (cu1 - 5, cu1)]
-        a, b = CURT_DARK, CURT_DARK2
-    else:
-        lit = state.startswith("lit")
-        a, b = (CURT_LIT, CURT_LIT2) if lit else (CURT_DARK, CURT_DARK2)
-        spans = [(cu0, cu1)] if state.endswith("closed") else [(cu0, cu0 + 6), (cu1 - 6, cu1)]
-    for s0, s1 in spans:
-        fr.box(s0, s1, bot, top + 1, 2, 3, b)                       # continuous back layer (holds the folds)
-        for u in range(s0, s1):
-            if (u // 2) % 2 == 0:
-                fr.box(u, u + 1, bot, top, 1, 2, a)                 # front folds
-        # tie-back sag at the bottom of open panels
-        if len(spans) == 2:
-            fr.box(s0, s1, bot, bot + 1, 1, 2, 0)
+    lit = state.startswith("lit")
+    ca, cb = (CURT_LIT, CURT_LIT2) if lit else (CURT_DARK, CURT_DARK2)
+    start_open = not state.endswith("closed")
+    cid = len(CURTAINS) // 2
+    for (s0, s1, du) in ((cu0, mid, -6), (mid, cu1, 6)):
+        def style(a_, b_, c_, A, B, C, s0=s0):
+            if c_ == 1:
+                return cb                                          # back layer (continuous)
+            return ca if ((s0 + a_) // 2) % 2 == 0 else 0          # front folds
+        arr, gmin = frame_shape(fr, s0, s1, bot, top, 1, 3, style)
+        slide = (fr.ux * du, fr.uz * du)
+        CURTAINS.append(dict(arr=arr, gmin=gmin, slide=slide, start_open=start_open, cid=cid))
 
 def wall_art(fr, u_face, y0, v0, w, h, along_v=True, plane=None):
     """picture on a wall plane. u_face: the wall layer (u) to hang on, v0..v0+w along v."""
@@ -646,7 +677,7 @@ def wall_art(fr, u_face, y0, v0, w, h, along_v=True, plane=None):
             t = ((yy - y0) * 3 + (vv - v0) * 2 + rng.randint(0, 2)) // max(1, (h + w) // 3)
             fr.box(u_face, u_face + 1, yy, yy + 1, vv, vv + 1, cols[t % 3])
 
-def furnish_room(fr, bw, k, state, twin, blanket, carpet):
+def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False):
     y = fy(k)
     U0, U1 = T_PART, bw
     lit = state.startswith("lit")
@@ -717,6 +748,10 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
     if state == "tv":
         fr.light(U0 + 3, y + 14, 21.5, (0.45, 0.6, 1.0), 1.0, 0.2)
     fr.box(U0 + 2, U0 + 4, y + 8, y + 9, 14, 17, CERAMIC)                     # kettle tray
+    if keycard:                                                               # mission key card on the desk
+        arr, gmin = frame_shape(fr, U0 + 3, U0 + 6, y + 8, y + 9, 26, 28,
+                                lambda a_, b_, c_, A, B, C: DARK_METAL if a_ == 1 else STREET_LMP)
+        KEYCARDS.append(dict(arr=arr, gmin=gmin, floor=k))
     fr.box(U0 + 2, U0 + 3, y + 9, y + 11, 15, 16, STEEL)
     fr.box(U0 + 3, U0 + 5, y, y + 4, 14, 16, DARK_METAL)                      # trash bin
     fr.box(U0 + 3, U0 + 5, y + 1, y + 4, 14, 16, 0)
@@ -823,6 +858,12 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
     if lit:
         fr.light(cu, y + FH - SLAB_T - 2, 20, (1.0, 0.82, 0.55), 2.2, 0.3)
 
+KEYCARD_ROOMS = {}
+_cands = [(n_, b_, k_) for (n_, b_, f_, bw_) in room_frames() for k_ in range(FLOORS) if not (k_ == 0 and n_ == "S" and b_ in (1, 2))]
+for k_ in range(FLOORS):
+    opts = [c for c in _cands if c[2] == k_]
+    KEYCARD_ROOMS[MRNG.choice(opts)] = True
+
 def build_rooms():
     for name, b, fr, bw in room_frames():
         for k in range(FLOORS):
@@ -850,8 +891,11 @@ def build_rooms():
             blanket = rng.choice([BLANKET_A, BLANKET_A, BLANKET_B, BLANKET_C])
             carpet = rng.choice([CARP_A, CARP_A, CARP_B])
             ff = fr.mirrored(T_PART, bw) if rng.random() < 0.5 else fr
-            furnish_room(ff, bw, k, state, twin, blanket, carpet)
+            furnish_room(ff, bw, k, state, twin, blanket, carpet, keycard=(name, b, k) in KEYCARD_ROOMS)
             room_log.append((name, b, k, state))
+            # a few shop-window mannequins standing at open windows, looking out over the atrium
+            if name in "WE" and state in ("lit_open", "dark_open", "tv") and MRNG.random() < 0.15:
+                MQ_DECOR.append((fr, bw // 2 - 2, y, 4))
 
 # ============================================================================
 # 5. Corridors (ring between the room partition and the exterior wall)
@@ -867,20 +911,70 @@ COR_PAINTABLE = [COR_WALL, ROOM_WALL, STAIR_WALL, EXT_WALL]
 SEAMS_X = [ax0 + 2 * SHORT_BAY_W]                     # shape seams (see export)
 SEAMS_Z = [az0 + 2 * LONG_BAY_W, az0 + 6 * LONG_BAY_W, AZ0 - 6]
 
+THEMES = [  # one per floor: carpet, carpet alt, pattern, wallpaper, wallpaper stripe, motif
+    dict(c=COR_CARP, c2=COR_CARP2, p=COR_GOLD,   w=COR_WALL,    st=COR_STRIPE,  motif="medallion"),
+    dict(c=CARP_OR,  c2=CARP_OR2,  p=COR_GOLD,   w=WALL_ORANGE, st=COR_STRIPE,  motif="zigzag"),
+    dict(c=CARP_G,   c2=CARP_G2,   p=COR_GOLD,   w=WALL_GREEN,  st=ROOM_WALL_B, motif="diamond"),
+    dict(c=CARP_BL,  c2=CARP_BL2,  p=PAINT_LINE, w=WALL_BLUE,   st=ATR_WALL2,   motif="stripes"),
+    dict(c=CARP_PK,  c2=CARP_PK2,  p=COR_GOLD,   w=WALL_MAUVE,  st=ROOM_WALL_C, motif="dots"),
+    dict(c=CARP_DK,  c2=CARP_DK2,  p=COR_CARP2,  w=WALL_GREY,   st=STAIR_WALL2, motif="plain"),
+]
+THEME_WALLS = [t_["w"] for t_ in THEMES] + [t_["st"] for t_ in THEMES]
+
+def corridor_art(fr, u, y, w=8, h=8):
+    """framed picture on the exterior wall face of a corridor (v = COR_W layer)."""
+    fr.box(u, u + w, y, y + h, COR_W - 1, COR_W, PICFRAME)
+    cols = MRNG.choice([(ART1, ART2, CEIL), (LEAF2, ART1, CEIL), (BLANKET_B, ART2, BLANKET_A), (WALL_BLUE, ART1, CEIL)])
+    for yy in range(y + 1, y + h - 1):
+        for uu in range(u + 1, u + w - 1):
+            band = (yy - y) * 2 // max(1, h - 2) + ((uu - u) * 3 // w == 1)
+            fr.box(uu, uu + 1, yy, yy + 1, COR_W - 1, COR_W, cols[band % 3])
+
+def corridor_bench(fr, u, y):
+    fr.box(u, u + 10, y + 3, y + 4, COR_W - 4, COR_W - 1, WOOD_MED)
+    fr.box(u, u + 10, y + 4, y + 8, COR_W - 2, COR_W - 1, WOOD_MED)
+    for uu in (u, u + 9):
+        fr.box(uu, uu + 1, y, y + 3, COR_W - 4, COR_W - 1, DARK_METAL)
+
+def corridor_plant(fr, u, y):
+    fr.box(u + 1, u + 6, y, y + 6, COR_W - 6, COR_W - 1, PLANTER)
+    x_, z_ = fr.pt(u + 3, COR_W - 4)
+    box(x_, x_ + 1, y + 6, y + 11, z_, z_ + 1, TRUNK)
+    leaf_blob(x_, y + 13, z_, 3, 71 + y, LEAF2 if (u // 7) % 2 else LEAF, anchor=(x_, y + 10, z_), squash=0.8, keep=0.3)
+
 def build_corridors():
     for name, fr, L in cor_frames:
         for k in range(FLOORS):
             y = fy(k)
-            # carpet runner: red field, gold border, repeating medallions
-            fr.box(0, L, y - 1, y, 0, COR_W, COR_CARP)
-            fr.box(0, L, y - 1, y, 2, 3, COR_GOLD)
-            fr.box(0, L, y - 1, y, COR_W - 3, COR_W - 2, COR_GOLD)
+            th = THEMES[k]
+            # ---- carpet: themed field + border + motif
+            fr.box(0, L, y - 1, y, 0, COR_W, th["c"])
+            fr.box(0, L, y - 1, y, 2, 3, th["p"])
+            fr.box(0, L, y - 1, y, COR_W - 3, COR_W - 2, th["p"])
             for u in range(6, L, 12):
-                for d in range(4):
-                    fr.box(u + d, u + d + 1, y - 1, y, 9 - d, 9 + d, COR_GOLD)
-                    fr.box(u + 7 - d, u + 8 - d, y - 1, y, 9 - d, 9 + d, COR_GOLD)
-                fr.box(u + 3, u + 5, y - 1, y, 8, 10, COR_CARP2)
-            # dropped ceiling + crown moulding + lamps + sprinklers
+                if th["motif"] == "medallion":
+                    for d in range(4):
+                        fr.box(u + d, u + d + 1, y - 1, y, 9 - d, 9 + d, th["p"])
+                        fr.box(u + 7 - d, u + 8 - d, y - 1, y, 9 - d, 9 + d, th["p"])
+                    fr.box(u + 3, u + 5, y - 1, y, 8, 10, th["c2"])
+                elif th["motif"] == "zigzag":
+                    for d in range(12):
+                        vv = 5 + (d if d < 6 else 11 - d)
+                        fr.box(u + d, u + d + 1, y - 1, y, vv, vv + 2, th["p"])
+                elif th["motif"] == "diamond":
+                    for d in range(5):
+                        fr.box(u + d, u + d + 1, y - 1, y, 9 - d, 9 + d + 1, th["c2"])
+                        fr.box(u + 9 - d, u + 10 - d, y - 1, y, 9 - d, 9 + d + 1, th["c2"])
+                    fr.box(u + 4, u + 6, y - 1, y, 8, 11, th["p"])
+                elif th["motif"] == "stripes":
+                    fr.box(u, u + 2, y - 1, y, 4, COR_W - 4, th["c2"])
+                    fr.box(u + 6, u + 7, y - 1, y, 4, COR_W - 4, th["p"])
+                elif th["motif"] == "dots":
+                    for vv in (6, 11):
+                        fr.box(u + (vv % 4), u + (vv % 4) + 2, y - 1, y, vv, vv + 2, th["p"])
+                else:
+                    fr.box(u, u + 1, y - 1, y, 3, COR_W - 3, th["c2"])
+            # ---- dropped ceiling + crown moulding + lamps + sprinklers
             fr.box(0, L, y + 24, y + 25, 0, COR_W, CEIL)
             for side in (-1, COR_W):
                 fr.paint(0, L, y + 23, y + 24, side, side + 1, CEIL, COR_PAINTABLE)
@@ -890,29 +984,39 @@ def build_corridors():
                 fr.box(u - 3, u + 3, y + 23, y + 24, 6, 7, BRASS); fr.box(u - 3, u + 3, y + 23, y + 24, 11, 12, BRASS)
             for u in range(0, L, 17):
                 fr.box(u, u + 1, y + 23, y + 24, 3, 4, CHROME)
+            flick_p = 0.6 if k == 5 else 0.18
             for u in range(51, L - 5, 68):          # aligned with a ceiling lamp
-                fr.light(u, y + 21, 9, (1.0, 0.86, 0.62), 2.0, 0.25, "flicker" if rng.random() < 0.18 else "")
-            # both walls: striped wallpaper above a wood wainscot with chair rail
+                fr.light(u, y + 21, 9, (1.0, 0.86, 0.62), 2.0, 0.25, "flicker" if rng.random() < flick_p else "")
+            # ---- both walls: themed wallpaper with stripes above a wood wainscot with chair rail
             for side in (-1, COR_W):
+                fr.paint(0, L, y + 10, y + 23, side, side + 1, th["w"], COR_PAINTABLE)
                 for u in range(0, L, 6):
-                    fr.paint(u, u + 3, y + 10, y + 23, side, side + 1, COR_STRIPE, COR_PAINTABLE)
-                fr.paint(0, L, y + 10, y + 23, side, side + 1, COR_WALL, [ROOM_WALL, EXT_WALL, STAIR_WALL])
-                fr.paint(0, L, y + 1, y + 9, side, side + 1, WAINS, COR_PAINTABLE + [COR_STRIPE])
+                    fr.paint(u, u + 3, y + 10, y + 23, side, side + 1, th["st"], [th["w"]])
+                fr.paint(0, L, y + 1, y + 9, side, side + 1, WAINS, COR_PAINTABLE + THEME_WALLS)
                 for u in range(0, L, 12):
                     fr.paint(u, u + 1, y + 1, y + 9, side, side + 1, WAINS2, [WAINS])
-                fr.paint(0, L, y + 9, y + 10, side, side + 1, CHAIR_RAIL, COR_PAINTABLE + [COR_STRIPE, WAINS])
-                fr.paint(0, L, y, y + 1, side, side + 1, WOOD_DARK, COR_PAINTABLE + [COR_STRIPE, WAINS, WAINS2])
+                fr.paint(0, L, y + 9, y + 10, side, side + 1, CHAIR_RAIL, COR_PAINTABLE + THEME_WALLS + [WAINS])
+                fr.paint(0, L, y, y + 1, side, side + 1, WOOD_DARK, COR_PAINTABLE + THEME_WALLS + [WAINS, WAINS2])
+            # ---- exterior-wall occupancy (so features never collide)
+            busy = np.zeros(L + 40, bool)
+            def mark(a_, b_):
+                busy[max(a_, 0):max(b_, 0)] = True
+            def free(a_, b_):
+                return a_ >= 20 and b_ <= L - 20 and not busy[a_:b_].any()
+            def doorway(u_):
+                xs_, zs_ = fr.pt(u_, 0)
+                return k == 0 and name in ("S", "N") and abs(xs_ - (ax0 + 2 * SHORT_BAY_W)) < 24
             # wall sconces on the exterior side (between the windows)
             for u in range(12, L - 6, 34):
                 xa_, za_ = fr.pt(u, 0); xb_, zb_ = fr.pt(u + 1, 0)
                 if any(min(xa_, xb_) < sx_ <= max(xa_, xb_) for sx_ in SEAMS_X) or \
                    any(min(za_, zb_) < sz_ <= max(za_, zb_) for sz_ in SEAMS_Z):
                     u += 3                                                         # keep it inside one shape
-                xs_, zs_ = fr.pt(u, 0)
-                if k == 0 and name in ("S", "N") and abs(xs_ - (ax0 + 2 * SHORT_BAY_W)) < 22:
+                if doorway(u):
                     continue                                                       # entrance / pool connector doorway
                 fr.box(u, u + 2, y + 14, y + 16, COR_W - 2, COR_W, BRASS)         # bracket under the shade
                 fr.box(u, u + 2, y + 16, y + 19, COR_W - 2, COR_W - 1, LAMPSHADE)
+                mark(u - 1, u + 3)
             # small exterior windows with stone lintel + sill
             for u in range(30, L - 20, 68):
                 fr.box(u, u + 8, y + 10, y + 22, COR_W, COR_W + T_EXT, 0)
@@ -920,15 +1024,114 @@ def build_corridors():
                 fr.box(u + 3, u + 5, y + 10, y + 22, COR_W + 2, COR_W + 3, FRAME)
                 fr.box(u - 1, u + 9, y + 9, y + 10, COR_W - 1, COR_W + T_EXT + 1, LINTEL)
                 fr.box(u - 1, u + 9, y + 22, y + 24, COR_W + 1, COR_W + T_EXT + 1, LINTEL)
+                mark(u - 2, u + 10)
             # fire extinguisher cabinet near each end
             for u in (24, L - 30):
                 fr.box(u, u + 5, y + 8, y + 18, COR_W, COR_W + 1, 0)
                 fr.box(u, u + 5, y + 8, y + 18, COR_W + 1, COR_W + 2, RED)
                 fr.box(u + 1, u + 4, y + 9, y + 17, COR_W, COR_W + 1, GLASS_DOOR)
                 fr.box(u + 2, u + 3, y + 9, y + 15, COR_W + 1, COR_W + 2, RED)
+                mark(u - 1, u + 6)
+            for u in range(0, L):
+                xs_, zs_ = fr.pt(u, COR_W - 4)
+                if doorway(u) or any(abs(xs_ - q) <= 6 for q in SEAMS_X) or any(abs(zs_ - q) <= 6 for q in SEAMS_Z):
+                    mark(u, u + 1)                                 # doorways + shape seams stay free
+            # ---- floor feature (one per floor, on its own side)
+            FEATURE_SIDE = {1: "E", 2: "W", 3: "N", 5: "W"}
+            def place(w_, target):
+                for off in range(0, L):
+                    for u_ in (target + off, target - off):
+                        if free(u_, u_ + w_):
+                            mark(u_ - 1, u_ + w_ + 1)
+                            return u_
+                return None
+            if FEATURE_SIDE.get(k) == name:
+                if k == 1:                                     # two vending machines
+                    u = place(20, L // 2)
+                    if u is not None:
+                        for i_, (body, panel) in enumerate(((DARK_METAL, TV_SCREEN), (RED, CEIL_LAMP))):
+                            uu = u + i_ * 10
+                            fr.box(uu, uu + 9, y, y + 20, COR_W - 6, COR_W, body)
+                            fr.box(uu + 1, uu + 6, y + 7, y + 18, COR_W - 7, COR_W - 6, panel)
+                            for r_ in range(4):
+                                for c_ in range(3):
+                                    fr.box(uu + 1 + c_ * 2, uu + 2 + c_ * 2, y + 8 + r_ * 3, y + 10 + r_ * 3, COR_W - 7, COR_W - 6,
+                                           (ART1, ART2, BLANKET_B, LEAF2)[(r_ + c_ + i_) % 4])
+                            fr.box(uu + 7, uu + 8, y + 9, y + 15, COR_W - 7, COR_W - 6, CHROME)   # coin / buttons
+                            fr.box(uu + 1, uu + 8, y + 2, y + 5, COR_W - 7, COR_W - 6, TV_BODY)   # pick-up slot
+                        fr.light(u + 10, y + 14, COR_W - 9, (0.6, 0.8, 1.0), 1.2, 0.3)
+                elif k == 2:                                   # payphone + bench
+                    u = place(6, L // 2)
+                    if u is not None:
+                        fr.box(u, u + 5, y + 8, y + 18, COR_W - 2, COR_W, DARK_METAL)
+                        fr.box(u + 1, u + 4, y + 14, y + 17, COR_W - 3, COR_W - 2, CHROME)    # keypad
+                        fr.box(u + 1, u + 2, y + 9, y + 14, COR_W - 3, COR_W - 2, TV_BODY)    # handset
+                        fr.box(u + 1, u + 4, y + 18, y + 20, COR_W - 3, COR_W, DARK_METAL)
+                elif k == 3:                                   # a door painted on the wall, with an EXIT sign
+                    u = place(12, L // 2)
+                    if u is not None:
+                        fr.box(u, u + 12, y, y + 23, COR_W - 1, COR_W, WOOD_DARK)
+                        fr.box(u + 1, u + 11, y, y + 22, COR_W - 1, COR_W, WOOD_DOOR)
+                        fr.box(u + 9, u + 10, y + 10, y + 12, COR_W - 2, COR_W - 1, BRASS)
+                        fr.box(u + 4, u + 8, y + 24, y + 26, COR_W - 1, COR_W, EXIT_SIGN)
+                elif k == 5:                                   # abandoned housekeeping cart + TV with static
+                    u = place(10, L // 3)
+                    if u is not None:
+                        fr.box(u, u + 9, y, y + 12, COR_W - 7, COR_W - 1, STEEL)
+                        fr.box(u + 1, u + 8, y + 2, y + 11, COR_W - 6, COR_W - 2, 0)
+                        fr.box(u + 1, u + 8, y + 4, y + 5, COR_W - 6, COR_W - 2, STEEL)
+                        fr.box(u + 2, u + 7, y + 5, y + 7, COR_W - 5, COR_W - 3, TOWEL)
+                        fr.box(u, u + 9, y + 12, y + 13, COR_W - 7, COR_W - 1, STEEL)
+                    u = place(8, 2 * L // 3)
+                    if u is not None:
+                        fr.box(u, u + 8, y, y + 7, COR_W - 6, COR_W - 1, STEEL)           # cart
+                        fr.box(u, u + 8, y + 7, y + 14, COR_W - 6, COR_W - 1, TV_BODY)    # old TV
+                        fr.box(u + 1, u + 7, y + 8, y + 13, COR_W - 7, COR_W - 6, TV_SCREEN)
+                        fr.light(u + 4, y + 10, COR_W - 9, (0.5, 0.6, 1.0), 0.8, 0.2)
+            if k == 4:                                         # mirrors at both corners of every side
+                for (ma, mb) in ((3, 12), (L - 12, L - 3)):
+                    if busy[ma - 1:mb + 1].any():
+                        continue
+                    mark(ma - 1, mb + 1)
+                    fr.box(ma, mb, y + 2, y + 22, COR_W - 1, COR_W, PICFRAME)
+                    fr.box(ma + 1, mb - 1, y + 3, y + 21, COR_W - 1, COR_W, MIRROR)
+            if k == 5 and name == "S":                         # a lone chair, turned to face the wall
+                cu_ = place(5, L // 2 + 30)
+                if cu_ is not None:
+                    fr.box(cu_, cu_ + 5, y + 4, y + 5, 12, 17, UPHOL2)
+                    fr.box(cu_, cu_ + 5, y + 5, y + 11, 12, 13, UPHOL2)
+                    for (lu, lv) in ((cu_, 12), (cu_ + 4, 12), (cu_, 16), (cu_ + 4, 16)):
+                        fr.box(lu, lu + 1, y, y + 4, lv, lv + 1, WOOD_DARK)
+            # ---- pictures, benches and plants along the exterior wall
+            n_ = 0
+            for target in range(60, L - 30, 68):
+                u = place(10, target)
+                if u is None:
+                    continue
+                corridor_art(fr, u + 1, y + 12)
+                if n_ % 2 == 0:
+                    corridor_bench(fr, u, y)
+                else:
+                    corridor_plant(fr, u + 2, y)
+                n_ += 1
 
 build_rooms()
 build_corridors()
+
+def stamp_mannequin(fr, u0, y, v0):
+    """mannequin standing at frame (u0.., v0..), facing -v (towards the window / lower v)."""
+    arr, gmin = frame_shape(fr, u0, u0 + 5, y, y + 18, v0, v0 + 3, lambda a_, b_, c_, A, B, C: MQ_MODEL[a_, b_, c_])
+    gx, gy, gz = gmin
+    reg = G[gx:gx + arr.shape[0], gy:gy + arr.shape[1], gz:gz + arr.shape[2]]
+    if ((reg > 0) & (arr > 0)).any():
+        return False
+    feet = arr[:, 0, :] > 0
+    if not (G[gx:gx + arr.shape[0], gy - 1, gz:gz + arr.shape[2]][feet] > 0).all():
+        return False
+    reg[arr > 0] = arr[arr > 0]
+    return True
+
+MQ_PLACED = sum(stamp_mannequin(fr_, u_, y_, v_) for (fr_, u_, y_, v_) in MQ_DECOR)
 
 # ============================================================================
 # 6. Ground floor lobby (south side, bays 1-2) + main entrance
@@ -970,7 +1173,8 @@ box(lx0 + 8, lx0 + 36, y, y + 11, lz0 + 14, lz0 + 20, WOOD_DARK)
 for xx in range(lx0 + 9, lx0 + 36, 4):
     box(xx, xx + 2, y + 2, y + 9, lz0 + 19, lz0 + 20, WOOD_MED)
 box(lx0 + 8, lx0 + 36, y + 11, y + 12, lz0 + 13, lz0 + 21, WOOD_LIGHT)
-box(lx0 + 12, lx0 + 14, y + 12, y + 14, lz0 + 16, lz0 + 18, BRASS)          # bell
+BELL = dict(arr=np.full((2, 2, 2), BRASS, np.uint8), gmin=(lx0 + 12, y + 12, lz0 + 16))   # front-desk bell (mission)
+MISSION_START = (lx0 + 24, y, lz0 + 28)
 box(lx0 + 26, lx0 + 31, y + 12, y + 16, lz0 + 15, lz0 + 17, TV_BODY)       # monitor
 box(lx0 + 27, lx0 + 30, y + 13, y + 15, lz0 + 17, lz0 + 18, TV_SCREEN)
 box(lx0 + 8, lx0 + 36, y + 8, y + 22, lz0 + 1, lz0 + 3, WOOD_DARK)
@@ -1546,6 +1750,57 @@ PROPS.append(("kickboard", cxN - 44, DY - 3, pz0 + 46, 20))
 PROPS.append(("kickboard", cxN + 46, DY - 3, pz0 + 20, -15))
 SOUND_SPOTS = [("pool", cxN, DY, (pz0 + pz1) // 2), ("spa", scx, DY, scz)]
 
+# ---- mission mannequins: two per floor, each patrolling (silently) one straight corridor side
+def _swing_cells():
+    occ = set()
+    for d in DOORS:
+        if d["kind"] != "swing":
+            continue
+        px, pz = d["pivot"]; X, Y, Z = np.nonzero(d["arr"]); gx, gy, gz = d["gmin"]
+        for frac in np.linspace(0, 0.85, 8):
+            a_ = np.radians(d["ang"] * frac)
+            cx_, cz_ = X + gx + 0.5 - px, Z + gz + 0.5 - pz
+            rx = cx_ * np.cos(a_) + cz_ * np.sin(a_); rz = -cx_ * np.sin(a_) + cz_ * np.cos(a_)
+            occ |= set(zip(np.floor(px + rx).astype(int).tolist(), np.floor(pz + rz).astype(int).tolist()))
+    return occ
+SWING = _swing_cells()
+
+def clear_run(fr_, L_, y_):
+    """longest stretch of the corridor centre line (u) where a turning mannequin touches nothing."""
+    ok = []
+    for u in range(22, L_ - 21):
+        px_, pz_ = cont(fr_, u, 8.5)
+        x0, z0 = int(np.floor(px_ - 2.5)), int(np.floor(pz_ - 2.5))
+        free_ = not (G[x0:x0 + 5, y_:y_ + 18, z0:z0 + 5] > 0).any() and \
+            not any((x, z) in SWING for x in range(x0, x0 + 5) for z in range(z0, z0 + 5))
+        ok.append(free_)
+    best, cur, start = (0, 0), 0, 0
+    for i, f_ in enumerate(ok + [False]):
+        if f_:
+            if cur == 0:
+                start = i
+            cur += 1
+        else:
+            if cur > best[1] - best[0]:
+                best = (start, start + cur)
+            cur = 0
+    return 22 + best[0], 22 + best[1] - 1
+
+for k_ in range(FLOORS):
+    sides = MRNG.sample([c_ for c_ in cor_frames], 2)
+    for (name_, fr_, L_) in sides:
+        ua, ub = clear_run(fr_, L_, fy(k_))
+        assert ub - ua >= 80, (name_, k_, ua, ub)
+        pa = cont(fr_, ua, 8.5); pb = cont(fr_, ub, 8.5)
+        t_ = MRNG.uniform(0.25, 0.75)
+        u_ = int(ua + (ub - ua) * t_)
+        arr, gmin = frame_shape(fr_, u_ - 2, u_ + 3, fy(k_), fy(k_) + 18, 7, 10, lambda a__, b__, c__, A, B, C: MQ_MODEL[a__, b__, c__])
+        MANNEQUINS.append(dict(arr=arr, gmin=gmin, seg=(pa, pb), floor=k_, front=(-fr_.vx, -fr_.vz)))
+# a few more decorative ones: lobby corner, poolside
+MQ_PLACED += stamp_mannequin(WORLD, lx0 + 4, G0, lz0 + 24)
+MQ_PLACED += stamp_mannequin(WORLD, px1 + 22, DY, pz0 + 8)
+print("decor mannequins", MQ_PLACED, "of", len(MQ_DECOR) + 2, file=sys.stderr)
+
 # ============================================================================
 # 9. Texture pass: per-voxel / per-panel colour variation
 # ============================================================================
@@ -1577,6 +1832,8 @@ vary(LAWN, [LAWN, LAWN2], seed=5)
 vary(CARP_A, [CARP_A, CARP_A2], seed=6, weights=[2, 1])
 vary(CARP_B, [CARP_B, CARP_B2], seed=7, weights=[2, 1])
 vary(COR_CARP, [COR_CARP, COR_CARP2], seed=8, weights=[4, 1])
+for (c1_, c2_, sd_) in ((CARP_OR, CARP_OR2, 81), (CARP_G, CARP_G2, 82), (CARP_BL, CARP_BL2, 83), (CARP_PK, CARP_PK2, 84), (CARP_DK, CARP_DK2, 85)):
+    vary(c1_, [c1_, c2_], seed=sd_, weights=[4, 1])
 vary(RUG, [RUG, RUG2], seed=9, weights=[3, 1])
 vary(WOOD_DARK, [WOOD_DARK, WOOD_DARK2], cell=(1, 3, 1), seed=10, weights=[2, 1])
 vary(WOOD_MED, [WOOD_MED, WOOD_MED2], cell=(1, 3, 1), seed=11, weights=[2, 1])
@@ -1905,6 +2162,40 @@ def export():
     write_vox(os.path.join(VOXDIR, "radio.vox"), ra)
     rpos = ((rgx + rsx // 2) * 0.1 - CX, rgy * 0.1, (rgz + rsz - rsz // 2) * 0.1 - CZ)
     xml.append(f'\t<vox name="poolradio" tags="radio" pos="{f3(rpos)}" file="MOD/vox/radio.vox" object="shape"/>\n')
+    def body_origin(arr, gmin):
+        sx, sy, sz = arr.shape
+        gx, gy, gz = gmin
+        return ((gx + sx // 2) * 0.1 - CX, gy * 0.1, (gz + sz - sz // 2) * 0.1 - CZ)
+    shape_files = {}
+    def shape_file(prefix, arr):
+        key = (prefix, arr.shape, arr.tobytes())
+        if key not in shape_files:
+            shape_files[key] = f"{prefix}_{sum(1 for k_ in shape_files if k_[0] == prefix)}"
+            write_vox(os.path.join(VOXDIR, shape_files[key] + ".vox"), arr)
+        return shape_files[key]
+    xml.append('\t<group name="curtains" pos="0 0 0">\n')
+    for i, c in enumerate(CURTAINS):
+        o = body_origin(c["arr"], c["gmin"])
+        tg = f"curtain cid={c['cid']} sx={c['slide'][0] * 0.1:.2f} sz={c['slide'][1] * 0.1:.2f}" + (" startopen" if c["start_open"] else "")
+        xml.append(f'\t\t<body name="curtain{i}" tags="{tg}" pos="{f3(o)}"><vox pos="0 0 0" file="MOD/vox/{shape_file("curtain", c["arr"])}.vox" object="shape"/></body>\n')
+    xml.append('\t</group>\n')
+    xml.append('\t<group name="mission" pos="0 0 0">\n')
+    bo = body_origin(BELL["arr"], BELL["gmin"])
+    xml.append(f'\t\t<body name="deskbell" tags="deskbell" pos="{f3(bo)}"><vox pos="0 0 0" file="MOD/vox/{shape_file("bell", BELL["arr"])}.vox" object="shape"/></body>\n')
+    mx, my, mz = MISSION_START
+    xml.append(f'\t\t<location tags="missionstart" pos="{f3((mx * 0.1 - CX, my * 0.1, mz * 0.1 - CZ))}"/>\n')
+    for i, kc in enumerate(KEYCARDS):
+        o = body_origin(kc["arr"], kc["gmin"])
+        xml.append(f'\t\t<body name="keycard{i}" tags="keycard floor={kc["floor"] + 1}" pos="{f3(o)}">'
+                   f'<vox pos="0 0 0" file="MOD/vox/{shape_file("keycard", kc["arr"])}.vox" object="shape">'
+                   f'<light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>\n')
+    for i, m in enumerate(MANNEQUINS):
+        o = body_origin(m["arr"], m["gmin"])
+        (ax_, az_), (bx_, bz_) = m["seg"]
+        seg = f"{ax_ * 0.1 - CX:.2f},{az_ * 0.1 - CZ:.2f},{bx_ * 0.1 - CX:.2f},{bz_ * 0.1 - CZ:.2f}"
+        xml.append(f'\t\t<body name="mannequin{i}" tags="mannequin seg={seg} fx={m["front"][0]} fz={m["front"][1]}" pos="{f3(o)}">'
+                   f'<vox pos="0 0 0" file="MOD/vox/{shape_file("mannequin", m["arr"])}.vox" object="shape"/></body>\n')
+    xml.append('\t</group>\n')
     xml.append('\t<group name="lamps" pos="0 0 0">\n')
     for i, L in enumerate(lamps):
         px_, py_, pz_ = L["pos"]
@@ -1993,13 +2284,15 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.15\n"
+        f.write("name = Liminal Atrium v3.16\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
-                "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"
+                "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot. Sandbox - break everything. "
+                "Mission: ring the front-desk bell to CHECK OUT - find six key cards while the mannequins move when unseen.\n"
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
-                 doors=len(DOORS), door_files=len(door_files), lamp_shapes=len(lamps), lamp_files=len(lamp_files), lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
+                 doors=len(DOORS), door_files=len(door_files), curtains=len(CURTAINS), keycards=len(KEYCARDS),
+                 mannequins=len(MANNEQUINS), lamp_shapes=len(lamps), lamp_files=len(lamp_files), lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
                  rooms=len(room_log), lit=sum(1 for r in room_log if r[3].startswith("lit")),
                  tv=sum(1 for r in room_log if r[3] == "tv"))
     print(json.dumps(stats))
@@ -2014,7 +2307,8 @@ if __name__ == "__main__":
             arr = PROP_SHAPES[pname]; sx, sy, sz = arr.shape
             reg = Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz]
             reg[arr > 0] = arr[arr > 0]
-        stamps = [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
+        stamps = [(c_["arr"], c_["gmin"]) for c_ in CURTAINS] + [(k_["arr"], k_["gmin"]) for k_ in KEYCARDS] + \
+                 [(m_["arr"], m_["gmin"]) for m_ in MANNEQUINS] + [(BELL["arr"], BELL["gmin"])] + [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
             + [(c_[0], c_[1]) for c_ in CALLS]
         for arr, (gx, gy, gz) in stamps:
             sx, sy, sz = arr.shape

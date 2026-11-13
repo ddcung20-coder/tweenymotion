@@ -24,6 +24,314 @@
 		<light pos="6.6 2.2 18.5" type="sphere" color="0.5 0.9 1" scale="1.4" size="0.3"/>
 	</group>
 	<vox name="poolradio" tags="radio" pos="0.9 3 30.2" file="MOD/vox/radio.vox" object="shape"/>
+	<group name="curtains" pos="0 0 0">
+		<body name="curtain0" tags="curtain cid=0 sx=0.00 sz=-0.60" pos="-8.6 1 -21.6"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain1" tags="curtain cid=0 sx=0.00 sz=0.60" pos="-8.6 1 -20.6"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain2" tags="curtain cid=1 sx=0.00 sz=-0.60" pos="-8.6 4 -21.6"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain3" tags="curtain cid=1 sx=0.00 sz=0.60" pos="-8.6 4 -20.6"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain4" tags="curtain cid=2 sx=0.00 sz=-0.60 startopen" pos="-8.6 7 -21.6"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain5" tags="curtain cid=2 sx=0.00 sz=0.60 startopen" pos="-8.6 7 -20.6"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain6" tags="curtain cid=3 sx=0.00 sz=-0.60 startopen" pos="-8.6 10 -21.6"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain7" tags="curtain cid=3 sx=0.00 sz=0.60 startopen" pos="-8.6 10 -20.6"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain8" tags="curtain cid=4 sx=0.00 sz=-0.60 startopen" pos="-8.6 13 -21.6"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain9" tags="curtain cid=4 sx=0.00 sz=0.60 startopen" pos="-8.6 13 -20.6"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain10" tags="curtain cid=5 sx=0.00 sz=-0.60" pos="-8.6 16 -21.6"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain11" tags="curtain cid=5 sx=0.00 sz=0.60" pos="-8.6 16 -20.6"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain12" tags="curtain cid=6 sx=0.00 sz=-0.60 startopen" pos="-8.6 1 -18.2"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain13" tags="curtain cid=6 sx=0.00 sz=0.60 startopen" pos="-8.6 1 -17.2"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain14" tags="curtain cid=7 sx=0.00 sz=-0.60 startopen" pos="-8.6 4 -18.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain15" tags="curtain cid=7 sx=0.00 sz=0.60 startopen" pos="-8.6 4 -17.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain16" tags="curtain cid=8 sx=0.00 sz=-0.60" pos="-8.6 7 -18.2"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain17" tags="curtain cid=8 sx=0.00 sz=0.60" pos="-8.6 7 -17.2"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain18" tags="curtain cid=9 sx=0.00 sz=-0.60" pos="-8.6 10 -18.2"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain19" tags="curtain cid=9 sx=0.00 sz=0.60" pos="-8.6 10 -17.2"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain20" tags="curtain cid=10 sx=0.00 sz=-0.60 startopen" pos="-8.6 13 -18.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain21" tags="curtain cid=10 sx=0.00 sz=0.60 startopen" pos="-8.6 13 -17.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain22" tags="curtain cid=11 sx=0.00 sz=-0.60" pos="-8.6 16 -18.2"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain23" tags="curtain cid=11 sx=0.00 sz=0.60" pos="-8.6 16 -17.2"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain24" tags="curtain cid=12 sx=0.00 sz=-0.60" pos="-8.6 1 -14.8"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain25" tags="curtain cid=12 sx=0.00 sz=0.60" pos="-8.6 1 -13.8"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain26" tags="curtain cid=13 sx=0.00 sz=-0.60" pos="-8.6 4 -14.8"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain27" tags="curtain cid=13 sx=0.00 sz=0.60" pos="-8.6 4 -13.8"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain28" tags="curtain cid=14 sx=0.00 sz=-0.60" pos="-8.6 7 -14.8"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain29" tags="curtain cid=14 sx=0.00 sz=0.60" pos="-8.6 7 -13.8"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain30" tags="curtain cid=15 sx=0.00 sz=-0.60 startopen" pos="-8.6 10 -14.8"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain31" tags="curtain cid=15 sx=0.00 sz=0.60 startopen" pos="-8.6 10 -13.8"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain32" tags="curtain cid=16 sx=0.00 sz=-0.60 startopen" pos="-8.6 13 -14.8"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain33" tags="curtain cid=16 sx=0.00 sz=0.60 startopen" pos="-8.6 13 -13.8"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain34" tags="curtain cid=17 sx=0.00 sz=-0.60" pos="-8.6 16 -14.8"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain35" tags="curtain cid=17 sx=0.00 sz=0.60" pos="-8.6 16 -13.8"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain36" tags="curtain cid=18 sx=0.00 sz=-0.60" pos="-8.6 1 -11.4"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain37" tags="curtain cid=18 sx=0.00 sz=0.60" pos="-8.6 1 -10.4"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain38" tags="curtain cid=19 sx=0.00 sz=-0.60" pos="-8.6 4 -11.4"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain39" tags="curtain cid=19 sx=0.00 sz=0.60" pos="-8.6 4 -10.4"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain40" tags="curtain cid=20 sx=0.00 sz=-0.60 startopen" pos="-8.6 7 -11.4"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain41" tags="curtain cid=20 sx=0.00 sz=0.60 startopen" pos="-8.6 7 -10.4"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain42" tags="curtain cid=21 sx=0.00 sz=-0.60 startopen" pos="-8.6 10 -11.4"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain43" tags="curtain cid=21 sx=0.00 sz=0.60 startopen" pos="-8.6 10 -10.4"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain44" tags="curtain cid=22 sx=0.00 sz=-0.60 startopen" pos="-8.6 13 -11.4"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain45" tags="curtain cid=22 sx=0.00 sz=0.60 startopen" pos="-8.6 13 -10.4"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain46" tags="curtain cid=23 sx=0.00 sz=-0.60 startopen" pos="-8.6 16 -11.4"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain47" tags="curtain cid=23 sx=0.00 sz=0.60 startopen" pos="-8.6 16 -10.4"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain48" tags="curtain cid=24 sx=0.00 sz=-0.60" pos="-8.6 1 -8"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain49" tags="curtain cid=24 sx=0.00 sz=0.60" pos="-8.6 1 -7"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain50" tags="curtain cid=25 sx=0.00 sz=-0.60 startopen" pos="-8.6 4 -8"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain51" tags="curtain cid=25 sx=0.00 sz=0.60 startopen" pos="-8.6 4 -7"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain52" tags="curtain cid=26 sx=0.00 sz=-0.60" pos="-8.6 7 -8"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain53" tags="curtain cid=26 sx=0.00 sz=0.60" pos="-8.6 7 -7"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain54" tags="curtain cid=27 sx=0.00 sz=-0.60 startopen" pos="-8.6 10 -8"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain55" tags="curtain cid=27 sx=0.00 sz=0.60 startopen" pos="-8.6 10 -7"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain56" tags="curtain cid=28 sx=0.00 sz=-0.60 startopen" pos="-8.6 13 -8"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain57" tags="curtain cid=28 sx=0.00 sz=0.60 startopen" pos="-8.6 13 -7"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain58" tags="curtain cid=29 sx=0.00 sz=-0.60" pos="-8.6 16 -8"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain59" tags="curtain cid=29 sx=0.00 sz=0.60" pos="-8.6 16 -7"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain60" tags="curtain cid=30 sx=0.00 sz=-0.60" pos="-8.6 1 -4.6"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain61" tags="curtain cid=30 sx=0.00 sz=0.60" pos="-8.6 1 -3.6"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain62" tags="curtain cid=31 sx=0.00 sz=-0.60" pos="-8.6 4 -4.6"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain63" tags="curtain cid=31 sx=0.00 sz=0.60" pos="-8.6 4 -3.6"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain64" tags="curtain cid=32 sx=0.00 sz=-0.60 startopen" pos="-8.6 7 -4.6"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain65" tags="curtain cid=32 sx=0.00 sz=0.60 startopen" pos="-8.6 7 -3.6"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain66" tags="curtain cid=33 sx=0.00 sz=-0.60" pos="-8.6 10 -4.6"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain67" tags="curtain cid=33 sx=0.00 sz=0.60" pos="-8.6 10 -3.6"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain68" tags="curtain cid=34 sx=0.00 sz=-0.60 startopen" pos="-8.6 13 -4.6"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain69" tags="curtain cid=34 sx=0.00 sz=0.60 startopen" pos="-8.6 13 -3.6"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain70" tags="curtain cid=35 sx=0.00 sz=-0.60" pos="-8.6 16 -4.6"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain71" tags="curtain cid=35 sx=0.00 sz=0.60" pos="-8.6 16 -3.6"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain72" tags="curtain cid=36 sx=0.00 sz=-0.60 startopen" pos="-8.6 1 -1.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain73" tags="curtain cid=36 sx=0.00 sz=0.60 startopen" pos="-8.6 1 -0.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain74" tags="curtain cid=37 sx=0.00 sz=-0.60 startopen" pos="-8.6 4 -1.2"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain75" tags="curtain cid=37 sx=0.00 sz=0.60 startopen" pos="-8.6 4 -0.2"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain76" tags="curtain cid=38 sx=0.00 sz=-0.60" pos="-8.6 7 -1.2"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain77" tags="curtain cid=38 sx=0.00 sz=0.60" pos="-8.6 7 -0.2"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain78" tags="curtain cid=39 sx=0.00 sz=-0.60" pos="-8.6 10 -1.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain79" tags="curtain cid=39 sx=0.00 sz=0.60" pos="-8.6 10 -0.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain80" tags="curtain cid=40 sx=0.00 sz=-0.60" pos="-8.6 13 -1.2"><vox pos="0 0 0" file="MOD/vox/curtain_0.vox" object="shape"/></body>
+		<body name="curtain81" tags="curtain cid=40 sx=0.00 sz=0.60" pos="-8.6 13 -0.2"><vox pos="0 0 0" file="MOD/vox/curtain_1.vox" object="shape"/></body>
+		<body name="curtain82" tags="curtain cid=41 sx=0.00 sz=-0.60" pos="-8.6 16 -1.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain83" tags="curtain cid=41 sx=0.00 sz=0.60" pos="-8.6 16 -0.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain84" tags="curtain cid=42 sx=0.00 sz=-0.60 startopen" pos="-8.6 1 2.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain85" tags="curtain cid=42 sx=0.00 sz=0.60 startopen" pos="-8.6 1 3.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain86" tags="curtain cid=43 sx=0.00 sz=-0.60 startopen" pos="-8.6 4 2.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain87" tags="curtain cid=43 sx=0.00 sz=0.60 startopen" pos="-8.6 4 3.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain88" tags="curtain cid=44 sx=0.00 sz=-0.60 startopen" pos="-8.6 7 2.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain89" tags="curtain cid=44 sx=0.00 sz=0.60 startopen" pos="-8.6 7 3.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain90" tags="curtain cid=45 sx=0.00 sz=-0.60 startopen" pos="-8.6 10 2.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain91" tags="curtain cid=45 sx=0.00 sz=0.60 startopen" pos="-8.6 10 3.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain92" tags="curtain cid=46 sx=0.00 sz=-0.60 startopen" pos="-8.6 13 2.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain93" tags="curtain cid=46 sx=0.00 sz=0.60 startopen" pos="-8.6 13 3.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain94" tags="curtain cid=47 sx=0.00 sz=-0.60" pos="-8.6 16 2.2"><vox pos="0 0 0" file="MOD/vox/curtain_2.vox" object="shape"/></body>
+		<body name="curtain95" tags="curtain cid=47 sx=0.00 sz=0.60" pos="-8.6 16 3.2"><vox pos="0 0 0" file="MOD/vox/curtain_3.vox" object="shape"/></body>
+		<body name="curtain96" tags="curtain cid=48 sx=0.00 sz=0.60" pos="8.6 1 3"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain97" tags="curtain cid=48 sx=0.00 sz=-0.60" pos="8.6 1 2"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain98" tags="curtain cid=49 sx=0.00 sz=0.60" pos="8.6 4 3"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain99" tags="curtain cid=49 sx=0.00 sz=-0.60" pos="8.6 4 2"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain100" tags="curtain cid=50 sx=0.00 sz=0.60 startopen" pos="8.6 7 3"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain101" tags="curtain cid=50 sx=0.00 sz=-0.60 startopen" pos="8.6 7 2"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain102" tags="curtain cid=51 sx=0.00 sz=0.60 startopen" pos="8.6 10 3"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain103" tags="curtain cid=51 sx=0.00 sz=-0.60 startopen" pos="8.6 10 2"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain104" tags="curtain cid=52 sx=0.00 sz=0.60" pos="8.6 13 3"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain105" tags="curtain cid=52 sx=0.00 sz=-0.60" pos="8.6 13 2"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain106" tags="curtain cid=53 sx=0.00 sz=0.60" pos="8.6 16 3"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain107" tags="curtain cid=53 sx=0.00 sz=-0.60" pos="8.6 16 2"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain108" tags="curtain cid=54 sx=0.00 sz=0.60 startopen" pos="8.6 1 -0.4"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain109" tags="curtain cid=54 sx=0.00 sz=-0.60 startopen" pos="8.6 1 -1.4"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain110" tags="curtain cid=55 sx=0.00 sz=0.60" pos="8.6 4 -0.4"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain111" tags="curtain cid=55 sx=0.00 sz=-0.60" pos="8.6 4 -1.4"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain112" tags="curtain cid=56 sx=0.00 sz=0.60 startopen" pos="8.6 7 -0.4"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain113" tags="curtain cid=56 sx=0.00 sz=-0.60 startopen" pos="8.6 7 -1.4"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain114" tags="curtain cid=57 sx=0.00 sz=0.60" pos="8.6 10 -0.4"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain115" tags="curtain cid=57 sx=0.00 sz=-0.60" pos="8.6 10 -1.4"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain116" tags="curtain cid=58 sx=0.00 sz=0.60" pos="8.6 13 -0.4"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain117" tags="curtain cid=58 sx=0.00 sz=-0.60" pos="8.6 13 -1.4"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain118" tags="curtain cid=59 sx=0.00 sz=0.60" pos="8.6 16 -0.4"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain119" tags="curtain cid=59 sx=0.00 sz=-0.60" pos="8.6 16 -1.4"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain120" tags="curtain cid=60 sx=0.00 sz=0.60 startopen" pos="8.6 1 -3.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain121" tags="curtain cid=60 sx=0.00 sz=-0.60 startopen" pos="8.6 1 -4.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain122" tags="curtain cid=61 sx=0.00 sz=0.60 startopen" pos="8.6 4 -3.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain123" tags="curtain cid=61 sx=0.00 sz=-0.60 startopen" pos="8.6 4 -4.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain124" tags="curtain cid=62 sx=0.00 sz=0.60" pos="8.6 7 -3.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain125" tags="curtain cid=62 sx=0.00 sz=-0.60" pos="8.6 7 -4.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain126" tags="curtain cid=63 sx=0.00 sz=0.60" pos="8.6 10 -3.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain127" tags="curtain cid=63 sx=0.00 sz=-0.60" pos="8.6 10 -4.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain128" tags="curtain cid=64 sx=0.00 sz=0.60 startopen" pos="8.6 13 -3.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain129" tags="curtain cid=64 sx=0.00 sz=-0.60 startopen" pos="8.6 13 -4.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain130" tags="curtain cid=65 sx=0.00 sz=0.60 startopen" pos="8.6 16 -3.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain131" tags="curtain cid=65 sx=0.00 sz=-0.60 startopen" pos="8.6 16 -4.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain132" tags="curtain cid=66 sx=0.00 sz=0.60 startopen" pos="8.6 1 -7.2"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain133" tags="curtain cid=66 sx=0.00 sz=-0.60 startopen" pos="8.6 1 -8.2"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain134" tags="curtain cid=67 sx=0.00 sz=0.60 startopen" pos="8.6 4 -7.2"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain135" tags="curtain cid=67 sx=0.00 sz=-0.60 startopen" pos="8.6 4 -8.2"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain136" tags="curtain cid=68 sx=0.00 sz=0.60" pos="8.6 7 -7.2"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain137" tags="curtain cid=68 sx=0.00 sz=-0.60" pos="8.6 7 -8.2"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain138" tags="curtain cid=69 sx=0.00 sz=0.60 startopen" pos="8.6 10 -7.2"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain139" tags="curtain cid=69 sx=0.00 sz=-0.60 startopen" pos="8.6 10 -8.2"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain140" tags="curtain cid=70 sx=0.00 sz=0.60 startopen" pos="8.6 13 -7.2"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain141" tags="curtain cid=70 sx=0.00 sz=-0.60 startopen" pos="8.6 13 -8.2"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain142" tags="curtain cid=71 sx=0.00 sz=0.60" pos="8.6 16 -7.2"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain143" tags="curtain cid=71 sx=0.00 sz=-0.60" pos="8.6 16 -8.2"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain144" tags="curtain cid=72 sx=0.00 sz=0.60 startopen" pos="8.6 1 -10.6"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain145" tags="curtain cid=72 sx=0.00 sz=-0.60 startopen" pos="8.6 1 -11.6"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain146" tags="curtain cid=73 sx=0.00 sz=0.60 startopen" pos="8.6 4 -10.6"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain147" tags="curtain cid=73 sx=0.00 sz=-0.60 startopen" pos="8.6 4 -11.6"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain148" tags="curtain cid=74 sx=0.00 sz=0.60 startopen" pos="8.6 7 -10.6"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain149" tags="curtain cid=74 sx=0.00 sz=-0.60 startopen" pos="8.6 7 -11.6"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain150" tags="curtain cid=75 sx=0.00 sz=0.60" pos="8.6 10 -10.6"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain151" tags="curtain cid=75 sx=0.00 sz=-0.60" pos="8.6 10 -11.6"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain152" tags="curtain cid=76 sx=0.00 sz=0.60 startopen" pos="8.6 13 -10.6"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain153" tags="curtain cid=76 sx=0.00 sz=-0.60 startopen" pos="8.6 13 -11.6"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain154" tags="curtain cid=77 sx=0.00 sz=0.60" pos="8.6 16 -10.6"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain155" tags="curtain cid=77 sx=0.00 sz=-0.60" pos="8.6 16 -11.6"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain156" tags="curtain cid=78 sx=0.00 sz=0.60" pos="8.6 1 -14"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain157" tags="curtain cid=78 sx=0.00 sz=-0.60" pos="8.6 1 -15"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain158" tags="curtain cid=79 sx=0.00 sz=0.60 startopen" pos="8.6 4 -14"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain159" tags="curtain cid=79 sx=0.00 sz=-0.60 startopen" pos="8.6 4 -15"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain160" tags="curtain cid=80 sx=0.00 sz=0.60" pos="8.6 7 -14"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain161" tags="curtain cid=80 sx=0.00 sz=-0.60" pos="8.6 7 -15"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain162" tags="curtain cid=81 sx=0.00 sz=0.60" pos="8.6 10 -14"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain163" tags="curtain cid=81 sx=0.00 sz=-0.60" pos="8.6 10 -15"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain164" tags="curtain cid=82 sx=0.00 sz=0.60" pos="8.6 13 -14"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain165" tags="curtain cid=82 sx=0.00 sz=-0.60" pos="8.6 13 -15"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain166" tags="curtain cid=83 sx=0.00 sz=0.60" pos="8.6 16 -14"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain167" tags="curtain cid=83 sx=0.00 sz=-0.60" pos="8.6 16 -15"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain168" tags="curtain cid=84 sx=0.00 sz=0.60" pos="8.6 1 -17.4"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain169" tags="curtain cid=84 sx=0.00 sz=-0.60" pos="8.6 1 -18.4"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain170" tags="curtain cid=85 sx=0.00 sz=0.60" pos="8.6 4 -17.4"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain171" tags="curtain cid=85 sx=0.00 sz=-0.60" pos="8.6 4 -18.4"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain172" tags="curtain cid=86 sx=0.00 sz=0.60" pos="8.6 7 -17.4"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain173" tags="curtain cid=86 sx=0.00 sz=-0.60" pos="8.6 7 -18.4"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain174" tags="curtain cid=87 sx=0.00 sz=0.60" pos="8.6 10 -17.4"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain175" tags="curtain cid=87 sx=0.00 sz=-0.60" pos="8.6 10 -18.4"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain176" tags="curtain cid=88 sx=0.00 sz=0.60 startopen" pos="8.6 13 -17.4"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain177" tags="curtain cid=88 sx=0.00 sz=-0.60 startopen" pos="8.6 13 -18.4"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain178" tags="curtain cid=89 sx=0.00 sz=0.60" pos="8.6 16 -17.4"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain179" tags="curtain cid=89 sx=0.00 sz=-0.60" pos="8.6 16 -18.4"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain180" tags="curtain cid=90 sx=0.00 sz=0.60" pos="8.6 1 -20.8"><vox pos="0 0 0" file="MOD/vox/curtain_6.vox" object="shape"/></body>
+		<body name="curtain181" tags="curtain cid=90 sx=0.00 sz=-0.60" pos="8.6 1 -21.8"><vox pos="0 0 0" file="MOD/vox/curtain_7.vox" object="shape"/></body>
+		<body name="curtain182" tags="curtain cid=91 sx=0.00 sz=0.60 startopen" pos="8.6 4 -20.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain183" tags="curtain cid=91 sx=0.00 sz=-0.60 startopen" pos="8.6 4 -21.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain184" tags="curtain cid=92 sx=0.00 sz=0.60 startopen" pos="8.6 7 -20.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain185" tags="curtain cid=92 sx=0.00 sz=-0.60 startopen" pos="8.6 7 -21.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain186" tags="curtain cid=93 sx=0.00 sz=0.60" pos="8.6 10 -20.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain187" tags="curtain cid=93 sx=0.00 sz=-0.60" pos="8.6 10 -21.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain188" tags="curtain cid=94 sx=0.00 sz=0.60" pos="8.6 13 -20.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain189" tags="curtain cid=94 sx=0.00 sz=-0.60" pos="8.6 13 -21.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain190" tags="curtain cid=95 sx=0.00 sz=0.60" pos="8.6 16 -20.8"><vox pos="0 0 0" file="MOD/vox/curtain_4.vox" object="shape"/></body>
+		<body name="curtain191" tags="curtain cid=95 sx=0.00 sz=-0.60" pos="8.6 16 -21.8"><vox pos="0 0 0" file="MOD/vox/curtain_5.vox" object="shape"/></body>
+		<body name="curtain192" tags="curtain cid=96 sx=0.60 sz=0.00" pos="6.4 1 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_8.vox" object="shape"/></body>
+		<body name="curtain193" tags="curtain cid=96 sx=-0.60 sz=0.00" pos="5.4 1 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_9.vox" object="shape"/></body>
+		<body name="curtain194" tags="curtain cid=97 sx=0.60 sz=0.00" pos="6.4 4 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain195" tags="curtain cid=97 sx=-0.60 sz=0.00" pos="5.4 4 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain196" tags="curtain cid=98 sx=0.60 sz=0.00" pos="6.4 7 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain197" tags="curtain cid=98 sx=-0.60 sz=0.00" pos="5.4 7 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain198" tags="curtain cid=99 sx=0.60 sz=0.00" pos="6.4 10 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain199" tags="curtain cid=99 sx=-0.60 sz=0.00" pos="5.4 10 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain200" tags="curtain cid=100 sx=0.60 sz=0.00" pos="6.4 13 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain201" tags="curtain cid=100 sx=-0.60 sz=0.00" pos="5.4 13 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain202" tags="curtain cid=101 sx=0.60 sz=0.00 startopen" pos="6.4 16 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain203" tags="curtain cid=101 sx=-0.60 sz=0.00 startopen" pos="5.4 16 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain204" tags="curtain cid=102 sx=0.60 sz=0.00" pos="2.4 4 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain205" tags="curtain cid=102 sx=-0.60 sz=0.00" pos="1.4 4 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain206" tags="curtain cid=103 sx=0.60 sz=0.00 startopen" pos="2.4 7 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain207" tags="curtain cid=103 sx=-0.60 sz=0.00 startopen" pos="1.4 7 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain208" tags="curtain cid=104 sx=0.60 sz=0.00" pos="2.4 10 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain209" tags="curtain cid=104 sx=-0.60 sz=0.00" pos="1.4 10 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain210" tags="curtain cid=105 sx=0.60 sz=0.00" pos="2.4 13 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain211" tags="curtain cid=105 sx=-0.60 sz=0.00" pos="1.4 13 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain212" tags="curtain cid=106 sx=0.60 sz=0.00" pos="2.4 16 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_8.vox" object="shape"/></body>
+		<body name="curtain213" tags="curtain cid=106 sx=-0.60 sz=0.00" pos="1.4 16 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_9.vox" object="shape"/></body>
+		<body name="curtain214" tags="curtain cid=107 sx=0.60 sz=0.00" pos="-1.6 4 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain215" tags="curtain cid=107 sx=-0.60 sz=0.00" pos="-2.6 4 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain216" tags="curtain cid=108 sx=0.60 sz=0.00 startopen" pos="-1.6 7 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_8.vox" object="shape"/></body>
+		<body name="curtain217" tags="curtain cid=108 sx=-0.60 sz=0.00 startopen" pos="-2.6 7 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_9.vox" object="shape"/></body>
+		<body name="curtain218" tags="curtain cid=109 sx=0.60 sz=0.00" pos="-1.6 10 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_8.vox" object="shape"/></body>
+		<body name="curtain219" tags="curtain cid=109 sx=-0.60 sz=0.00" pos="-2.6 10 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_9.vox" object="shape"/></body>
+		<body name="curtain220" tags="curtain cid=110 sx=0.60 sz=0.00 startopen" pos="-1.6 13 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain221" tags="curtain cid=110 sx=-0.60 sz=0.00 startopen" pos="-2.6 13 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain222" tags="curtain cid=111 sx=0.60 sz=0.00" pos="-1.6 16 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain223" tags="curtain cid=111 sx=-0.60 sz=0.00" pos="-2.6 16 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain224" tags="curtain cid=112 sx=0.60 sz=0.00" pos="-5.6 1 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_8.vox" object="shape"/></body>
+		<body name="curtain225" tags="curtain cid=112 sx=-0.60 sz=0.00" pos="-6.6 1 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_9.vox" object="shape"/></body>
+		<body name="curtain226" tags="curtain cid=113 sx=0.60 sz=0.00" pos="-5.6 4 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_8.vox" object="shape"/></body>
+		<body name="curtain227" tags="curtain cid=113 sx=-0.60 sz=0.00" pos="-6.6 4 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_9.vox" object="shape"/></body>
+		<body name="curtain228" tags="curtain cid=114 sx=0.60 sz=0.00 startopen" pos="-5.6 7 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_8.vox" object="shape"/></body>
+		<body name="curtain229" tags="curtain cid=114 sx=-0.60 sz=0.00 startopen" pos="-6.6 7 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_9.vox" object="shape"/></body>
+		<body name="curtain230" tags="curtain cid=115 sx=0.60 sz=0.00" pos="-5.6 10 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain231" tags="curtain cid=115 sx=-0.60 sz=0.00" pos="-6.6 10 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain232" tags="curtain cid=116 sx=0.60 sz=0.00 startopen" pos="-5.6 13 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_10.vox" object="shape"/></body>
+		<body name="curtain233" tags="curtain cid=116 sx=-0.60 sz=0.00 startopen" pos="-6.6 13 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_11.vox" object="shape"/></body>
+		<body name="curtain234" tags="curtain cid=117 sx=0.60 sz=0.00" pos="-5.6 16 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_8.vox" object="shape"/></body>
+		<body name="curtain235" tags="curtain cid=117 sx=-0.60 sz=0.00" pos="-6.6 16 -23.5"><vox pos="0 0 0" file="MOD/vox/curtain_9.vox" object="shape"/></body>
+		<body name="curtain236" tags="curtain cid=118 sx=-0.60 sz=0.00" pos="-6.4 1 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain237" tags="curtain cid=118 sx=0.60 sz=0.00" pos="-5.4 1 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain238" tags="curtain cid=119 sx=-0.60 sz=0.00" pos="-6.4 4 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain239" tags="curtain cid=119 sx=0.60 sz=0.00" pos="-5.4 4 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain240" tags="curtain cid=120 sx=-0.60 sz=0.00" pos="-6.4 7 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_14.vox" object="shape"/></body>
+		<body name="curtain241" tags="curtain cid=120 sx=0.60 sz=0.00" pos="-5.4 7 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_15.vox" object="shape"/></body>
+		<body name="curtain242" tags="curtain cid=121 sx=-0.60 sz=0.00 startopen" pos="-6.4 10 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_14.vox" object="shape"/></body>
+		<body name="curtain243" tags="curtain cid=121 sx=0.60 sz=0.00 startopen" pos="-5.4 10 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_15.vox" object="shape"/></body>
+		<body name="curtain244" tags="curtain cid=122 sx=-0.60 sz=0.00" pos="-6.4 13 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain245" tags="curtain cid=122 sx=0.60 sz=0.00" pos="-5.4 13 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain246" tags="curtain cid=123 sx=-0.60 sz=0.00" pos="-6.4 16 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_14.vox" object="shape"/></body>
+		<body name="curtain247" tags="curtain cid=123 sx=0.60 sz=0.00" pos="-5.4 16 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_15.vox" object="shape"/></body>
+		<body name="curtain248" tags="curtain cid=124 sx=-0.60 sz=0.00" pos="-2.4 1 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain249" tags="curtain cid=124 sx=0.60 sz=0.00" pos="-1.4 1 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain250" tags="curtain cid=125 sx=-0.60 sz=0.00 startopen" pos="-2.4 4 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain251" tags="curtain cid=125 sx=0.60 sz=0.00 startopen" pos="-1.4 4 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain252" tags="curtain cid=126 sx=-0.60 sz=0.00" pos="-2.4 7 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_14.vox" object="shape"/></body>
+		<body name="curtain253" tags="curtain cid=126 sx=0.60 sz=0.00" pos="-1.4 7 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_15.vox" object="shape"/></body>
+		<body name="curtain254" tags="curtain cid=127 sx=-0.60 sz=0.00 startopen" pos="-2.4 10 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain255" tags="curtain cid=127 sx=0.60 sz=0.00 startopen" pos="-1.4 10 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain256" tags="curtain cid=128 sx=-0.60 sz=0.00 startopen" pos="-2.4 13 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain257" tags="curtain cid=128 sx=0.60 sz=0.00 startopen" pos="-1.4 13 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain258" tags="curtain cid=129 sx=-0.60 sz=0.00 startopen" pos="-2.4 16 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain259" tags="curtain cid=129 sx=0.60 sz=0.00 startopen" pos="-1.4 16 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain260" tags="curtain cid=130 sx=-0.60 sz=0.00" pos="1.6 1 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_14.vox" object="shape"/></body>
+		<body name="curtain261" tags="curtain cid=130 sx=0.60 sz=0.00" pos="2.6 1 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_15.vox" object="shape"/></body>
+		<body name="curtain262" tags="curtain cid=131 sx=-0.60 sz=0.00 startopen" pos="1.6 4 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain263" tags="curtain cid=131 sx=0.60 sz=0.00 startopen" pos="2.6 4 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain264" tags="curtain cid=132 sx=-0.60 sz=0.00 startopen" pos="1.6 7 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain265" tags="curtain cid=132 sx=0.60 sz=0.00 startopen" pos="2.6 7 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain266" tags="curtain cid=133 sx=-0.60 sz=0.00 startopen" pos="1.6 10 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain267" tags="curtain cid=133 sx=0.60 sz=0.00 startopen" pos="2.6 10 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain268" tags="curtain cid=134 sx=-0.60 sz=0.00" pos="1.6 13 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_14.vox" object="shape"/></body>
+		<body name="curtain269" tags="curtain cid=134 sx=0.60 sz=0.00" pos="2.6 13 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_15.vox" object="shape"/></body>
+		<body name="curtain270" tags="curtain cid=135 sx=-0.60 sz=0.00 startopen" pos="1.6 16 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain271" tags="curtain cid=135 sx=0.60 sz=0.00 startopen" pos="2.6 16 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain272" tags="curtain cid=136 sx=-0.60 sz=0.00" pos="5.6 1 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_14.vox" object="shape"/></body>
+		<body name="curtain273" tags="curtain cid=136 sx=0.60 sz=0.00" pos="6.6 1 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_15.vox" object="shape"/></body>
+		<body name="curtain274" tags="curtain cid=137 sx=-0.60 sz=0.00 startopen" pos="5.6 4 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain275" tags="curtain cid=137 sx=0.60 sz=0.00 startopen" pos="6.6 4 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain276" tags="curtain cid=138 sx=-0.60 sz=0.00 startopen" pos="5.6 7 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain277" tags="curtain cid=138 sx=0.60 sz=0.00 startopen" pos="6.6 7 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain278" tags="curtain cid=139 sx=-0.60 sz=0.00" pos="5.6 10 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_14.vox" object="shape"/></body>
+		<body name="curtain279" tags="curtain cid=139 sx=0.60 sz=0.00" pos="6.6 10 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_15.vox" object="shape"/></body>
+		<body name="curtain280" tags="curtain cid=140 sx=-0.60 sz=0.00 startopen" pos="5.6 13 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain281" tags="curtain cid=140 sx=0.60 sz=0.00 startopen" pos="6.6 13 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+		<body name="curtain282" tags="curtain cid=141 sx=-0.60 sz=0.00" pos="5.6 16 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_12.vox" object="shape"/></body>
+		<body name="curtain283" tags="curtain cid=141 sx=0.60 sz=0.00" pos="6.6 16 4.9"><vox pos="0 0 0" file="MOD/vox/curtain_13.vox" object="shape"/></body>
+	</group>
+	<group name="mission" pos="0 0 0">
+		<body name="deskbell" tags="deskbell" pos="-2.7 1.6 -26"><vox pos="0 0 0" file="MOD/vox/bell_0.vox" object="shape"/></body>
+		<location tags="missionstart" pos="-1.6 0.4 -24.9"/>
+		<body name="keycard0" tags="keycard floor=3" pos="-11.1 7.2 -19.9"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
+		<body name="keycard1" tags="keycard floor=2" pos="-11.1 4.2 -8.6"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
+		<body name="keycard2" tags="keycard floor=5" pos="11.1 13.2 -12.2"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
+		<body name="keycard3" tags="keycard floor=6" pos="11.1 16.2 -12.2"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
+		<body name="keycard4" tags="keycard floor=1" pos="11.1 1.2 -13.3"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
+		<body name="keycard5" tags="keycard floor=4" pos="-7.6 10.2 -26"><vox pos="0 0 0" file="MOD/vox/keycard_1.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
+		<body name="mannequin0" tags="mannequin seg=-1.50,-28.75,-12.60,-28.75 fx=0 fz=1" pos="-9.8 0.4 -28.7"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"/></body>
+		<body name="mannequin1" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 0.4 -4.2"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
+		<body name="mannequin2" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 3.4 -9.1"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
+		<body name="mannequin3" tags="mannequin seg=-12.60,10.15,12.60,10.15 fx=0 fz=-1" pos="-2.7 3.4 10.2"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"/></body>
+		<body name="mannequin4" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 6.4 -13.6"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
+		<body name="mannequin5" tags="mannequin seg=-13.85,-27.50,-13.85,8.90 fx=1 fz=0" pos="-13.9 6.4 -5.9"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
+		<body name="mannequin6" tags="mannequin seg=-13.85,-27.50,-13.85,8.90 fx=1 fz=0" pos="-13.9 9.4 -15.1"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
+		<body name="mannequin7" tags="mannequin seg=-1.50,-28.75,-12.60,-28.75 fx=0 fz=1" pos="-8.9 9.4 -28.7"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"/></body>
+		<body name="mannequin8" tags="mannequin seg=-12.60,10.15,12.60,10.15 fx=0 fz=-1" pos="2.7 12.4 10.2"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"/></body>
+		<body name="mannequin9" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 12.4 -13.2"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
+		<body name="mannequin10" tags="mannequin seg=-13.85,-27.50,-13.85,8.90 fx=1 fz=0" pos="-13.9 15.4 -0.3"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
+		<body name="mannequin11" tags="mannequin seg=-12.60,10.15,12.60,10.15 fx=0 fz=-1" pos="1.9 15.4 10.2"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"/></body>
+	</group>
 	<group name="lamps" pos="0 0 0">
 		<vox name="lamp0" pos="-5 20.5 -20.1" file="MOD/vox/lamp_0.vox" object="shape">
 			<light pos="0 -0.05 0" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
@@ -572,510 +880,516 @@
 			<light tags="flicker" pos="-0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
 		<vox name="lamp182" pos="-13.9 17.7 -17.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light tags="flicker" pos="-0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
 		<vox name="lamp183" pos="-13.9 17.7 -11" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
 		<vox name="lamp184" pos="-13.9 17.7 -4.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light tags="flicker" pos="-0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
 		<vox name="lamp185" pos="-13.9 17.7 2.6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light tags="flicker" pos="-0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
 		<vox name="lamp186" pos="-13.9 17.7 9.5" file="MOD/vox/lamp_7.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp187" pos="13.9 2.7 6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp188" pos="13.9 2.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp189" pos="13.9 2.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp190" pos="13.9 2.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp191" pos="13.9 2.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp192" pos="13.9 2.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
-			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp193" pos="13.9 5.7 6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp194" pos="13.9 5.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp195" pos="13.9 5.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp196" pos="13.9 5.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp197" pos="13.9 5.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp198" pos="13.9 5.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
-			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp199" pos="13.9 8.7 6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp200" pos="13.9 8.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp201" pos="13.9 8.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp202" pos="13.9 8.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
-			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp203" pos="13.9 8.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp204" pos="13.9 8.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
-			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp205" pos="13.9 11.7 6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp206" pos="13.9 11.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp207" pos="13.9 11.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp208" pos="13.9 11.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp209" pos="13.9 11.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp210" pos="13.9 11.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
-			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp211" pos="13.9 14.7 6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp212" pos="13.9 14.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp213" pos="13.9 14.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp214" pos="13.9 14.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp215" pos="13.9 14.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp216" pos="13.9 14.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
-			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp217" pos="13.9 17.7 6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp218" pos="13.9 17.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp219" pos="13.9 17.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp220" pos="13.9 17.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp221" pos="13.9 17.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp222" pos="13.9 17.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
-			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp223" pos="9.7 2.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp224" pos="2.9 2.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp225" pos="-3.9 2.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
 			<light tags="flicker" pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp226" pos="-10.7 2.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<vox name="lamp187" pos="-14.2 16.2 -3.5" file="MOD/vox/lamp_8.vox" object="shape">
+			<light pos="0.25 0.2 0.05" type="sphere" color="0.5 0.6 1" scale="0.8" size="0.2"/>
 		</vox>
-		<vox name="lamp227" pos="9.7 5.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<vox name="lamp188" pos="13.9 2.7 6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp228" pos="2.9 5.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<vox name="lamp189" pos="13.9 2.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp229" pos="-3.9 5.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<vox name="lamp190" pos="13.9 2.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp230" pos="-10.7 5.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<vox name="lamp191" pos="13.9 2.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp231" pos="9.7 8.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<vox name="lamp192" pos="13.9 2.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp232" pos="2.9 8.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp233" pos="-3.9 8.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp234" pos="-10.7 8.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp235" pos="9.7 11.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp236" pos="2.9 11.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp237" pos="-3.9 11.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp238" pos="-10.7 11.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp239" pos="9.7 14.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp240" pos="2.9 14.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp241" pos="-3.9 14.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp242" pos="-10.7 14.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp243" pos="9.7 17.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp244" pos="2.9 17.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp245" pos="-3.9 17.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp246" pos="-10.7 17.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp247" pos="-9.7 2.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp193" pos="13.9 2.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp248" pos="-2.9 2.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp194" pos="13.9 5.7 6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp195" pos="13.9 5.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp196" pos="13.9 5.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp197" pos="13.9 5.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp198" pos="13.9 5.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp199" pos="13.9 5.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp249" pos="3.9 2.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<vox name="lamp200" pos="14.1 4.1 -9.7" file="MOD/vox/lamp_9.vox" object="shape">
+			<light pos="-0.15 0.7 0.25" type="sphere" color="0.6 0.8 1" scale="1.2" size="0.3"/>
 		</vox>
-		<vox name="lamp250" pos="10.7 2.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<vox name="lamp201" pos="13.9 8.7 6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp251" pos="-9.7 5.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<vox name="lamp202" pos="13.9 8.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp252" pos="-2.9 5.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp203" pos="13.9 8.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp204" pos="13.9 8.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp205" pos="13.9 8.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp206" pos="13.9 8.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
 			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp253" pos="3.9 5.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp207" pos="13.9 11.7 6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp208" pos="13.9 11.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp209" pos="13.9 11.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp210" pos="13.9 11.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp211" pos="13.9 11.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp212" pos="13.9 11.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
+			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp213" pos="13.9 14.7 6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp214" pos="13.9 14.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp215" pos="13.9 14.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp216" pos="13.9 14.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp217" pos="13.9 14.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp218" pos="13.9 14.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
 			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp254" pos="10.7 5.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<vox name="lamp219" pos="13.9 17.7 6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp255" pos="-9.7 8.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp220" pos="13.9 17.7 -0.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp221" pos="13.9 17.7 -7.6" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp222" pos="13.9 17.7 -14.4" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp223" pos="13.9 17.7 -21.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp224" pos="13.9 17.7 -28.1" file="MOD/vox/lamp_7.vox" object="shape">
 			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp256" pos="-2.9 8.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp225" pos="9.7 2.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp226" pos="2.9 2.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp227" pos="-3.9 2.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp228" pos="-10.7 2.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp229" pos="9.7 5.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp230" pos="2.9 5.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp231" pos="-3.9 5.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp232" pos="-10.7 5.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp233" pos="9.7 8.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp234" pos="2.9 8.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp235" pos="-3.9 8.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp236" pos="-10.7 8.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp237" pos="9.7 11.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp238" pos="2.9 11.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp239" pos="-3.9 11.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp240" pos="-10.7 11.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp241" pos="9.7 14.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp242" pos="2.9 14.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp243" pos="-3.9 14.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp244" pos="-10.7 14.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp245" pos="9.7 17.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp246" pos="2.9 17.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp247" pos="-3.9 17.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp248" pos="-10.7 17.7 -28.8" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp249" pos="-9.7 2.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp257" pos="3.9 8.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp250" pos="-2.9 2.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp251" pos="3.9 2.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp252" pos="10.7 2.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp253" pos="-9.7 5.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp254" pos="-2.9 5.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp258" pos="10.7 8.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp259" pos="-9.7 11.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
-			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		</vox>
-		<vox name="lamp260" pos="-2.9 11.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp255" pos="3.9 5.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp261" pos="3.9 11.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp256" pos="10.7 5.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp262" pos="10.7 11.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp257" pos="-9.7 8.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp258" pos="-2.9 8.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp263" pos="-9.7 14.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp259" pos="3.9 8.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp260" pos="10.7 8.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp264" pos="-2.9 14.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp261" pos="-9.7 11.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp265" pos="3.9 14.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp262" pos="-2.9 11.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp263" pos="3.9 11.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp266" pos="10.7 14.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp264" pos="10.7 11.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp267" pos="-9.7 17.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp265" pos="-9.7 14.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp268" pos="-2.9 17.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp266" pos="-2.9 14.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp269" pos="3.9 17.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp267" pos="3.9 14.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp270" pos="10.7 17.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp268" pos="10.7 14.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
 		</vox>
-		<vox name="lamp271" pos="0.8 2.6 -25.6" file="MOD/vox/lamp_8.vox" object="shape">
+		<vox name="lamp269" pos="-9.7 17.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp270" pos="-2.9 17.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp271" pos="3.9 17.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp272" pos="10.7 17.7 10.2" file="MOD/vox/lamp_4.vox" object="shape">
+			<light tags="flicker" pos="0.05 -0.2 0.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		</vox>
+		<vox name="lamp273" pos="0.8 2.6 -25.6" file="MOD/vox/lamp_10.vox" object="shape">
 			<light pos="0.45 -0.1 0.35" type="sphere" color="1 0.85 0.6" scale="3.5" size="0.4"/>
 		</vox>
-		<vox name="lamp272" pos="-2.6 3 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp274" pos="-2.6 3 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.85 0.65" scale="2" size="0.3"/>
 		</vox>
-		<vox name="lamp273" pos="2.6 3 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp275" pos="2.6 3 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.85 0.65" scale="2" size="0.3"/>
 		</vox>
-		<vox name="lamp274" pos="-12.4 3 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp276" pos="-12.4 3 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp275" pos="-12.4 6 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp277" pos="-12.4 6 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp276" pos="-12.4 9 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp278" pos="-12.4 9 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp277" pos="-12.4 12 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp279" pos="-12.4 12 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp278" pos="-12.4 15 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp280" pos="-12.4 15 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp279" pos="-12.4 18 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp281" pos="-12.4 18 -25.5" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp280" pos="12.4 3 6.9" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp282" pos="12.4 3 6.9" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp281" pos="12.4 6 6.9" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp283" pos="12.4 6 6.9" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp282" pos="12.4 9 6.9" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp284" pos="12.4 9 6.9" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp283" pos="12.4 12 6.9" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp285" pos="12.4 12 6.9" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp284" pos="12.4 15 6.9" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp286" pos="12.4 15 6.9" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp285" pos="12.4 18 6.9" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp287" pos="12.4 18 6.9" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp286" pos="-9.6 3 7.1" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp288" pos="-9.6 3 7.1" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 -0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp287" pos="-9.6 6 7.1" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp289" pos="-9.6 6 7.1" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 -0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp288" pos="-9.6 9 7.1" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp290" pos="-9.6 9 7.1" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 -0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp289" pos="-9.6 12 7.1" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp291" pos="-9.6 12 7.1" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 -0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp290" pos="-9.6 15 7.1" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp292" pos="-9.6 15 7.1" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 -0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp291" pos="-9.6 18 7.1" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp293" pos="-9.6 18 7.1" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="0.05 -0.2 -0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp292" pos="9.6 3 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp294" pos="9.6 3 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp293" pos="9.6 6 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp295" pos="9.6 6 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp294" pos="9.6 9 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp296" pos="9.6 9 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp295" pos="9.6 12 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp297" pos="9.6 12 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp296" pos="9.6 15 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp298" pos="9.6 15 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp297" pos="9.6 18 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
+		<vox name="lamp299" pos="9.6 18 -25.7" file="MOD/vox/lamp_4.vox" object="shape">
 			<light pos="-0.05 -0.2 0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp298" pos="-0.1 19 -29.2" file="MOD/vox/lamp_9.vox" object="shape">
+		<vox name="lamp300" pos="-0.1 19 -29.2" file="MOD/vox/lamp_11.vox" object="shape">
 			<light pos="0.1 0.8 -0.5" type="sphere" color="1 0.75 0.45" scale="5" size="0.5"/>
 		</vox>
-		<vox name="lamp299" pos="-16.5 5.3 -31.4" file="MOD/vox/lamp_10.vox" object="shape">
+		<vox name="lamp301" pos="-16.5 5.3 -31.4" file="MOD/vox/lamp_12.vox" object="shape">
 			<light pos="0 -0.05 -0.15" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
 		</vox>
-		<vox name="lamp300" pos="16.5 5.3 -31.4" file="MOD/vox/lamp_10.vox" object="shape">
+		<vox name="lamp302" pos="16.5 5.3 -31.4" file="MOD/vox/lamp_12.vox" object="shape">
 			<light pos="0 -0.05 -0.15" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
 		</vox>
-		<vox name="lamp301" pos="-16.5 5.3 12.8" file="MOD/vox/lamp_10.vox" object="shape">
+		<vox name="lamp303" pos="-16.5 5.3 12.8" file="MOD/vox/lamp_12.vox" object="shape">
 			<light pos="0 -0.05 -0.15" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
 		</vox>
-		<vox name="lamp302" pos="16.5 5.3 12.8" file="MOD/vox/lamp_10.vox" object="shape">
+		<vox name="lamp304" pos="16.5 5.3 12.8" file="MOD/vox/lamp_12.vox" object="shape">
 			<light pos="0 -0.05 -0.15" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
 		</vox>
-		<vox name="lamp303" pos="-16.5 5.3 -9.2" file="MOD/vox/lamp_10.vox" object="shape">
+		<vox name="lamp305" pos="-16.5 5.3 -9.2" file="MOD/vox/lamp_12.vox" object="shape">
 			<light pos="0 -0.05 -0.15" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
 		</vox>
-		<vox name="lamp304" pos="16.5 5.3 -9.2" file="MOD/vox/lamp_10.vox" object="shape">
+		<vox name="lamp306" pos="16.5 5.3 -9.2" file="MOD/vox/lamp_12.vox" object="shape">
 			<light pos="0 -0.05 -0.15" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
 		</vox>
-		<vox name="lamp305" pos="0 4.9 12.5" file="MOD/vox/lamp_11.vox" object="shape">
+		<vox name="lamp307" pos="0 4.9 12.5" file="MOD/vox/lamp_13.vox" object="shape">
 			<light pos="0 -0.3 0.4" type="sphere" color="0.9 0.95 1" scale="2" size="0.3"/>
 		</vox>
-		<vox name="lamp306" pos="0 4.9 14.9" file="MOD/vox/lamp_11.vox" object="shape">
+		<vox name="lamp308" pos="0 4.9 14.9" file="MOD/vox/lamp_13.vox" object="shape">
 			<light pos="0 -0.3 -0.2" type="sphere" color="0.9 0.95 1" scale="2" size="0.3"/>
 		</vox>
-		<vox name="lamp307" pos="-7.4 8.3 18.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp309" pos="-7.4 8.3 18.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp308" pos="-7.4 8.3 21.3" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp310" pos="-7.4 8.3 21.3" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp309" pos="-7.4 8.3 24.5" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp311" pos="-7.4 8.3 24.5" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp310" pos="-7.4 8.3 27.7" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp312" pos="-7.4 8.3 27.7" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp311" pos="-7.4 8.3 30.9" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp313" pos="-7.4 8.3 30.9" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp312" pos="-7.4 8.3 34.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp314" pos="-7.4 8.3 34.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp313" pos="-4.2 8.3 18.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp315" pos="-4.2 8.3 18.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp314" pos="-4.2 8.3 21.3" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp316" pos="-4.2 8.3 21.3" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp315" pos="-4.2 8.3 24.5" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp317" pos="-4.2 8.3 24.5" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp316" pos="-4.2 8.3 27.7" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp318" pos="-4.2 8.3 27.7" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp317" pos="-4.2 8.3 30.9" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp319" pos="-4.2 8.3 30.9" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp318" pos="-4.2 8.3 34.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp320" pos="-4.2 8.3 34.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp319" pos="-1 8.3 18.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp321" pos="-1 8.3 18.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp320" pos="-1 8.3 21.3" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp322" pos="-1 8.3 21.3" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp321" pos="-1 8.3 24.5" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp323" pos="-1 8.3 24.5" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp322" pos="-1 8.3 27.7" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp324" pos="-1 8.3 27.7" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp323" pos="-1 8.3 30.9" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp325" pos="-1 8.3 30.9" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp324" pos="-1 8.3 34.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp326" pos="-1 8.3 34.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp325" pos="2.2 8.3 18.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp327" pos="2.2 8.3 18.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp326" pos="2.2 8.3 21.3" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp328" pos="2.2 8.3 21.3" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp327" pos="2.2 8.3 24.5" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp329" pos="2.2 8.3 24.5" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp328" pos="2.2 8.3 27.7" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp330" pos="2.2 8.3 27.7" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp329" pos="2.2 8.3 30.9" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp331" pos="2.2 8.3 30.9" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp330" pos="2.2 8.3 34.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp332" pos="2.2 8.3 34.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp331" pos="5.4 8.3 18.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp333" pos="5.4 8.3 18.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp332" pos="5.4 8.3 21.3" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp334" pos="5.4 8.3 21.3" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp333" pos="5.4 8.3 24.5" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp335" pos="5.4 8.3 24.5" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp334" pos="5.4 8.3 27.7" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp336" pos="5.4 8.3 27.7" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp335" pos="5.4 8.3 30.9" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp337" pos="5.4 8.3 30.9" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp336" pos="5.4 8.3 34.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp338" pos="5.4 8.3 34.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp337" pos="8.6 8.3 18.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp339" pos="8.6 8.3 18.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp338" pos="8.6 8.3 21.3" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp340" pos="8.6 8.3 21.3" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp339" pos="8.6 8.3 24.5" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp341" pos="8.6 8.3 24.5" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp340" pos="8.6 8.3 27.7" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp342" pos="8.6 8.3 27.7" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp341" pos="8.6 8.3 30.9" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp343" pos="8.6 8.3 30.9" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp342" pos="8.6 8.3 34.1" file="MOD/vox/lamp_12.vox" object="shape">
+		<vox name="lamp344" pos="8.6 8.3 34.1" file="MOD/vox/lamp_14.vox" object="shape">
 			<light pos="0 -0.2 0" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
 		</vox>
-		<vox name="lamp343" pos="-6.1 1.7 22.7" file="MOD/vox/lamp_13.vox" object="shape">
+		<vox name="lamp345" pos="-6.1 1.7 22.7" file="MOD/vox/lamp_15.vox" object="shape">
 			<light pos="0.15 0.15 -0.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp344" pos="6 1.7 22.7" file="MOD/vox/lamp_13.vox" object="shape">
+		<vox name="lamp346" pos="6 1.7 22.7" file="MOD/vox/lamp_15.vox" object="shape">
 			<light pos="-0.05 0.15 -0.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp345" pos="-6.1 1.7 24.5" file="MOD/vox/lamp_13.vox" object="shape">
+		<vox name="lamp347" pos="-6.1 1.7 24.5" file="MOD/vox/lamp_15.vox" object="shape">
 			<light pos="0.15 0.15 -0.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp346" pos="6 1.7 24.5" file="MOD/vox/lamp_13.vox" object="shape">
+		<vox name="lamp348" pos="6 1.7 24.5" file="MOD/vox/lamp_15.vox" object="shape">
 			<light pos="-0.05 0.15 -0.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp347" pos="-6.1 1.7 26.3" file="MOD/vox/lamp_13.vox" object="shape">
+		<vox name="lamp349" pos="-6.1 1.7 26.3" file="MOD/vox/lamp_15.vox" object="shape">
 			<light pos="0.15 0.15 -0.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp348" pos="6 1.7 26.3" file="MOD/vox/lamp_13.vox" object="shape">
+		<vox name="lamp350" pos="6 1.7 26.3" file="MOD/vox/lamp_15.vox" object="shape">
 			<light pos="-0.05 0.15 -0.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp349" pos="-6.1 1.7 28.1" file="MOD/vox/lamp_13.vox" object="shape">
+		<vox name="lamp351" pos="-6.1 1.7 28.1" file="MOD/vox/lamp_15.vox" object="shape">
 			<light pos="0.15 0.15 -0.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp350" pos="6 1.7 28.1" file="MOD/vox/lamp_13.vox" object="shape">
+		<vox name="lamp352" pos="6 1.7 28.1" file="MOD/vox/lamp_15.vox" object="shape">
 			<light pos="-0.05 0.15 -0.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
 		</vox>
 	</group>
