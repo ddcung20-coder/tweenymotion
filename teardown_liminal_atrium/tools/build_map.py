@@ -747,6 +747,7 @@ def window_in_facade(fr, bw, y):
     return u0
 
 ROOM_SWITCHES = []   # per-room light switch shapes: (arr, gmin, room id, lights on, tv on)
+ROOM_NSTANDS = {}    # room id -> number of bedside lamps
 
 def curtains(fr, u0, y, state, rid=-1):
     """two curtain panels per window: separate static bodies that main.lua slides open / shut (E)."""
@@ -836,7 +837,9 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False, rid=0):
         fr.box(U1 - 4, U1 - 1, y + 9, y + 12, nv, nv + 3, LAMPSHADE)
         fr.box(U1 - 3, U1 - 2, y + 10, y + 11, nv + 1, nv + 2, 0)            # hollow: the bulb lives here
     fr.box(U1 - 5, U1 - 3, y + 6, y + 7, stands[0][0] + 2, stands[0][0] + 4, TV_BODY)   # phone
-    fr.light(U1 - 3, y + 10.5, stands[0][0] + 1, (1.0, 0.78, 0.45), 1.6, 0.1, f"room={rid} rl=lamp")
+    for (nv, nw) in stands:                                                   # every bedside lamp has its own bulb
+        fr.light(U1 - 3, y + 10.5, nv + 1, (1.0, 0.78, 0.45), 1.6, 0.1, f"room={rid} rl=lamp")
+    ROOM_NSTANDS[rid] = len(stands)
     # art above the bed(s)
     wall_art(fr, U1 - 1 + 1, y + 16, beds[0][0] + (1 if not twin else 4), 14, 7)
     # ---- desk + TV + mirror on the opposite wall (u = U0)
@@ -3069,7 +3072,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.25\n"
+        f.write("name = Liminal Atrium v3.26\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

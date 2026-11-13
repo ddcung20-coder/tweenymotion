@@ -391,10 +391,14 @@ per = collections.Counter()
 for l in ns["LIGHTS"]:
     t = dict(kv.split("=") for kv in l[6].split() if "=" in kv)
     if "room" in t: per[(t["room"], t["rl"])] += 1
-kinds_ok = all(per[(str(i), k)] == 1 for i in range(len(ns["room_log"])) for k in ("ceil", "lamp", "bath", "tv"))
+NS = ns["ROOM_NSTANDS"]
+kinds_ok = all(per[(str(i), k)] == 1 for i in range(len(ns["room_log"])) for k in ("ceil", "bath", "tv")) and \
+           all(per[(str(i), "lamp")] == NS[i] >= 1 for i in range(len(ns["room_log"])))
 lamp_rooms = sum(1 for L in ns["LAMPS"] if any("room=" in lt[6] for lt in L["lights"]))
+need = sum(3 + NS[i] for i in range(len(ns["room_log"])))
 mixed = [i for i, L in enumerate(ns["LAMPS"]) if len({lt[6] for lt in L["lights"]}) > 1 and any("room=" in lt[6] for lt in L["lights"])]
-report("every room: ceiling, bedside, bathroom light + TV, each its own switchable lamp", kinds_ok and not mixed and lamp_rooms == 4 * len(ns["room_log"]), f"{lamp_rooms} room lamps, mixed {mixed[:4]}")
+report("every room: ceiling, EVERY bedside lamp, bathroom light + TV, each its own switchable lamp", kinds_ok and not mixed and lamp_rooms == need,
+       f"{lamp_rooms}/{need} room lamps, {sum(1 for v in NS.values() if v > 1)} rooms with 2 bedside lamps, mixed {mixed[:4]}")
 pd_bad = []
 for i, (poly, cells) in enumerate(ns["PUDDLES"]):
     if not all(FULL[x, YB - 1, z] == 0 and FULL[x, YB - 2, z] > 0 for (x, z) in cells):
