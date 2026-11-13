@@ -12,16 +12,27 @@ local TOOLS = { "sledge", "spraycan", "extinguisher", "blowtorch", "shotgun", "p
 
 local function giveTools()
 	for i = 1, #TOOLS do
-		SetBool("game.tool." .. TOOLS[i] .. ".enabled", true)
+		local id = TOOLS[i]
+		SetBool("game.tool." .. id .. ".enabled", true)
+		if SetToolEnabled then pcall(SetToolEnabled, id, true) end      -- 2.x API
 	end
 end
 
 local function topUpAmmo()
-	-- always keep every tool loaded (the key may not exist yet on a fresh custom level)
+	-- keep every tool loaded: registry (1.x) and SetToolAmmo (2.x, ammo is per player there)
 	for i = 1, #TOOLS do
-		local key = "game.tool." .. TOOLS[i] .. ".ammo"
+		local id = TOOLS[i]
+		local key = "game.tool." .. id .. ".ammo"
 		if GetFloat(key) < 50 then
-			SetFloat(key, 99)
+			SetFloat(key, 999)
+		end
+		if SetToolAmmo then
+			local cur = 0
+			if GetToolAmmo then
+				local ok, v = pcall(GetToolAmmo, id)
+				if ok and type(v) == "number" then cur = v end
+			end
+			if cur < 50 then pcall(SetToolAmmo, id, 999) end
 		end
 	end
 end
@@ -324,6 +335,41 @@ local function elevUpdate(dt)
 end
 
 ----------------------------------------------------------------------------------------------------
+-- lamps: every light knows its lamp voxel; when that lamp is shot/smashed the light goes out
+----------------------------------------------------------------------------------------------------
+local lamps = {}
+local lampIdx = 1
+local deadLight = {}
+
+local function lampsInit()
+	local ls = FindLights("lamp", true)
+	for i = 1, #ls do
+		local v = GetTagValue(ls[i], "lamp")
+		local p = {}
+		for num in string.gmatch(v, "[^,]+") do p[#p + 1] = tonumber(num) end
+		if #p == 3 then
+			lamps[#lamps + 1] = { light = ls[i], pos = Vec(p[1], p[2], p[3]) }
+		end
+	end
+end
+
+local function lampsTick()
+	local n = #lamps
+	if n == 0 then return end
+	for k = 1, math.min(40, n) do                 -- round robin: ~40 checks per frame
+		local L = lamps[lampIdx]
+		lampIdx = lampIdx % n + 1
+		if not deadLight[L.light] then
+			-- a lamp voxel centre is 5 cm from its neighbours: nothing within 4 cm means it is gone
+			if not QueryClosestPoint(L.pos, 0.04) then
+				deadLight[L.light] = true
+				SetLightEnabled(L.light, false)
+			end
+		end
+	end
+end
+
+----------------------------------------------------------------------------------------------------
 -- flickering corridor lights
 ----------------------------------------------------------------------------------------------------
 local flick = {}
@@ -339,6 +385,7 @@ local function flickerTick(dt, cam)
 	local nearest, nd = nil, 12
 	for i = 1, #flick do
 		local f = flick[i]
+		if deadLight[f.light] then f.on = false end
 		f.timer = f.timer - dt
 		if f.timer <= 0 then
 			if f.on then
@@ -348,7 +395,7 @@ local function flickerTick(dt, cam)
 				f.on = true
 				f.timer = (math.random() < 0.35) and (0.05 + math.random() * 0.1) or (1.5 + math.random() * 5)
 			end
-			SetLightEnabled(f.light, f.on)
+			if not deadLight[f.light] then SetLightEnabled(f.light, f.on) end
 		end
 		local p = GetLightTransform(f.light).pos
 		local d = dist(p, cam)
@@ -384,19 +431,72 @@ local function spotsTick(cam)
 end
 
 ----------------------------------------------------------------------------------------------------
+-- the map's own spawn menu (N key, or "Liminal Spawn" in the pause menu)
+----------------------------------------------------------------------------------------------------
+local SPAWN_ITEMS = {
+	{ "Car (blue)", "car_a" }, { "Car (silver)", "car_b" }, { "Car (red)", "car_c" },
+	{ "Luggage cart", "luggage_cart" }, { "Beach ball", "beach_ball" }, { "Swim ring", "swim_ring" },
+	{ "Kickboard", "kickboard" }, { "Wooden crate", "crate" }, { "Red barrel", "barrel" },
+	{ "Lobby sofa", "sofa" }, { "Old TV", "crt_tv" },
+}
+local menuOpen = false
+
+local function spawnItem(id)
+	local ct = GetCameraTransform()
+	local fwd = TransformToParentVec(ct, Vec(0, 0, -1))
+	local pos = VecAdd(ct.pos, VecScale(fwd, 4))
+	pos[2] = pos[2] + 0.5
+	local yaw = math.deg(math.atan2(-fwd[1], -fwd[3]))
+	Spawn("MOD/prefab/" .. id .. ".xml", Transform(pos, QuatEuler(0, yaw, 0)))
+	PlaySound(snd.click, ct.pos, 0.6)
+end
+
+local function spawnMenuTick()
+	if InputPressed("n") then menuOpen = not menuOpen end
+	if menuOpen and InputPressed("esc") then menuOpen = false end
+end
+
+function draw()
+	if PauseMenuButton then
+		if PauseMenuButton("Liminal Spawn") then menuOpen = true end
+	end
+	if not menuOpen then return end
+	UiMakeInteractive()
+	UiPush()
+		local w, rowH = 360, 38
+		local h = 80 + #SPAWN_ITEMS * rowH + 50
+		UiTranslate(UiCenter() - w / 2, UiMiddle() - h / 2)
+		UiColor(0.05, 0.04, 0.08, 0.85)
+		UiRect(w, h)
+		UiColor(1, 1, 1, 1)
+		UiFont("bold.ttf", 26)
+		UiTranslate(w / 2, 40)
+		UiAlign("center middle")
+		UiText("LIMINAL SPAWN")
+		UiFont("regular.ttf", 22)
+		UiTranslate(0, 40)
+		for i = 1, #SPAWN_ITEMS do
+			UiColor(0.85, 0.8, 1, 1)
+			if UiTextButton(SPAWN_ITEMS[i][1], w - 40, rowH - 6) then
+				spawnItem(SPAWN_ITEMS[i][2])
+			end
+			UiTranslate(0, rowH)
+		end
+		UiTranslate(0, 10)
+		UiColor(1, 0.6, 0.6, 1)
+		if UiTextButton("Close (N)", w - 40, rowH - 6) then menuOpen = false end
+	UiPop()
+end
+
+----------------------------------------------------------------------------------------------------
 -- callbacks
 ----------------------------------------------------------------------------------------------------
 local toolTimer = 0
+local ammoTimer = 0
 
 local active = true
 
 function init()
-	-- run only once even if the level XML also loads this file
-	if GetBool("level.liminal.running") then
-		active = false
-		return
-	end
-	SetBool("level.liminal.running", true)
 	SetBool("level.sandbox", true)          -- sandbox level (spawn menu etc.)
 	SetBool("level.unlimitedammo", true)
 	loadSounds()
@@ -405,6 +505,7 @@ function init()
 	elevInit()
 	flickerInit()
 	spotsInit()
+	lampsInit()
 end
 
 function tick(dt)
@@ -413,13 +514,20 @@ function tick(dt)
 		toolTimer = toolTimer + dt
 		giveTools()
 	end
-	topUpAmmo()
+	ammoTimer = (ammoTimer or 0) - dt
+	if ammoTimer <= 0 then
+		ammoTimer = 1
+		giveTools()
+		topUpAmmo()
+	end
 	local cam = GetCameraTransform().pos
 	PlayLoop(snd.ambience, cam, 0.3)
 	doorsTick(cam)
 	elevTick(dt)
 	flickerTick(dt, cam)
 	spotsTick(cam)
+	lampsTick()
+	spawnMenuTick()
 end
 
 function update(dt)

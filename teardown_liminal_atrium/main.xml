@@ -2,7 +2,6 @@
 	<environment skybox="cloudy.dds" skyboxtint="0.35 0.3 0.5" skyboxbrightness="0.12" skyboxrot="0" constant="0.004 0.003 0.006" ambient="0.25" ambientexponent="1.6" fogColor="0.07 0.06 0.1" fogParams="30 160 0.9 4" sunBrightness="0" sunColorTint="0.6 0.6 1" sunDir="auto" sunSpread="0" sunLength="32" sunFogScale="1" sunGlare="0" exposure="1 6" brightness="1" nightlight="true" wetness="0" puddleamount="0" puddlesize="0.5" rain="0"/>
 	<postprocessing saturation="0.92" colorbalance="1.0 0.94 1.1" brightness="1.05" gamma="1" bloom="1.3"/>
 	<spawnpoint pos="0 0.5 -21.1" rot="0 180 0"/>
-	<script file="main.lua"/>
 	<boundary>
 		<vertex pos="-23.6 -38.5"/>
 		<vertex pos="23.6 -38.5"/>
@@ -19,360 +18,360 @@
 		<vox name="c_0_0_3" pos="-17.6 0 26.7" file="MOD/vox/c_0_0_3.vox" object="shape"/>
 		<vox name="c_1_0_3" pos="0 0 26.7" file="MOD/vox/c_1_0_3.vox" object="shape"/>
 		<vox name="c_2_0_3" pos="17.6 0 26.7" file="MOD/vox/c_2_0_3.vox" object="shape"/>
-		<light pos="-5 20.45 -20.1" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="-5 20.45 -14.7" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="-5 20.45 -9.3" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="-5 20.45 -3.9" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="-5 20.45 1.5" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="0 20.45 -20.1" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="0 20.45 -14.7" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="0 20.45 -9.3" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="0 20.45 -3.9" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="0 20.45 1.5" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="5 20.45 -20.1" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="5 20.45 -14.7" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="5 20.45 -9.3" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="5 20.45 -3.9" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="5 20.45 1.5" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
-		<light pos="-7.75 20.15 -21.15" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-7.75 20.15 -17.75" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-7.75 20.15 -14.35" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-7.75 20.15 -10.95" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-7.75 20.15 -7.55" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-7.75 20.15 -4.15" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-7.75 20.15 -0.75" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-7.75 20.15 2.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="7.75 20.15 2.55" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="7.75 20.15 -0.85" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="7.75 20.15 -4.25" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="7.75 20.15 -7.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="7.75 20.15 -11.05" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="7.75 20.15 -14.45" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="7.75 20.15 -17.85" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="7.75 20.15 -21.25" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="5.95 20.15 -22.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="1.95 20.15 -22.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-2.05 20.15 -22.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-6.05 20.15 -22.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-5.95 20.15 4.05" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-1.95 20.15 4.05" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="2.05 20.15 4.05" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="6.05 20.15 4.05" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
-		<light pos="-8.95 1.45 -19.75" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 2.9 -21.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 10.45 -22.45" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 11.9 -21.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-10.6 13.8 -22.35" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="-8.95 16.45 -22.45" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 17.9 -21.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 1.45 -19.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 2.9 -17.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-10.6 4.8 -16.45" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="-8.95 7.45 -19.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 8.9 -17.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 10.45 -19.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 11.9 -17.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 16.45 -19.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 17.9 -17.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 1.45 -9.55" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 2.9 -10.85" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 7.45 -12.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 8.9 -10.95" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 13.45 -9.55" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 14.9 -10.85" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-10.6 16.8 -12.15" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="-8.95 1.45 -8.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 2.9 -7.55" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 7.45 -6.15" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 8.9 -7.45" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-10.6 13.8 -6.25" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="-8.95 1.45 -2.75" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 2.9 -4.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 10.45 -5.45" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 11.9 -4.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 16.45 -5.45" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 17.9 -4.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-10.6 1.8 0.55" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="-8.95 4.45 0.65" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 5.9 -0.65" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 7.45 0.65" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 8.9 -0.65" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-8.95 13.45 -2.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-10.45 14.9 -0.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-10.6 1.8 1.45" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="-10.6 4.8 1.45" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="-10.6 7.8 1.45" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="10.6 7.8 1.25" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="10.6 10.8 1.25" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="8.95 13.45 1.15" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 14.9 2.45" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="10.6 1.8 0.35" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="8.95 10.45 -2.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 11.9 -0.95" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="10.6 1.8 -5.55" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="10.6 4.8 -3.05" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="10.6 13.8 -3.05" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="8.95 7.45 -9.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 8.9 -7.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="8.95 10.45 -9.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 11.9 -7.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="10.6 13.8 -12.35" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="8.95 16.45 -9.75" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 17.9 -11.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="8.95 7.45 -15.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 8.9 -14.55" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="8.95 13.45 -15.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 14.9 -14.55" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="8.95 16.45 -13.15" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 17.9 -14.45" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="8.95 1.45 -19.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 2.9 -17.95" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="8.95 4.45 -16.55" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 5.9 -17.85" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="8.95 10.45 -16.55" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 11.9 -17.85" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="8.95 1.45 -22.65" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="10.45 2.9 -21.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="10.6 4.8 -20.05" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="7.55 1.45 -24.95" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="5.95 2.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="3.55 16.45 -24.95" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="1.95 17.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-0.45 7.45 -23.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-2.05 8.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-0.45 10.45 -24.95" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-2.05 11.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-4.45 1.45 -23.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-6.05 2.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-4.45 4.45 -24.95" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-6.05 5.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-7.75 7.45 -24.95" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-6.15 8.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-4.55 13.8 -25.5" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="-7.75 16.45 -23.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-6.15 17.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-4.25 7.45 6.35" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-5.85 8.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-7.55 10.45 5.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-5.95 11.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-4.25 16.45 5.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-5.85 17.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-0.25 7.45 5.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="-1.85 8.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-3.45 10.8 6.9" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="3.75 1.45 6.35" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="2.15 2.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="0.55 4.8 6.9" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="3.75 13.45 5.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="2.15 14.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="3.65 16.8 6.9" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
-		<light pos="4.45 1.45 6.35" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="6.05 2.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="4.45 10.45 6.35" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
-		<light pos="6.05 11.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
-		<light pos="-13.95 2.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="-13.95 2.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 2.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 2.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="-13.95 2.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 2.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 5.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 5.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 5.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 5.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 5.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 5.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 8.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 8.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 8.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 8.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="-13.95 8.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 8.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 11.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 11.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 11.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 11.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 11.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 11.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 14.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 14.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="-13.95 14.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="-13.95 14.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 14.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 14.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="-13.95 17.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 17.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 17.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 17.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 17.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-13.95 17.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 2.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="13.95 2.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 2.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 2.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 2.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 2.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 5.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 5.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 5.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 5.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 5.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 5.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 8.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="13.95 8.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 8.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="13.95 8.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 8.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="13.95 8.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="13.95 11.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="13.95 11.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 11.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 11.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 11.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 11.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 14.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="13.95 14.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 14.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 14.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 14.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="13.95 14.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 17.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 17.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 17.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 17.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="13.95 17.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="13.95 17.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="9.65 2.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="2.85 2.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="-3.95 2.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-10.75 2.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="9.65 5.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="2.85 5.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-3.95 5.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-10.75 5.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="9.65 8.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="2.85 8.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-3.95 8.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-10.75 8.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="9.65 11.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="2.85 11.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-3.95 11.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-10.75 11.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="9.65 14.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="2.85 14.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-3.95 14.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-10.75 14.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="9.65 17.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="2.85 17.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-3.95 17.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-10.75 17.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-9.65 2.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-2.85 2.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="3.95 2.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="10.75 2.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-9.65 5.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="-2.85 5.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="3.95 5.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="10.75 5.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="-9.65 8.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-2.85 8.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="3.95 8.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="10.75 8.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-9.65 11.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light tags="flicker" pos="-2.85 11.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="3.95 11.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="10.75 11.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-9.65 14.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-2.85 14.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="3.95 14.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="10.75 14.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-9.65 17.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="-2.85 17.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="3.95 17.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="10.75 17.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
-		<light pos="1.25 2.5 -25.25" type="sphere" color="1 0.85 0.6" scale="3.5" size="0.4"/>
-		<light pos="-2.55 2.8 -25.45" type="sphere" color="1 0.85 0.65" scale="2" size="0.3"/>
-		<light pos="2.65 2.8 -25.45" type="sphere" color="1 0.85 0.65" scale="2" size="0.3"/>
+		<light tags="lamp=-5.050,20.550,-20.150" pos="-5 20.45 -20.1" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=-5.050,20.550,-14.750" pos="-5 20.45 -14.7" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=-5.050,20.550,-9.350" pos="-5 20.45 -9.3" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=-5.050,20.550,-3.950" pos="-5 20.45 -3.9" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=-5.050,20.550,1.450" pos="-5 20.45 1.5" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=-0.050,20.550,-20.150" pos="0 20.45 -20.1" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=-0.050,20.550,-14.750" pos="0 20.45 -14.7" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=-0.050,20.550,-9.350" pos="0 20.45 -9.3" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=-0.050,20.550,-3.950" pos="0 20.45 -3.9" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=-0.050,20.550,1.450" pos="0 20.45 1.5" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=4.950,20.550,-20.150" pos="5 20.45 -20.1" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=4.950,20.550,-14.750" pos="5 20.45 -14.7" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=4.950,20.550,-9.350" pos="5 20.45 -9.3" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=4.950,20.550,-3.950" pos="5 20.45 -3.9" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=4.950,20.550,1.450" pos="5 20.45 1.5" type="sphere" color="0.8 0.66 1" scale="2.6" size="0.25"/>
+		<light tags="lamp=-7.850,20.250,-21.150" pos="-7.75 20.15 -21.15" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-7.850,20.250,-17.750" pos="-7.75 20.15 -17.75" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-7.850,20.250,-14.350" pos="-7.75 20.15 -14.35" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-7.850,20.250,-10.950" pos="-7.75 20.15 -10.95" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-7.850,20.250,-7.550" pos="-7.75 20.15 -7.55" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-7.850,20.250,-4.150" pos="-7.75 20.15 -4.15" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-7.850,20.250,-0.750" pos="-7.75 20.15 -0.75" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-7.850,20.250,2.650" pos="-7.75 20.15 2.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=7.850,20.250,2.550" pos="7.75 20.15 2.55" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=7.850,20.250,-0.850" pos="7.75 20.15 -0.85" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=7.850,20.250,-4.250" pos="7.75 20.15 -4.25" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=7.850,20.250,-7.650" pos="7.75 20.15 -7.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=7.850,20.250,-11.050" pos="7.75 20.15 -11.05" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=7.850,20.250,-14.450" pos="7.75 20.15 -14.45" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=7.850,20.250,-17.850" pos="7.75 20.15 -17.85" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=7.850,20.250,-21.250" pos="7.75 20.15 -21.25" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=5.950,20.250,-22.750" pos="5.95 20.15 -22.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=1.950,20.250,-22.750" pos="1.95 20.15 -22.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-2.050,20.250,-22.750" pos="-2.05 20.15 -22.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-6.050,20.250,-22.750" pos="-6.05 20.15 -22.65" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-5.950,20.250,4.150" pos="-5.95 20.15 4.05" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-1.950,20.250,4.150" pos="-1.95 20.15 4.05" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=2.050,20.250,4.150" pos="2.05 20.15 4.05" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=6.050,20.250,4.150" pos="6.05 20.15 4.05" type="sphere" color="0.85 0.7 1" scale="1.1" size="0.15"/>
+		<light tags="lamp=-9.050,1.450,-19.750" pos="-8.95 1.45 -19.75" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,3.050,-21.050" pos="-10.45 2.9 -21.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,10.450,-22.450" pos="-8.95 10.45 -22.45" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,12.050,-21.150" pos="-10.45 11.9 -21.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-10.650,13.750,-22.550" pos="-10.6 13.8 -22.35" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=-9.050,16.450,-22.450" pos="-8.95 16.45 -22.45" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,18.050,-21.150" pos="-10.45 17.9 -21.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,1.450,-19.050" pos="-8.95 1.45 -19.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,3.050,-17.750" pos="-10.45 2.9 -17.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-10.650,4.750,-16.250" pos="-10.6 4.8 -16.45" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=-9.050,7.450,-19.050" pos="-8.95 7.45 -19.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,9.050,-17.750" pos="-10.45 8.9 -17.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,10.450,-19.050" pos="-8.95 10.45 -19.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,12.050,-17.750" pos="-10.45 11.9 -17.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,16.450,-19.050" pos="-8.95 16.45 -19.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,18.050,-17.750" pos="-10.45 17.9 -17.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,1.450,-9.550" pos="-8.95 1.45 -9.55" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,3.050,-10.850" pos="-10.45 2.9 -10.85" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,7.450,-12.250" pos="-8.95 7.45 -12.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,9.050,-10.950" pos="-10.45 8.9 -10.95" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,13.450,-9.550" pos="-8.95 13.45 -9.55" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,15.050,-10.850" pos="-10.45 14.9 -10.85" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-10.650,16.750,-12.350" pos="-10.6 16.8 -12.15" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=-9.050,1.450,-8.850" pos="-8.95 1.45 -8.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,3.050,-7.550" pos="-10.45 2.9 -7.55" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,7.450,-6.150" pos="-8.95 7.45 -6.15" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,9.050,-7.450" pos="-10.45 8.9 -7.45" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-10.650,13.750,-6.050" pos="-10.6 13.8 -6.25" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=-9.050,1.450,-2.750" pos="-8.95 1.45 -2.75" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,3.050,-4.050" pos="-10.45 2.9 -4.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,10.450,-5.450" pos="-8.95 10.45 -5.45" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,12.050,-4.150" pos="-10.45 11.9 -4.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,16.450,-5.450" pos="-8.95 16.45 -5.45" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,18.050,-4.150" pos="-10.45 17.9 -4.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-10.650,1.750,0.750" pos="-10.6 1.8 0.55" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=-9.050,4.450,0.650" pos="-8.95 4.45 0.65" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,6.050,-0.650" pos="-10.45 5.9 -0.65" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,7.450,0.650" pos="-8.95 7.45 0.65" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,9.050,-0.650" pos="-10.45 8.9 -0.65" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-9.050,13.450,-2.050" pos="-8.95 13.45 -2.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-10.450,15.050,-0.750" pos="-10.45 14.9 -0.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-10.650,1.750,1.250" pos="-10.6 1.8 1.45" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=-10.650,4.750,1.250" pos="-10.6 4.8 1.45" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=-10.650,7.750,1.250" pos="-10.6 7.8 1.45" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=10.550,7.750,1.050" pos="10.6 7.8 1.25" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=10.550,10.750,1.050" pos="10.6 10.8 1.25" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=8.850,13.450,1.150" pos="8.95 13.45 1.15" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,15.050,2.450" pos="10.45 14.9 2.45" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=10.550,1.750,0.550" pos="10.6 1.8 0.35" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=8.850,10.450,-2.250" pos="8.95 10.45 -2.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,12.050,-0.950" pos="10.45 11.9 -0.95" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=10.550,1.750,-5.750" pos="10.6 1.8 -5.55" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=10.550,4.750,-2.850" pos="10.6 4.8 -3.05" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=10.550,13.750,-2.850" pos="10.6 13.8 -3.05" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=8.850,7.450,-9.050" pos="8.95 7.45 -9.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,9.050,-7.750" pos="10.45 8.9 -7.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=8.850,10.450,-9.050" pos="8.95 10.45 -9.05" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,12.050,-7.750" pos="10.45 11.9 -7.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=10.550,13.750,-12.550" pos="10.6 13.8 -12.35" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=8.850,16.450,-9.750" pos="8.95 16.45 -9.75" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,18.050,-11.050" pos="10.45 17.9 -11.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=8.850,7.450,-15.850" pos="8.95 7.45 -15.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,9.050,-14.550" pos="10.45 8.9 -14.55" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=8.850,13.450,-15.850" pos="8.95 13.45 -15.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,15.050,-14.550" pos="10.45 14.9 -14.55" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=8.850,16.450,-13.150" pos="8.95 16.45 -13.15" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,18.050,-14.450" pos="10.45 17.9 -14.45" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=8.850,1.450,-19.250" pos="8.95 1.45 -19.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,3.050,-17.950" pos="10.45 2.9 -17.95" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=8.850,4.450,-16.550" pos="8.95 4.45 -16.55" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,6.050,-17.850" pos="10.45 5.9 -17.85" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=8.850,10.450,-16.550" pos="8.95 10.45 -16.55" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,12.050,-17.850" pos="10.45 11.9 -17.85" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=8.850,1.450,-22.650" pos="8.95 1.45 -22.65" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=10.450,3.050,-21.350" pos="10.45 2.9 -21.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=10.550,4.750,-19.850" pos="10.6 4.8 -20.05" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=7.450,1.450,-24.950" pos="7.55 1.45 -24.95" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=5.950,3.050,-25.350" pos="5.95 2.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=3.450,16.450,-24.950" pos="3.55 16.45 -24.95" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=1.950,18.050,-25.350" pos="1.95 17.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-0.550,7.450,-23.850" pos="-0.45 7.45 -23.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-2.050,9.050,-25.350" pos="-2.05 8.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-0.550,10.450,-24.950" pos="-0.45 10.45 -24.95" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-2.050,12.050,-25.350" pos="-2.05 11.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-4.550,1.450,-23.850" pos="-4.45 1.45 -23.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-6.050,3.050,-25.350" pos="-6.05 2.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-4.550,4.450,-24.950" pos="-4.45 4.45 -24.95" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-6.050,6.050,-25.350" pos="-6.05 5.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-7.850,7.450,-24.950" pos="-7.75 7.45 -24.95" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-6.150,9.050,-25.350" pos="-6.15 8.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-4.350,13.750,-25.550" pos="-4.55 13.8 -25.5" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=-7.850,16.450,-23.850" pos="-7.75 16.45 -23.85" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-6.150,18.050,-25.350" pos="-6.15 17.9 -25.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-4.350,7.450,6.350" pos="-4.25 7.45 6.35" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-5.850,9.050,6.750" pos="-5.85 8.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-7.650,10.450,5.250" pos="-7.55 10.45 5.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-5.950,12.050,6.750" pos="-5.95 11.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-4.350,16.450,5.250" pos="-4.25 16.45 5.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-5.850,18.050,6.750" pos="-5.85 17.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-0.350,7.450,5.250" pos="-0.25 7.45 5.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=-1.850,9.050,6.750" pos="-1.85 8.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-3.650,10.750,6.850" pos="-3.45 10.8 6.9" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=3.650,1.450,6.350" pos="3.75 1.45 6.35" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=2.150,3.050,6.750" pos="2.15 2.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=0.350,4.750,6.850" pos="0.55 4.8 6.9" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=3.650,13.450,5.250" pos="3.75 13.45 5.25" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=2.150,15.050,6.750" pos="2.15 14.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=3.850,16.750,6.850" pos="3.65 16.8 6.9" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		<light tags="lamp=4.350,1.450,6.350" pos="4.45 1.45 6.35" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=6.050,3.050,6.750" pos="6.05 2.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=4.350,10.450,6.350" pos="4.45 10.45 6.35" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.1"/>
+		<light tags="lamp=6.050,12.050,6.750" pos="6.05 11.9 6.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		<light tags="lamp=-13.950,2.750,-24.550" pos="-13.95 2.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=-13.950,2.750,-17.750" pos="-13.95 2.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,2.750,-10.950" pos="-13.95 2.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,2.750,-4.150" pos="-13.95 2.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=-13.950,2.750,2.650" pos="-13.95 2.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,2.750,9.450" pos="-13.95 2.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,5.750,-24.550" pos="-13.95 5.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,5.750,-17.750" pos="-13.95 5.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,5.750,-10.950" pos="-13.95 5.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,5.750,-4.150" pos="-13.95 5.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,5.750,2.650" pos="-13.95 5.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,5.750,9.450" pos="-13.95 5.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,8.750,-24.550" pos="-13.95 8.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,8.750,-17.750" pos="-13.95 8.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,8.750,-10.950" pos="-13.95 8.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,8.750,-4.150" pos="-13.95 8.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=-13.950,8.750,2.650" pos="-13.95 8.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,8.750,9.450" pos="-13.95 8.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,11.750,-24.550" pos="-13.95 11.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,11.750,-17.750" pos="-13.95 11.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,11.750,-10.950" pos="-13.95 11.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,11.750,-4.150" pos="-13.95 11.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,11.750,2.650" pos="-13.95 11.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,11.750,9.450" pos="-13.95 11.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,14.750,-24.550" pos="-13.95 14.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,14.750,-17.750" pos="-13.95 14.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=-13.950,14.750,-10.950" pos="-13.95 14.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=-13.950,14.750,-4.150" pos="-13.95 14.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,14.750,2.650" pos="-13.95 14.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,14.750,9.450" pos="-13.95 14.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=-13.950,17.750,-24.550" pos="-13.95 17.5 -24.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,17.750,-17.750" pos="-13.95 17.5 -17.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,17.750,-10.950" pos="-13.95 17.5 -10.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,17.750,-4.150" pos="-13.95 17.5 -4.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,17.750,2.650" pos="-13.95 17.5 2.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-13.950,17.750,9.450" pos="-13.95 17.5 9.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,2.750,5.950" pos="13.95 2.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=13.950,2.750,-0.850" pos="13.95 2.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,2.750,-7.650" pos="13.95 2.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,2.750,-14.450" pos="13.95 2.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,2.750,-21.250" pos="13.95 2.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,2.750,-28.050" pos="13.95 2.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,5.750,5.950" pos="13.95 5.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,5.750,-0.850" pos="13.95 5.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,5.750,-7.650" pos="13.95 5.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,5.750,-14.450" pos="13.95 5.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,5.750,-21.250" pos="13.95 5.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,5.750,-28.050" pos="13.95 5.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,8.750,5.950" pos="13.95 8.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=13.950,8.750,-0.850" pos="13.95 8.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,8.750,-7.650" pos="13.95 8.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=13.950,8.750,-14.450" pos="13.95 8.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,8.750,-21.250" pos="13.95 8.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=13.950,8.750,-28.050" pos="13.95 8.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=13.950,11.750,5.950" pos="13.95 11.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=13.950,11.750,-0.850" pos="13.95 11.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,11.750,-7.650" pos="13.95 11.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,11.750,-14.450" pos="13.95 11.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,11.750,-21.250" pos="13.95 11.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,11.750,-28.050" pos="13.95 11.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,14.750,5.950" pos="13.95 14.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=13.950,14.750,-0.850" pos="13.95 14.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,14.750,-7.650" pos="13.95 14.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,14.750,-14.450" pos="13.95 14.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,14.750,-21.250" pos="13.95 14.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=13.950,14.750,-28.050" pos="13.95 14.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,17.750,5.950" pos="13.95 17.5 5.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,17.750,-0.850" pos="13.95 17.5 -0.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,17.750,-7.650" pos="13.95 17.5 -7.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,17.750,-14.450" pos="13.95 17.5 -14.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=13.950,17.750,-21.250" pos="13.95 17.5 -21.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=13.950,17.750,-28.050" pos="13.95 17.5 -28.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=9.650,2.750,-28.850" pos="9.65 2.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=2.850,2.750,-28.850" pos="2.85 2.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=-3.950,2.750,-28.850" pos="-3.95 2.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-10.750,2.750,-28.850" pos="-10.75 2.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=9.650,5.750,-28.850" pos="9.65 5.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=2.850,5.750,-28.850" pos="2.85 5.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-3.950,5.750,-28.850" pos="-3.95 5.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-10.750,5.750,-28.850" pos="-10.75 5.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=9.650,8.750,-28.850" pos="9.65 8.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=2.850,8.750,-28.850" pos="2.85 8.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-3.950,8.750,-28.850" pos="-3.95 8.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-10.750,8.750,-28.850" pos="-10.75 8.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=9.650,11.750,-28.850" pos="9.65 11.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=2.850,11.750,-28.850" pos="2.85 11.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-3.950,11.750,-28.850" pos="-3.95 11.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-10.750,11.750,-28.850" pos="-10.75 11.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=9.650,14.750,-28.850" pos="9.65 14.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=2.850,14.750,-28.850" pos="2.85 14.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-3.950,14.750,-28.850" pos="-3.95 14.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-10.750,14.750,-28.850" pos="-10.75 14.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=9.650,17.750,-28.850" pos="9.65 17.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=2.850,17.750,-28.850" pos="2.85 17.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-3.950,17.750,-28.850" pos="-3.95 17.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-10.750,17.750,-28.850" pos="-10.75 17.5 -28.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-9.650,2.750,10.250" pos="-9.65 2.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-2.850,2.750,10.250" pos="-2.85 2.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=3.950,2.750,10.250" pos="3.95 2.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=10.750,2.750,10.250" pos="10.75 2.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-9.650,5.750,10.250" pos="-9.65 5.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=-2.850,5.750,10.250" pos="-2.85 5.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=3.950,5.750,10.250" pos="3.95 5.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=10.750,5.750,10.250" pos="10.75 5.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=-9.650,8.750,10.250" pos="-9.65 8.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-2.850,8.750,10.250" pos="-2.85 8.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=3.950,8.750,10.250" pos="3.95 8.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=10.750,8.750,10.250" pos="10.75 8.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-9.650,11.750,10.250" pos="-9.65 11.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="flicker lamp=-2.850,11.750,10.250" pos="-2.85 11.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=3.950,11.750,10.250" pos="3.95 11.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=10.750,11.750,10.250" pos="10.75 11.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-9.650,14.750,10.250" pos="-9.65 14.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-2.850,14.750,10.250" pos="-2.85 14.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=3.950,14.750,10.250" pos="3.95 14.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=10.750,14.750,10.250" pos="10.75 14.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-9.650,17.750,10.250" pos="-9.65 17.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=-2.850,17.750,10.250" pos="-2.85 17.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=3.950,17.750,10.250" pos="3.95 17.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=10.750,17.750,10.250" pos="10.75 17.5 10.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+		<light tags="lamp=0.850,2.650,-25.650" pos="1.25 2.5 -25.25" type="sphere" color="1 0.85 0.6" scale="3.5" size="0.4"/>
+		<light tags="lamp=-2.550,3.050,-25.450" pos="-2.55 2.8 -25.45" type="sphere" color="1 0.85 0.65" scale="2" size="0.3"/>
+		<light tags="lamp=2.650,3.050,-25.450" pos="2.65 2.8 -25.45" type="sphere" color="1 0.85 0.65" scale="2" size="0.3"/>
 		<light pos="0.05 3.3 -31.3" type="sphere" color="1 0.85 0.65" scale="4" size="0.4"/>
-		<light pos="-12.35 2.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="-12.35 5.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="-12.35 8.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="-12.35 11.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="-12.35 14.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="-12.35 17.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=-12.350,3.050,-25.450" pos="-12.35 2.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=-12.350,6.050,-25.450" pos="-12.35 5.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=-12.350,9.050,-25.450" pos="-12.35 8.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=-12.350,12.050,-25.450" pos="-12.35 11.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=-12.350,15.050,-25.450" pos="-12.35 14.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=-12.350,18.050,-25.450" pos="-12.35 17.8 -25.45" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		<light pos="-11.75 20.8 -26.65" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="12.35 2.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="12.35 5.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="12.35 8.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="12.35 11.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="12.35 14.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="12.35 17.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=12.350,3.050,6.850" pos="12.35 2.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=12.350,6.050,6.850" pos="12.35 5.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=12.350,9.050,6.850" pos="12.35 8.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=12.350,12.050,6.850" pos="12.35 11.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=12.350,15.050,6.850" pos="12.35 14.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light tags="lamp=12.350,18.050,6.850" pos="12.35 17.8 6.85" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		<light pos="11.75 20.8 8.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="-9.55 2.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="-9.55 5.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="-9.55 8.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="-9.55 11.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="-9.55 14.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="-9.55 17.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="9.55 2.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="9.55 5.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="9.55 8.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="9.55 11.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="9.55 14.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="9.55 17.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
-		<light pos="0 19.8 -29.7" type="sphere" color="1 0.75 0.45" scale="5" size="0.5"/>
-		<light pos="-16.5 5.25 -31.55" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
-		<light pos="16.5 5.25 -31.55" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
-		<light pos="-16.5 5.25 12.65" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
-		<light pos="16.5 5.25 12.65" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
-		<light pos="-16.5 5.25 -9.35" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
-		<light pos="16.5 5.25 -9.35" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
-		<light pos="0 4.6 12.9" type="sphere" color="0.9 0.95 1" scale="2" size="0.3"/>
-		<light pos="0 4.6 14.7" type="sphere" color="0.9 0.95 1" scale="2" size="0.3"/>
-		<light pos="-7.4 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-7.4 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-7.4 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-7.4 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-7.4 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-7.4 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-4.2 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-4.2 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-4.2 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-4.2 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-4.2 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-4.2 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-1 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-1 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-1 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-1 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-1 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-1 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="2.2 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="2.2 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="2.2 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="2.2 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="2.2 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="2.2 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="5.4 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="5.4 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="5.4 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="5.4 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="5.4 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="5.4 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="8.6 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="8.6 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="8.6 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="8.6 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="8.6 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="8.6 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
-		<light pos="-5.95 1.85 22.65" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
-		<light pos="5.95 1.85 22.65" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
-		<light pos="-5.95 1.85 24.45" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
-		<light pos="5.95 1.85 24.45" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
-		<light pos="-5.95 1.85 26.25" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
-		<light pos="5.95 1.85 26.25" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
-		<light pos="-5.95 1.85 28.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
-		<light pos="5.95 1.85 28.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
+		<light tags="lamp=-9.550,3.050,7.050" pos="-9.55 2.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=-9.550,6.050,7.050" pos="-9.55 5.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=-9.550,9.050,7.050" pos="-9.55 8.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=-9.550,12.050,7.050" pos="-9.55 11.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=-9.550,15.050,7.050" pos="-9.55 14.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=-9.550,18.050,7.050" pos="-9.55 17.8 7.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=9.550,3.050,-25.650" pos="9.55 2.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=9.550,6.050,-25.650" pos="9.55 5.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=9.550,9.050,-25.650" pos="9.55 8.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=9.550,12.050,-25.650" pos="9.55 11.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=9.550,15.050,-25.650" pos="9.55 14.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=9.550,18.050,-25.650" pos="9.55 17.8 -25.65" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		<light tags="lamp=-0.050,19.750,-29.250" pos="0 19.8 -29.7" type="sphere" color="1 0.75 0.45" scale="5" size="0.5"/>
+		<light tags="lamp=-16.550,5.350,-31.550" pos="-16.5 5.25 -31.55" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		<light tags="lamp=16.450,5.350,-31.550" pos="16.5 5.25 -31.55" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		<light tags="lamp=-16.550,5.350,12.650" pos="-16.5 5.25 12.65" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		<light tags="lamp=16.450,5.350,12.650" pos="16.5 5.25 12.65" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		<light tags="lamp=-16.550,5.350,-9.350" pos="-16.5 5.25 -9.35" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		<light tags="lamp=16.450,5.350,-9.350" pos="16.5 5.25 -9.35" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		<light tags="lamp=-0.050,4.950,12.550" pos="0 4.6 12.9" type="sphere" color="0.9 0.95 1" scale="2" size="0.3"/>
+		<light tags="lamp=-0.050,4.950,14.750" pos="0 4.6 14.7" type="sphere" color="0.9 0.95 1" scale="2" size="0.3"/>
+		<light tags="lamp=-7.450,8.350,18.050" pos="-7.4 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-7.450,8.350,21.250" pos="-7.4 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-7.450,8.350,24.450" pos="-7.4 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-7.450,8.350,27.650" pos="-7.4 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-7.450,8.350,30.850" pos="-7.4 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-7.450,8.350,34.050" pos="-7.4 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-4.250,8.350,18.050" pos="-4.2 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-4.250,8.350,21.250" pos="-4.2 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-4.250,8.350,24.450" pos="-4.2 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-4.250,8.350,27.650" pos="-4.2 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-4.250,8.350,30.850" pos="-4.2 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-4.250,8.350,34.050" pos="-4.2 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-1.050,8.350,18.050" pos="-1 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-1.050,8.350,21.250" pos="-1 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-1.050,8.350,24.450" pos="-1 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-1.050,8.350,27.650" pos="-1 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-1.050,8.350,30.850" pos="-1 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-1.050,8.350,34.050" pos="-1 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=2.150,8.350,18.050" pos="2.2 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=2.150,8.350,21.250" pos="2.2 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=2.150,8.350,24.450" pos="2.2 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=2.150,8.350,27.650" pos="2.2 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=2.150,8.350,30.850" pos="2.2 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=2.150,8.350,34.050" pos="2.2 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=5.350,8.350,18.050" pos="5.4 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=5.350,8.350,21.250" pos="5.4 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=5.350,8.350,24.450" pos="5.4 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=5.350,8.350,27.650" pos="5.4 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=5.350,8.350,30.850" pos="5.4 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=5.350,8.350,34.050" pos="5.4 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=8.550,8.350,18.050" pos="8.6 8.1 18.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=8.550,8.350,21.250" pos="8.6 8.1 21.3" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=8.550,8.350,24.450" pos="8.6 8.1 24.5" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=8.550,8.350,27.650" pos="8.6 8.1 27.7" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=8.550,8.350,30.850" pos="8.6 8.1 30.9" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=8.550,8.350,34.050" pos="8.6 8.1 34.1" type="sphere" color="0.92 0.97 1" scale="2.4" size="0.5"/>
+		<light tags="lamp=-6.050,1.850,22.650" pos="-5.95 1.85 22.65" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
+		<light tags="lamp=6.050,1.850,22.650" pos="5.95 1.85 22.65" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
+		<light tags="lamp=-6.050,1.850,24.450" pos="-5.95 1.85 24.45" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
+		<light tags="lamp=6.050,1.850,24.450" pos="5.95 1.85 24.45" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
+		<light tags="lamp=-6.050,1.850,26.250" pos="-5.95 1.85 26.25" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
+		<light tags="lamp=6.050,1.850,26.250" pos="5.95 1.85 26.25" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
+		<light tags="lamp=-6.050,1.850,28.050" pos="-5.95 1.85 28.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
+		<light tags="lamp=6.050,1.850,28.050" pos="5.95 1.85 28.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
 		<light pos="6.6 2.2 18.5" type="sphere" color="0.5 0.9 1" scale="1.4" size="0.3"/>
 	</group>
 	<water type="polygon" pos="0.000 2.20 25.000" size="12.00 7.00" depth="1.40" wave="0.02" ripple="0.25" motion="0.05" foam="0">

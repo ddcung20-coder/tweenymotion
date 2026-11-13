@@ -1609,8 +1609,52 @@ def make_kickboard():
     a[0, :, 0] = a[7, :, 0] = 0
     return a
 
+def make_crate(n=10):
+    a = np.zeros((n, n, n), np.uint8)
+    a[:, :, :] = WOOD_LIGHT
+    for i in range(n):
+        for j in range(n):
+            for k in range(n):
+                edge = sum(v in (0, n - 1) for v in (i, j, k)) >= 2
+                if edge or (j in (n // 2,) and (i in (0, n - 1) or k in (0, n - 1))):
+                    a[i, j, k] = WOOD_MED
+    a[1:-1, 1:-1, 1:-1] = 0
+    return a
+
+def make_barrel(r=3, h=9):
+    a = np.zeros((2 * r + 1, h, 2 * r + 1), np.uint8)
+    for x in range(2 * r + 1):
+        for z in range(2 * r + 1):
+            if (x - r) ** 2 + (z - r) ** 2 <= r * r + 1:
+                a[x, :, z] = RED
+                a[x, 2, z] = DARK_METAL; a[x, h - 3, z] = DARK_METAL
+    a[1:-1, 1:-1, 1:-1][a[1:-1, 1:-1, 1:-1] > 0] = 0
+    a[:, 0, :][a[:, 1, :] == 0] = 0
+    return a
+
+def make_sofa():
+    a = np.zeros((20, 9, 8), np.uint8)
+    a[:, 0:4, :] = UPHOL
+    a[:, 4:9, 6:8] = UPHOL
+    a[0:2, 4:7, :] = UPHOL; a[18:20, 4:7, :] = UPHOL
+    a[2:18, 4:5, 0:6] = UPHOL2
+    for (x, z) in ((0, 0), (19, 0), (0, 7), (19, 7)):
+        a[x, 0, z] = WOOD_DARK
+    return a
+
+def make_crt():
+    a = np.zeros((8, 7, 7), np.uint8)
+    a[:, :, :] = TV_BODY
+    a[1:7, 1:6, 0] = TV_SCREEN
+    a[2:6, 0, 3:7] = DARK_METAL
+    return a
+
 PROP_SHAPES = {"car_a": make_car(CAR_A), "car_b": make_car(CAR_B), "car_c": make_car(CAR_C), "luggage_cart": make_cart(),
-               "beach_ball": make_ball(), "swim_ring": make_ring(), "kickboard": make_kickboard()}
+               "beach_ball": make_ball(), "swim_ring": make_ring(), "kickboard": make_kickboard(),
+               "crate": make_crate(), "barrel": make_barrel(), "sofa": make_sofa(), "crt_tv": make_crt()}
+SPAWNABLE = [("car_a", "Car (blue)"), ("car_b", "Car (silver)"), ("car_c", "Car (red)"), ("luggage_cart", "Luggage cart"),
+             ("beach_ball", "Beach ball"), ("swim_ring", "Swim ring"), ("kickboard", "Kickboard"),
+             ("crate", "Wooden crate"), ("barrel", "Red barrel"), ("sofa", "Lobby sofa"), ("crt_tv", "Old TV")]
 
 # ============================================================================
 # 11. Export: chunks -> .vox, main.xml
@@ -1704,6 +1748,17 @@ def export():
                 voxes.append(dict(name=name, gmin=(gx0, gy0, gz0), size=(sx, sy, sz), pos=(ox, oy, oz), lights=[], n=n))
     for pname, arr in PROP_SHAPES.items():
         write_vox(os.path.join(VOXDIR, pname + ".vox"), arr)
+    # spawnable prefabs (game spawn menu via spawn.txt, and the map's own N-key spawn menu)
+    pdir = os.path.join(OUT, "prefab")
+    os.makedirs(pdir, exist_ok=True)
+    lines = []
+    for pname, label in SPAWNABLE:
+        with open(os.path.join(pdir, pname + ".xml"), "w") as f:
+            f.write(f'<prefab version="1.6.0">\n\t<group name="{pname}">\n\t\t<body dynamic="true">\n'
+                    f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{pname}.vox" object="shape"/>\n\t\t</body>\n\t</group>\n</prefab>\n')
+        lines.append(f"prefab/{pname}.xml : Liminal Atrium/{label}")
+    with open(os.path.join(OUT, "spawn.txt"), "w") as f:
+        f.write("\n".join(lines) + "\n")
     write_vox(os.path.join(VOXDIR, "elev_btn.vox"), np.full((1, 1, 1), CEIL_LAMP, np.uint8))
     for e in ELEVATORS:
         write_vox(os.path.join(VOXDIR, f"elev_car_{e['shaft']}.vox"), e["arr"])
@@ -1733,16 +1788,16 @@ def export():
         x0, y0, z0 = max(ix - R, 0), max(iy - R, 0), max(iz - R, 0)
         win = G[x0:ix + R + 1, y0:iy + R + 1, z0:iz + R + 1]
         X, Y, Z = np.nonzero(np.isin(win, EMIT))
-        if False and len(X):   # attached lights die on ANY damage to their shape in game -> keep all unattached
+        # lights stay unattached (attached lights die on ANY damage to their shape); instead each light
+        # remembers its lamp voxel and main.lua switches it off when that lamp is shot / smashed
+        if len(X):
             d2 = (X + x0 + 0.5 - gx) ** 2 + (Y + y0 + 0.5 - gy) ** 2 + (Z + z0 + 0.5 - gz) ** 2
             j = int(np.argmin(d2))
             lx, ly, lz = X[j] + x0, Y[j] + y0, Z[j] + z0
-            v = owner(lx, ly, lz)
-            wx, wy, wz = (lx + 0.5) * 0.1 - CX, (ly + 0.5) * 0.1, (lz + 0.5) * 0.1 - CZ
-            v["lights"].append((wx - v["pos"][0], wy - v["pos"][1], wz - v["pos"][2], rgb, scale, size, ltags))
+            lamp = f"{(lx + 0.5) * 0.1 - CX:.3f},{(ly + 0.5) * 0.1:.3f},{(lz + 0.5) * 0.1 - CZ:.3f}"
+            ltags = (ltags + " " if ltags else "") + "lamp=" + lamp
             snapped += 1
-        else:
-            loose.append((gx * 0.1 - CX, gy * 0.1, gz * 0.1 - CZ, rgb, scale, size, ltags))
+        loose.append((gx * 0.1 - CX, gy * 0.1, gz * 0.1 - CZ, rgb, scale, size, ltags))
 
     def f3(a): return " ".join(f"{t:.3f}".rstrip("0").rstrip(".") if abs(t) > 1e-9 else "0" for t in a)
     def light_xml(p, rgb, scale, size, ind="\t\t\t", ltags=""):
@@ -1763,7 +1818,6 @@ def export():
     # base-game main.lua: player tools / spawn menu like the official sandbox levels.
     # (our own logic lives in the mod-root main.lua, which the game runs automatically;
     #  it guards itself so it never runs twice even if "main.lua" resolves to it)
-    xml.append('\t<script file="main.lua"/>\n')
     xml.append('\t<boundary>\n')
     for (bx_, bz_) in [(-half_w, -half_d), (half_w, -half_d), (half_w, half_d), (-half_w, half_d)]:
         xml.append(f'\t\t<vertex pos="{bx_:.1f} {bz_:.1f}"/>\n')
@@ -1858,13 +1912,13 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium\n"
+        f.write("name = Liminal Atrium v3.7\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
-                 doors=len(DOORS), door_files=len(door_files), lights_in_lamps=snapped, lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
+                 doors=len(DOORS), door_files=len(door_files), lights_with_lamp=snapped, lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
                  rooms=len(room_log), lit=sum(1 for r in room_log if r[3].startswith("lit")),
                  tv=sum(1 for r in room_log if r[3] == "tv"))
     print(json.dumps(stats))
