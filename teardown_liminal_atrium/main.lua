@@ -7,49 +7,48 @@
 ----------------------------------------------------------------------------------------------------
 -- tools
 ----------------------------------------------------------------------------------------------------
-local TOOLS = { "sledge", "spraycan", "extinguisher", "blowtorch", "shotgun", "plank", "pipebomb",
-	"gun", "bomb", "wire", "rocket", "booster", "leafblower", "turbo", "explosive", "rifle", "steroid" }
+-- base-game tools that use ammo (sledge, spraycan, extinguisher, leafblower ... do not)
+local AMMO_TOOLS = { blowtorch = true, shotgun = true, plank = true, pipebomb = true, gun = true, bomb = true,
+	wire = true, rocket = true, booster = true, rifle = true, explosive = true, steroid = true, turbo = true }
+
+-- every tool the game really has (base game + tool mods), from the registry
+local function allTools()
+	local ids = {}
+	if ListKeys then
+		local keys = ListKeys("game.tool")
+		for i = 1, #keys do ids[#ids + 1] = keys[i] end
+	end
+	return ids
+end
 
 local function giveTools()
-	for i = 1, #TOOLS do
-		local id = TOOLS[i]
+	local ids = allTools()
+	for i = 1, #ids do
+		local id = ids[i]
 		SetBool("game.tool." .. id .. ".enabled", true)
 		if SetToolEnabled then pcall(SetToolEnabled, id, true) end      -- 2.x API
 	end
 end
 
--- every tool the game knows about (base game + tool mods): the registry lists them under game.tool
-local function allTools()
-	local ids = {}
-	local seen = {}
-	if ListKeys then
-		local keys = ListKeys("game.tool")
-		for i = 1, #keys do
-			if not seen[keys[i]] then seen[keys[i]] = true; ids[#ids + 1] = keys[i] end
-		end
-	end
-	for i = 1, #TOOLS do
-		if not seen[TOOLS[i]] then seen[TOOLS[i]] = true; ids[#ids + 1] = TOOLS[i] end
-	end
-	return ids
-end
-
 local function topUpAmmo()
-	-- keep every tool loaded, base and modded: registry (1.x / most tool mods) and SetToolAmmo (2.x)
+	-- refill every tool that uses ammo: registry (1.x and most tool mods) and SetToolAmmo (2.x, per player)
 	local ids = allTools()
 	for i = 1, #ids do
 		local id = ids[i]
 		local key = "game.tool." .. id .. ".ammo"
-		if GetFloat(key) < 50 then
-			SetFloat(key, 999)
-		end
-		if SetToolAmmo then
-			local cur = 0
-			if GetToolAmmo then
-				local ok, v = pcall(GetToolAmmo, id)
-				if ok and type(v) == "number" then cur = v end
+		local usesAmmo = AMMO_TOOLS[id] or HasKey(key)
+		if usesAmmo then
+			if HasKey(key) and GetFloat(key) < 50 then
+				SetFloat(key, 999)
 			end
-			if cur < 50 then pcall(SetToolAmmo, id, 999) end
+			if SetToolAmmo then
+				local cur = 0
+				if GetToolAmmo then
+					local ok, v = pcall(GetToolAmmo, id)
+					if ok and type(v) == "number" then cur = v end
+				end
+				if cur < 50 then pcall(SetToolAmmo, id, 999) end
+			end
 		end
 	end
 end
@@ -282,16 +281,20 @@ local function elevTick(dt)
 			end
 		end
 	end
-	-- continuous sounds: motor hum while travelling, music inside every cab
+	-- continuous sounds: a loop handle plays at one place, so use the cab nearest to the player
+	local cam = GetCameraTransform().pos
+	local near, nd = nil, 30
 	for i = 1, #cars do
 		local c = cars[i]
 		if IsHandleValid(c.body) and not c.broken then
-			local p = cabCenter(c)
-			if c.state == "moving" then
-				PlayLoop(snd.hum, p, 0.55)
-			end
-			PlayLoop(snd.muzak, p, 0.28)
+			local d = dist(cabCenter(c), cam)
+			if d < nd then near, nd = c, d end
 		end
+	end
+	if near then
+		local p = cabCenter(near)
+		if near.state == "moving" then PlayLoop(snd.hum, p, 0.55) end
+		PlayLoop(snd.muzak, p, 0.28)
 	end
 end
 
@@ -453,14 +456,12 @@ local function spawnItem(id)
 end
 
 local function spawnMenuTick()
+	if PauseMenuButton and PauseMenuButton("Liminal Spawn") then menuOpen = true end
 	if InputPressed("n") then menuOpen = not menuOpen end
 	if menuOpen and InputPressed("esc") then menuOpen = false end
 end
 
 function draw()
-	if PauseMenuButton then
-		if PauseMenuButton("Liminal Spawn") then menuOpen = true end
-	end
 	if not menuOpen then return end
 	UiMakeInteractive()
 	UiPush()
@@ -495,8 +496,6 @@ end
 local toolTimer = 0
 local ammoTimer = 0
 
-local active = true
-
 function init()
 	SetBool("level.sandbox", true)          -- sandbox level (spawn menu etc.)
 	SetBool("level.unlimitedammo", true)
@@ -509,7 +508,6 @@ function init()
 end
 
 function tick(dt)
-	if not active then return end
 	if toolTimer < 3 then
 		toolTimer = toolTimer + dt
 		giveTools()
@@ -530,6 +528,5 @@ function tick(dt)
 end
 
 function update(dt)
-	if not active then return end
 	elevUpdate(dt)
 end

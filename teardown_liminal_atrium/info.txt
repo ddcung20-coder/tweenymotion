@@ -1,4 +1,4 @@
-name = Liminal Atrium v3.8
+name = Liminal Atrium v3.9
 author = Claude
 description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.
 tags = Map

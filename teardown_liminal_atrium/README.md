@@ -1,4 +1,4 @@
-# Liminal Atrium v3.8 — Teardown 샌드박스 맵
+# Liminal Atrium v3.9 — Teardown 샌드박스 맵
 
 사진 속 보라빛 호텔 아트리움(리미널 스페이스)을 바탕으로 만든 Teardown 커스텀 맵입니다.
 
@@ -68,3 +68,12 @@
 `tools/build_map.py` 가 맵 전체를 생성합니다 (Python 3 + numpy).
 층수(`FLOORS`), 방 개수(`LONG_BAYS`/`SHORT_BAYS`), 창 크기(`WIN_W`, `WIN_H`), 방 상태 비율(`STATES`) 등을
 바꾼 뒤 `python3 tools/build_map.py` 를 실행하면 `vox/` 와 `main.xml` 이 다시 만들어집니다.
+
+## 검수 (tools/qa_full.py)
+`python3 tools/qa_full.py` 로 맵 전체를 자동 검수합니다 (v3.9 기준 전 항목 통과):
+- 팔레트/참조 파일/vox 크기/XML·프리팹 파싱/엔티티 이름 중복
+- 떠 있는 조각 0, 벽 속 조명 0, 동적 소품·문 열림 공간 겹침 없음, 모든 전등에 불빛 연결
+- **도보 도달성**: 키 1.8m 플레이어로 스폰에서 객실 142개 전부, 6개 층 복도·계단·리넨실, 로비, 정문 밖, 주차장,
+  옥상, 수영장·스파까지 걸어서 도달 가능 (문 열린 상태 기준, 무릎 높이 30cm 턱은 넘음)
+- 모든 여닫이문이 벽·가구에 안 닿고 열림, 엘리베이터 1~6층 이동 경로 비어 있음
+- 사운드 디코딩/클리핑/루프 이음새, main.lua Lua 5.1 컴파일

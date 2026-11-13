@@ -947,6 +947,7 @@ for px_ in (lx0 + 22, lx1 - 24):
 # glass double doors to the atrium
 box(cx - 14, cx + 14, y, y + 23, az0 - T_FAC, az0, FRAME)
 box(cx - 13, cx + 13, y, y + 22, az0 - T_FAC, az0, 0)
+box(cx - 13, cx + 13, y, y + 3, az0, az0 + 2, 0)          # no skirting across the doorway into the atrium
 add_door(WORLD, cx - 13, cx, y, y + 22, az0 - 3, az0 - 2, glass_door, hinge=(cx - 13, az0 - 2), open_dir=(0, 1))
 add_door(WORLD, cx, cx + 13, y, y + 22, az0 - 3, az0 - 2, lambda a, b, c, A, B, C: glass_door(A - 1 - a, b, c, A, B, C),
          hinge=(cx + 13, az0 - 2), open_dir=(0, 1))
@@ -992,9 +993,10 @@ box(cx - 14, cx + 14, y, y + 22, lz0 - T_PART, lz0 + 1, 0)
 box(cx - 15, cx + 15, y + 22, y + 23, lz0 - T_PART, lz0 + 1, WOOD_DARK)
 box(cx - 16, cx + 16, y, y + 25, bz0 - 1, bz0 + T_EXT, LINTEL)
 box(cx - 15, cx + 15, y, y + 23, bz0 - 3, bz0 + T_EXT, 0)   # also cut the plinth / plinth cap in front of the door
-add_door(WORLD, cx - 15, cx, y, y + 23, bz0 + 1, bz0 + 2, glass_door, hinge=(cx - 15, bz0 + 1), open_dir=(0, -1))
+# entrance doors swing inward: the sidewalk outside is 10 cm higher than the corridor floor
+add_door(WORLD, cx - 15, cx, y, y + 23, bz0 + 1, bz0 + 2, glass_door, hinge=(cx - 15, bz0 + 2), open_dir=(0, 1))
 add_door(WORLD, cx, cx + 15, y, y + 23, bz0 + 1, bz0 + 2, lambda a, b, c, A, B, C: glass_door(A - 1 - a, b, c, A, B, C),
-         hinge=(cx + 15, bz0 + 1), open_dir=(0, -1))
+         hinge=(cx + 15, bz0 + 2), open_dir=(0, 1))
 box(cx - 20, cx + 20, G0, G0 + 1, bz0 - 14, bz0, RUG_BRD)                    # door mat
 box(cx - 8, cx + 8, G0, G0 + 1, bz0 - 12, bz0 - 2, COR_CARP)
 # entrance canopy with brass posts, lamps and sign
@@ -1839,7 +1841,7 @@ def export():
     spawn = ((ax0 + ax1) / 2 * 0.1 - CX, G0 * 0.1 + 0.1, (az0 + 18) * 0.1 - CZ)
     half_w, half_d = W / 2 * 0.1, D / 2 * 0.1
     xml = []
-    xml.append('<scene version="6" shadowVolume="%d 30 %d">\n' % (int(W * 0.1) + 4, int(D * 0.1) + 4))
+    xml.append('<scene version="6" shadowVolume="%d %d %d">\n' % (int(W * 0.1) + 4, int(H * 0.1) * 2 + 6, int(D * 0.1) + 4))
     xml.append('\t<environment skybox="cloudy.dds" skyboxtint="0.35 0.3 0.5" skyboxbrightness="0.12" skyboxrot="0" '
                'constant="0.004 0.003 0.006" ambient="0.25" ambientexponent="1.6" fogColor="0.07 0.06 0.1" '
                'fogParams="30 160 0.9 4" sunBrightness="0" sunColorTint="0.6 0.6 1" sunDir="auto" sunSpread="0" '
@@ -1954,7 +1956,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.8\n"
+        f.write("name = Liminal Atrium v3.9\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"
