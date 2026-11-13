@@ -1418,7 +1418,7 @@ def export():
         x0, y0, z0 = max(ix - R, 0), max(iy - R, 0), max(iz - R, 0)
         win = G[x0:ix + R + 1, y0:iy + R + 1, z0:iz + R + 1]
         X, Y, Z = np.nonzero(np.isin(win, EMIT))
-        if len(X):
+        if False and len(X):   # attached lights die on ANY damage to their shape in game -> keep all unattached
             d2 = (X + x0 + 0.5 - gx) ** 2 + (Y + y0 + 0.5 - gy) ** 2 + (Z + z0 + 0.5 - gz) ** 2
             j = int(np.argmin(d2))
             lx, ly, lz = X[j] + x0, Y[j] + y0, Z[j] + z0
@@ -1444,9 +1444,7 @@ def export():
                'wetness="0" puddleamount="0" puddlesize="0.5" rain="0"/>\n')
     xml.append('\t<postprocessing saturation="0.92" colorbalance="1.0 0.94 1.1" brightness="1.05" gamma="1" bloom="1.3"/>\n')
     xml.append(f'\t<spawnpoint pos="{f3(spawn)}" rot="0 180 0"/>\n')
-    xml.append('\t<script file="main.lua"/>\n')            # base game: gives the player their unlocked tools
-    xml.append('\t<script file="MOD/doors.lua"/>\n')       # E to open / close doors
-    xml.append('\t<script file="MOD/elevator.lua"/>\n')    # working elevators
+    # scripts: the mod-root main.lua runs automatically when the map is played (tools, doors, elevators)
     xml.append('\t<boundary>\n')
     for (bx_, bz_) in [(-half_w, -half_d), (half_w, -half_d), (half_w, half_d), (-half_w, half_d)]:
         xml.append(f'\t\t<vertex pos="{bx_:.1f} {bz_:.1f}"/>\n')
