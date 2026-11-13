@@ -521,13 +521,15 @@ for (px, pz) in [(ax0 + 10, az0 + 10), (ax1 - 10, az0 + 10), (ax1 - 10, az1 - 12
 PROPS.append(("luggage_cart", ax0 + 46, G0, az1 - 14, 15))
 
 # atrium lights (purple, as in the photo)
-for i in range(2):
-    for j in range(3):
-        light(ax0 + 40 + i * 80, ATR_TOP - 8, az0 + 45 + j * 90, (0.78, 0.64, 1.0), 6.0, 0.6)
+# one light right under every ceiling downlight (same grid as the fixtures above)
+for i in range(3):
+    for j in range(5):
+        light(ax0 + 30 + i * 50, ATR_TOP - 1.5, az0 + 28 + j * 54, (0.8, 0.66, 1.0), 2.6, 0.25)
+# cove strip: a light every bay, just in front of the glowing strip, so it reads as one continuous line
 for fr, L, bw, name in atrium_face_frames():
-    for u in range(L // 4, L, L // 2):
-        x, z = fr.pt(u, -3)
-        light(x + 0.5, ATR_TOP - 4.5, z + 0.5, (0.85, 0.7, 1.0), 3.0, 0.3)
+    for u in range(bw // 2, L, bw):
+        x, z = fr.pt(u, -2)
+        light(x + 0.5, ATR_TOP - 3.5, z + 0.5, (0.85, 0.7, 1.0), 1.1, 0.15)
 
 # ============================================================================
 # 4. Hotel rooms
