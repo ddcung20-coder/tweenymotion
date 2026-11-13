@@ -287,3 +287,14 @@ for k in range(220):
     spl[(np.arange(m) + s0) % n] += b * rng.uniform(0.1, 0.5)
 save("fountain.ogg", 0.6 * fall + 0.5 * spl, 0.55)
 print("fountain sound written")
+
+# --- helicopter: blade slap (~4.5 Hz, whole cycles in 4 s) + turbine whine + rotor wash (seamless 4 s loop) ---
+L = 4.0; n = int(L * SR); tt = t(L)
+bp = 18 / L                                            # 18 blade passes in 4 s
+phase = (tt * bp) % 1.0
+slap = np.exp(-phase / 0.06) * lowpass(loop_noise(L, 1.2), 900) * 2.2
+thump = np.sin(2 * np.pi * 60 * tt) * np.exp(-phase / 0.08)
+whine = 0.08 * np.sin(2 * np.pi * (round(2400 * L) / L) * tt) + 0.05 * np.sin(2 * np.pi * (round(3600 * L) / L) * tt)
+wash = 0.35 * bandpass(loop_noise(L, 0.8), 200, 3000)
+save("heli_rotor.ogg", slap + 0.7 * thump + whine + wash, 0.7)
+print("heli sound written")

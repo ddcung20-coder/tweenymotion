@@ -105,6 +105,7 @@ local function loadSounds()
 	snd.mall      = LoadLoop("MOD/snd/mall_song.ogg")
 	snd.garage    = LoadLoop("MOD/snd/garage_drips.ogg")
 	snd.fountain  = LoadLoop("MOD/snd/fountain.ogg")
+	snd.heli      = LoadLoop("MOD/snd/heli_rotor.ogg")
 	snd.deskbell  = LoadSound("MOD/snd/deskbell.ogg")
 	snd.musicbox  = LoadSound("MOD/snd/musicbox.ogg")
 	snd.hum       = LoadSound("MOD/snd/dream_hum.ogg")
@@ -1148,6 +1149,125 @@ local function carsTick()
 end
 
 ----------------------------------------------------------------------------------------------------
+-- helicopter on the helipad: get in with E, then
+--   W / S  forward / back     A / D  turn     Space  climb     Ctrl  descend
+-- Flight is arcade style: the script steers the body's velocity and attitude while the rotor runs.
+----------------------------------------------------------------------------------------------------
+local heli = nil
+local HELI_SPEED, HELI_CLIMB, HELI_TURN = 22, 7, 70     -- m/s, m/s, deg/s
+
+local function shapeHalf(sh)
+	local x, y, z, sc = GetShapeSize(sh)
+	sc = sc or 0.1
+	return Vec(x * sc / 2, y * sc / 2, z * sc / 2)
+end
+
+local function heliInit()
+	local v = FindVehicle and FindVehicle("helicopter", true) or 0
+	if v == 0 then return end
+	local b = GetVehicleBody(v)
+	local rotor, tail = FindShape("helirotor", true), FindShape("helitail", true)
+	heli = { veh = v, body = b, rotor = rotor, tail = tail, rpm = 0, ang = 0, tang = 0, yaw = 0, broken = false }
+	LIMINAL_HELI = heli          -- (read by the offline tests)
+	local count = 0
+	local shapes = GetBodyShapes(b)
+	for i = 1, #shapes do count = count + GetShapeVoxelCount(shapes[i]) end
+	heli.vox0 = count
+	if rotor ~= 0 then
+		local t0 = GetShapeLocalTransform(rotor)
+		heli.rHalf = shapeHalf(rotor); heli.rHalf[2] = 0
+		heli.rCenter = VecAdd(t0.pos, heli.rHalf)
+	end
+	if tail ~= 0 then
+		local t0 = GetShapeLocalTransform(tail)
+		heli.tHalf = shapeHalf(tail); heli.tHalf[1] = 0
+		heli.tCenter = VecAdd(t0.pos, heli.tHalf)
+	end
+end
+
+local function heliDriven()
+	return heli ~= nil and GetPlayerVehicle and GetPlayerVehicle() == heli.veh
+end
+
+local function heliTick(dt)
+	if not heli or not IsHandleValid(heli.body) then return end
+	if not heli.broken then
+		local count = 0
+		local shapes = GetBodyShapes(heli.body)
+		for i = 1, #shapes do count = count + GetShapeVoxelCount(shapes[i]) end
+		if count < heli.vox0 * 0.7 or (heli.rotor ~= 0 and IsShapeBroken(heli.rotor) and GetShapeVoxelCount(heli.rotor) < 300) then
+			heli.broken = true        -- wrecked: engine dead, it falls like anything else
+		end
+	end
+	local on = heliDriven() and not heli.broken
+	if on and heli.rpm == 0 then
+		local _, yaw = GetQuatEuler(GetBodyTransform(heli.body).rot)
+		heli.yaw = yaw
+	end
+	heli.rpm = on and math.min(1, heli.rpm + dt * 0.4) or math.max(0, heli.rpm - dt * 0.25)
+	-- spin the rotors (shapes rotate about their own centres)
+	heli.ang = (heli.ang + heli.rpm * 1300 * dt) % 360
+	heli.tang = (heli.tang + heli.rpm * 2600 * dt) % 360
+	if heli.rotor ~= 0 and IsHandleValid(heli.rotor) and heli.rCenter then
+		local q = QuatEuler(0, heli.ang, 0)
+		SetShapeLocalTransform(heli.rotor, Transform(VecSub(heli.rCenter, QuatRotateVec(q, heli.rHalf)), q))
+	end
+	if heli.tail ~= 0 and IsHandleValid(heli.tail) and heli.tCenter then
+		local q = QuatEuler(heli.tang, 0, 0)
+		SetShapeLocalTransform(heli.tail, Transform(VecSub(heli.tCenter, QuatRotateVec(q, heli.tHalf)), q))
+	end
+	if heli.rpm > 0.02 then
+		PlayLoop(snd.heli, GetBodyTransform(heli.body).pos, 0.25 + 0.75 * heli.rpm)
+	end
+end
+
+local function heliUpdate(dt)
+	if not heli or heli.broken or heli.rpm < 0.15 or not IsHandleValid(heli.body) then return end
+	local driven = heliDriven()
+	local t = GetBodyTransform(heli.body)
+	local fwd, turn, lift = 0, 0, 0
+	if driven then
+		if InputDown("up") then fwd = fwd + 1 end
+		if InputDown("down") then fwd = fwd - 1 end
+		if InputDown("left") then turn = turn + 1 end
+		if InputDown("right") then turn = turn - 1 end
+		if InputDown("jump") then lift = lift + 1 end
+		if InputDown("crouch") then lift = lift - 1 end
+	else
+		lift = -0.3                       -- pilot got out: settle down gently
+	end
+	if t.pos[2] > 90 and lift > 0 then lift = 0 end
+	heli.yaw = heli.yaw + turn * HELI_TURN * dt
+	local f = Vec(-math.sin(math.rad(heli.yaw)), 0, -math.cos(math.rad(heli.yaw)))
+	local want = VecAdd(VecScale(f, fwd * HELI_SPEED * heli.rpm), Vec(0, lift * HELI_CLIMB * heli.rpm, 0))
+	local v = GetBodyVelocity(heli.body)
+	local k = math.min(1, dt * 1.6) * heli.rpm
+	SetBodyVelocity(heli.body, VecAdd(VecScale(v, 1 - k), VecScale(want, k)))
+	local target = QuatEuler(-fwd * 12, heli.yaw, -turn * 6)
+	ConstrainOrientation(heli.body, 0, t.rot, target, 2.5 * heli.rpm, 50 * heli.rpm)
+end
+
+local function heliDraw()
+	if not heliDriven() then return end
+	local t = GetBodyTransform(heli.body)
+	local v = GetBodyVelocity(heli.body)
+	UiPush()
+		UiAlign("left bottom")
+		UiTranslate(30, UiHeight() - 30)
+		UiColor(0, 0, 0, 0.45)
+		UiRect(430, 96)
+		UiTranslate(14, -66)
+		UiFont("bold.ttf", 22)
+		UiColor(0.6, 1, 0.75, 1)
+		UiText(string.format("ALT %4.0f m    SPD %3.0f km/h    ROTOR %3.0f%%", t.pos[2] - 4, VecLength(v) * 3.6, heli.rpm * 100))
+		UiTranslate(0, 30)
+		UiFont("regular.ttf", 17)
+		UiColor(1, 1, 1, 0.85)
+		UiText(heli.broken and "ENGINE FAILURE" or "W/S forward/back   A/D turn   Space up   Ctrl down   E exit")
+	UiPop()
+end
+
+----------------------------------------------------------------------------------------------------
 -- the map's own spawn menu (N key, or "Liminal Spawn" in the pause menu)
 ----------------------------------------------------------------------------------------------------
 local SPAWN_ITEMS = {
@@ -1209,6 +1329,7 @@ end
 
 function draw()
 	drawMission()
+	heliDraw()
 	if ammoDebug then drawAmmoDebug() end
 	if not menuOpen then return end
 	UiMakeInteractive()
@@ -1258,6 +1379,7 @@ function init()
 	curtainsInit()
 	roomsInit()
 	autoInit()
+	heliInit()
 	missionInit()
 	say("Front desk: ring the bell when you are ready to dream.", 7)
 end
@@ -1287,6 +1409,7 @@ function tick(dt)
 		end
 	end
 	carsTick()
+	heliTick(dt)
 	curtainsTick(dt)
 	autoTick(dt)
 	missionTick(dt)
@@ -1302,4 +1425,5 @@ end
 
 function update(dt)
 	elevUpdate(dt)
+	heliUpdate(dt)
 end

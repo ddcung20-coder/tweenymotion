@@ -2737,6 +2737,266 @@ SPAWNABLE = [("car_a", "Car (blue)"), ("car_b", "Car (silver)"), ("car_c", "Car 
              ("crate", "Wooden crate"), ("barrel", "Red barrel"), ("sofa", "Lobby sofa"), ("crt_tv", "Old TV")]
 
 # ============================================================================
+# 10b. Street south of the parking lot (beyond the original grid edge z = 0):
+#      its own voxel grid ROAD (local z 0..RD, grid z = local z - RD), exported as separate shapes.
+# ============================================================================
+RD = 150
+RH = G0 + 64
+ROAD = np.zeros((W, RH, RD), np.uint8)
+ROAD_LAMPS = []          # (arr, gmin_grid, light (gx, gy, gz_grid))
+ROAD_CARS = []           # (kind, fallback, centre x, ground y, centre z_grid, yaw)
+RRNG = random.Random(613)
+def rb(x0, x1, y0, y1, z0, z1, c):
+    xa, xb = sorted((int(x0), int(x1))); ya, yb = sorted((int(y0), int(y1))); za, zb = sorted((int(z0), int(z1)))
+    ROAD[max(xa, 0):min(xb, W), max(ya, 0):min(yb, RH), max(za, 0):min(zb, RD)] = c
+# ground: same layers as the site (bedrock, earth, asphalt on top -> surface at G0)
+rb(0, W, 0, 1, 0, RD, BEDROCK); rb(0, W, 1, G0 - 3, 0, RD, SOIL); rb(0, W, G0 - 3, G0, 0, RD, ASPHALT)
+XR = np.arange(W)[:, None]; ZR = np.arange(RD)[None, :]
+tex = hash3(np.broadcast_to(XR, (W, RD)), np.zeros((W, RD), int), np.broadcast_to(ZR, (W, RD)), 77)
+ROAD[:, G0 - 1, :] = np.where(tex < 0.25, ASPHALT2, ASPHALT)
+NS0, NS1 = 128, RD          # north sidewalk (along the parking lot)
+NC0 = 126                   # north curb
+RZ0, RZ1 = 54, 126          # carriageway (2 x 3.6 m)
+SC0 = 52                    # south curb
+SS0, SS1 = 26, 52           # south sidewalk
+DRIVEWAYS = [(70, 170), (300, 400)]
+def on_drive(x):
+    return any(a <= x < b for (a, b) in DRIVEWAYS)
+for x in range(W):
+    if on_drive(x):
+        continue
+    rb(x, x + 1, G0, G0 + 1, NS0, NS1, PAVER if (x // 6) % 2 == 0 else PAVER2)
+    rb(x, x + 1, G0 - 1, G0 + 1, NC0, NS0, CURB)
+for (a, b) in DRIVEWAYS:                     # flush driveway with dropped curbs at its sides
+    rb(a - 2, a, G0 - 1, G0 + 1, NC0, NS1, CURB); rb(b, b + 2, G0 - 1, G0 + 1, NC0, NS1, CURB)
+for x in range(W):
+    rb(x, x + 1, G0, G0 + 1, SS0, SS1, PAVER if ((x // 6) + 1) % 2 == 0 else PAVER2)
+rb(0, W, G0 - 1, G0 + 1, SC0, RZ0, CURB)
+# markings: edge lines, double yellow centre line, zebra crossing in front of the hotel entrance
+rb(0, W, G0 - 1, G0, RZ0 + 3, RZ0 + 4, PAINT_LINE); rb(0, W, G0 - 1, G0, RZ1 - 4, RZ1 - 3, PAINT_LINE)
+MID = (RZ0 + RZ1) // 2
+rb(0, W, G0 - 1, G0, MID - 2, MID - 1, YELLOW_PAINT); rb(0, W, G0 - 1, G0, MID + 1, MID + 2, YELLOW_PAINT)
+ENT = (bx0 + bx1) // 2
+for x in range(ENT - 24, ENT + 24, 5):
+    rb(x, x + 3, G0 - 1, G0, RZ0 + 2, RZ1 - 2, PAINT_LINE)
+for x in range(ENT - 26, ENT + 26):                      # dropped curbs at the crossing
+    rb(x, x + 1, G0 - 1, G0, NC0, NS0, CURB); rb(x, x + 1, G0 - 1, G0, SC0, RZ0, CURB)
+    rb(x, x + 1, G0, G0 + 1, NC0, NS0, 0); rb(x, x + 1, G0, G0 + 1, SC0, RZ0, 0)
+# manholes, storm drains
+for (mx, mz) in ((150, MID + 10), (330, MID - 12), (40, MID - 10)):
+    for dx in range(-3, 4):
+        for dz in range(-3, 4):
+            if dx * dx + dz * dz <= 10:
+                rb(mx + dx, mx + dx + 1, G0 - 1, G0, mz + dz, mz + dz + 1, DARK_METAL if (dx + dz) % 2 else TIRE)
+for x in range(30, W - 30, 80):
+    for z0_ in (RZ0, RZ1 - 2):
+        rb(x, x + 6, G0 - 1, G0, z0_, z0_ + 2, TIRE)
+        for gx in range(x, x + 6, 2):
+            rb(gx, gx + 1, G0 - 1, G0, z0_, z0_ + 2, DARK_METAL)
+# street lamps on the south sidewalk (heads are separate lamp shapes), trees in pits between them
+for x in range(40, W - 20, 90):
+    rb(x - 1, x + 3, G0 + 1, G0 + 3, SS1 - 6, SS1 - 2, DARK_METAL)
+    rb(x, x + 2, G0 + 1, G0 + 50, SS1 - 5, SS1 - 3, DARK_METAL)
+    rb(x, x + 2, G0 + 48, G0 + 50, SS1 - 3, SS1 + 6, DARK_METAL)              # arm over the road
+    head = np.full((4, 2, 4), STREET_LMP, np.uint8)
+    ROAD_LAMPS.append((head, (x - 1, G0 + 46, SS1 + 3 - RD), (x + 1, G0 + 45, SS1 + 5 - RD)))
+for x in range(85, W - 20, 90):
+    rb(x - 5, x + 6, G0 - 1, G0 + 1, SS0 + 6, SS0 + 17, CURB)
+    rb(x - 4, x + 5, G0, G0 + 1, SS0 + 7, SS0 + 16, SOIL)
+    rb(x, x + 2, G0 + 1, G0 + 40, SS0 + 11, SS0 + 13, TRUNK)
+    R_ = 12
+    X3, Y3, Z3 = np.meshgrid(np.arange(-R_, R_ + 1), np.arange(-R_, R_ + 1), np.arange(-R_, R_ + 1), indexing="ij")
+    can = np.zeros(X3.shape, bool)
+    for _ in range(7):
+        ox, oy, oz = RRNG.randint(-5, 5), RRNG.randint(-3, 4), RRNG.randint(-5, 5); rr = RRNG.randint(5, 7)
+        can |= (X3 - ox) ** 2 + ((Y3 - oy) ** 2) * 1.3 + (Z3 - oz) ** 2 <= rr * rr
+    can &= hash3(X3 + x, Y3, Z3, 9) > 0.2
+    can[R_, :R_ + 1, R_] = True
+    can = keep_connected(can, [(R_, 0, R_)])
+    cy, cz = G0 + 40 + 6, SS0 + 12
+    for (i, j, k) in zip(*np.nonzero(can)):
+        gx, gy, gz = x + i - R_, cy + j - R_, cz + k - R_
+        if 0 <= gx < W and gy < RH and 0 <= gz < RD and ROAD[gx, gy, gz] == 0:
+            ROAD[gx, gy, gz] = LEAF if hash3(np.array([gx]), np.array([gy]), np.array([gz]), 3)[0] < 0.5 else LEAF2
+    rb(x, x + 2, G0 + 30, cy, SS0 + 11, SS0 + 13, TRUNK)                          # trunk up into the crown
+# bus stop: shelter, bench, timetable, sign
+BS = 300
+rb(BS, BS + 40, G0 + 1, G0 + 26, SS0 + 2, SS0 + 3, GLASS_EXT)                     # back glass
+for px in (BS, BS + 39):
+    rb(px, px + 1, G0 + 1, G0 + 26, SS0 + 2, SS0 + 14, STEEL)
+rb(BS - 1, BS + 41, G0 + 26, G0 + 27, SS0 + 1, SS0 + 16, STEEL)                    # roof
+rb(BS + 4, BS + 36, G0 + 5, G0 + 6, SS0 + 4, SS0 + 8, WOOD_MED)                    # bench
+for px in (BS + 5, BS + 34):
+    rb(px, px + 1, G0 + 1, G0 + 5, SS0 + 4, SS0 + 8, STEEL)
+rb(BS + 36, BS + 38, G0 + 8, G0 + 20, SS0 + 3, SS0 + 4, CEIL)                      # timetable
+rb(BS + 44, BS + 46, G0 + 1, G0 + 34, SS1 - 5, SS1 - 3, STEEL)                     # sign post
+rb(BS + 35, BS + 50, G0 + 26, G0 + 34, SS1 - 3, SS1 - 2, BLANKET_C)
+for ci, ch in enumerate("BUS"):                                                     # white letters facing the road (+z)
+    for r_, row in enumerate(BFONT[ch]):
+        for c_, cc in enumerate(row):
+            if cc == "#":
+                rb(BS + 47 - ci * 4 - c_, BS + 48 - ci * 4 - c_, G0 + 32 - r_, G0 + 33 - r_, SS1 - 2, SS1 - 1, CEIL)
+# south edge: low brick wall with an iron fence, hedge in front, lawn behind
+rb(0, W, G0, G0 + 1, 0, SS0, LAWN)
+rb(0, W, G0, G0 + 8, 14, 18, BRICK); rb(0, W, G0 + 8, G0 + 9, 13, 19, LINTEL)
+for x in range(0, W, 8):
+    rb(x, x + 1, G0 + 9, G0 + 20, 15, 17, DARK_METAL)
+rb(0, W, G0 + 18, G0 + 19, 15, 17, DARK_METAL)
+for x in range(W):
+    h_ = 6 + int(3 * hash3(np.array([x // 3]), np.array([0]), np.array([0]), 21)[0])
+    rb(x, x + 1, G0 + 1, G0 + 1 + h_, 19, SS0, LEAF3 if (x // 5) % 3 else LEAF)
+# both road ends are closed: striped barricades + cones (the map ends there)
+for x0_ in (3, W - 9):
+    for z in range(RZ0 + 4, RZ1 - 4, 14):
+        rb(x0_, x0_ + 1, G0, G0 + 9, z, z + 1, WOOD_DARK); rb(x0_, x0_ + 1, G0, G0 + 9, z + 10, z + 11, WOOD_DARK)
+        for k in range(10):
+            rb(x0_ + 1, x0_ + 2, G0 + 6, G0 + 9, z + k, z + k + 1, RED if (k // 2) % 2 else CEIL)
+    for z in range(RZ0 + 6, RZ1 - 6, 10):
+        cx_ = x0_ + (5 if x0_ < 10 else -4)
+        rb(cx_ - 2, cx_ + 3, G0, G0 + 1, z - 2, z + 3, TIRE)
+        rb(cx_ - 1, cx_ + 2, G0 + 1, G0 + 6, z - 1, z + 2, WALL_ORANGE)
+        rb(cx_ - 1, cx_ + 2, G0 + 3, G0 + 4, z - 1, z + 2, CEIL)
+# a van parked at the south kerb (base-game vehicle, along the road)
+ROAD_CARS.append(("van", "car_a", 410, G0, SC0 + 14 - RD, 90))
+
+# ============================================================================
+# 10c. Upper roof: stairs from the room-ring roof, helipad, flyable helicopter
+# ============================================================================
+RT = ATR_TOP + 4                  # walking surface of the upper (atrium) roof
+STX0, STX1 = 250, 262             # stairs: up the south side, ending at the upper roof's edge
+STZ_TOP = az0 - 5                 # last tread (the upper roof starts 4 voxels south of az0)
+box(STX0 - 1, STX1 + 1, ROOF_Y, RT + 9, STZ_TOP - 40, STZ_TOP + 1, 0)         # clear (a wall vent sat here)
+for s_ in range(13):
+    z0_ = STZ_TOP - 38 + s_ * 3
+    box(STX0, STX1, ROOF_Y, ROOF_Y + 2 * (s_ + 1), z0_, z0_ + 3, STEEL)
+    box(STX0, STX1, ROOF_Y + 2 * s_ + 1, ROOF_Y + 2 * (s_ + 1), z0_, z0_ + 1, YELLOW_PAINT)   # step nosing
+for xr in (STX0 - 1, STX1):
+    for s_ in range(0, 13, 2):
+        z0_ = STZ_TOP - 38 + s_ * 3
+        box(xr, xr + 1, ROOF_Y, ROOF_Y + 2 * (s_ + 1) + 9, z0_, z0_ + 1, STEEL)
+    for s_ in range(13):
+        z0_ = STZ_TOP - 38 + s_ * 3
+        box(xr, xr + 1, ROOF_Y + 2 * (s_ + 1) + 7, ROOF_Y + 2 * (s_ + 1) + 9, z0_, z0_ + 3, STEEL)
+# helipad on the upper roof: dark pad, yellow ring, white H, green edge lights
+HCX, HCZ = (ax0 + ax1) // 2, (az0 + az1) // 2
+for x in range(HCX - 72, HCX + 73):
+    for z in range(HCZ - 72, HCZ + 73):
+        d_ = ((x - HCX) ** 2 + (z - HCZ) ** 2) ** 0.5
+        if d_ <= 70 and G[x, RT - 1, z]:
+            G[x, RT - 1, z] = YELLOW_PAINT if 56 <= d_ <= 60 else (PAINT_LINE if 66 <= d_ <= 68 else ASPHALT)
+box(HCX - 16, HCX - 10, RT - 1, RT, HCZ - 22, HCZ + 22, PAINT_LINE)
+box(HCX + 10, HCX + 16, RT - 1, RT, HCZ - 22, HCZ + 22, PAINT_LINE)
+box(HCX - 10, HCX + 10, RT - 1, RT, HCZ - 3, HCZ + 3, PAINT_LINE)
+for a_ in range(0, 360, 30):
+    ex = int(round(HCX + 70 * np.cos(np.radians(a_)))); ez = int(round(HCZ + 70 * np.sin(np.radians(a_))))
+    box(ex, ex + 2, RT, RT + 1, ez, ez + 2, EXIT_SIGN)
+    if a_ % 90 == 45:
+        light(ex + 1, RT + 2, ez + 1, (0.3, 1.0, 0.45), 1.2, 0.1)
+# perimeter railing round the upper roof (gap where the stairs arrive), windsock, floodlights
+for (xa_, xb_, za_, zb_) in ((ax0, ax1, az0 - 4, az0 - 3), (ax0, ax1, az1 + 3, az1 + 4), (ax0 - 4, ax0 - 3, az0 - 4, az1 + 4), (ax1 + 3, ax1 + 4, az0 - 4, az1 + 4)):
+    for x in range(xa_, xb_):
+        for z in range(za_, zb_):
+            if STX0 - 1 <= x < STX1 + 1 and z == az0 - 4:
+                continue
+            if G[x, RT - 1, z] == 0:
+                continue
+            if (x + z) % 10 == 0:
+                box(x, x + 1, RT, RT + 9, z, z + 1, STEEL)
+            box(x, x + 1, RT + 8, RT + 9, z, z + 1, STEEL)
+box(STX0 - 1, STX0, RT, RT + 9, az0 - 4, az0 - 3, STEEL); box(STX1, STX1 + 1, RT, RT + 9, az0 - 4, az0 - 3, STEEL)
+# tall roof fixtures are their own static shapes (the world shapes stop at 256 voxels high)
+ROOF_SHAPES = []      # (name, arr, gmin, [(gx, gy, gz, rgb, scale, size)])
+ws = np.zeros((16, 26, 7), np.uint8)
+ws[15, 0:26, 3] = STEEL                                           # pole (x = 15)
+for k in range(12):
+    rr_ = 3 - k // 4
+    for dy in range(-rr_, rr_ + 1):
+        for dz in range(-rr_, rr_ + 1):
+            if dy * dy + dz * dz <= rr_ * rr_ + 1:
+                ws[14 - k, 22 + dy, 3 + dz] = WALL_ORANGE if (k // 3) % 2 == 0 else CEIL
+ROOF_SHAPES.append(("windsock", ws, (ax1 - 8 - 15, RT, az0 + 6 - 3), []))
+for (fx_, fz_) in ((ax0 + 4, az0 + 4), (ax1 - 10, az1 - 10)):
+    fl_ = np.zeros((6, 17, 6), np.uint8)
+    fl_[0:2, 0:15, 0:2] = STEEL                                   # pole in one corner
+    fl_[0:6, 15:17, 0:6] = CEIL_LAMP                              # lamp head over the pad side
+    ROOF_SHAPES.append((f"floodlight{len(ROOF_SHAPES)}", fl_, (fx_, RT, fz_), [(fx_ + 4, RT + 13, fz_ + 4, (1.0, 0.95, 0.85), 3.5, 0.3)]))
+
+# ---- the helicopter (my own design): body, main rotor, tail rotor (shapes of one vehicle body)
+def helicopter_model():
+    X_, Y_, Z_ = 24, 40, 120
+    m = np.zeros((X_, Y_, Z_), np.uint8)
+    A, B, C = np.meshgrid(np.arange(X_), np.arange(Y_), np.arange(Z_), indexing="ij")
+    ac = (X_ - 1) / 2
+    # cabin: rounded nose, elliptic section, hollow with a floor
+    s = np.clip(np.sqrt((C + 1) / 14.0), 0, 1) * np.where(C > 40, 1 - (C - 40) / 20 * 0.45, 1)
+    yb = 6 + (1 - s) * 7; yt = 28 - (1 - s) * 9
+    ym, hh, hw = (yb + yt) / 2, (yt - yb) / 2, 11 * s
+    outer = (C < 52) & (((A - ac) / np.maximum(hw, 0.1)) ** 2 + ((B - ym) / np.maximum(hh, 0.1)) ** 2 <= 1)
+    inner = (C < 50) & (C > 3) & (((A - ac) / np.maximum(hw - 1.6, 0.1)) ** 2 + ((B - ym) / np.maximum(hh - 1.6, 0.1)) ** 2 <= 1)
+    shell = outer & ~inner
+    m[shell & (B < ym)] = CAR_A
+    m[shell & (B >= ym)] = CEIL
+    m[shell & (np.abs(B - np.round(ym)) < 0.6)] = YELLOW_PAINT
+    m[shell & (B > ym + 1) & (C >= 2) & (C <= 34)] = GLASS                                   # canopy + side windows
+    m[shell & (B > ym + 1) & ((C == 18) | (C == 19))] = CEIL                                  # door pillar
+    m[inner & (B <= np.floor(yb) + 2)] = TV_BODY                                              # cabin floor
+    for (sa, sc) in ((5, 14), (5, 24), (14, 14), (14, 24)):                                   # two pairs of seats
+        m[sa:sa + 5, 9:13, sc:sc + 5] = UPHOL; m[sa:sa + 5, 13:19, sc + 4:sc + 5] = UPHOL
+    m[6:18, 16:18, 6:9] = TV_BODY                                                             # instrument panel
+    m[8:10, 18:19, 7:8] = TV_SCREEN; m[14:16, 18:19, 7:8] = TV_SCREEN
+    # tail boom, fin, stabiliser
+    for c in range(48, 114):
+        hs = 4 - (c - 48) / 66 * 2.2; yc = 20 + (c - 48) / 66 * 6
+        sel = (np.abs(A[:, :, c] - ac) <= hs) & (np.abs(B[:, :, c] - yc) <= hs)
+        m[:, :, c][sel] = CAR_A
+        m[:, :, c][sel & (B[:, :, c] >= yc + hs - 1)] = CEIL
+    for c in range(102, 119):
+        top = int(24 + (c - 102) * 0.95)
+        m[11:13, 22:min(top, Y_ - 1), c] = CAR_A
+        m[11:13, max(top - 3, 22):min(top, Y_ - 1), c] = YELLOW_PAINT
+    m[2:22, 24:25, 98:105] = CEIL
+    # engine cowling, exhaust, mast
+    m[7:17, 26:32, 18:44] = ELEV_DOOR
+    m[8:16, 30:32, 22:40] = CEIL
+    m[10:14, 27:30, 44:47] = DARK_METAL
+    m[10:14, 32:38, 25:29] = DARK_METAL
+    # skids + struts
+    for sa in (2, 20):
+        m[sa:sa + 2, 0:2, 4:54] = DARK_METAL
+        m[sa:sa + 2, 2:3, 2:5] = DARK_METAL
+        for sc in (14, 40):
+            m[sa:sa + 2, 2:10, sc:sc + 2] = DARK_METAL
+            m[min(sa, 6):max(sa + 2, 18), 8:10, sc:sc + 2] = DARK_METAL
+    # nav lights, landing light
+    m[0, 18:20, 26:28] = RED; m[X_ - 1, 18:20, 26:28] = EXIT_SIGN
+    m[10:14, 5:7, 6:9] = CEIL_LAMP
+    m = np.where(keep_connected(m > 0, [(12, 7, 30)]), m, 0).astype(np.uint8)
+    return m
+
+def rotor_model(R_=50):
+    r = np.zeros((2 * R_ + 1, 2, 2 * R_ + 1), np.uint8)
+    r[:, 1, R_ - 1:R_ + 2] = TV_BODY; r[R_ - 1:R_ + 2, 1, :] = TV_BODY
+    r[:3, 1, R_ - 1:R_ + 2] = YELLOW_PAINT; r[-3:, 1, R_ - 1:R_ + 2] = YELLOW_PAINT
+    r[R_ - 1:R_ + 2, 1, :3] = YELLOW_PAINT; r[R_ - 1:R_ + 2, 1, -3:] = YELLOW_PAINT
+    r[R_ - 3:R_ + 4, 0:2, R_ - 3:R_ + 4] = DARK_METAL
+    return r
+
+def tail_rotor_model(R_=10):
+    t = np.zeros((1, 2 * R_ + 1, 2 * R_ + 1), np.uint8)
+    t[0, R_ - 1:R_ + 2, :] = TV_BODY; t[0, :, R_ - 1:R_ + 2] = TV_BODY
+    t[0, R_ - 2:R_ + 3, R_ - 2:R_ + 3] = DARK_METAL
+    return t
+
+HELI_BODY = helicopter_model()
+HELI_ROTOR = rotor_model()
+HELI_TAIL = tail_rotor_model()
+hx0, hz0 = HCX - 12, HCZ - 60                      # body grid min corner: centred on the pad; the nose (c = 0) faces -z
+HELI = dict(gmin=(hx0, RT, hz0),
+            rotor_gmin=(hx0 + 12 - 50, RT + 38, hz0 + 27 - 50),
+            tail_gmin=(hx0 + 13, RT + 31 - 10, hz0 + 112 - 10),     # against the right face of the fin
+            seat=(7, 12, 16), light=(12, 4, 7))
+
+# ============================================================================
 # 11. Export: chunks -> .vox, main.xml
 # ============================================================================
 def matl_dict(i):
@@ -2878,6 +3138,20 @@ def export():
                 oy = gy0 * 0.1
                 oz = (gz0 + sz - sz // 2) * 0.1 - CZ
                 voxes.append(dict(name=name, gmin=(gx0, gy0, gz0), size=(sx, sy, sz), pos=(ox, oy, oz), lights=[], n=n))
+    road_voxes = []
+    for xi, (x0, x1_) in enumerate(zip(XS_MAIN, XS_MAIN[1:])):
+        sub = ROAD[x0:x1_]
+        nz = np.nonzero(sub)
+        if len(nz[0]) == 0:
+            continue
+        bx_ = (nz[0].min(), nz[0].max() + 1); by_ = (nz[1].min(), nz[1].max() + 1); bz_ = (nz[2].min(), nz[2].max() + 1)
+        sub = sub[bx_[0]:bx_[1], by_[0]:by_[1], bz_[0]:bz_[1]]
+        gx0, gy0, gz0 = x0 + bx_[0], by_[0], bz_[0] - RD                 # grid z is negative south of the map
+        sx, sy, sz = sub.shape
+        name = f"road_{xi}"
+        total += write_vox(os.path.join(VOXDIR, name + ".vox"), sub)
+        road_voxes.append((name, ((gx0 + sx // 2) * 0.1 - CX, gy0 * 0.1, (gz0 + sz - sz // 2) * 0.1 - CZ)))
+    write_vox(os.path.join(VOXDIR, "road_lamp.vox"), ROAD_LAMPS[0][0])
     for pname, arr in PROP_SHAPES.items():
         write_vox(os.path.join(VOXDIR, pname + ".vox"), arr)
     # spawnable prefabs (game spawn menu via spawn.txt, and the map's own N-key spawn menu)
@@ -2916,6 +3190,7 @@ def export():
 
     spawn = ((ax0 + ax1) / 2 * 0.1 - CX, G0 * 0.1 + 0.1, (az0 + 18) * 0.1 - CZ)
     half_w, half_d = W / 2 * 0.1, D / 2 * 0.1
+    south = -half_d - RD * 0.1                                             # the street extends the map south
     xml = []
     xml.append('<scene version="6" shadowVolume="%d %d %d">\n' % (int(W * 0.1) + 4, int(H * 0.1) * 2 + 6, int(D * 0.1) + 4))
     xml.append('\t<environment skybox="cloudy.dds" skyboxtint="0.35 0.3 0.5" skyboxbrightness="0.12" skyboxrot="0" '
@@ -2929,7 +3204,7 @@ def export():
     # (our own logic lives in the mod-root main.lua, which the game runs automatically;
     #  it guards itself so it never runs twice even if "main.lua" resolves to it)
     xml.append('\t<boundary>\n')
-    for (bx_, bz_) in [(-half_w, -half_d), (half_w, -half_d), (half_w, half_d), (-half_w, half_d)]:
+    for (bx_, bz_) in [(-half_w, south), (half_w, south), (half_w, half_d), (-half_w, half_d)]:
         xml.append(f'\t\t<vertex pos="{bx_:.1f} {bz_:.1f}"/>\n')
     xml.append('\t</boundary>\n')
     xml.append('\t<group name="liminal_atrium" pos="0 0 0">\n')
@@ -3016,6 +3291,51 @@ def export():
         for (vx, vz) in pts:
             xml.append(f'\t\t<vertex pos="{(vx - pcx) * 0.1:.3f} {(vz - pcz) * 0.1:.3f}"/>\n')
         xml.append('\t</water>\n')
+    for nm_, arr_ in (("heli_body", HELI_BODY), ("heli_rotor", HELI_ROTOR), ("heli_tail", HELI_TAIL)):
+        write_vox(os.path.join(VOXDIR, nm_ + ".vox"), arr_)
+    def org(arr_, gm):
+        sx, sy, sz = arr_.shape
+        return ((gm[0] + sx // 2) * 0.1 - CX, gm[1] * 0.1, (gm[2] + sz - sz // 2) * 0.1 - CZ)
+    hb = org(HELI_BODY, HELI["gmin"])
+    rel = lambda o: (o[0] - hb[0], o[1] - hb[1], o[2] - hb[2])
+    bsx, bsy, bsz = HELI_BODY.shape
+    def in_body(a, b, c):        # body-array cell -> position relative to the body vox origin
+        return ((a + 0.5 - bsx // 2) * 0.1, b * 0.1, (c + 0.5 - (bsz - bsz // 2)) * 0.1)
+    xml.append(f'\t<vehicle name="helicopter" tags="helicopter" pos="0 0 0" driven="false" topspeed="0" acceleration="0" strength="3">\n'
+               f'\t\t<body tags="helibody" pos="{f3(hb)}" dynamic="true">\n'
+               f'\t\t\t<vox pos="0 0 0" file="MOD/vox/heli_body.vox" object="shape" density="0.8">\n'
+               f'\t\t\t\t<location tags="player" pos="{f3(in_body(*HELI["seat"]))}" rot="0 0 0"/>\n'
+               f'\t\t\t\t<location tags="vital" pos="{f3(in_body(12, 28, 30))}"/>\n'
+               f'\t\t\t\t<light pos="{f3(in_body(*HELI["light"]))}" rot="-60 0 0" type="cone" color="1 .95 .85" scale="12" angle="60" penumbra="25" size="0.1"/>\n'
+               f'\t\t\t\t<light pos="{f3(in_body(-1, 19, 27))}" type="sphere" color="1 0.1 0.1" scale="0.8" size="0.05"/>\n'
+               f'\t\t\t\t<light pos="{f3(in_body(24, 19, 27))}" type="sphere" color="0.1 1 0.2" scale="0.8" size="0.05"/>\n'
+               f'\t\t\t</vox>\n'
+               f'\t\t\t<vox tags="helirotor" pos="{f3(rel(org(HELI_ROTOR, HELI["rotor_gmin"])))}" file="MOD/vox/heli_rotor.vox" object="shape" density="0.3"/>\n'
+               f'\t\t\t<vox tags="helitail" pos="{f3(rel(org(HELI_TAIL, HELI["tail_gmin"])))}" file="MOD/vox/heli_tail.vox" object="shape" density="0.3"/>\n'
+               f'\t\t</body>\n\t</vehicle>\n')
+    xml.append('\t<group name="rooftop" pos="0 0 0">\n')
+    for (nm_, arr_, gm_, lts_) in ROOF_SHAPES:
+        write_vox(os.path.join(VOXDIR, nm_ + ".vox"), arr_)
+        o_ = org(arr_, gm_)
+        xml.append(f'\t\t<vox name="{nm_}" pos="{f3(o_)}" file="MOD/vox/{nm_}.vox" object="shape"' + ('>\n' if lts_ else '/>\n'))
+        for (lx_, ly_, lz_, rgb_, sc_, sz_) in lts_:
+            xml.append(light_xml(((lx_ + 0.5) * 0.1 - CX - o_[0], ly_ * 0.1 - o_[1], (lz_ + 0.5) * 0.1 - CZ - o_[2]), rgb_, sc_, sz_))
+        if lts_:
+            xml.append('\t\t</vox>\n')
+    xml.append('\t</group>\n')
+    xml.append('\t<group name="street" pos="0 0 0">\n')
+    for (name_, pos_) in road_voxes:
+        xml.append(f'\t\t<vox name="{name_}" pos="{f3(pos_)}" file="MOD/vox/{name_}.vox" object="shape"/>\n')
+    for i, (arr_, (lx_, ly_, lz_), (qx, qy, qz)) in enumerate(ROAD_LAMPS):
+        sx, sy, sz = arr_.shape
+        lp = ((lx_ + sx // 2) * 0.1 - CX, ly_ * 0.1, (lz_ + sz - sz // 2) * 0.1 - CZ)
+        rel = ((qx + 0.5) * 0.1 - CX - lp[0], qy * 0.1 - lp[1], (qz + 0.5) * 0.1 - CZ - lp[2])
+        xml.append(f'\t\t<vox name="streetlamp{i}" pos="{f3(lp)}" file="MOD/vox/road_lamp.vox" object="shape">\n')
+        xml.append(light_xml(rel, (1.0, 0.75, 0.45), 6.0, 0.3))
+        xml.append('\t\t</vox>\n')
+    for (kind_, fb_, cx_, cy_, cz_, ry_) in ROAD_CARS:
+        xml.append(f'\t\t<location tags="carspawn kind={kind_} fallback={fb_}" pos="{cx_ * 0.1 - CX:.2f} {cy_ * 0.1 + 0.05:.2f} {cz_ * 0.1 - CZ:.2f}" rot="0 {ry_} 0"/>\n')
+    xml.append('\t</group>\n')
     for (kind_, fb_, gx_, gy_, gz_, ry_) in CAR_SPOTS:
         cxp, czp = (gx_ + 10) * 0.1 - CX, (gz_ + 22) * 0.1 - CZ                   # bay centre on the ground
         xml.append(f'\t<location tags="carspawn kind={kind_} fallback={fb_}" pos="{cxp:.2f} {gy_ * 0.1 + 0.05:.2f} {czp:.2f}" rot="0 {ry_} 0"/>\n')
@@ -3087,7 +3407,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.27\n"
+        f.write("name = Liminal Atrium v3.28\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

@@ -418,11 +418,49 @@ for (kind_, fb_, gx_, gy_, gz_, ry_) in ns["CAR_SPOTS"]:
     if (reg > 0).any() or not (ground > 0).all() or cx_ - 12 < 0 or cz_ - 26 < 0:
         car_bad.append(kind_)
 report(f"{len(ns['CAR_SPOTS'])} car spots: free space + ground for a base-game vehicle", not car_bad and len(ns["CAR_SPOTS"]) >= 7, str(car_bad))
+RO = ns["ROAD"]; RD_ = ns["RD"]
+r_isl = 0
+for x0_, x1_ in zip(XS_MAIN, XS_MAIN[1:]):
+    lab_r, n_r = ndimage.label(RO[x0_:x1_] > 0)
+    r_isl += n_r - len(set(np.unique(lab_r[:, 0:2, :])) - {0})
+report("street: no floating pieces in its shapes", r_isl == 0, f"{r_isl} islands")
+report("street surface meets the parking lot at the same height (no step)",
+       bool((RO[:, G0 - 1, RD_ - 1] > 0).all() and (G[:, G0 - 1, 0] > 0).all() and not (G[:, G0, 0] > 0).all()))
+lamp_ok = True
+for (arr_, (lx_, ly_, lz_), q_) in ns["ROAD_LAMPS"]:
+    lzl = lz_ + RD_
+    above = RO[lx_:lx_ + arr_.shape[0], ly_ + arr_.shape[1], lzl:lzl + arr_.shape[2]]
+    inside = RO[lx_:lx_ + arr_.shape[0], ly_:ly_ + arr_.shape[1], lzl:lzl + arr_.shape[2]]
+    lamp_ok &= bool((above > 0).any() and not (inside > 0).any())
+report(f"{len(ns['ROAD_LAMPS'])} street lamps hang from their arms", lamp_ok)
+van_ok = True
+for (k_, fb_, cx_, cy_, cz_, ry_) in ns["ROAD_CARS"]:
+    czl = cz_ + RD_
+    van_ok &= not (RO[cx_ - 30:cx_ + 30, cy_ + 1:cy_ + 26, czl - 13:czl + 13] > 0).any() and bool((RO[cx_ - 20:cx_ + 20, cy_ - 1, czl - 8:czl + 8] > 0).all())
+report("parked van on the street has room", van_ok)
+H_ = ns["HELI"]
+def hits(arr_, gm):
+    gx, gy, gz = gm; sx, sy, sz = arr_.shape
+    reg = FULL[gx:gx + sx, gy:gy + sy, gz:gz + sz]          # (the grid ends at H; above it is open sky)
+    return int(((reg > 0) & (arr_[:reg.shape[0], :reg.shape[1], :reg.shape[2]] > 0)).sum())
+hb_ = ns["HELI_BODY"]
+under = FULL[H_["gmin"][0]:H_["gmin"][0] + hb_.shape[0], H_["gmin"][1] - 1, H_["gmin"][2]:H_["gmin"][2] + hb_.shape[2]][hb_[:, 0, :] > 0]
+lab_h, n_h = ndimage.label(hb_ > 0)
+rc = (H_["rotor_gmin"][0] + 50, H_["rotor_gmin"][1], H_["rotor_gmin"][2] + 50)
+sweep = FULL[rc[0] - 51:rc[0] + 52, rc[1]:rc[1] + 3, rc[2] - 51:rc[2] + 52] > 0
+report("helicopter: one solid piece, parked clear on the helipad (skids on the pad), rotor disc free all round",
+       n_h == 1 and hits(hb_, H_["gmin"]) == 0 and hits(ns["HELI_ROTOR"], H_["rotor_gmin"]) == 0 and hits(ns["HELI_TAIL"], H_["tail_gmin"]) == 0
+       and (under > 0).all() and not sweep.any(), f"pieces {n_h}, under {(under > 0).mean():.2f}, sweep {int(sweep.sum())}")
+tg = H_["tail_gmin"]
+rs_bad = [nm for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"] if hits(arr_, gm_) or not (FULL[gm_[0]:gm_[0] + arr_.shape[0], gm_[1] - 1, gm_[2]:gm_[2] + arr_.shape[2]][arr_[:, 0, :] > 0] > 0).all()]
+report("windsock + floodlights stand on the roof, clear of everything", not rs_bad, str(rs_bad))
+report("tail rotor touches the tail fin", bool((hb_[tg[0] - H_["gmin"][0] - 1, tg[1] - H_["gmin"][1]:tg[1] - H_["gmin"][1] + 21, tg[2] - H_["gmin"][2]:tg[2] - H_["gmin"][2] + 21] > 0).any()))
+report("stairs lead from the room-ring roof up to the helipad roof", reachable(255, ns["ROOF_Y"], 125, r=4) and reachable(255, ns["RT"], 170, r=6) and reachable(ns["HCX"] + 40, ns["RT"], ns["HCZ"], r=6))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
-LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "fountain.ogg"}
+LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "fountain.ogg", "heli_rotor.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)
     peak = float(np.abs(x).max())
