@@ -269,7 +269,7 @@ def add_door(fr, u0, u1, y0, y1, v0, v1, style, hinge=None, open_dir=None, slide
             # door stop: a strip across the top of the opening on the side the door does NOT open to.
             # It hides the clearance gap when the door is shut and stops it swinging the wrong way.
             du, dv = open_dir
-            fr.box(u0 - du, u1 - du, y1 - 1, y1, v0 - dv, v1 - dv, stop)
+            fr.box(u0 - du, u1 - du, y1 - 1, y1 + 1, v0 - dv, v1 - dv, stop)   # 2 rows: also bonds to the header
     d = dict(arr=arr, gmin=(x0, y0, z0), start_open=start_open, tag=tag, yoff=0.05 if slide is None else 0.0)
     if slide is not None:
         d["kind"] = "slide"
@@ -753,27 +753,32 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet):
     fr.box(U1 - 1, U1, y, y + 12, v0b + 1, ROOM_D, TILE)
     fr.box(bu0b + 1, U1, y + 12, y + 13, ROOM_D - 1, ROOM_D, TILE_DARK)
     fr.box(U1 - 1, U1, y + 12, y + 13, v0b + 1, ROOM_D, TILE_DARK)
-    # toilet (against the u = U1 wall)
+    # layout keeps a free standing area (~0.7 x 0.8 m) in front of the door
+    # toilet (against the u = U1 wall, near the door)
     fr.box(U1 - 4, U1 - 1, y, y + 4, v0b + 2, v0b + 6, CERAMIC)
     fr.box(U1 - 3, U1 - 2, y + 3, y + 4, v0b + 3, v0b + 5, 0)
     fr.box(U1 - 2, U1, y + 4, y + 10, v0b + 2, v0b + 6, CERAMIC)
     fr.box(U1 - 1, U1, y + 7, y + 8, v0b + 7, v0b + 9, CHROME)                  # paper holder
     fr.box(U1 - 2, U1 - 1, y + 6, y + 8, v0b + 7, v0b + 9, TOWEL)
-    # bathtub along the back wall + shower
-    fr.box(bu0b + 1, bu0b + 10, y, y + 6, v0b + 6, ROOM_D - 1, CERAMIC)
-    fr.box(bu0b + 2, bu0b + 9, y + 2, y + 6, v0b + 7, ROOM_D - 2, 0)
-    fr.box(bu0b + 5, bu0b + 6, y + 18, y + 22, ROOM_D - 1, ROOM_D, CHROME)       # shower head (on the wall)
-    fr.box(bu0b + 1, bu0b + 10, y + 23, y + 24, v0b + 6, v0b + 7, CHROME)        # curtain rod
-    fr.box(bu0b + 1, bu0b + 4, y + 7, y + 23, v0b + 6, v0b + 7, TOWEL)           # shower curtain (pulled aside)
-    fr.box(bu0b + 1, bu0b + 2, y + 16, y + 17, v0b + 7, ROOM_D - 2, CHROME)      # towel bar over the tub
-    fr.box(bu0b + 1, bu0b + 2, y + 11, y + 16, v0b + 8, v0b + 11, TOWEL)
-    # vanity against the bathroom front wall (v = v0b), mirror above
-    fr.box(bu0b + 3, bu0b + 8, y, y + 9, v0b + 1, v0b + 4, WOOD_DARK)
-    fr.box(bu0b + 3, bu0b + 9, y + 9, y + 10, v0b + 1, v0b + 5, CERAMIC)
-    fr.box(bu0b + 4, bu0b + 7, y + 9, y + 10, v0b + 2, v0b + 4, 0)
-    fr.box(bu0b + 5, bu0b + 6, y + 10, y + 12, v0b + 1, v0b + 2, CHROME)
-    fr.box(bu0b + 3, bu0b + 9, y + 13, y + 22, v0b, v0b + 1, MIRROR)
-    fr.box(bu0b + 3, bu0b + 9, y, y + 1, v0b + 4, v0b + 6, BATHMAT)
+    # walk-in shower in the far corner: tiled tray, low curb, head on the wall, curtain on a rod
+    fr.box(U1 - 6, U1 - 1, y - 1, y, ROOM_D - 7, ROOM_D - 1, TILE_DARK)
+    fr.box(U1 - 6, U1 - 1, y, y + 1, ROOM_D - 7, ROOM_D - 6, CERAMIC)            # curb
+    fr.box(U1 - 6, U1 - 5, y, y + 1, ROOM_D - 7, ROOM_D - 1, CERAMIC)
+    fr.box(U1 - 3, U1 - 2, y + 18, y + 22, ROOM_D - 1, ROOM_D, CHROME)           # shower head (on the wall)
+    fr.box(U1 - 3, U1 - 2, y + 22, y + 23, ROOM_D - 2, ROOM_D, CHROME)
+    fr.box(U1 - 6, U1 - 1, y + 23, y + 24, ROOM_D - 7, ROOM_D - 6, CHROME)       # curtain rod
+    fr.box(U1 - 6, U1 - 5, y + 1, y + 23, ROOM_D - 7, ROOM_D - 6, CHROME)        # corner post (stands on the curb)
+    fr.box(U1 - 6, U1 - 4, y + 8, y + 23, ROOM_D - 7, ROOM_D - 6, TOWEL)         # curtain, pulled aside
+    # vanity on the back wall next to the shower, mirror above it
+    fr.box(bu0b + 1, bu0b + 6, y, y + 9, ROOM_D - 4, ROOM_D - 1, WOOD_DARK)
+    fr.box(bu0b + 1, bu0b + 6, y + 9, y + 10, ROOM_D - 5, ROOM_D - 1, CERAMIC)
+    fr.box(bu0b + 2, bu0b + 5, y + 9, y + 10, ROOM_D - 4, ROOM_D - 2, 0)        # basin
+    fr.box(bu0b + 3, bu0b + 4, y + 10, y + 12, ROOM_D - 2, ROOM_D - 1, CHROME)  # faucet
+    fr.box(bu0b + 1, bu0b + 6, y + 13, y + 22, ROOM_D - 1, ROOM_D, MIRROR)
+    # towels on a bar on the bathroom's front wall
+    fr.box(bu0b + 5, bu0b + 10, y + 15, y + 16, v0b + 1, v0b + 2, CHROME)
+    fr.box(bu0b + 6, bu0b + 9, y + 9, y + 15, v0b + 1, v0b + 2, TOWEL)
+    fr.box(bu0b + 3, bu0b + 8, y, y + 1, v0b + 5, v0b + 8, BATHMAT)
     fr.box(bu0b + 5, bu0b + 8, y + 26, y + 27, v0b + 5, v0b + 8, CEIL_LAMP if lit else CEIL)
     # ---- wardrobe with open hanging rail, luggage rack
     fr.box(U0, U0 + 6, y, y + 22, ROOM_D - 12, ROOM_D - 1, WOOD_DARK)
@@ -1988,7 +1993,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.14\n"
+        f.write("name = Liminal Atrium v3.15\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"

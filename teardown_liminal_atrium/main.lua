@@ -16,7 +16,10 @@ local function allTools()
 	local ids = {}
 	if ListKeys then
 		local keys = ListKeys("game.tool")
-		for i = 1, #keys do ids[#ids + 1] = keys[i] end
+		for i = 1, #keys do
+			-- only real tools (they always have a display name); skip internal / leftover registry nodes
+			if HasKey("game.tool." .. keys[i] .. ".name") then ids[#ids + 1] = keys[i] end
+		end
 	end
 	return ids
 end

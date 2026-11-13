@@ -152,6 +152,63 @@ checks["roof (via stair penthouse)"] = (bx0 + 20, ns["ROOF_Y"], (bz0 + bz1) // 2
 for nm, (x, y, z) in checks.items():
     report(f"reachable: {nm}", reachable(int(x), int(y), int(z)))
 
+# 5b. both sides of every swing door are reachable (rooms, bathrooms, stairwells, lobby, entrance)
+side_bad = []
+for i, d in enumerate(ns["DOORS"]):
+    if d["kind"] != "swing": continue
+    arr = d["arr"]; gx, gy, gz = d["gmin"]; sx, sy, sz = arr.shape
+    cxd, czd = gx + sx / 2, gz + sz / 2
+    nx, nz = (0, 1) if sx > sz else (1, 0)                 # door normal (thin axis)
+    for sgn in (-1, 1):
+        px_, pz_ = int(cxd + sgn * nx * 5), int(czd + sgn * nz * 5)
+        if not reachable(px_, gy, pz_, r=3, dy=8):
+            side_bad.append((i, sgn))
+report("both sides of every door are reachable", not side_bad, f"{len(side_bad)} door sides: {side_bad[:6]}")
+
+# 5c. door hinges: each joint point touches a door voxel and a world voxel
+joint_bad = []
+for i, d in enumerate(ns["DOORS"]):
+    if d["kind"] != "swing": continue
+    px, pz = d["pivot"]; gx, gy, gz = d["gmin"]; arr = d["arr"]
+    for yy in (gy + 2, gy + arr.shape[1] - 2):
+        near = [(int(math.floor(px + ox)), yy, int(math.floor(pz + oz))) for ox in (-0.5, 0.5) for oz in (-0.5, 0.5)]
+        door_touch = any(0 <= c[0] - gx < arr.shape[0] and 0 <= c[2] - gz < arr.shape[2] and arr[c[0] - gx, c[1] - gy, c[2] - gz] > 0 for c in near)
+        wall_touch = any(FULL[c] > 0 for c in near)
+        if not (door_touch and wall_touch):
+            joint_bad.append((i, yy - gy, door_touch, wall_touch))
+report("every door hinge joint touches both the door and the wall", not joint_bad, str(joint_bad[:6]))
+
+# 5d. doors that start open never overlap each other (dynamic bodies overlapping at load would explode)
+def door_cells(d, frac):
+    a_ = math.radians(d["ang"] * frac); px, pz = d["pivot"]; arr = d["arr"]; gx, gy, gz = d["gmin"]
+    X, Y, Z = np.nonzero(arr); cx_ = X + gx + 0.5; cz_ = Z + gz + 0.5
+    rx = (cx_ - px) * math.cos(a_) + (cz_ - pz) * math.sin(a_); rz = -(cx_ - px) * math.sin(a_) + (cz_ - pz) * math.cos(a_)
+    return set(zip(np.floor(px + rx).astype(int).tolist(), (Y + gy).tolist(), np.floor(pz + rz).astype(int).tolist()))
+occupied = {}
+clash = []
+for i, d in enumerate(ns["DOORS"]):
+    if d["kind"] != "swing": continue
+    cells = door_cells(d, 0.85 if d["start_open"] else 0.0)
+    for c in cells:
+        if c in occupied and occupied[c] != i:
+            clash.append((occupied[c], i)); break
+        occupied[c] = i
+report("no two doors overlap at load", not clash, str(clash[:6]))
+
+# 5e. every lamp is attached to the building (face-adjacent to a world voxel)
+float_lamps = []
+for li, L in enumerate(ns["LAMPS"]):
+    V = np.array(L["vox"])
+    touch = False
+    for dvec in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)):
+        nb = V + np.array(dvec)
+        ok = (nb[:, 0] >= 0) & (nb[:, 0] < W) & (nb[:, 1] >= 0) & (nb[:, 1] < H) & (nb[:, 2] >= 0) & (nb[:, 2] < D)
+        if (G[nb[ok, 0], nb[ok, 1], nb[ok, 2]] > 0).any():
+            touch = True; break
+    if not touch:
+        float_lamps.append(li)
+report("every lamp is attached to the building", not float_lamps, str(float_lamps[:8]))
+
 # 6. doors swing free, elevator cabs travel free
 worst = 0.0
 for d in ns["DOORS"]:
@@ -184,6 +241,20 @@ for name, b, fr, bw in ns["room_frames"]():
             if frac < need:
                 open_rooms.append((name, b, k + 1, wname, round(frac, 2)))
 report("every hotel room has all its walls", not open_rooms, str(open_rooms[:8]))
+# every room window is glazed (no open hole to the atrium)
+GLASS_IDS = [ns["GLASS"]]
+unglazed = []
+WIN_W, WIN_H, SILL, T_FAC = ns["WIN_W"], ns["WIN_H"], ns["SILL"], ns["T_FAC"]
+for name, b, fr, bw in ns["room_frames"]():
+    for k in range(FLOORS):
+        if k == 0 and name == "S" and b in (1, 2):
+            continue
+        u0 = bw // 2 - WIN_W // 2 + 1
+        x0, x1, z0, z1 = fr._rect(u0 + 1, u0 + WIN_W - 1, -T_FAC, 0)
+        pane = FULL[x0:x1, fy(k) + SILL + 1:fy(k) + SILL + WIN_H - 1, z0:z1]
+        if int(np.isin(pane, GLASS_IDS).sum()) < (WIN_W - 3) * (WIN_H - 2):
+            unglazed.append((name, b, k + 1))
+report("every room window has its glass", not unglazed, str(unglazed[:6]))
 HANDLES = {ns["BRASS"], ns["STEEL"]}
 wrong = []
 for i, d in enumerate(ns["DOORS"]):
