@@ -1512,6 +1512,26 @@ for (ppx, ppz) in ((ix0 + 8, iz1 - 10), (ix1 - 10, iz1 - 10), (ix0 + 8, iz0 + 10
 # roof plant on the annex
 box(cxN - 20, cxN + 20, DY + HALL_H + 4, DY + HALL_H + 14, AZ1 - 50, AZ1 - 30, HVAC)
 box(cxN - 18, cxN + 18, DY + HALL_H + 14, DY + HALL_H + 15, AZ1 - 48, AZ1 - 32, DARK_METAL)
+# poolside radio: plays the song (snd/radio_song.ogg) until it is shot / smashed
+box(cxN + 2, cxN + 16, DY, DY + 6, pz1 + 14, pz1 + 20, LOUNGER)               # side table
+box(cxN + 3, cxN + 15, DY, DY + 5, pz1 + 15, pz1 + 19, 0)
+box(cxN + 2, cxN + 3, DY, DY + 5, pz1 + 14, pz1 + 15, LOUNGER); box(cxN + 15, cxN + 16, DY, DY + 5, pz1 + 14, pz1 + 15, LOUNGER)
+box(cxN + 2, cxN + 3, DY, DY + 5, pz1 + 19, pz1 + 20, LOUNGER); box(cxN + 15, cxN + 16, DY, DY + 5, pz1 + 19, pz1 + 20, LOUNGER)
+def make_radio():
+    a = np.zeros((10, 7, 4), np.uint8)
+    a[:, 0:5, :] = TV_BODY
+    for cxs in (2, 7):                                   # two speakers on the front (z = 0, facing the pool)
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                if abs(dx) + abs(dy) < 2:
+                    a[cxs + dx, 2 + dy, 0] = CHROME
+    a[4:6, 2:4, 0] = GLASS_DOOR                          # cassette window
+    a[4, 4, 0] = TV_SCREEN                               # power LED
+    a[1, 5, 1:3] = CHROME; a[8, 5, 1:3] = CHROME         # carry handle
+    a[1:9, 6, 1:3] = CHROME
+    return a
+RADIO = dict(arr=make_radio(), gmin=(cxN + 4, DY + 6, pz1 + 15))
+
 # floating toys (dynamic: plastic floats in Teardown water)
 PROPS.append(("beach_ball", cxN - 30, DY - 6, pz0 + 30, 0))
 PROPS.append(("beach_ball", cxN + 34, DY - 6, pz0 + 52, 0))
@@ -1876,6 +1896,10 @@ def export():
     for (wx, wy, wz, rgb, scale, size, ltags) in loose:
         xml.append(light_xml((wx, wy, wz), rgb, scale, size, "\t\t", ltags))
     xml.append('\t</group>\n')
+    ra = RADIO["arr"]; rsx, rsy, rsz = ra.shape; rgx, rgy, rgz = RADIO["gmin"]
+    write_vox(os.path.join(VOXDIR, "radio.vox"), ra)
+    rpos = ((rgx + rsx // 2) * 0.1 - CX, rgy * 0.1, (rgz + rsz - rsz // 2) * 0.1 - CZ)
+    xml.append(f'\t<vox name="poolradio" tags="radio" pos="{f3(rpos)}" file="MOD/vox/radio.vox" object="shape"/>\n')
     xml.append('\t<group name="lamps" pos="0 0 0">\n')
     for i, L in enumerate(lamps):
         px_, py_, pz_ = L["pos"]
@@ -1964,7 +1988,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.12\n"
+        f.write("name = Liminal Atrium v3.13\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"
@@ -1985,7 +2009,7 @@ if __name__ == "__main__":
             arr = PROP_SHAPES[pname]; sx, sy, sz = arr.shape
             reg = Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz]
             reg[arr > 0] = arr[arr > 0]
-        stamps = [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
+        stamps = [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
             + [(c_[0], c_[1]) for c_ in CALLS]
         for arr, (gx, gy, gz) in stamps:
             sx, sy, sz = arr.shape

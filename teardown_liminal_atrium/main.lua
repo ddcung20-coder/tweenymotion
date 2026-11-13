@@ -94,6 +94,7 @@ local function loadSounds()
 	snd.buzz      = LoadLoop("MOD/snd/buzz.ogg")
 	snd.pool      = LoadLoop("MOD/snd/pool_ambience.ogg")
 	snd.spa       = LoadLoop("MOD/snd/spa_bubbles.ogg")
+	snd.song      = LoadLoop("MOD/snd/radio_song.ogg")
 end
 
 local function dist(a, b)
@@ -446,12 +447,29 @@ local function spotsInit()
 	end
 end
 
+-- poolside radio: plays the song while it is intact; shoot / smash it and the music stops
+local radio = 0
+local radioDead = false
+
+local function radioTick(cam)
+	if radioDead then return end
+	if radio == 0 then radio = FindShape("radio", true) end
+	if radio == 0 or not IsHandleValid(radio) or IsShapeBroken(radio) then
+		if radio ~= 0 then radioDead = true end
+		return
+	end
+	local p = GetShapeWorldTransform(radio).pos
+	if dist(p, cam) < 60 then
+		PlayLoop(snd.song, p, 0.9)
+	end
+end
+
 local function spotsTick(cam)
 	for i = 1, #spots do
 		local sp = spots[i]
 		local d = dist(sp.pos, cam)
 		if sp.kind == "pool" and d < 45 then
-			PlayLoop(snd.pool, sp.pos, 0.7)
+			PlayLoop(snd.pool, sp.pos, 0.45)
 		elseif sp.kind == "spa" and d < 18 then
 			PlayLoop(snd.spa, sp.pos, 0.5)
 		end
@@ -584,6 +602,7 @@ function tick(dt)
 	elevTick(dt)
 	flickerTick(dt, cam)
 	spotsTick(cam)
+	radioTick(cam)
 	spawnMenuTick()
 end
 
