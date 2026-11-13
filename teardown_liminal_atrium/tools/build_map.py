@@ -2599,36 +2599,17 @@ def marble_veins(bases, vein, n, seed):
             if not (0 <= x < W and 0 <= z < D):
                 break
 
-# concrete: aggregate speckle + damp blotches (structure, car park, stairs)
-speckle(SLAB, [(STAIR_CONC, 0.06), (ROOF2, 0.03), (CURB, 0.03)], 201)
-blotch(SLAB, ROOF2, 5, 0.05, 202, mix=0.55)
-speckle(STAIR_CONC, [(CURB, 0.08), (SLAB, 0.05)], 203)
-# plaster: faint stipple on ceilings and walls; diamond-trellis wallpaper in the rooms
-speckle(CEIL, [(ATR_PANEL, 0.12), (ATR_WALL3, 0.05)], 204)
+# diamond-trellis wallpaper in the rooms (thin lines, no per-voxel noise on walls / ceilings / concrete)
 wallpaper(ROOM_WALL, COR_WALL, 12)
 wallpaper(ROOM_WALL_B, STAIR_WALL, 12)
 wallpaper(ROOM_WALL_C, ATR_SEAM, 12)
-speckle(LOBBY_WALL, [(COR_WALL, 0.12)], 208)
-speckle(STAIR_WALL, [(ATR_GRID, 0.08), (STAIR_WALL2, 0.03)], 209)
-speckle(ATR_PANEL, [(ATR_WALL3, 0.10)], 210)
-# brick facade: a few darker burnt bricks; stone trim: weathering
+# brick facade: a few darker burnt bricks
 blotch(BRICK2, BRICK3, 1, 0.12, 211, mix=0.0)
-speckle(EXT_WALL, [(EXT_TRIM2, 0.18)], 212)
-speckle(LINTEL, [(EXT_TRIM, 0.15)], 213)
-# outdoors: gravel in the asphalt, oil patches, richer lawn, worn pavers
-speckle(ASPHALT, [(CURB, 0.02), (ROOF, 0.05)], 214)
-blotch(ASPHALT, ROOF, 9, 0.06, 215)
+# lawn: mixed grass tones
 speckle(LAWN, [(LEAF3, 0.10), (LAWN2, 0.15)], 216)
-speckle(PAVER, [(PAVER2, 0.15), (CURB, 0.04)], 217)
-# floors: bathroom tiles with grout, marble shading + veins, wood with grain noise, stone flooring
+# floors: bathroom tiles with grout, veins in the white marble
 grout(TILE, TILE_DARK, 5)
-speckle(MARBLE_B, [(MARBLE_B2, 0.25)], 218)
-speckle(MARBLE_BG, [(MARBLE_BG2, 0.25)], 219)
 marble_veins([MARBLE_W, MARBLE_W2], MARBLE_VEIN, 260, 220)
-speckle(PARQUET, [(PARQUET2, 0.18)], 221)
-speckle(WOOD_LIGHT, [(WOOD_MED, 0.04)], 222)
-speckle(FLOOR_STN, [(FLOOR_STN3, 0.12)], 223)
-speckle(FLOOR_STN2, [(FLOOR_STN, 0.12)], 224)
 
 # ============================================================================
 # 10. Props (separate dynamic bodies)
@@ -3084,7 +3065,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.23\n"
+        f.write("name = Liminal Atrium v3.24\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
