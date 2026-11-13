@@ -1,4 +1,4 @@
-name = Liminal Atrium v3.28
+name = Liminal Atrium v3.29
 author = Claude
 description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground car park and a luxury shopping arcade. Sandbox - break everything. Dreamcore mission SWEET DREAMS: ring the front-desk bell, follow the pastel dreamers to six lost memories and wake up.
 tags = Map

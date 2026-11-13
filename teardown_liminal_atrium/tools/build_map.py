@@ -2960,6 +2960,7 @@ def helicopter_model():
     m[8:16, 30:32, 22:40] = CEIL
     m[10:14, 27:30, 44:47] = DARK_METAL
     m[10:14, 32:38, 25:29] = DARK_METAL
+    m[10:14, 29:34, 109:116] = DARK_METAL                                                     # tail rotor gearbox on the fin
     # skids + struts
     for sa in (2, 20):
         m[sa:sa + 2, 0:2, 4:54] = DARK_METAL
@@ -2974,17 +2975,22 @@ def helicopter_model():
     return m
 
 def rotor_model(R_=50):
-    r = np.zeros((2 * R_ + 1, 2, 2 * R_ + 1), np.uint8)
-    r[:, 1, R_ - 1:R_ + 2] = TV_BODY; r[R_ - 1:R_ + 2, 1, :] = TV_BODY
-    r[:3, 1, R_ - 1:R_ + 2] = YELLOW_PAINT; r[-3:, 1, R_ - 1:R_ + 2] = YELLOW_PAINT
-    r[R_ - 1:R_ + 2, 1, :3] = YELLOW_PAINT; r[R_ - 1:R_ + 2, 1, -3:] = YELLOW_PAINT
-    r[R_ - 3:R_ + 4, 0:2, R_ - 3:R_ + 4] = DARK_METAL
+    """main rotor = its own body: blades (y 8), hub, and a shaft (y 0..5) that sits inside the mast,
+    held there by two ball joints on the shaft axis (= a hinge about the vertical)."""
+    r = np.zeros((2 * R_ + 1, 9, 2 * R_ + 1), np.uint8)
+    r[:, 8, R_ - 1:R_ + 2] = TV_BODY; r[R_ - 1:R_ + 2, 8, :] = TV_BODY
+    r[:3, 8, R_ - 1:R_ + 2] = YELLOW_PAINT; r[-3:, 8, R_ - 1:R_ + 2] = YELLOW_PAINT
+    r[R_ - 1:R_ + 2, 8, :3] = YELLOW_PAINT; r[R_ - 1:R_ + 2, 8, -3:] = YELLOW_PAINT
+    r[R_ - 3:R_ + 4, 6:9, R_ - 3:R_ + 4] = DARK_METAL
+    r[R_ - 1:R_ + 1, 0:6, R_ - 1:R_ + 1] = CHROME
     return r
 
 def tail_rotor_model(R_=10):
-    t = np.zeros((1, 2 * R_ + 1, 2 * R_ + 1), np.uint8)
-    t[0, R_ - 1:R_ + 2, :] = TV_BODY; t[0, :, R_ - 1:R_ + 2] = TV_BODY
-    t[0, R_ - 2:R_ + 3, R_ - 2:R_ + 3] = DARK_METAL
+    """tail rotor body: shaft along x (x 0..4, inside the gearbox) and the blades at x = 4."""
+    t = np.zeros((5, 2 * R_ + 1, 2 * R_ + 1), np.uint8)
+    t[4, R_ - 1:R_ + 2, :] = TV_BODY; t[4, :, R_ - 1:R_ + 2] = TV_BODY
+    t[3:5, R_ - 2:R_ + 3, R_ - 2:R_ + 3] = DARK_METAL
+    t[0:4, R_ - 1:R_ + 1, R_ - 1:R_ + 1] = CHROME
     return t
 
 HELI_BODY = helicopter_model()
@@ -2992,8 +2998,8 @@ HELI_ROTOR = rotor_model()
 HELI_TAIL = tail_rotor_model()
 hx0, hz0 = HCX - 12, HCZ - 60                      # body grid min corner: centred on the pad; the nose (c = 0) faces -z
 HELI = dict(gmin=(hx0, RT, hz0),
-            rotor_gmin=(hx0 + 12 - 50, RT + 38, hz0 + 27 - 50),
-            tail_gmin=(hx0 + 13, RT + 31 - 10, hz0 + 112 - 10),     # against the right face of the fin
+            rotor_gmin=(hx0 + 12 - 50, RT + 30, hz0 + 27 - 50),       # shaft in the mast, blades 0.8 m higher
+            tail_gmin=(hx0 + 10, RT + 31 - 10, hz0 + 112 - 10),       # shaft in the gearbox, blades right of the fin
             seat=(7, 12, 16), light=(12, 4, 7))
 
 # ============================================================================
@@ -3303,16 +3309,30 @@ def export():
         return ((a + 0.5 - bsx // 2) * 0.1, b * 0.1, (c + 0.5 - (bsz - bsz // 2)) * 0.1)
     xml.append(f'\t<vehicle name="helicopter" tags="helicopter" pos="0 0 0" driven="false" topspeed="0" acceleration="0" strength="3">\n'
                f'\t\t<body tags="helibody" pos="{f3(hb)}" dynamic="true">\n'
-               f'\t\t\t<vox pos="0 0 0" file="MOD/vox/heli_body.vox" object="shape" density="0.8">\n'
+               f'\t\t\t<vox pos="0 0 0" file="MOD/vox/heli_body.vox" object="shape" density="0.4">\n'
                f'\t\t\t\t<location tags="player" pos="{f3(in_body(*HELI["seat"]))}" rot="0 0 0"/>\n'
                f'\t\t\t\t<location tags="vital" pos="{f3(in_body(12, 28, 30))}"/>\n'
                f'\t\t\t\t<light pos="{f3(in_body(*HELI["light"]))}" rot="-60 0 0" type="cone" color="1 .95 .85" scale="12" angle="60" penumbra="25" size="0.1"/>\n'
                f'\t\t\t\t<light pos="{f3(in_body(-1, 19, 27))}" type="sphere" color="1 0.1 0.1" scale="0.8" size="0.05"/>\n'
                f'\t\t\t\t<light pos="{f3(in_body(24, 19, 27))}" type="sphere" color="0.1 1 0.2" scale="0.8" size="0.05"/>\n'
                f'\t\t\t</vox>\n'
-               f'\t\t\t<vox tags="helirotor" pos="{f3(rel(org(HELI_ROTOR, HELI["rotor_gmin"])))}" file="MOD/vox/heli_rotor.vox" object="shape" density="0.3"/>\n'
-               f'\t\t\t<vox tags="helitail" pos="{f3(rel(org(HELI_TAIL, HELI["tail_gmin"])))}" file="MOD/vox/heli_tail.vox" object="shape" density="0.3"/>\n'
                f'\t\t</body>\n\t</vehicle>\n')
+    # rotors: separate light bodies, each on two ball joints along its axis (a hinge without any axis convention)
+    def joint_rel(arr_, a, b, c):
+        sx, sy, sz = arr_.shape
+        return ((a - sx // 2) * 0.1, b * 0.1, (c - (sz - sz // 2)) * 0.1)
+    ro_ = org(HELI_ROTOR, HELI["rotor_gmin"])
+    xml.append(f'\t<body name="helirotor" tags="helirotor" pos="{f3(ro_)}" dynamic="true">\n'
+               f'\t\t<vox pos="0 0 0" file="MOD/vox/heli_rotor.vox" object="shape" density="0.25">\n'
+               f'\t\t\t<joint pos="{f3(joint_rel(HELI_ROTOR, 51, 2.5, 51))}" type="ball" size="0.1"/>\n'
+               f'\t\t\t<joint pos="{f3(joint_rel(HELI_ROTOR, 51, 5.5, 51))}" type="ball" size="0.1"/>\n'
+               f'\t\t</vox>\n\t</body>\n')
+    to_ = org(HELI_TAIL, HELI["tail_gmin"])
+    xml.append(f'\t<body name="helitail" tags="helitail" pos="{f3(to_)}" dynamic="true">\n'
+               f'\t\t<vox pos="0 0 0" file="MOD/vox/heli_tail.vox" object="shape" density="0.25">\n'
+               f'\t\t\t<joint pos="{f3(joint_rel(HELI_TAIL, 0.5, 11, 11))}" type="ball" size="0.1"/>\n'
+               f'\t\t\t<joint pos="{f3(joint_rel(HELI_TAIL, 3.5, 11, 11))}" type="ball" size="0.1"/>\n'
+               f'\t\t</vox>\n\t</body>\n')
     xml.append('\t<group name="rooftop" pos="0 0 0">\n')
     for (nm_, arr_, gm_, lts_) in ROOF_SHAPES:
         write_vox(os.path.join(VOXDIR, nm_ + ".vox"), arr_)
@@ -3407,7 +3427,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.28\n"
+        f.write("name = Liminal Atrium v3.29\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

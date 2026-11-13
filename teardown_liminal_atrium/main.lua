@@ -1154,79 +1154,66 @@ end
 -- Flight is arcade style: the script steers the body's velocity and attitude while the rotor runs.
 ----------------------------------------------------------------------------------------------------
 local heli = nil
-local HELI_SPEED, HELI_CLIMB, HELI_TURN = 22, 7, 70     -- m/s, m/s, deg/s
+local HELI_SPEED, HELI_CLIMB, HELI_TURN = 20, 6, 1.3    -- m/s, m/s, rad/s
+local HELI_ACC = 9                                       -- m/s^2 the rotor can push sideways / up beyond gravity
 
-local function shapeHalf(sh)
-	local x, y, z, sc = GetShapeSize(sh)
-	sc = sc or 0.1
-	return Vec(x * sc / 2, y * sc / 2, z * sc / 2)
+local function bodyVoxels(b)
+	local count = 0
+	local shapes = GetBodyShapes(b)
+	for i = 1, #shapes do count = count + GetShapeVoxelCount(shapes[i]) end
+	return count
 end
 
 local function heliInit()
 	local v = FindVehicle and FindVehicle("helicopter", true) or 0
 	if v == 0 then return end
 	local b = GetVehicleBody(v)
-	local rotor, tail = FindShape("helirotor", true), FindShape("helitail", true)
-	heli = { veh = v, body = b, rotor = rotor, tail = tail, rpm = 0, ang = 0, tang = 0, yaw = 0, broken = false }
+	heli = { veh = v, body = b, rotor = FindBody("helirotor", true), tail = FindBody("helitail", true),
+		rpm = 0, broken = false, rotorLost = false }
 	LIMINAL_HELI = heli          -- (read by the offline tests)
-	local count = 0
-	local shapes = GetBodyShapes(b)
-	for i = 1, #shapes do count = count + GetShapeVoxelCount(shapes[i]) end
-	heli.vox0 = count
-	if rotor ~= 0 then
-		local t0 = GetShapeLocalTransform(rotor)
-		heli.rHalf = shapeHalf(rotor); heli.rHalf[2] = 0
-		heli.rCenter = VecAdd(t0.pos, heli.rHalf)
-	end
-	if tail ~= 0 then
-		local t0 = GetShapeLocalTransform(tail)
-		heli.tHalf = shapeHalf(tail); heli.tHalf[1] = 0
-		heli.tCenter = VecAdd(t0.pos, heli.tHalf)
-	end
+	heli.vox0 = bodyVoxels(b)
 end
 
 local function heliDriven()
 	return heli ~= nil and GetPlayerVehicle and GetPlayerVehicle() == heli.veh
 end
 
+-- the rotor body is still on its mast (joints hold it there; if it is shot off, it drifts away)
+local function rotorAttached()
+	if heli.rotor == 0 or not IsHandleValid(heli.rotor) then return false end
+	local d = VecLength(VecSub(GetBodyTransform(heli.rotor).pos, GetBodyTransform(heli.body).pos))
+	if heli.rotorDist == nil then heli.rotorDist = d end
+	return math.abs(d - heli.rotorDist) < 0.6
+end
+
 local function heliTick(dt)
 	if not heli or not IsHandleValid(heli.body) then return end
-	if not heli.broken then
-		local count = 0
-		local shapes = GetBodyShapes(heli.body)
-		for i = 1, #shapes do count = count + GetShapeVoxelCount(shapes[i]) end
-		if count < heli.vox0 * 0.7 or (heli.rotor ~= 0 and IsShapeBroken(heli.rotor) and GetShapeVoxelCount(heli.rotor) < 300) then
-			heli.broken = true        -- wrecked: engine dead, it falls like anything else
-		end
-	end
-	local on = heliDriven() and not heli.broken
-	if on and heli.rpm == 0 then
-		local _, yaw = GetQuatEuler(GetBodyTransform(heli.body).rot)
-		heli.yaw = yaw
-	end
-	heli.rpm = on and math.min(1, heli.rpm + dt * 0.4) or math.max(0, heli.rpm - dt * 0.25)
-	-- spin the rotors (shapes rotate about their own centres)
-	heli.ang = (heli.ang + heli.rpm * 1300 * dt) % 360
-	heli.tang = (heli.tang + heli.rpm * 2600 * dt) % 360
-	if heli.rotor ~= 0 and IsHandleValid(heli.rotor) and heli.rCenter then
-		local q = QuatEuler(0, heli.ang, 0)
-		SetShapeLocalTransform(heli.rotor, Transform(VecSub(heli.rCenter, QuatRotateVec(q, heli.rHalf)), q))
-	end
-	if heli.tail ~= 0 and IsHandleValid(heli.tail) and heli.tCenter then
-		local q = QuatEuler(heli.tang, 0, 0)
-		SetShapeLocalTransform(heli.tail, Transform(VecSub(heli.tCenter, QuatRotateVec(q, heli.tHalf)), q))
-	end
+	if not heli.broken and bodyVoxels(heli.body) < heli.vox0 * 0.7 then heli.broken = true end
+	if not heli.rotorLost and not rotorAttached() then heli.rotorLost = true end
+	local on = heliDriven() and not heli.broken and not heli.rotorLost
+	heli.rpm = on and math.min(1, heli.rpm + dt * 0.45) or math.max(0, heli.rpm - dt * 0.25)
 	if heli.rpm > 0.02 then
 		PlayLoop(snd.heli, GetBodyTransform(heli.body).pos, 0.25 + 0.75 * heli.rpm)
 	end
 end
 
 local function heliUpdate(dt)
-	if not heli or heli.broken or heli.rpm < 0.15 or not IsHandleValid(heli.body) then return end
-	local driven = heliDriven()
-	local t = GetBodyTransform(heli.body)
+	if not heli or not IsHandleValid(heli.body) then return end
+	local b = heli.body
+	local t = GetBodyTransform(b)
+	local up = TransformToParentVec(t, Vec(0, 1, 0))
+	local right = TransformToParentVec(t, Vec(1, 0, 0))
+	-- spin the rotor bodies about their joint axes (relative to the helicopter's own rotation)
+	local av = GetBodyAngularVelocity(b)
+	if heli.rotor ~= 0 and IsHandleValid(heli.rotor) and not heli.rotorLost then
+		SetBodyAngularVelocity(heli.rotor, VecAdd(av, VecScale(up, 26 * heli.rpm)))
+	end
+	if heli.tail ~= 0 and IsHandleValid(heli.tail) then
+		SetBodyAngularVelocity(heli.tail, VecAdd(av, VecScale(right, 40 * heli.rpm)))
+	end
+	if heli.broken or heli.rotorLost or heli.rpm < 0.2 then return end
 	local fwd, turn, lift = 0, 0, 0
-	if driven then
+	if heliDriven() then
 		if InputDown("up") then fwd = fwd + 1 end
 		if InputDown("down") then fwd = fwd - 1 end
 		if InputDown("left") then turn = turn + 1 end
@@ -1234,17 +1221,26 @@ local function heliUpdate(dt)
 		if InputDown("jump") then lift = lift + 1 end
 		if InputDown("crouch") then lift = lift - 1 end
 	else
-		lift = -0.3                       -- pilot got out: settle down gently
+		lift = -0.35                       -- pilot got out: settle down gently
 	end
 	if t.pos[2] > 90 and lift > 0 then lift = 0 end
-	heli.yaw = heli.yaw + turn * HELI_TURN * dt
-	local f = Vec(-math.sin(math.rad(heli.yaw)), 0, -math.cos(math.rad(heli.yaw)))
-	local want = VecAdd(VecScale(f, fwd * HELI_SPEED * heli.rpm), Vec(0, lift * HELI_CLIMB * heli.rpm, 0))
-	local v = GetBodyVelocity(heli.body)
-	local k = math.min(1, dt * 1.6) * heli.rpm
-	SetBodyVelocity(heli.body, VecAdd(VecScale(v, 1 - k), VecScale(want, k)))
-	local target = QuatEuler(-fwd * 12, heli.yaw, -turn * 6)
-	ConstrainOrientation(heli.body, 0, t.rot, target, 2.5 * heli.rpm, 50 * heli.rpm)
+	local power = heli.rpm
+	-- heading of the real body (so turning always moves the nose, whatever the physics did)
+	local _, yaw = GetQuatEuler(t.rot)
+	local f = Vec(-math.sin(math.rad(yaw)), 0, -math.cos(math.rad(yaw)))
+	local want = VecAdd(VecScale(f, fwd * HELI_SPEED), Vec(0, lift * HELI_CLIMB, 0))
+	-- velocity through physics constraints: limited force, so collisions still push back
+	local m = GetBodyMass(b)
+	local com = TransformToParentPoint(t, GetBodyCenterOfMass(b))
+	local side = m * HELI_ACC * dt * power
+	local vert = m * (9.81 + HELI_ACC) * dt * power
+	ConstrainVelocity(b, 0, com, Vec(1, 0, 0), want[1], -side, side)
+	ConstrainVelocity(b, 0, com, Vec(0, 0, 1), want[3], -side, side)
+	ConstrainVelocity(b, 0, com, Vec(0, 1, 0), want[2], -vert, vert)
+	-- attitude: nose dips when flying forward, banks into turns, yaw follows A / D
+	-- (the target heading leads the real one while A / D is held; with no input it holds the heading)
+	local target = QuatEuler(-fwd * 10, yaw + turn * 30, turn * 7)
+	ConstrainOrientation(b, 0, t.rot, target, HELI_TURN * power)
 end
 
 local function heliDraw()
@@ -1263,7 +1259,7 @@ local function heliDraw()
 		UiTranslate(0, 30)
 		UiFont("regular.ttf", 17)
 		UiColor(1, 1, 1, 0.85)
-		UiText(heli.broken and "ENGINE FAILURE" or "W/S forward/back   A/D turn   Space up   Ctrl down   E exit")
+		UiText((heli.broken or heli.rotorLost) and "ENGINE FAILURE" or "W/S forward/back   A/D turn   Space up   Ctrl down   E exit")
 	UiPop()
 end
 

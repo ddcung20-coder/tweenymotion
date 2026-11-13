@@ -3488,17 +3488,27 @@
 	</water>
 	<vehicle name="helicopter" tags="helicopter" pos="0 0 0" driven="false" topspeed="0" acceleration="0" strength="3">
 		<body tags="helibody" pos="0 24.6 -9.3" dynamic="true">
-			<vox pos="0 0 0" file="MOD/vox/heli_body.vox" object="shape" density="0.8">
+			<vox pos="0 0 0" file="MOD/vox/heli_body.vox" object="shape" density="0.4">
 				<location tags="player" pos="-0.45 1.2 -4.35" rot="0 0 0"/>
 				<location tags="vital" pos="0.05 2.8 -2.95"/>
 				<light pos="0.05 0.4 -5.25" rot="-60 0 0" type="cone" color="1 .95 .85" scale="12" angle="60" penumbra="25" size="0.1"/>
 				<light pos="-1.25 1.9 -3.25" type="sphere" color="1 0.1 0.1" scale="0.8" size="0.05"/>
 				<light pos="1.25 1.9 -3.25" type="sphere" color="0.1 1 0.2" scale="0.8" size="0.05"/>
 			</vox>
-			<vox tags="helirotor" pos="0 3.8 -3.2" file="MOD/vox/heli_rotor.vox" object="shape" density="0.3"/>
-			<vox tags="helitail" pos="0.1 2.1 5.3" file="MOD/vox/heli_tail.vox" object="shape" density="0.3"/>
 		</body>
 	</vehicle>
+	<body name="helirotor" tags="helirotor" pos="0 27.6 -12.5" dynamic="true">
+		<vox pos="0 0 0" file="MOD/vox/heli_rotor.vox" object="shape" density="0.25">
+			<joint pos="0.1 0.25 0" type="ball" size="0.1"/>
+			<joint pos="0.1 0.55 0" type="ball" size="0.1"/>
+		</vox>
+	</body>
+	<body name="helitail" tags="helitail" pos="0 26.7 -4" dynamic="true">
+		<vox pos="0 0 0" file="MOD/vox/heli_tail.vox" object="shape" density="0.25">
+			<joint pos="-0.15 1.1 0" type="ball" size="0.1"/>
+			<joint pos="0.15 1.1 0" type="ball" size="0.1"/>
+		</vox>
+	</body>
 	<group name="rooftop" pos="0 0 0">
 		<vox name="windsock" pos="6.5 24.6 -22.2" file="MOD/vox/windsock.vox" object="shape"/>
 		<vox name="floodlight1" pos="-7.3 24.6 -22.2" file="MOD/vox/floodlight1.vox" object="shape">

@@ -446,7 +446,7 @@ def hits(arr_, gm):
 hb_ = ns["HELI_BODY"]
 under = FULL[H_["gmin"][0]:H_["gmin"][0] + hb_.shape[0], H_["gmin"][1] - 1, H_["gmin"][2]:H_["gmin"][2] + hb_.shape[2]][hb_[:, 0, :] > 0]
 lab_h, n_h = ndimage.label(hb_ > 0)
-rc = (H_["rotor_gmin"][0] + 50, H_["rotor_gmin"][1], H_["rotor_gmin"][2] + 50)
+rc = (H_["rotor_gmin"][0] + 50, H_["rotor_gmin"][1] + 8, H_["rotor_gmin"][2] + 50)
 sweep = FULL[rc[0] - 51:rc[0] + 52, rc[1]:rc[1] + 3, rc[2] - 51:rc[2] + 52] > 0
 report("helicopter: one solid piece, parked clear on the helipad (skids on the pad), rotor disc free all round",
        n_h == 1 and hits(hb_, H_["gmin"]) == 0 and hits(ns["HELI_ROTOR"], H_["rotor_gmin"]) == 0 and hits(ns["HELI_TAIL"], H_["tail_gmin"]) == 0
@@ -454,7 +454,17 @@ report("helicopter: one solid piece, parked clear on the helipad (skids on the p
 tg = H_["tail_gmin"]
 rs_bad = [nm for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"] if hits(arr_, gm_) or not (FULL[gm_[0]:gm_[0] + arr_.shape[0], gm_[1] - 1, gm_[2]:gm_[2] + arr_.shape[2]][arr_[:, 0, :] > 0] > 0).all()]
 report("windsock + floodlights stand on the roof, clear of everything", not rs_bad, str(rs_bad))
-report("tail rotor touches the tail fin", bool((hb_[tg[0] - H_["gmin"][0] - 1, tg[1] - H_["gmin"][1]:tg[1] - H_["gmin"][1] + 21, tg[2] - H_["gmin"][2]:tg[2] - H_["gmin"][2] + 21] > 0).any()))
+def body_cell(gm, a, b, c):
+    x, y, z = gm[0] + a - H_["gmin"][0], gm[1] + b - H_["gmin"][1], gm[2] + c - H_["gmin"][2]
+    return 0 <= x < hb_.shape[0] and 0 <= y < hb_.shape[1] and 0 <= z < hb_.shape[2] and hb_[x, y, z] > 0
+def joints_ok(arr_, gm, pts):
+    return all(arr_[a, b, c] > 0 and body_cell(gm, a, b, c) for (a, b, c) in pts)
+RO_, TA_ = ns["HELI_ROTOR"], ns["HELI_TAIL"]
+report("main rotor: shaft in the mast, both joint points inside rotor + mast", joints_ok(RO_, H_["rotor_gmin"], [(50, 2, 50), (50, 5, 50)]))
+report("tail rotor: shaft in the fin gearbox, both joint points inside rotor + gearbox", joints_ok(TA_, H_["tail_gmin"], [(0, 10, 10), (3, 10, 10)]))
+blade_hit = sum(1 for (a, b, c) in zip(*np.nonzero(RO_)) if b >= 8 and body_cell(H_["rotor_gmin"], a, b, c)) + \
+            sum(1 for (a, b, c) in zip(*np.nonzero(TA_)) if a >= 4 and body_cell(H_["tail_gmin"], a, b, c))
+report("rotor blades clear the helicopter body (only the shafts sit inside)", blade_hit == 0, f"{blade_hit} cells")
 report("stairs lead from the room-ring roof up to the helipad roof", reachable(255, ns["ROOF_Y"], 125, r=4) and reachable(255, ns["RT"], 170, r=6) and reachable(ns["HCX"] + 40, ns["RT"], ns["HCZ"], r=6))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
