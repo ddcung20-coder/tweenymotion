@@ -1,0 +1,4 @@
+name = Liminal Atrium
+author = Claude
+description = A deserted hotel atrium at night. 6 floors of rooms around a purple-lit courtyard: furnished rooms, corridors, stairwells, elevator shafts and a roof. Sandbox - break everything.
+tags = Map

@@ -1,0 +1,323 @@
+<scene version="6" shadowVolume="42 30 53">
+	<environment skybox="cloudy.dds" skyboxtint="0.35 0.3 0.5" skyboxbrightness="0.12" skyboxrot="0" constant="0.004 0.003 0.006" ambient="0.25" ambientexponent="1.6" fogColor="0.07 0.06 0.1" fogParams="30 160 0.9 4" sunBrightness="0" sunColorTint="0.6 0.6 1" sunDir="auto" sunSpread="0" sunLength="32" sunFogScale="1" sunGlare="0" exposure="1 6" brightness="1" nightlight="true" wetness="0" puddleamount="0" puddlesize="0.5" rain="0"/>
+	<postprocessing saturation="0.92" colorbalance="1.0 0.94 1.1" brightness="1.05" gamma="1" bloom="1.3"/>
+	<spawnpoint pos="0 0.5 -11.8" rot="0 180 0"/>
+	<boundary>
+		<vertex pos="-19.2 -24.8"/>
+		<vertex pos="19.2 -24.8"/>
+		<vertex pos="19.2 24.8"/>
+		<vertex pos="-19.2 24.8"/>
+	</boundary>
+	<group name="liminal_atrium" pos="0 0 0">
+		<vox name="c_0_0_0" pos="-12.8 0 -18.4" file="MOD/vox/c_0_0_0.vox" object="shape">
+			<light pos="-1.15 2.6 1.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 5.6 1.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 8.6 1.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 11.6 1.45" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.75 2.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.75 5.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.75 8.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.75 11.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="5 1.45 3.8" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="5 4.45 3.8" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="5 10.45 3.8" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="0.45 2.8 2.25" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="0.45 5.8 2.25" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="0.45 8.8 2.25" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="0.45 11.8 2.25" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="-4.3 5.1 -4.3" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		</vox>
+		<vox name="c_0_0_1" pos="-12.8 0 -5.6" file="MOD/vox/c_0_0_1.vox" object="shape">
+			<light pos="-1.15 2.6 -4.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 2.6 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 5.6 -4.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 5.6 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 8.6 -4.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 8.6 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 11.6 -4.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 11.6 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.8 4.45 -4.8" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 5.9 -6.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="3.8 7.45 -4.8" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 8.9 -6.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="3.8 1.45 -1.4" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 2.9 -2.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="3.8 10.45 -1.4" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 11.9 -2.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="3.8 1.45 2" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 2.9 0.65" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="3.8 4.45 2" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 5.9 0.65" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="3.8 4.45 5.4" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 5.9 4.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="3.8 7.45 5.4" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 8.9 4.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="3.8 10.45 5.4" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 11.9 4.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-4.3 5.1 5.7" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		</vox>
+		<vox name="c_0_0_2" pos="-12.8 0 7.2" file="MOD/vox/c_0_0_2.vox" object="shape">
+			<light pos="-1.15 2.6 -3.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 2.6 3.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 5.6 -3.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 5.6 3.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 8.6 -3.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 8.6 3.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 11.6 -3.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 11.6 3.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.8 10.45 -4" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 11.9 -5.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="3.8 1.45 -0.6" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 2.9 -1.95" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="2.2 7.8 -3.25" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+			<light pos="3.8 10.45 -0.6" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.35 11.9 -1.95" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="2.2 7.8 0.15" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		</vox>
+		<vox name="c_0_0_3" pos="-12.8 0 19.2" file="MOD/vox/c_0_0_3.vox" object="shape">
+			<light pos="-1.15 2.6 -2.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 5.6 -2.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 8.6 -2.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.15 11.6 -2.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.45 2.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.45 5.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.45 8.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.45 11.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.25 2.8 -2.85" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+			<light pos="3.25 5.8 -2.85" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+			<light pos="3.25 8.8 -2.85" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+			<light pos="3.25 11.8 -2.85" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+			<light pos="-4.3 5.1 3.5" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		</vox>
+		<vox name="c_0_1_0" pos="-10.9 12.8 -16.4" file="MOD/vox/c_0_1_0.vox" object="shape">
+			<light pos="-3.05 1.8 -0.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.05 4.8 -0.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.85 1.8 -3.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.85 4.8 -3.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.1 3.65 1.8" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-1.45 2 0.25" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="-1.45 5 0.25" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="-0.85 8 -0.95" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		</vox>
+		<vox name="c_0_1_1" pos="-10.9 12.8 -5.6" file="MOD/vox/c_0_1_1.vox" object="shape">
+			<light pos="3.15 7.35 -1.15" type="sphere" color="0.85 0.7 1" scale="3" size="0.3"/>
+			<light pos="-3.05 1.8 -4.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.05 1.8 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.05 4.8 -4.55" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.05 4.8 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.9 0.65 -4.8" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="0.45 2.1 -6.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="1.9 3.65 -4.8" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="0.45 5.1 -6.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="1.9 3.65 2" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="0.45 5.1 0.65" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="1.9 0.65 5.4" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="0.45 2.1 4.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		</vox>
+		<vox name="c_0_1_2" pos="-10.9 12.8 7.2" file="MOD/vox/c_0_1_2.vox" object="shape">
+			<light pos="3.15 7.35 -0.35" type="sphere" color="0.85 0.7 1" scale="3" size="0.3"/>
+			<light pos="-3.05 1.8 -3.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.05 1.8 3.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.05 4.8 -3.75" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.05 4.8 3.05" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.9 3.65 -0.6" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="0.45 5.1 -1.95" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="1.9 0.65 6.2" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="0.45 2.1 4.85" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		</vox>
+		<vox name="c_0_1_3" pos="-10.9 12.8 17.3" file="MOD/vox/c_0_1_3.vox" object="shape">
+			<light pos="-3.05 1.8 -0.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.05 4.8 -0.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-0.45 1.8 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-0.45 4.8 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.35 2 -0.95" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+			<light pos="1.35 5 -0.95" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		</vox>
+		<vox name="c_1_0_0" pos="0 0 -18.4" file="MOD/vox/c_1_0_0.vox" object="shape">
+			<light pos="4.55 2.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-2.25 2.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="4.55 5.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-2.25 5.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="4.55 8.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-2.25 8.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="4.55 11.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-2.25 11.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="4.2 10.45 3.8" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="5.85 11.9 2.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="0.2 7.45 3.8" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="1.85 8.9 2.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-6.15 2.9 2.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-6.15 5.9 2.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-6.15 11.9 2.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-2.55 2.8 2.25" type="sphere" color="1 0.85 0.65" scale="2.5" size="0.3"/>
+			<light pos="0.05 2.8 2.25" type="sphere" color="1 0.85 0.65" scale="2.5" size="0.3"/>
+			<light pos="2.65 2.8 2.25" type="sphere" color="1 0.85 0.65" scale="2.5" size="0.3"/>
+			<light pos="0.05 3.3 -3.9" type="sphere" color="1 0.85 0.65" scale="4" size="0.4"/>
+		</vox>
+		<vox name="c_1_0_1" pos="0 0 -5.6" file="MOD/vox/c_1_0_1.vox" object="shape"/>
+		<vox name="c_1_0_2" pos="0 0 7.2" file="MOD/vox/c_1_0_2.vox" object="shape"/>
+		<vox name="c_1_0_3" pos="0 0 19.2" file="MOD/vox/c_1_0_3.vox" object="shape">
+			<light pos="-4.55 2.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="2.25 2.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-4.55 5.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="2.25 5.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-4.55 8.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="2.25 8.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-4.55 11.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="2.25 11.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-4.2 1.45 -4.6" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-5.85 2.9 -3.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-0.2 1.45 -4.6" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-1.85 2.9 -3.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="3.8 1.45 -4.6" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="2.15 2.9 -3.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="0.55 4.8 -3" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+			<light pos="6.15 8.9 -3.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		</vox>
+		<vox name="c_1_1_0" pos="0 12.8 -16.4" file="MOD/vox/c_1_1_0.vox" object="shape">
+			<light pos="3.95 7.35 3.05" type="sphere" color="0.85 0.7 1" scale="3" size="0.3"/>
+			<light pos="-4.05 7.35 3.05" type="sphere" color="0.85 0.7 1" scale="3" size="0.3"/>
+			<light pos="4.55 1.8 -3.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-2.25 1.8 -3.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="4.55 4.8 -3.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-2.25 4.8 -3.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.45 4 0.2" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+			<light pos="-6.15 5.1 0.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		</vox>
+		<vox name="c_1_1_1" pos="0 19.4 -5.6" file="MOD/vox/c_1_1_1.vox" object="shape">
+			<light pos="-4 0.4 -3.5" type="sphere" color="0.78 0.64 1" scale="6" size="0.6"/>
+			<light pos="-4 0.4 5.5" type="sphere" color="0.78 0.64 1" scale="6" size="0.6"/>
+			<light pos="4 0.4 -3.5" type="sphere" color="0.78 0.64 1" scale="6" size="0.6"/>
+			<light pos="4 0.4 5.5" type="sphere" color="0.78 0.64 1" scale="6" size="0.6"/>
+		</vox>
+		<vox name="c_1_1_2" pos="0 12.8 7.2" file="MOD/vox/c_1_1_2.vox" object="shape">
+			<light pos="-4 7 1.7" type="sphere" color="0.78 0.64 1" scale="6" size="0.6"/>
+			<light pos="4 7 1.7" type="sphere" color="0.78 0.64 1" scale="6" size="0.6"/>
+			<light pos="-3.95 7.35 6.15" type="sphere" color="0.85 0.7 1" scale="3" size="0.3"/>
+			<light pos="4.05 7.35 6.15" type="sphere" color="0.85 0.7 1" scale="3" size="0.3"/>
+		</vox>
+		<vox name="c_1_1_3" pos="0 12.8 17.3" file="MOD/vox/c_1_1_3.vox" object="shape">
+			<light pos="-4.55 1.8 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="2.25 1.8 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-4.55 4.8 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="2.25 4.8 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.45 4 -1.1" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+			<light pos="6.15 2.1 -1.25" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="6.15 5.1 -1.25" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		</vox>
+		<vox name="c_2_0_0" pos="12.8 0 -18.4" file="MOD/vox/c_2_0_0.vox" object="shape">
+			<light pos="1.15 2.6 1.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 5.6 1.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 8.6 1.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 11.6 1.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.45 2.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.45 5.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.45 8.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.45 11.6 -1.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.8 4.45 5" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-2.35 5.9 6.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-3.8 10.45 5" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-2.35 11.9 6.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-3.25 2.8 2.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+			<light pos="-3.25 5.8 2.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+			<light pos="-3.25 8.8 2.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+			<light pos="-3.25 11.8 2.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+			<light pos="4.3 5.1 -4.3" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		</vox>
+		<vox name="c_2_0_1" pos="12.8 0 -5.6" file="MOD/vox/c_2_0_1.vox" object="shape">
+			<light pos="1.15 2.6 2.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 2.6 -4.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 5.6 2.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 5.6 -4.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 8.6 2.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 8.6 -4.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 11.6 2.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 11.6 -4.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.8 1.45 2.4" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-2.35 2.9 3.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-2.2 10.8 5.05" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+			<light pos="-2.2 1.8 1.65" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+			<light pos="-2.2 4.8 -1.75" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+			<light pos="4.3 5.1 5.7" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		</vox>
+		<vox name="c_2_0_2" pos="12.8 0 7.2" file="MOD/vox/c_2_0_2.vox" object="shape">
+			<light pos="1.15 2.6 2.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 2.6 -3.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 5.6 2.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 5.6 -3.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 8.6 2.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 8.6 -3.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 11.6 2.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 11.6 -3.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.8 1.45 3.2" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-2.35 2.9 4.55" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-3.8 7.45 -0.2" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-2.35 8.9 1.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-3.8 4.45 -3.6" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-2.35 5.9 -2.25" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-3.8 7.45 -3.6" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-2.35 8.9 -2.25" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-2.2 1.8 -4.35" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+		</vox>
+		<vox name="c_2_0_3" pos="12.8 0 19.2" file="MOD/vox/c_2_0_3.vox" object="shape">
+			<light pos="1.15 2.6 -2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 5.6 -2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 8.6 -2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="1.15 11.6 -2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.75 2.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.75 5.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.75 8.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3.75 11.6 0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-5 7.45 -4.6" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-0.45 2.8 -3.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="-0.45 5.8 -3.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="-0.45 8.8 -3.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="-0.45 11.8 -3.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="4.3 5.1 3.5" type="sphere" color="1 0.75 0.45" scale="6" size="0.3"/>
+		</vox>
+		<vox name="c_2_1_0" pos="10.8 12.8 -16.4" file="MOD/vox/c_2_1_0.vox" object="shape">
+			<light pos="3.15 1.8 -0.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.15 4.8 -0.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="0.55 1.8 -3.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="0.55 4.8 -3.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.8 3.65 3" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-0.35 5.1 4.35" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-1.25 2 0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+			<light pos="-1.25 5 0.05" type="sphere" color="0.85 0.95 1" scale="1.2" size="0.2"/>
+		</vox>
+		<vox name="c_2_1_1" pos="10.8 12.8 -5.6" file="MOD/vox/c_2_1_1.vox" object="shape">
+			<light pos="-3.05 7.35 -1.25" type="sphere" color="0.85 0.7 1" scale="3" size="0.3"/>
+			<light pos="3.15 1.8 2.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.15 1.8 -4.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.15 4.8 2.15" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.15 4.8 -4.65" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.8 3.65 2.4" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-0.35 5.1 3.75" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-1.8 3.65 -4.4" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-0.35 5.1 -3.05" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		</vox>
+		<vox name="c_2_1_2" pos="10.8 12.8 7.2" file="MOD/vox/c_2_1_2.vox" object="shape">
+			<light pos="-3.05 7.35 -0.45" type="sphere" color="0.85 0.7 1" scale="3" size="0.3"/>
+			<light pos="3.15 1.8 2.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.15 1.8 -3.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.15 4.8 2.95" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.15 4.8 -3.85" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-0.2 1 5.85" type="sphere" color="0.45 0.6 1" scale="1" size="0.2"/>
+			<light pos="-1.8 0.65 -0.2" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-0.35 2.1 1.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+			<light pos="-1.8 3.65 -0.2" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-0.35 5.1 1.15" type="sphere" color="1 0.82 0.55" scale="2.2" size="0.3"/>
+		</vox>
+		<vox name="c_2_1_3" pos="10.8 12.8 17.3" file="MOD/vox/c_2_1_3.vox" object="shape">
+			<light pos="3.15 1.8 -0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="3.15 4.8 -0.35" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.75 1.8 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-1.75 4.8 2.25" type="sphere" color="1 0.86 0.62" scale="2" size="0.25"/>
+			<light pos="-3 0.65 -2.7" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="-3 3.65 -2.7" type="sphere" color="1 0.78 0.45" scale="1.6" size="0.15"/>
+			<light pos="1.55 2 -1.15" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="1.55 5 -1.15" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+			<light pos="0.95 8 0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		</vox>
+	</group>
+</scene>
