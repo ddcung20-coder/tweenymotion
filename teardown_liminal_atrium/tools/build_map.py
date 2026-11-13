@@ -301,8 +301,8 @@ def wood_door(a, b, c, A, B, C):
 def glass_door(a, b, c, A, B, C):
     if a in (0, A - 1) or b in (0, 1, B - 1):
         return FRAME
-    if b in (9, 10) and a in (1, A - 2):
-        return BRASS
+    if b in (9, 10) and a == A - 2:
+        return BRASS                                   # handle on the latch edge only
     return GLASS_DOOR
 
 def steel_door(a, b, c, A, B, C):
@@ -1056,7 +1056,7 @@ def stairwell(fr):
             fr.box(-T_PART, 0, y, y + 22, 26, 36, 0)
             fr.box(-T_PART - 1, -T_PART, y + 22, y + 25, 28, 34, EXIT_SIGN)
             fr.box(0, 1, y + 21, y + 22, 25, 37, DARK_METAL)
-            add_door(fr, -1, 0, y, y + 22, 26, 36, lambda a, b, c, A, B, C: steel_door(c, b, a, C, B, A),
+            add_door(fr, -1, 0, y, y + 22, 26, 36, lambda a, b, c, A, B, C: steel_door(C - 1 - c, b, a, C, B, A),
                      hinge=(0, 36), open_dir=(1, 0), stop=DARK_METAL)
             fr.light(4, y + 24, 22, (1.0, 0.95, 0.85), 1.6, 0.2)
             fr.box(2, 6, y + 26, y + 27, 20, 24, CEIL_LAMP)
@@ -1962,7 +1962,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.10\n"
+        f.write("name = Liminal Atrium v3.11\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"

@@ -161,6 +161,20 @@ for d in ns["DOORS"]:
     rx = (cx_ - px) * math.cos(a_) + (cz_ - pz) * math.sin(a_); rz = -(cx_ - px) * math.sin(a_) + (cz_ - pz) * math.cos(a_)
     worst = max(worst, float((FULL[np.floor(px + rx).astype(int), Y + gy, np.floor(pz + rz).astype(int)] > 0).mean()))
 report("every swing door opens without hitting walls/furniture", worst < 0.02, f"worst overlap {worst:.3f}")
+HANDLES = {ns["BRASS"], ns["STEEL"]}
+wrong = []
+for i, d in enumerate(ns["DOORS"]):
+    if d["kind"] != "swing": continue
+    arr = d["arr"]; gx, gy, gz = d["gmin"]
+    X, Y, Z = np.nonzero(np.isin(arr, list(HANDLES)))
+    if not len(X):
+        wrong.append((i, "no handle")); continue
+    px, pz = d["pivot"]
+    hd = np.hypot(X + gx + 0.5 - px, Z + gz + 0.5 - pz).min()       # handle distance from the hinge line
+    width = max(arr.shape[0], arr.shape[2])
+    if hd < width * 0.6:
+        wrong.append((i, round(float(hd), 1), width))
+report("every door handle is on the latch side (away from the hinge)", not wrong, str(wrong[:6]))
 cab = 0
 for e in ns["ELEVATORS"]:
     arr = e["arr"]; gx, gy, gz = e["gmin"]; sx, sy, sz = arr.shape
