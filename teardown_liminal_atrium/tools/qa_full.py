@@ -395,11 +395,16 @@ kinds_ok = all(per[(str(i), k)] == 1 for i in range(len(ns["room_log"])) for k i
 lamp_rooms = sum(1 for L in ns["LAMPS"] if any("room=" in lt[6] for lt in L["lights"]))
 mixed = [i for i, L in enumerate(ns["LAMPS"]) if len({lt[6] for lt in L["lights"]}) > 1 and any("room=" in lt[6] for lt in L["lights"])]
 report("every room: ceiling, bedside, bathroom light + TV, each its own switchable lamp", kinds_ok and not mixed and lamp_rooms == 4 * len(ns["room_log"]), f"{lamp_rooms} room lamps, mixed {mixed[:4]}")
+pd_bad = []
+for i, (poly, cells) in enumerate(ns["PUDDLES"]):
+    if not all(FULL[x, YB - 1, z] == 0 and FULL[x, YB - 2, z] > 0 for (x, z) in cells):
+        pd_bad.append(i)
+report(f"{len(ns['PUDDLES'])} car-park puddles: real water in a 10 cm dip in the floor", len(ns["PUDDLES"]) >= 6 and not pd_bad, str(pd_bad))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
-LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg"}
+LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)
     peak = float(np.abs(x).max())

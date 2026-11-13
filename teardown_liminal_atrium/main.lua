@@ -103,6 +103,7 @@ local function loadSounds()
 	snd.curtain   = LoadSound("MOD/snd/curtain.ogg")
 	snd.autodoor  = LoadSound("MOD/snd/autodoor.ogg")
 	snd.mall      = LoadLoop("MOD/snd/mall_song.ogg")
+	snd.garage    = LoadLoop("MOD/snd/garage_drips.ogg")
 	snd.deskbell  = LoadSound("MOD/snd/deskbell.ogg")
 	snd.musicbox  = LoadSound("MOD/snd/musicbox.ogg")
 	snd.hum       = LoadSound("MOD/snd/dream_hum.ogg")
@@ -495,6 +496,16 @@ local function spotsTick(cam)
 		end
 	end
 	if near then PlayLoop(snd.mall, near.pos, 0.8) end
+	-- car park: dripping water + ventilation hum from the nearest spot (also only down in B1)
+	near, nd = nil, 40
+	for i = 1, #spots do
+		local sp = spots[i]
+		if sp.kind == "garage" and cam[2] < sp.pos[2] + 2.2 then
+			local d = dist(sp.pos, cam)
+			if d < nd then near, nd = sp, d end
+		end
+	end
+	if near then PlayLoop(snd.garage, near.pos, 0.55) end
 	for i = 1, #spots do
 		local sp = spots[i]
 		local d = dist(sp.pos, cam)

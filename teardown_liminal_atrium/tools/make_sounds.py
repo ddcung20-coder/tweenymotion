@@ -262,3 +262,17 @@ whir = (np.sin(2 * np.pi * (180 + 60 * shape_) * tt) * 0.5 + 0.25 * np.sin(2 * n
 hiss = bandpass(rng.standard_normal(n), 2500, 7000) * shape_ * 0.35
 save("autodoor.ogg", whir + hiss, 0.5)
 print("autodoor sound written")
+
+# --- car park ambience: ventilation hum + water drips with a long concrete echo (seamless 12 s loop) ---
+L = 12.0; n = int(L * SR); tt = t(L)
+hum_ = 0.5 * lowpass(loop_noise(L, 1.8), 250) + 0.06 * np.sin(2 * np.pi * 50 * tt) + 0.03 * np.sin(2 * np.pi * 100 * tt)
+drips_ = np.zeros(n)
+for k in range(16):
+    s0 = int(rng.uniform(0, L - 0.3) * SR); f = rng.uniform(700, 1500); m = int(0.2 * SR)
+    d = np.sin(2 * np.pi * (f + 500 * np.exp(-t(0.2) / 0.015)) * t(0.2)) * env(m, 0.001, 0.035)
+    drips_[s0:s0 + m] += d * rng.uniform(0.3, 1.0)
+echo_ = drips_.copy()
+for delay, g in ((0.09, 0.55), (0.21, 0.4), (0.38, 0.3), (0.62, 0.2), (0.95, 0.12), (1.4, 0.07)):
+    echo_ += g * np.roll(drips_, int(delay * SR))
+save("garage_drips.ogg", hum_ * 0.7 + lowpass(echo_, 5000) * 0.6, 0.55)
+print("garage sound written")

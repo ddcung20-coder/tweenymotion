@@ -2274,10 +2274,17 @@ for cxc in (AISLE0 - 3, AISLE1 + 3):
             paint(cxc - 3, cxc + 3, yy + 1, yy + 2, czc - 3, czc + 3, TIRE)
         face = Frame(cxc + 2, czc + 2, 0, -1, -1, 0) if cxc < (AISLE0 + AISLE1) // 2 else Frame(cxc - 3, czc - 3, 0, 1, 1, 0)
         ftext(face, "B1", 2, YB + 20, -1, YELLOW_PAINT)
+TUBE_N = [0]
 def tube(x, z):
-    box(x, x + 1, YC - 1, YC, z + 1, z + 2, STEEL); box(x, x + 1, YC - 1, YC, z + 8, z + 9, STEEL)
-    box(x, x + 1, YC - 2, YC - 1, z, z + 10, CEIL_LAMP)
-    light(x + 0.5, YC - 4, z + 5, (0.88, 0.95, 1.0), 1.8, 0.3)
+    """twin fluorescent batten; every 4th one flickers (buzz), one is dead."""
+    n_ = TUBE_N[0]; TUBE_N[0] += 1
+    box(x - 1, x + 2, YC - 1, YC, z + 1, z + 2, STEEL); box(x - 1, x + 2, YC - 1, YC, z + 8, z + 9, STEEL)
+    box(x - 1, x + 2, YC - 2, YC - 1, z, z + 10, STEEL)
+    dead = n_ == 5
+    box(x - 1, x, YC - 3, YC - 2, z, z + 10, CEIL if dead else CEIL_LAMP)
+    box(x + 1, x + 2, YC - 3, YC - 2, z, z + 10, CEIL if dead else CEIL_LAMP)
+    if not dead:
+        light(x + 0.5, YC - 5, z + 5, (0.86, 0.95, 1.0), 1.9, 0.3, "flicker" if n_ % 4 == 1 else "")
 for z in (100, 170, 240, 320, 375):
     tube((AISLE0 + AISLE1) // 2, z)
 for z in (130, 210, 350):
@@ -2288,6 +2295,139 @@ box(IX0 + 10, IX0 + 12, YC - 2, YC, IZ0, PZ1, STEEL); box(PX1 - 12, PX1 - 10, YC
 ftext(Frame(IX0 - 1, TZ1 - 1, 0, -1, -1, 0), "EXIT", (TZ1 - TZ0) // 2, YC - 1, -1, EXIT_SIGN)
 for (pn, px_, pz_) in (("car_a", AISLE1 + 14, 100), ("car_c", IX0 + 8, 180), ("car_b", AISLE1 + 14, 300)):
     PROPS.append((pn, px_, YB, pz_, 0))
+# ---- car park detail pass: standing water, ceiling services, paint, signage, clutter
+for ch_, rows_ in {"0": ["###", "#.#", "#.#", "#.#", "###"], "2": ["##.", "..#", ".#.", "#..", "###"],
+                   "3": ["##.", "..#", ".#.", "..#", "##."], "4": ["#.#", "#.#", "###", "..#", "..#"],
+                   "5": ["###", "#..", "##.", "..#", "##."], "6": [".##", "#..", "###", "#.#", "###"],
+                   "7": ["###", "..#", ".#.", ".#.", ".#."], "8": ["###", "#.#", "###", "#.#", "###"],
+                   "9": ["###", "#.#", "###", "..#", "##."]}.items():
+    BFONT[ch_] = rows_
+def garage_ok(x0, x1, z0, z1, m=3):
+    """inside the car park, clear of the stair core, the tunnel mouth and the shape seams."""
+    if x0 < IX0 or x1 > PX1 - 2 or z0 < IZ0 or z1 > PZ1:
+        return False
+    for (a, b, c, d) in STAIR_RECTS:
+        if x0 < b + m and x1 > a - m and z0 < d + m and z1 > c - m:
+            return False
+    return True
+# wall paint: grey dado band with a yellow stripe, on every car-park wall face
+for (xa, xb, za, zb) in ((IX0 - 1, IX0, IZ0, PZ1), (IX0, PX1 - 2, IZ0 - 1, IZ0), (PX1 - 2, PX1 - 1, IZ0, PZ1), (IX0, PX1 - 2, PZ1, PZ1 + 1)):
+    paint(xa, xb, YB, YB + 10, za, zb, WALL_GREY, [SLAB])
+    paint(xa, xb, YB + 10, YB + 11, za, zb, YELLOW_PAINT, [SLAB])
+# downstand beams across the ceiling (in line with the columns), sprinkler main, cable tray, supply duct
+for bz in (120, 150, 218, 280, 340, 388):
+    xs_ = [x for x in range(IX0, PX1 - 2) if garage_ok(x, x + 1, bz, bz + 4, 1)]
+    for x in xs_:
+        box(x, x + 1, YC - 4, YC, bz, bz + 4, SLAB)
+box(146, 147, YC - 1, YC, IZ0, PZ1, RED)
+for z in range(IZ0 + 6, PZ1, 20):
+    if garage_ok(145, 148, z, z + 1, 0):
+        box(146, 147, YC - 2, YC - 1, z, z + 1, CHROME)                   # sprinkler heads
+for z in range(IZ0, PZ1):
+    if garage_ok(218, 224, z, z + 1, 0) and not (z % 40 < 2):
+        box(218, 224, YC - 1, YC, z, z + 1, STEEL)
+        box(219, 223, YC - 2, YC - 1, z, z + 1, TIRE if z % 3 else CABLE)   # cables in the tray
+DZ1 = 392
+box(175, 182, YC - 4, YC, IZ0, DZ1, HVAC)
+for z in range(IZ0 + 14, DZ1 - 6, 30):
+    box(176, 181, YC - 5, YC - 4, z, z + 6, DARK_METAL)                   # supply grilles
+    for gz in range(z, z + 6, 2):
+        box(177, 180, YC - 5, YC - 4, gz, gz + 1, HVAC)
+# bay numbers on the walls, wheel stops, oil stains
+for i, z in enumerate(range(IZ0, PZ1 - 20, 26)):
+    zc = z + 13
+    if garage_ok(IX0, IX0 + 10, z, z + 26, 0) and not (TZ0 - 4 <= zc <= TZ1 + 4):
+        ftext(Frame(IX0 - 1, zc + 6, 0, -1, -1, 0), "A" + str(i + 1), 6, YB + 22, -1, YELLOW_PAINT)
+        box(IX0 + 3, IX0 + 5, YB, YB + 1, zc - 5, zc + 5, CURB)
+    if garage_ok(PX1 - 12, PX1 - 2, z, z + 26, 0) and not (226 <= zc <= 270):     # (no label over automatic door 1)
+        ftext(Frame(PX1 - 2, zc - 6, 0, 1, 1, 0), "B" + str(i + 1), 6, YB + 22, -1, YELLOW_PAINT)
+        box(PX1 - 8, PX1 - 6, YB, YB + 1, zc - 5, zc + 5, CURB)
+    for (sx_, ok_) in ((IX0 + 22, garage_ok(IX0, AISLE0, z, z + 26, 0)), (PX1 - 24, garage_ok(AISLE1, PX1 - 2, z, z + 26, 0))):
+        if ok_ and BRNG.random() < 0.7:
+            for dx in range(-5, 6):
+                for dz in range(-4, 5):
+                    if (dx / 5.5) ** 2 + (dz / 4.5) ** 2 < 1 and BRNG.random() < 0.85:
+                        if G[sx_ + dx, YB - 1, zc + dz] in (STAIR_CONC, PAINT_LINE):
+                            G[sx_ + dx, YB - 1, zc + dz] = ASPHALT
+# tyre marks along the aisle, direction arrows, zebra crossing to the arcade door, speed bump at the tunnel
+for lane in (150, 174):
+    for z in range(IZ0 + 4, PZ1 - 4):
+        if BRNG.random() < 0.55 and G[lane, YB - 1, z] == STAIR_CONC:
+            G[lane, YB - 1, z] = ASPHALT2
+for (ax_, az_, dz_) in ((142, 220, -1), (142, 330, -1), (180, 200, 1), (180, 330, 1)):
+    for k_ in range(9):
+        box(ax_, ax_ + 2, YB - 1, YB, az_ + dz_ * k_, az_ + dz_ * k_ + 1, PAINT_LINE)       # shaft
+    for k_ in range(4):
+        hz = az_ + dz_ * (9 + k_)
+        box(ax_ - 3 + k_, ax_ + 5 - k_, YB - 1, YB, hz, hz + 1, PAINT_LINE)                 # head
+for x in range(AISLE1, PX1 - 2, 4):
+    box(x, x + 2, YB - 1, YB, 240, 256, PAINT_LINE)
+for z in range(TZ0 + 2, TZ1 - 2):
+    box(IX0 + 3, IX0 + 6, YB, YB + 1, z, z + 1, YELLOW_PAINT if (z // 4) % 2 else TIRE)
+# ticket machine by the entry, fire hose cabinet, electrical panel, bin, cones, CCTV
+box(IX0 + 2, IX0 + 7, YB, YB + 14, TZ1 + 6, TZ1 + 10, DARK_METAL)
+box(IX0 + 7, IX0 + 8, YB + 9, YB + 12, TZ1 + 7, TZ1 + 9, TV_SCREEN)
+box(IX0 + 7, IX0 + 8, YB + 6, YB + 7, TZ1 + 7, TZ1 + 9, YELLOW_PAINT)
+box(IX0, IX0 + 2, YB + 6, YB + 18, 200, 208, RED)
+box(IX0 + 2, IX0 + 3, YB + 7, YB + 17, 201, 207, GLASS_DOOR)
+box(IX0 + 1, IX0 + 2, YB + 9, YB + 15, 202, 206, CEIL)
+box(IX0 + 30, IX0 + 40, YB + 6, YB + 22, IZ0, IZ0 + 2, DARK_METAL)
+box(IX0 + 33, IX0 + 37, YB + 16, YB + 19, IZ0 + 2, IZ0 + 3, YELLOW_PAINT)
+box(PX1 - 12, PX1 - 8, YB, YB + 9, PZ1 - 6, PZ1 - 2, DUMPSTER)
+for (cx_, cz_) in ((158, 186), (168, 186), (163, 210)):
+    box(cx_ - 2, cx_ + 3, YB, YB + 1, cz_ - 2, cz_ + 3, TIRE)
+    box(cx_ - 1, cx_ + 2, YB + 1, YB + 5, cz_ - 1, cz_ + 2, WALL_ORANGE)
+    box(cx_ - 1, cx_ + 2, YB + 3, YB + 4, cz_ - 1, cz_ + 2, CEIL)
+    box(cx_, cx_ + 1, YB + 5, YB + 7, cz_, cz_ + 1, WALL_ORANGE)
+for (ccx, ccz) in ((IX0 + 2, IZ0 + 2), (PX1 - 6, IZ0 + 2), (IX0 + 2, PZ1 - 4), (PX1 - 6, PZ1 - 4)):
+    if garage_ok(ccx, ccx + 3, ccz, ccz + 2, 0):
+        box(ccx, ccx + 3, YC - 3, YC, ccz, ccz + 2, DARK_METAL)
+        box(ccx + 1, ccx + 2, YC - 3, YC - 2, ccz + 1, ccz + 2, TV_BODY)
+# standing water: shallow dips in the floor with real water, a wet halo, a stain on the ceiling above
+def convex_hull(pts):
+    pts = sorted(set(pts))
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    lo, hi = [], []
+    for p_ in pts:
+        while len(lo) >= 2 and cross(lo[-2], lo[-1], p_) <= 0:
+            lo.pop()
+        lo.append(p_)
+    for p_ in reversed(pts):
+        while len(hi) >= 2 and cross(hi[-2], hi[-1], p_) <= 0:
+            hi.pop()
+        hi.append(p_)
+    return lo[:-1] + hi[:-1]
+def inside(poly, x, z):
+    sg = [(poly[(i + 1) % len(poly)][0] - poly[i][0]) * (z - poly[i][1]) - (poly[(i + 1) % len(poly)][1] - poly[i][1]) * (x - poly[i][0])
+          for i in range(len(poly))]
+    return all(v >= 0 for v in sg) or all(v <= 0 for v in sg)
+PUDDLES = []
+for (pcx, pcz, rx, rz) in ((161, 198, 11, 8), (167, 338, 9, 8), (108, 296, 11, 7), (100, 243, 8, 7),
+                          (210, 278, 10, 8), (150, 380, 10, 7), (100, 346, 6, 6), (172, 128, 13, 9)):
+    pts = []
+    for a_ in range(0, 360, 30):
+        f_ = BRNG.uniform(0.7, 1.0)
+        pts.append((round(pcx + rx * f_ * np.cos(np.radians(a_)), 1), round(pcz + rz * f_ * np.sin(np.radians(a_)), 1)))
+    poly = convex_hull(pts)
+    cells = [(x, z) for x in range(pcx - rx - 1, pcx + rx + 2) for z in range(pcz - rz - 1, pcz + rz + 2) if inside(poly, x + 0.5, z + 0.5)]
+    if not all(garage_ok(x, x + 1, z, z + 1, 1) and G[x, YB - 1, z] != 0 and not (G[x, YB:YB + 2, z] > 0).any() for (x, z) in cells):
+        continue
+    for (x, z) in cells:
+        G[x, YB - 1, z] = 0                                                # 10 cm dip
+    for x in range(pcx - rx - 4, pcx + rx + 5):                            # wet, darker concrete around it
+        for z in range(pcz - rz - 4, pcz + rz + 5):
+            d_ = min(((x + 0.5 - c[0]) ** 2 + (z + 0.5 - c[1]) ** 2) for c in cells) ** 0.5
+            if 0 < d_ < 3.5 and G[x, YB - 1, z] in (STAIR_CONC, PAINT_LINE, ASPHALT2) and BRNG.random() < 1.2 - d_ / 3.5:
+                G[x, YB - 1, z] = ROOF
+            if d_ < 2.5 and G[x, YC, z] == SLAB and BRNG.random() < 0.8:
+                G[x, YC, z] = ROOF2                                        # damp patch on the ceiling
+    POOLS.append((YB - 0.4, 1, poly))
+    PUDDLES.append((poly, cells))
+# a slow leak above the puddle by the west wall: rusty drip line on the pipe
+box(IX0 + 10, IX0 + 12, YC - 3, YC - 2, 344, 348, DUMPSTER)
+SOUND_SPOTS.extend([("garage", 162, YB + 15, 150), ("garage", 162, YB + 15, 300), ("garage", 110, YB + 15, 296)])
+
 # ---- both stairwells continue down to B1 (SW -> car park, NE -> arcade)
 B_GLYPH = ["##.", "#.#", "##.", "#.#", "##."]
 def b1_stairs(fr):
@@ -2838,7 +2978,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.21\n"
+        f.write("name = Liminal Atrium v3.22\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
