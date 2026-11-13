@@ -4,7 +4,7 @@
 --  3) building ambience, flickering corridor lights with fluorescent buzz
 --  4) creak / thud sounds for the physical (grab-and-pull) doors
 --  5) curtains that open / close with E
---  6) the "CHECK-OUT" mission: six key cards, and mannequins that only move while unseen
+--  6) the dreamcore mission "SWEET DREAMS": six lost memories, pastel dreamers that show the way
 
 ----------------------------------------------------------------------------------------------------
 -- tools
@@ -102,11 +102,10 @@ local function loadSounds()
 	snd.song      = LoadLoop("MOD/snd/radio_song.ogg")
 	snd.curtain   = LoadSound("MOD/snd/curtain.ogg")
 	snd.deskbell  = LoadSound("MOD/snd/deskbell.ogg")
-	snd.keycard   = LoadSound("MOD/snd/keycard.ogg")
-	snd.step      = LoadSound("MOD/snd/mq_step.ogg")
-	snd.caught    = LoadSound("MOD/snd/caught.ogg")
+	snd.musicbox  = LoadSound("MOD/snd/musicbox.ogg")
+	snd.hum       = LoadSound("MOD/snd/dream_hum.ogg")
 	snd.checkout  = LoadSound("MOD/snd/checkout.ogg")
-	snd.drone     = LoadLoop("MOD/snd/mission_drone.ogg")
+	snd.pad       = LoadLoop("MOD/snd/dream_pad.ogg")
 end
 
 local function dist(a, b)
@@ -567,21 +566,36 @@ local function curtainsTick(dt)
 end
 
 ----------------------------------------------------------------------------------------------------
--- mission "CHECK-OUT"
---  ring the front-desk bell -> six key cards appear, one on a room desk on every floor.
---  the mannequins in the corridors only move while nobody is looking at them.
---  bring all six back to the desk and ring again to check out. if one reaches you, you never left.
+-- mission "SWEET DREAMS" (dreamcore, nothing scary)
+--  ring the front-desk bell -> six lost memories appear, one on a room desk on every floor.
+--  the pastel dreamers in the corridors slowly walk to the door of their floor's memory and look at it.
+--  each dreamer says one soft line when you pass. bring all six back, ring again, and wake up.
 --  "deskbell" body, "keycard" bodies (floor=), "mannequin" bodies (seg= fx= fz=), "missionstart" location
 ----------------------------------------------------------------------------------------------------
-local M = { state = "idle", keys = 0, t = 0, msg = nil, msgT = 0, found = {} }
+local M = { state = "idle", keys = 0, t = 0, msg = nil, msgT = 0, dream = 0, found = {} }
 LIMINAL_MISSION = M          -- (read by the offline tests)
 local bell = { shapes = {} }
 local cards = {}
 local mqs = {}
 local startT = nil
 local HIDE = Vec(0, -500, 0)
-local MQ_SPEED = 2.4
-local MQ_REACH = 1.3
+local GLIDE = 0.7            -- m/s, a slow sleepwalk
+local TURN = 90              -- deg/s
+
+local MEMORY_LINES = {
+	"a red carpet that went on forever",
+	"a soda from the vending machine at 3 a.m.",
+	"a phone call you always meant to make",
+	"a door you dreamed about as a child",
+	"a pink sky in the hallway mirror",
+	"cartoons on an old TV, late at night",
+}
+local DREAMER_LINES = {
+	"have we met before?", "it's always 3 a.m. here, and that's okay", "the pool is warm tonight",
+	"you used to love this hallway", "nothing bad happens here", "your room is just as you left it",
+	"listen... the elevator music", "it's okay to rest a little", "the carpet remembers your footsteps",
+	"someone left the lights on for you", "you're almost awake", "this place missed you",
+}
 
 local function say(text, sec)
 	M.msg, M.msgT = text, sec or 5
@@ -595,6 +609,12 @@ end
 
 local function heading(x, z)
 	return math.deg(math.atan2(x, z))
+end
+
+local function angleTo(cur, want, maxStep)
+	local d = (want - cur + 180) % 360 - 180
+	if math.abs(d) <= maxStep then return want end
+	return cur + (d > 0 and maxStep or -maxStep)
 end
 
 local function cardsHide()
@@ -617,7 +637,7 @@ local function cardsShow()
 		if IsHandleValid(c.body) then
 			SetBodyTransform(c.body, c.t0)
 			for j = 1, #c.shapes do
-				if IsHandleValid(c.shapes[j]) then SetTag(c.shapes[j], "interact", "Take key card") end
+				if IsHandleValid(c.shapes[j]) then SetTag(c.shapes[j], "interact", "Take memory") end
 			end
 		end
 	end
@@ -627,13 +647,11 @@ local function mqReset()
 	for i = 1, #mqs do
 		local m = mqs[i]
 		if not m.dead and IsHandleValid(m.body) then
-			SetBodyDynamic(m.body, false)
-			SetBodyVelocity(m.body, Vec(0, 0, 0))
-			SetBodyAngularVelocity(m.body, Vec(0, 0, 0))
 			SetBodyTransform(m.body, m.t0)
 			m.pos = VecCopy(m.t0.pos)
+			m.rotY = 0
 		end
-		m.stepT = 0
+		m.spoke = false
 	end
 end
 
@@ -660,9 +678,9 @@ local function missionInit()
 		local count = 0
 		for j = 1, #shapes do count = count + GetShapeVoxelCount(shapes[j]) end
 		local t0 = GetBodyTransform(b)
-		mqs[#mqs + 1] = { body = b, shapes = shapes, voxels = count, t0 = t0, pos = VecCopy(t0.pos),
+		mqs[#mqs + 1] = { body = b, shapes = shapes, voxels = count, t0 = t0, pos = VecCopy(t0.pos), rotY = 0,
 			a = Vec(s[1] or t0.pos[1], t0.pos[2], s[2] or t0.pos[3]), b = Vec(s[3] or t0.pos[1], t0.pos[2], s[4] or t0.pos[3]),
-			h0 = heading(tagNum(b, "fx", 0), tagNum(b, "fz", -1)), stepT = 0 }
+			h0 = heading(tagNum(b, "fx", 0), tagNum(b, "fz", -1)), line = DREAMER_LINES[(i - 1) % #DREAMER_LINES + 1] }
 	end
 end
 
@@ -678,15 +696,6 @@ local function mqBroken(m)
 	return count < m.voxels * 0.92
 end
 
--- the mannequin collapses into a normal physics object
-local function mqTopple(m, push)
-	if not IsHandleValid(m.body) then return end
-	SetBodyDynamic(m.body, true)
-	local t = GetBodyTransform(m.body)
-	local dir = push or Vec(math.random() - 0.5, 0, math.random() - 0.5)
-	ApplyBodyImpulse(m.body, VecAdd(t.pos, Vec(0, 1.6, 0)), VecScale(VecNormalize(dir), GetBodyMass(m.body) * 1.2))
-end
-
 local function closestOnSeg(a, b, p)
 	local ab = VecSub(b, a)
 	local l2 = VecDot(ab, ab)
@@ -696,38 +705,23 @@ local function closestOnSeg(a, b, p)
 	return VecAdd(a, VecScale(ab, t))
 end
 
--- is the mannequin visible from the camera (inside the view cone and not hidden behind anything)?
-local function mqSeen(m, ct)
-	local fwd = TransformToParentVec(ct, Vec(0, 0, -1))
-	for _, hgt in ipairs({ 1.6, 1.0, 0.4 }) do
-		local p = VecAdd(m.pos, Vec(0, hgt, 0))
-		local d = VecSub(p, ct.pos)
-		local len = VecLength(d)
-		if len < 0.01 then return true end
-		local dir = VecScale(d, 1 / len)
-		if VecDot(dir, fwd) > 0.5 then
-			QueryRejectBody(m.body)
-			local hit = QueryRaycast(ct.pos, dir, len - 0.15)
-			if not hit then return true end
-		end
-	end
-	return false
-end
-
-local function caught()
-	M.state = "caught"
-	M.t = 0
-	PlaySound(snd.caught, GetCameraTransform().pos, 1.0)
+-- pastel dream look: softer colours, more bloom; eased in and out
+local function setDreamLook(k)
+	if not SetPostProcessingProperty then return end
+	local function lerp(a, b) return a + (b - a) * k end
+	pcall(SetPostProcessingProperty, "saturation", lerp(0.92, 0.78))
+	pcall(SetPostProcessingProperty, "colorbalance", lerp(1.0, 1.08), lerp(0.94, 0.97), lerp(1.1, 1.16))
+	pcall(SetPostProcessingProperty, "brightness", lerp(1.05, 1.14))
+	pcall(SetPostProcessingProperty, "bloom", lerp(1.3, 2.4))
 end
 
 local function missionStart()
 	M.state = "active"
 	M.keys = 0
 	M.found = {}
-	M.time = 0
 	cardsShow()
 	mqReset()
-	say("CHECK-OUT\nYour six key cards are somewhere upstairs, one on every floor.\nBring them back and ring the bell.\nDo not let them reach you.", 9)
+	say("SWEET DREAMS\nYou left six memories in this hotel, one on every floor.\nThe dreamers in the hallways will show you the way.\nBring them back and ring the bell.", 9)
 end
 
 local function missionInteract(s)
@@ -741,13 +735,10 @@ local function missionInteract(s)
 					M.state = "won"
 					M.t = 0
 					PlaySound(snd.checkout, GetCameraTransform().pos, 0.9)
-					local cam = GetCameraTransform().pos
-					for i = 1, #mqs do
-						if not mqs[i].dead then mqTopple(mqs[i], VecSub(mqs[i].pos, cam)) end
-					end
-					say("CHECKED OUT\nThank you for staying with us.", 10)
+					say("GOOD MORNING\nYou can wake up now. Sweet dreams.", 10)
 				else
-					say("You still have " .. (#cards - M.keys) .. " key card" .. ((#cards - M.keys) == 1 and "" or "s") .. " to find.", 4)
+					local n = #cards - M.keys
+					say(n .. " memor" .. (n == 1 and "y is" or "ies are") .. " still waiting for you.\nThe dreamers will show you the way.", 4)
 				end
 			end
 			return true
@@ -761,15 +752,16 @@ local function missionInteract(s)
 				c.taken = true
 				M.keys = M.keys + 1
 				M.found[c.floor] = true
-				PlaySound(snd.keycard, GetShapeWorldTransform(s).pos, 0.9)
+				PlaySound(snd.musicbox, GetShapeWorldTransform(s).pos, 0.9)
 				SetBodyTransform(c.body, Transform(VecAdd(c.t0.pos, HIDE), c.t0.rot))
 				for k = 1, #c.shapes do
 					if IsHandleValid(c.shapes[k]) then RemoveTag(c.shapes[k], "interact") end
 				end
+				local line = MEMORY_LINES[c.floor] or "a memory"
 				if M.keys >= #cards then
-					say("All key cards found.\nReturn to the front desk and ring the bell.", 6)
+					say("memory " .. M.keys .. " / " .. #cards .. "  -  " .. line .. "\nThat's all of them. Ring the bell at the front desk.", 7)
 				else
-					say("Key card " .. M.keys .. " / " .. #cards, 2.5)
+					say("memory " .. M.keys .. " / " .. #cards .. "  -  " .. line, 4)
 				end
 				return true
 			end
@@ -778,65 +770,60 @@ local function missionInteract(s)
 	return false
 end
 
+local function dreamersTick(dt)
+	local pt = GetPlayerTransform().pos
+	for i = 1, #mqs do
+		local m = mqs[i]
+		if not m.dead then
+			-- this floor's memory, while it is still lying there
+			local target = nil
+			for k = 1, #cards do
+				local c = cards[k]
+				if not c.taken and math.abs(c.t0.pos[2] - m.pos[2]) < 2.0 then target = c.t0.pos end
+			end
+			local flatP = Vec(pt[1] - m.pos[1], 0, pt[3] - m.pos[3])
+			local near = math.abs(pt[2] - m.pos[2]) < 1.6 and VecLength(flatP) < 2.5
+			local wantH = m.h0
+			if target then
+				local goal = closestOnSeg(m.a, m.b, target)
+				local to = VecSub(goal, m.pos)
+				local d = VecLength(to)
+				if d > 0.05 and not (near and VecLength(flatP) < 1.4) then     -- never walks into you
+					m.pos = VecAdd(m.pos, VecScale(to, math.min(d, GLIDE * dt) / d))
+					wantH = heading(to[1], to[3])
+				else
+					wantH = heading(target[1] - m.pos[1], target[3] - m.pos[3])
+				end
+			end
+			m.rotY = angleTo(m.rotY, wantH - m.h0, TURN * dt)
+			SetBodyTransform(m.body, Transform(m.pos, QuatEuler(0, m.rotY, 0)))
+			if near and not m.spoke then
+				m.spoke = true
+				PlaySound(snd.hum, m.pos, 0.6)
+				say("\"" .. m.line .. "\"", 4)
+			end
+		end
+	end
+end
+
 local function missionTick(dt)
 	if M.msgT > 0 then M.msgT = M.msgT - dt end
-	-- shot mannequins stop for good (and fall over), mission or not
+	-- a shot-up dreamer just falls over (sandbox), mission or not
 	for i = 1, #mqs do
 		local m = mqs[i]
 		if not m.dead and mqBroken(m) then
 			m.dead = true
-			if IsHandleValid(m.body) and not IsBodyDynamic(m.body) then mqTopple(m) end
+			if IsHandleValid(m.body) and not IsBodyDynamic(m.body) then SetBodyDynamic(m.body, true) end
 		end
 	end
+	local want = (M.state == "active") and 1 or 0
+	if M.dream ~= want then
+		M.dream = want > M.dream and math.min(1, M.dream + dt / 2.5) or math.max(0, M.dream - dt / 4)
+		setDreamLook(M.dream)
+	end
+	if M.dream > 0 then PlayLoop(snd.pad, GetCameraTransform().pos, 0.4 * M.dream) end
 	if M.state == "active" then
-		M.time = M.time + dt
-		PlayLoop(snd.drone, GetCameraTransform().pos, 0.35)
-		local ct = GetCameraTransform()
-		local pt = GetPlayerTransform().pos
-		for i = 1, #mqs do
-			local m = mqs[i]
-			if not m.dead then
-				local dy = math.abs(pt[2] - m.pos[2])
-				if dy < 1.6 then
-					local goal = closestOnSeg(m.a, m.b, pt)
-					local flat = Vec(pt[1] - m.pos[1], 0, pt[3] - m.pos[3])
-					if VecLength(flat) < MQ_REACH then
-						caught()
-						return
-					end
-					if VecLength(VecSub(goal, pt)) < 14 and not mqSeen(m, ct) then
-						local to = VecSub(goal, m.pos)
-						local d = VecLength(to)
-						if d > 0.05 then
-							local step = math.min(d, MQ_SPEED * dt)
-							m.pos = VecAdd(m.pos, VecScale(to, step / d))
-							m.stepT = m.stepT - dt
-							if m.stepT <= 0 then
-								m.stepT = 0.42
-								PlaySound(snd.step, m.pos, 0.45)
-							end
-						end
-						local yaw = heading(flat[1], flat[3]) - m.h0
-						SetBodyTransform(m.body, Transform(m.pos, QuatEuler(0, yaw, 0)))
-					end
-				end
-			end
-		end
-	elseif M.state == "caught" then
-		M.t = M.t + dt
-		if M.t > 1.2 and not M.moved then
-			M.moved = true
-			if startT then SetPlayerTransform(startT) end
-			cardsHide()
-			mqReset()
-			M.keys = 0
-			M.found = {}
-		end
-		if M.t > 4.0 then
-			M.state = "idle"
-			M.moved = false
-			say("Ring the bell to try again.", 5)
-		end
+		dreamersTick(dt)
 	elseif M.state == "won" then
 		M.t = M.t + dt
 	end
@@ -844,48 +831,42 @@ end
 
 local function drawMission()
 	UiPush()
+	if M.state == "won" and M.t < 6 then
+		local a = M.t < 1.5 and (M.t / 1.5) * 0.8 or math.max(0, 0.8 * (1 - (M.t - 1.5) / 4.5))
+		UiColor(1, 0.96, 0.99, a)                   -- soft morning light
+		UiRect(UiWidth(), UiHeight())
+	end
 	if M.state == "active" then
 		UiPush()
 			UiAlign("center top")
 			UiTranslate(UiCenter(), 18)
-			UiColor(0, 0, 0, 0.55)
+			UiColor(1, 0.92, 0.97, 0.35)
 			UiRect(420, 64)
 			UiTranslate(0, 8)
 			UiFont("bold.ttf", 24)
-			UiColor(1, 0.85, 0.55, 1)
-			UiText("KEY CARDS  " .. M.keys .. " / " .. #cards)
+			UiColor(0.95, 0.5, 0.78, 1)
+			UiText("MEMORIES  " .. M.keys .. " / " .. #cards)
 			UiTranslate(0, 30)
 			UiFont("regular.ttf", 18)
 			local left = {}
 			for i = 1, #cards do
 				if not cards[i].taken then left[#left + 1] = tostring(cards[i].floor) end
 			end
-			UiColor(0.85, 0.8, 1, 0.9)
+			UiColor(0.55, 0.5, 0.85, 1)
 			if #left > 0 then
-				UiText("floors left: " .. table.concat(left, "  ") .. "     " .. string.format("%d:%02d", math.floor(M.time / 60), math.floor(M.time % 60)))
+				UiText("floors: " .. table.concat(left, "  ") .. "   -  follow the dreamers")
 			else
-				UiText("return to the front desk")
+				UiText("ring the bell at the front desk")
 			end
 		UiPop()
-	end
-	if M.state == "caught" then
-		local a = math.min(1, M.t / 0.6)
-		if M.t > 3.2 then a = math.max(0, 1 - (M.t - 3.2) / 0.8) end
-		UiColor(0, 0, 0, a)
-		UiRect(UiWidth(), UiHeight())
-		UiAlign("center middle")
-		UiTranslate(UiCenter(), UiMiddle())
-		UiFont("bold.ttf", 54)
-		UiColor(0.85, 0.15, 0.2, a)
-		UiText("YOU NEVER LEFT")
 	end
 	if M.msg and M.msgT > 0 then
 		UiPush()
 			UiAlign("center middle")
 			UiTranslate(UiCenter(), UiHeight() * 0.72)
 			UiFont("regular.ttf", 26)
-			UiColor(1, 0.95, 0.85, math.min(1, M.msgT))
-			UiTextShadow(0, 0, 0, 0.8, 2)
+			UiColor(1, 0.9, 0.97, math.min(1, M.msgT))
+			if UiTextShadow then UiTextShadow(0.45, 0.3, 0.6, 0.6, 2) end
 			UiText(M.msg)
 		UiPop()
 	end
@@ -997,7 +978,7 @@ function init()
 	spotsInit()
 	curtainsInit()
 	missionInit()
-	say("Front desk: ring the bell to check out.", 7)
+	say("Front desk: ring the bell when you are ready to dream.", 7)
 end
 
 function tick(dt)

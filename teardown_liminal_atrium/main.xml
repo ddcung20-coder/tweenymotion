@@ -313,24 +313,24 @@
 	<group name="mission" pos="0 0 0">
 		<body name="deskbell" tags="deskbell" pos="-2.7 1.6 -26"><vox pos="0 0 0" file="MOD/vox/bell_0.vox" object="shape"/></body>
 		<location tags="missionstart" pos="-1.6 0.4 -24.9"/>
-		<body name="keycard0" tags="keycard floor=3" pos="-11.1 7.2 -19.9"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
-		<body name="keycard1" tags="keycard floor=2" pos="-11.1 4.2 -8.6"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
-		<body name="keycard2" tags="keycard floor=5" pos="11.1 13.2 -12.2"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
-		<body name="keycard3" tags="keycard floor=6" pos="11.1 16.2 -12.2"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
-		<body name="keycard4" tags="keycard floor=1" pos="11.1 1.2 -13.3"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
-		<body name="keycard5" tags="keycard floor=4" pos="-7.6 10.2 -26"><vox pos="0 0 0" file="MOD/vox/keycard_1.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>
-		<body name="mannequin0" tags="mannequin seg=-1.50,-28.75,-12.60,-28.75 fx=0 fz=1" pos="-9.8 0.4 -28.7"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"/></body>
-		<body name="mannequin1" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 0.4 -4.2"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
-		<body name="mannequin2" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 3.4 -9.1"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
-		<body name="mannequin3" tags="mannequin seg=-12.60,10.15,12.60,10.15 fx=0 fz=-1" pos="-2.7 3.4 10.2"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"/></body>
-		<body name="mannequin4" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 6.4 -13.6"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
-		<body name="mannequin5" tags="mannequin seg=-13.85,-27.50,-13.85,8.90 fx=1 fz=0" pos="-13.9 6.4 -5.9"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
-		<body name="mannequin6" tags="mannequin seg=-13.85,-27.50,-13.85,8.90 fx=1 fz=0" pos="-13.9 9.4 -15.1"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
-		<body name="mannequin7" tags="mannequin seg=-1.50,-28.75,-12.60,-28.75 fx=0 fz=1" pos="-8.9 9.4 -28.7"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"/></body>
-		<body name="mannequin8" tags="mannequin seg=-12.60,10.15,12.60,10.15 fx=0 fz=-1" pos="2.7 12.4 10.2"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"/></body>
-		<body name="mannequin9" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 12.4 -13.2"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
-		<body name="mannequin10" tags="mannequin seg=-13.85,-27.50,-13.85,8.90 fx=1 fz=0" pos="-13.9 15.4 -0.3"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"/></body>
-		<body name="mannequin11" tags="mannequin seg=-12.60,10.15,12.60,10.15 fx=0 fz=-1" pos="1.9 15.4 10.2"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"/></body>
+		<body name="keycard0" tags="keycard floor=3" pos="-11.1 7.2 -19.9"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.62 0.9" scale="0.8" size="0.05"/></vox></body>
+		<body name="keycard1" tags="keycard floor=2" pos="-11.1 4.2 -8.6"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.62 0.9" scale="0.8" size="0.05"/></vox></body>
+		<body name="keycard2" tags="keycard floor=5" pos="11.1 13.2 -12.2"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.62 0.9" scale="0.8" size="0.05"/></vox></body>
+		<body name="keycard3" tags="keycard floor=6" pos="11.1 16.2 -12.2"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.62 0.9" scale="0.8" size="0.05"/></vox></body>
+		<body name="keycard4" tags="keycard floor=1" pos="11.1 1.2 -13.3"><vox pos="0 0 0" file="MOD/vox/keycard_0.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.62 0.9" scale="0.8" size="0.05"/></vox></body>
+		<body name="keycard5" tags="keycard floor=4" pos="-7.6 10.2 -26"><vox pos="0 0 0" file="MOD/vox/keycard_1.vox" object="shape"><light pos="0 0.15 -0.05" type="sphere" color="1 0.62 0.9" scale="0.8" size="0.05"/></vox></body>
+		<body name="mannequin0" tags="mannequin seg=-1.50,-28.75,-12.60,-28.75 fx=0 fz=1" pos="-9.8 0.4 -28.7"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin1" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 0.4 -4.2"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin2" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 3.4 -9.1"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin3" tags="mannequin seg=-12.60,10.15,12.60,10.15 fx=0 fz=-1" pos="-2.7 3.4 10.2"><vox pos="0 0 0" file="MOD/vox/mannequin_2.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin4" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 6.4 -13.6"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin5" tags="mannequin seg=-13.85,-27.50,-13.85,8.90 fx=1 fz=0" pos="-13.9 6.4 -5.9"><vox pos="0 0 0" file="MOD/vox/mannequin_3.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin6" tags="mannequin seg=-13.85,-27.50,-13.85,8.90 fx=1 fz=0" pos="-13.9 9.4 -15.1"><vox pos="0 0 0" file="MOD/vox/mannequin_3.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin7" tags="mannequin seg=-1.50,-28.75,-12.60,-28.75 fx=0 fz=1" pos="-8.9 9.4 -28.7"><vox pos="0 0 0" file="MOD/vox/mannequin_0.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin8" tags="mannequin seg=-12.60,10.15,12.60,10.15 fx=0 fz=-1" pos="2.7 12.4 10.2"><vox pos="0 0 0" file="MOD/vox/mannequin_2.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin9" tags="mannequin seg=13.85,8.90,13.85,-27.50 fx=-1 fz=0" pos="13.8 12.4 -13.2"><vox pos="0 0 0" file="MOD/vox/mannequin_1.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin10" tags="mannequin seg=-13.85,-27.50,-13.85,8.90 fx=1 fz=0" pos="-13.9 15.4 -0.3"><vox pos="0 0 0" file="MOD/vox/mannequin_3.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
+		<body name="mannequin11" tags="mannequin seg=-12.60,10.15,12.60,10.15 fx=0 fz=-1" pos="1.9 15.4 10.2"><vox pos="0 0 0" file="MOD/vox/mannequin_2.vox" object="shape"><light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>
 	</group>
 	<group name="lamps" pos="0 0 0">
 		<vox name="lamp0" pos="-5 20.5 -20.1" file="MOD/vox/lamp_0.vox" object="shape">

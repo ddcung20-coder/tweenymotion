@@ -308,7 +308,7 @@ for i, k_ in enumerate(ns["KEYCARDS"]):
     under = FULL[gx:gx + arr.shape[0], gy - 1, gz:gz + arr.shape[2]]
     if body_hits(arr, k_["gmin"]) or not (under[arr[:, 0, :] > 0] > 0).all():
         kc_bad.append(i)
-report("6 key cards (one per floor) lie clear on a desk", not kc_bad and sorted(k_["floor"] for k_ in ns["KEYCARDS"]) == list(range(FLOORS)), str(kc_bad))
+report("6 memories (one per floor) lie clear on a desk", not kc_bad and sorted(k_["floor"] for k_ in ns["KEYCARDS"]) == list(range(FLOORS)), str(kc_bad))
 bell = ns["BELL"]; bx_, by_, bz_ = bell["gmin"]
 report("front-desk bell sits clear on the desk", body_hits(bell["arr"], bell["gmin"]) == 0 and FULL[bx_, by_ - 1, bz_] > 0)
 ms = ns["MISSION_START"]
@@ -332,12 +332,12 @@ for i, m in enumerate(ns["MANNEQUINS"]):
             hit += 1000
     if hit:
         mq_bad.append((i, m["floor"], hit))
-report(f"all {len(ns['MANNEQUINS'])} mission mannequins have a clear corridor path", not mq_bad, str(mq_bad[:6]))
-report("two mission mannequins per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
+report(f"all {len(ns['MANNEQUINS'])} dreamers have a clear corridor path", not mq_bad, str(mq_bad[:6]))
+report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
-LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "mission_drone.ogg"}
+LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)
     peak = float(np.abs(x).max())

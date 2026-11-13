@@ -52,6 +52,12 @@ LAWN       = P(22, (58, 84, 44));  LAWN2 = P(23, (66, 92, 48))
 BATHMAT    = P(24, (200, 200, 195))
 # dirt / rock
 SOIL       = P(25, (70, 52, 38))
+# dreamcore pastels (dreamers + memories of the mission)
+MEMORY      = P(42, (255, 170, 220), "emit", flux=2, weight=0.8)
+DREAM_PINK  = P(43, (246, 188, 218))
+DREAM_LILAC = P(44, (206, 190, 242))
+DREAM_SKY   = P(45, (176, 214, 248))
+DREAM_CLOUD = P(46, (250, 247, 253))
 # per-floor corridor themes (dirt range: soft like carpet / plaster)
 CARP_G  = P(26, (52, 86, 62));  CARP_G2  = P(27, (45, 77, 55))
 CARP_BL = P(28, (40, 58, 100)); CARP_BL2 = P(29, (35, 51, 89))
@@ -265,17 +271,19 @@ MQ_DECOR = []      # decorative mannequins stamped into the world after the room
 MRNG = random.Random(4242)   # separate RNG: the new features never shift the rest of the map
 
 def mannequin_model():
-    """5 wide (a) x 18 tall (b) x 3 deep (c); front is c = 0. Faceless shop-window dummy."""
+    """5 wide (a) x 18 tall (b) x 3 deep (c); front is c = 0. A pastel, faceless dreamer."""
     m = np.zeros((5, 18, 3), np.uint8)
     for a in (1, 3):
-        m[a, 1:9, 1] = SHEET                     # legs
-        m[a, 0, 0:3] = SHEET                     # feet
-    m[1:4, 8:10, 1] = SHEET                      # hips
-    m[1:4, 10:15, 0:3] = SHEET                   # torso
-    m[0:5, 14, 1] = SHEET                        # shoulders
-    m[0, 8:14, 1] = SHEET; m[4, 8:14, 1] = SHEET # arms
-    m[2, 15, 1] = SHEET                          # neck
-    m[1:4, 16:18, 0:3] = PILLOW                  # head
+        m[a, 1:9, 1] = DREAM_SKY                 # legs
+        m[a, 0, 0:3] = DREAM_CLOUD               # feet
+    m[1:4, 8:10, 1] = DREAM_SKY                  # hips
+    m[1:4, 10:15, 0:3] = DREAM_LILAC             # torso
+    m[2, 12, 0] = DREAM_PINK                     # little heart on the chest
+    m[0:5, 14, 1] = DREAM_LILAC                  # shoulders
+    m[0, 8:14, 1] = DREAM_LILAC; m[4, 8:14, 1] = DREAM_LILAC   # arms
+    m[2, 15, 1] = DREAM_PINK                     # neck ribbon
+    m[1:4, 16:18, 0:3] = DREAM_CLOUD             # head
+    m[1, 16, 0] = DREAM_PINK; m[3, 16, 0] = DREAM_PINK          # blush
     return m
 MQ_MODEL = mannequin_model()
 CALLS = []         # landing call buttons (static shapes)
@@ -748,9 +756,9 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False):
     if state == "tv":
         fr.light(U0 + 3, y + 14, 21.5, (0.45, 0.6, 1.0), 1.0, 0.2)
     fr.box(U0 + 2, U0 + 4, y + 8, y + 9, 14, 17, CERAMIC)                     # kettle tray
-    if keycard:                                                               # mission key card on the desk
+    if keycard:                                                               # mission memory on the desk
         arr, gmin = frame_shape(fr, U0 + 3, U0 + 6, y + 8, y + 9, 26, 28,
-                                lambda a_, b_, c_, A, B, C: DARK_METAL if a_ == 1 else STREET_LMP)
+                                lambda a_, b_, c_, A, B, C: DREAM_CLOUD if a_ == 1 else MEMORY)
         KEYCARDS.append(dict(arr=arr, gmin=gmin, floor=k))
     fr.box(U0 + 2, U0 + 3, y + 9, y + 11, 15, 16, STEEL)
     fr.box(U0 + 3, U0 + 5, y, y + 4, 14, 16, DARK_METAL)                      # trash bin
@@ -2188,13 +2196,14 @@ def export():
         o = body_origin(kc["arr"], kc["gmin"])
         xml.append(f'\t\t<body name="keycard{i}" tags="keycard floor={kc["floor"] + 1}" pos="{f3(o)}">'
                    f'<vox pos="0 0 0" file="MOD/vox/{shape_file("keycard", kc["arr"])}.vox" object="shape">'
-                   f'<light pos="0 0.15 -0.05" type="sphere" color="1 0.8 0.4" scale="0.7" size="0.05"/></vox></body>\n')
+                   f'<light pos="0 0.15 -0.05" type="sphere" color="1 0.62 0.9" scale="0.8" size="0.05"/></vox></body>\n')
     for i, m in enumerate(MANNEQUINS):
         o = body_origin(m["arr"], m["gmin"])
         (ax_, az_), (bx_, bz_) = m["seg"]
         seg = f"{ax_ * 0.1 - CX:.2f},{az_ * 0.1 - CZ:.2f},{bx_ * 0.1 - CX:.2f},{bz_ * 0.1 - CZ:.2f}"
         xml.append(f'\t\t<body name="mannequin{i}" tags="mannequin seg={seg} fx={m["front"][0]} fz={m["front"][1]}" pos="{f3(o)}">'
-                   f'<vox pos="0 0 0" file="MOD/vox/{shape_file("mannequin", m["arr"])}.vox" object="shape"/></body>\n')
+                   f'<vox pos="0 0 0" file="MOD/vox/{shape_file("mannequin", m["arr"])}.vox" object="shape">'
+                   f'<light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>\n')
     xml.append('\t</group>\n')
     xml.append('\t<group name="lamps" pos="0 0 0">\n')
     for i, L in enumerate(lamps):
@@ -2284,11 +2293,11 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.16\n"
+        f.write("name = Liminal Atrium v3.17\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot. Sandbox - break everything. "
-                "Mission: ring the front-desk bell to CHECK OUT - find six key cards while the mannequins move when unseen.\n"
+                "Dreamcore mission SWEET DREAMS: ring the front-desk bell, follow the pastel dreamers to six lost memories and wake up.\n"
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
                  doors=len(DOORS), door_files=len(door_files), curtains=len(CURTAINS), keycards=len(KEYCARDS),
