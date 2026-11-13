@@ -831,7 +831,7 @@ def build_corridors():
                 fr.box(u - 3, u + 3, y + 23, y + 24, 6, 7, BRASS); fr.box(u - 3, u + 3, y + 23, y + 24, 11, 12, BRASS)
             for u in range(0, L, 17):
                 fr.box(u, u + 1, y + 23, y + 24, 3, 4, CHROME)
-            for u in range(34, L - 5, 68):
+            for u in range(51, L - 5, 68):          # aligned with a ceiling lamp
                 fr.light(u, y + 21, 9, (1.0, 0.86, 0.62), 2.0, 0.25)
             # both walls: striped wallpaper above a wood wainscot with chair rail
             for side in (-1, COR_W):
@@ -1406,14 +1406,28 @@ def export():
             if a <= gx < a + sx and b <= gy < b + sy and c <= gz < c + sz:
                 return v
         return None
+    # Teardown switches a shape-attached light off when the voxel at its position is gone.
+    # So: put each light INSIDE the nearest lamp voxel (then only breaking that lamp kills it);
+    # lights with no lamp within reach stay unattached (always on).
+    EMIT = np.array([i for i, v in PAL.items() if v[1] == "emit" and i not in (CURT_LIT, CURT_LIT2)], np.uint8)
     loose = []
+    snapped = 0
+    R = 4
     for (gx, gy, gz, rgb, scale, size) in LIGHTS:
-        wx, wy, wz = gx * 0.1 - CX, gy * 0.1, gz * 0.1 - CZ
-        v = owner(int(gx), int(gy), int(gz))
-        if v is None:
-            loose.append((wx, wy, wz, rgb, scale, size))
-        else:
+        ix, iy, iz = int(gx), int(gy), int(gz)
+        x0, y0, z0 = max(ix - R, 0), max(iy - R, 0), max(iz - R, 0)
+        win = G[x0:ix + R + 1, y0:iy + R + 1, z0:iz + R + 1]
+        X, Y, Z = np.nonzero(np.isin(win, EMIT))
+        if len(X):
+            d2 = (X + x0 + 0.5 - gx) ** 2 + (Y + y0 + 0.5 - gy) ** 2 + (Z + z0 + 0.5 - gz) ** 2
+            j = int(np.argmin(d2))
+            lx, ly, lz = X[j] + x0, Y[j] + y0, Z[j] + z0
+            v = owner(lx, ly, lz)
+            wx, wy, wz = (lx + 0.5) * 0.1 - CX, (ly + 0.5) * 0.1, (lz + 0.5) * 0.1 - CZ
             v["lights"].append((wx - v["pos"][0], wy - v["pos"][1], wz - v["pos"][2], rgb, scale, size))
+            snapped += 1
+        else:
+            loose.append((gx * 0.1 - CX, gy * 0.1, gz * 0.1 - CZ, rgb, scale, size))
 
     def f3(a): return " ".join(f"{t:.2f}".rstrip("0").rstrip(".") if abs(t) > 1e-9 else "0" for t in a)
     def light_xml(p, rgb, scale, size, ind="\t\t\t"):
@@ -1466,8 +1480,11 @@ def export():
         bo = origin(e["arr"], e["gmin"])
         xml.append(f'\t\t<body name="car_{e["shaft"]}" tags="elevcar shaft={e["shaft"]} floor={e["floor"]}" '
                    f'pos="{f3(bo)}" dynamic="true">\n')
-        lx, ly, lz = e["light"]
-        lrel = (lx * 0.1 - CX - bo[0], ly * 0.1 - bo[1], lz * 0.1 - CZ - bo[2])
+        LX, LY, LZ = np.nonzero(e["arr"] == CEIL_LAMP)
+        mid = np.array(e["arr"].shape) / 2
+        j = int(np.argmin((LX - mid[0]) ** 2 + (LZ - mid[2]) ** 2))
+        gx_, gy_, gz_ = e["gmin"]
+        lrel = ((gx_ + LX[j] + 0.5) * 0.1 - CX - bo[0], (gy_ + LY[j] + 0.5) * 0.1 - bo[1], (gz_ + LZ[j] + 0.5) * 0.1 - CZ - bo[2])
         xml.append(f'\t\t\t<vox pos="0 0 0" file="MOD/vox/elev_car_{e["shaft"]}.vox" object="shape">\n'
                    f'\t\t\t\t<light pos="{f3(lrel)}" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>\n'
                    f'\t\t\t</vox>\n')
@@ -1505,7 +1522,7 @@ def export():
                 "corridors, stairwells, elevator shafts, lobby, roof and parking lot. Sandbox - break everything.\n"
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
-                 doors=len(DOORS), door_files=len(door_files), elevators=len(ELEVATORS), calls=len(CALLS),
+                 doors=len(DOORS), door_files=len(door_files), lights_in_lamps=snapped, lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
                  rooms=len(room_log), lit=sum(1 for r in room_log if r[3].startswith("lit")),
                  tv=sum(1 for r in room_log if r[3] == "tv"))
     print(json.dumps(stats))
