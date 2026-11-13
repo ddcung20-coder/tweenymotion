@@ -1781,9 +1781,15 @@ def export():
         xml.append(light_xml((wx, wy, wz), rgb, scale, size, "\t\t", ltags))
     xml.append('\t</group>\n')
     for (sy_, dep, pts) in POOLS:
-        xml.append(f'\t<water pos="0 {sy_ * 0.1:.2f} 0" depth="{dep * 0.1:.2f}" wave="0.02" ripple="0.25" motion="0.05" foam="0">\n')
+        # polygon water anchored at the pool centre; vertices relative to it (like every child node).
+        # 'size' is given too, so even a box interpretation stays inside the pool.
+        xs_ = [q[0] for q in pts]; zs_ = [q[1] for q in pts]
+        pcx, pcz = (min(xs_) + max(xs_)) / 2, (min(zs_) + max(zs_)) / 2
+        wx_, wz_ = pcx * 0.1 - CX, pcz * 0.1 - CZ
+        xml.append(f'\t<water type="polygon" pos="{wx_:.3f} {sy_ * 0.1:.2f} {wz_:.3f}" size="{(max(xs_) - min(xs_)) * 0.1:.2f} '
+                   f'{(max(zs_) - min(zs_)) * 0.1:.2f}" depth="{dep * 0.1:.2f}" wave="0.02" ripple="0.25" motion="0.05" foam="0">\n')
         for (vx, vz) in pts:
-            xml.append(f'\t\t<vertex pos="{vx * 0.1 - CX:.3f} {vz * 0.1 - CZ:.3f}"/>\n')
+            xml.append(f'\t\t<vertex pos="{(vx - pcx) * 0.1:.3f} {(vz - pcz) * 0.1:.3f}"/>\n')
         xml.append('\t</water>\n')
     for (kind, sx_, sy_, sz_) in SOUND_SPOTS:
         xml.append(f'\t<location tags="ambsound kind={kind}" pos="{f3((sx_ * 0.1 - CX, sy_ * 0.1, sz_ * 0.1 - CZ))}"/>\n')

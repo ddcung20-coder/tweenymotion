@@ -375,25 +375,25 @@
 		<light pos="5.95 1.85 28.05" type="sphere" color="0.45 0.85 1" scale="1.6" size="0.2"/>
 		<light pos="6.6 2.2 18.5" type="sphere" color="0.5 0.9 1" scale="1.4" size="0.3"/>
 	</group>
-	<water pos="0 2.20 0" depth="1.40" wave="0.02" ripple="0.25" motion="0.05" foam="0">
-		<vertex pos="-6.000 21.500"/>
-		<vertex pos="6.000 21.500"/>
-		<vertex pos="6.000 28.500"/>
-		<vertex pos="-6.000 28.500"/>
+	<water type="polygon" pos="0.000 2.20 25.000" size="12.00 7.00" depth="1.40" wave="0.02" ripple="0.25" motion="0.05" foam="0">
+		<vertex pos="-6.000 -3.500"/>
+		<vertex pos="6.000 -3.500"/>
+		<vertex pos="6.000 3.500"/>
+		<vertex pos="-6.000 3.500"/>
 	</water>
-	<water pos="0 2.60 0" depth="0.80" wave="0.02" ripple="0.25" motion="0.05" foam="0">
-		<vertex pos="7.900 18.500"/>
-		<vertex pos="7.726 19.150"/>
-		<vertex pos="7.250 19.626"/>
-		<vertex pos="6.600 19.800"/>
-		<vertex pos="5.950 19.626"/>
-		<vertex pos="5.474 19.150"/>
-		<vertex pos="5.300 18.500"/>
-		<vertex pos="5.474 17.850"/>
-		<vertex pos="5.950 17.374"/>
-		<vertex pos="6.600 17.200"/>
-		<vertex pos="7.250 17.374"/>
-		<vertex pos="7.726 17.850"/>
+	<water type="polygon" pos="6.600 2.60 18.500" size="2.60 2.60" depth="0.80" wave="0.02" ripple="0.25" motion="0.05" foam="0">
+		<vertex pos="1.300 0.000"/>
+		<vertex pos="1.126 0.650"/>
+		<vertex pos="0.650 1.126"/>
+		<vertex pos="0.000 1.300"/>
+		<vertex pos="-0.650 1.126"/>
+		<vertex pos="-1.126 0.650"/>
+		<vertex pos="-1.300 0.000"/>
+		<vertex pos="-1.126 -0.650"/>
+		<vertex pos="-0.650 -1.126"/>
+		<vertex pos="0.000 -1.300"/>
+		<vertex pos="0.650 -1.126"/>
+		<vertex pos="1.126 -0.650"/>
 	</water>
 	<location tags="ambsound kind=pool" pos="0 2.4 25"/>
 	<location tags="ambsound kind=spa" pos="6.6 2.4 18.5"/>
