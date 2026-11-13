@@ -3,7 +3,7 @@
 --  2) working elevators (call buttons / floor buttons with E) with chime, motor hum, door and music sounds
 --  3) building ambience, flickering corridor lights with fluorescent buzz
 --  4) creak / thud sounds for the physical (grab-and-pull) doors
---  5) curtains that open / close with E, automatic sliding doors in the basement (B1)
+--  5) curtains that open / close with E, room lights + TVs switchable with E, automatic sliding doors in the basement (B1)
 --  6) the dreamcore mission "SWEET DREAMS": six lost memories, pastel dreamers that show the way
 
 ----------------------------------------------------------------------------------------------------
@@ -504,6 +504,101 @@ local function spotsTick(cam)
 			PlayLoop(snd.spa, sp.pos, 0.5)
 		end
 	end
+end
+
+----------------------------------------------------------------------------------------------------
+-- hotel rooms: E on the light switch by the door turns the room's lights on / off,
+-- E on the TV screen turns the TV on / off.
+--  lights tagged room=<id> rl=ceil|lamp|bath|tv, "roomswitch" shapes (room on tv), lit curtains (room)
+----------------------------------------------------------------------------------------------------
+local rooms = {}
+local roomBySwitch, roomByScreen = {}, {}
+
+local function roomOf(id)
+	local r = rooms[id]
+	if not r then
+		r = { lights = {}, tv = {}, screens = {}, curtains = {}, on = false, tvOn = false }
+		rooms[id] = r
+	end
+	return r
+end
+
+local function setLamp(l, on)
+	if on and lightBroken(l) then return end          -- a shot lamp stays dead
+	SetLightEnabled(l, on)
+	local sh = GetLightShape and GetLightShape(l) or 0
+	if sh ~= 0 and IsHandleValid(sh) and SetShapeEmissiveScale then SetShapeEmissiveScale(sh, on and 1 or 0) end
+end
+
+local function roomApply(r)
+	for i = 1, #r.lights do setLamp(r.lights[i], r.on) end
+	for i = 1, #r.tv do setLamp(r.tv[i], r.tvOn) end
+	for i = 1, #r.curtains do
+		local sh = r.curtains[i]
+		if IsHandleValid(sh) and SetShapeEmissiveScale then SetShapeEmissiveScale(sh, r.on and 1 or 0) end
+	end
+	if r.switch and IsHandleValid(r.switch) then
+		SetTag(r.switch, "interact", r.on and "Lights off" or "Lights on")
+	end
+	for i = 1, #r.screens do
+		if IsHandleValid(r.screens[i]) then SetTag(r.screens[i], "interact", r.tvOn and "Turn TV off" or "Turn TV on") end
+	end
+end
+
+local function roomsInit()
+	local ls = FindLights("room", true)
+	for i = 1, #ls do
+		local l = ls[i]
+		local r = roomOf(GetTagValue(l, "room"))
+		if GetTagValue(l, "rl") == "tv" then
+			r.tv[#r.tv + 1] = l
+			local sh = GetLightShape and GetLightShape(l) or 0
+			if sh ~= 0 then
+				r.screens[#r.screens + 1] = sh
+				roomByScreen[sh] = r
+			end
+		else
+			r.lights[#r.lights + 1] = l
+		end
+	end
+	local sw = FindShapes("roomswitch", true)
+	for i = 1, #sw do
+		local r = roomOf(GetTagValue(sw[i], "room"))
+		r.switch = sw[i]
+		r.on = GetTagValue(sw[i], "on") == "1"
+		r.tvOn = GetTagValue(sw[i], "tv") == "1"
+		roomBySwitch[sw[i]] = r
+	end
+	local cb = FindBodies("curtain", true)
+	for i = 1, #cb do
+		if HasTag(cb[i], "room") then
+			local r = roomOf(GetTagValue(cb[i], "room"))
+			local shapes = GetBodyShapes(cb[i])
+			for j = 1, #shapes do r.curtains[#r.curtains + 1] = shapes[j] end
+		end
+	end
+	for _, r in pairs(rooms) do roomApply(r) end
+end
+
+-- returns true when the pressed shape was a room switch or a TV
+local function roomsInteract(s)
+	local r = roomBySwitch[s]
+	if r then
+		if not IsShapeBroken(s) then
+			r.on = not r.on
+			roomApply(r)
+			PlaySound(snd.click, GetShapeWorldTransform(s).pos, 0.7)
+		end
+		return true
+	end
+	r = roomByScreen[s]
+	if r then
+		r.tvOn = not r.tvOn
+		roomApply(r)
+		PlaySound(snd.click, GetShapeWorldTransform(s).pos, 0.5)
+		return true
+	end
+	return false
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -1104,6 +1199,7 @@ function init()
 	flickerInit()
 	spotsInit()
 	curtainsInit()
+	roomsInit()
 	autoInit()
 	missionInit()
 	say("Front desk: ring the bell when you are ready to dream.", 7)
@@ -1130,7 +1226,7 @@ function tick(dt)
 	if InputPressed("interact") then
 		local s = GetPlayerInteractShape()
 		if s ~= 0 then
-			interactHandled = curtainsInteract(s) or missionInteract(s)
+			interactHandled = curtainsInteract(s) or roomsInteract(s) or missionInteract(s)
 		end
 	end
 	curtainsTick(dt)

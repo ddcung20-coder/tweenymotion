@@ -39,7 +39,7 @@ CEIL_LAMP  = P(4, (255, 238, 205), "emit", flux=2, weight=0.8)
 COVE_LAMP  = P(5, (220, 196, 255), "emit", flux=2, weight=0.7)
 STREET_LMP = P(6, (255, 210, 150), "emit", flux=3, weight=1.0)
 EXIT_SIGN  = P(7, (60, 220, 90), "emit", flux=2, weight=0.7)
-TV_SCREEN  = P(8, (110, 150, 255), "emit", flux=2, weight=0.6)
+TV_SCREEN  = P(8, (84, 116, 196), "emit", flux=2, weight=0.7)
 # grass (9-24): carpets, rugs, plants (soft)
 CARP_A     = P(9, (96, 86, 76));   CARP_A2 = P(10, (88, 79, 70))
 CARP_B     = P(11, (72, 80, 90));  CARP_B2 = P(12, (65, 72, 82))
@@ -743,7 +743,9 @@ def window_in_facade(fr, bw, y):
     fr.box(u0 - 1, u0 + WIN_W + 1, y + SILL - 1, y + SILL, -1, 1, WOOD_LIGHT)                                   # inner sill
     return u0
 
-def curtains(fr, u0, y, state):
+ROOM_SWITCHES = []   # per-room light switch shapes: (arr, gmin, room id, lights on, tv on)
+
+def curtains(fr, u0, y, state, rid=-1):
     """two curtain panels per window: separate static bodies that main.lua slides open / shut (E)."""
     cu0, cu1 = u0 - 2, u0 + WIN_W + 2
     mid = (cu0 + cu1) // 2
@@ -765,7 +767,7 @@ def curtains(fr, u0, y, state):
             return ca if ((s0 + a_) // 2) % 2 == 0 else 0          # front folds
         arr, gmin = frame_shape(fr, s0, s1, bot, top, 1, 3, style)
         slide = (fr.ux * du, fr.uz * du)
-        CURTAINS.append(dict(arr=arr, gmin=gmin, slide=slide, start_open=start_open, cid=cid))
+        CURTAINS.append(dict(arr=arr, gmin=gmin, slide=slide, start_open=start_open, cid=cid, rid=rid, lit=lit))
 
 def wall_art(fr, u_face, y0, v0, w, h, along_v=True, plane=None):
     """picture on a wall plane. u_face: the wall layer (u) to hang on, v0..v0+w along v."""
@@ -776,7 +778,7 @@ def wall_art(fr, u_face, y0, v0, w, h, along_v=True, plane=None):
             t = ((yy - y0) * 3 + (vv - v0) * 2 + rng.randint(0, 2)) // max(1, (h + w) // 3)
             fr.box(u_face, u_face + 1, yy, yy + 1, vv, vv + 1, cols[t % 3])
 
-def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False):
+def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False, rid=0):
     y = fy(k)
     U0, U1 = T_PART, bw
     lit = state.startswith("lit")
@@ -828,11 +830,10 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False):
         fr.box(U1 - 5, U1, y, y + 6, nv, nv + nw, WOOD_MED)
         fr.box(U1 - 5, U1 - 4, y + 2, y + 3, nv, nv + nw, WOOD_DARK)          # drawer line
         fr.box(U1 - 3, U1 - 2, y + 6, y + 9, nv + 1, nv + 2, BRASS)
-        fr.box(U1 - 4, U1 - 1, y + 9, y + 12, nv, nv + 3, LAMPSHADE if lit else UPHOL2)
+        fr.box(U1 - 4, U1 - 1, y + 9, y + 12, nv, nv + 3, LAMPSHADE)
         fr.box(U1 - 3, U1 - 2, y + 10, y + 11, nv + 1, nv + 2, 0)            # hollow: the bulb lives here
     fr.box(U1 - 5, U1 - 3, y + 6, y + 7, stands[0][0] + 2, stands[0][0] + 4, TV_BODY)   # phone
-    if lit:
-        fr.light(U1 - 3, y + 10.5, stands[0][0] + 1, (1.0, 0.78, 0.45), 1.6, 0.1)
+    fr.light(U1 - 3, y + 10.5, stands[0][0] + 1, (1.0, 0.78, 0.45), 1.6, 0.1, f"room={rid} rl=lamp")
     # art above the bed(s)
     wall_art(fr, U1 - 1 + 1, y + 16, beds[0][0] + (1 if not twin else 4), 14, 7)
     # ---- desk + TV + mirror on the opposite wall (u = U0)
@@ -842,10 +843,9 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False):
     fr.box(U0, U0 + 5, y + 1, y + 7, 24, 29, FRIDGE)                          # minibar
     fr.box(U0 + 5, U0 + 6, y + 4, y + 5, 25, 28, CHROME)
     fr.box(U0, U0 + 1, y + 10, y + 19, 15, 28, TV_BODY)
-    fr.box(U0 + 1, U0 + 2, y + 11, y + 18, 16, 27, TV_SCREEN if state == "tv" else TV_BODY)
+    fr.box(U0 + 1, U0 + 2, y + 11, y + 18, 16, 27, TV_SCREEN)
     fr.box(U0, U0 + 3, y + 8, y + 10, 20, 23, TV_BODY)                        # stand (touches the TV)
-    if state == "tv":
-        fr.light(U0 + 3, y + 14, 21.5, (0.45, 0.6, 1.0), 1.0, 0.2)
+    fr.light(U0 + 3, y + 14, 21.5, (0.45, 0.6, 1.0), 1.0, 0.2, f"room={rid} rl=tv")
     fr.box(U0 + 2, U0 + 4, y + 8, y + 9, 14, 17, CERAMIC)                     # kettle tray
     if keycard:                                                               # mission memory on the desk
         arr, gmin = frame_shape(fr, U0 + 3, U0 + 6, y + 8, y + 9, 26, 28,
@@ -913,7 +913,8 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False):
     fr.box(bu0b + 5, bu0b + 10, y + 15, y + 16, v0b + 1, v0b + 2, CHROME)
     fr.box(bu0b + 6, bu0b + 9, y + 9, y + 15, v0b + 1, v0b + 2, TOWEL)
     fr.box(bu0b + 3, bu0b + 8, y, y + 1, v0b + 5, v0b + 8, BATHMAT)
-    fr.box(bu0b + 5, bu0b + 8, y + 26, y + 27, v0b + 5, v0b + 8, CEIL_LAMP if lit else CEIL)
+    fr.box(bu0b + 5, bu0b + 8, y + 26, y + 27, v0b + 5, v0b + 8, CEIL_LAMP)
+    fr.light(bu0b + 6, y + 24.5, v0b + 6, (1.0, 0.92, 0.8), 1.0, 0.15, f"room={rid} rl=bath")
     # ---- wardrobe with open hanging rail, luggage rack
     fr.box(U0, U0 + 6, y, y + 22, ROOM_D - 12, ROOM_D - 1, WOOD_DARK)
     fr.box(U0 + 1, U0 + 6, y + 1, y + 21, ROOM_D - 11, ROOM_D - 2, 0)             # hollow
@@ -940,7 +941,10 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False):
     add_door(fr, du0, du0 + 9, y, y + 22, ROOM_D, ROOM_D + 1, wood_door,
              hinge=(du0, ROOM_D), open_dir=(0, -1), start_open=rng.random() < 0.25)
     fr.box(du0 + 11, du0 + 14, y + 15, y + 17, ROOM_D + T_PART, ROOM_D + T_PART + 1, BRASS)   # number plate
-    fr.box(du0 - 3, du0 - 2, y + 11, y + 13, ROOM_D - 1, ROOM_D, SWITCH)         # light switch (inside)
+    # light switch beside the entrance, on the bathroom wall (separate shape: E toggles the room's lights)
+    sarr, smin = frame_shape(fr, bu0b - 1, bu0b, y + 11, y + 14, ROOM_D - 2, ROOM_D,
+                             lambda a_, b_, c_, A, B, C: DARK_METAL if (b_ == 1 and c_ == 0) else SWITCH)
+    ROOM_SWITCHES.append((sarr, smin, rid, lit, state == "tv"))
     fr.box(du0 - 3, du0 - 2, y + 15, y + 17, ROOM_D - 1, ROOM_D, SWITCH)         # thermostat
     # corridor-side clutter: room service tray / do-not-disturb sign
     r = rng.random()
@@ -950,12 +954,11 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False):
         fr.box(du0 + 5, du0 + 6, y + 1, y + 3, ROOM_D + T_PART + 1, ROOM_D + T_PART + 2, GLASS_DOOR)
     # ceiling: fixture, smoke detector, AC grille
     cu = (U0 + U1) // 2
-    fr.box(cu - 2, cu + 2, y + FH - SLAB_T - 1, y + FH - SLAB_T, 18, 22, CEIL_LAMP if lit else CEIL)
+    fr.box(cu - 2, cu + 2, y + FH - SLAB_T - 1, y + FH - SLAB_T, 18, 22, CEIL_LAMP)
     fr.box(cu - 3, cu + 3, y + FH - SLAB_T - 1, y + FH - SLAB_T, 17, 18, BRASS)
     fr.box(cu, cu + 1, y + FH - SLAB_T - 1, y + FH - SLAB_T, 30, 31, SWITCH)
     fr.box(U0 + 9, U0 + 17, y + FH - SLAB_T - 1, y + FH - SLAB_T, ROOM_D - 5, ROOM_D - 2, HVAC)
-    if lit:
-        fr.light(cu, y + FH - SLAB_T - 2, 20, (1.0, 0.82, 0.55), 2.2, 0.3)
+    fr.light(cu, y + FH - SLAB_T - 2, 20, (1.0, 0.82, 0.55), 2.2, 0.3, f"room={rid} rl=ceil")
 
 KEYCARD_ROOMS = {}
 _cands = [(n_, b_, k_) for (n_, b_, f_, bw_) in room_frames() for k_ in range(FLOORS) if not (k_ == 0 and n_ == "S" and b_ in (1, 2))]
@@ -985,12 +988,12 @@ def build_rooms():
             fr.paint(bw, bw + 1, y, y + FH - SLAB_T, 0, ROOM_D, wall, [ROOM_WALL])
             fr.paint(T_PART, bw, y, y + FH - SLAB_T, ROOM_D, ROOM_D + 1, wall, [ROOM_WALL])
             fr.paint(T_PART, bw, y, y + FH - SLAB_T, -1, 0, wall, [ATR_WALL])
-            curtains(fr, u0, y, state)
+            curtains(fr, u0, y, state, rid=len(room_log))
             twin = bw >= 40 and rng.random() < 0.6
             blanket = rng.choice([BLANKET_A, BLANKET_A, BLANKET_B, BLANKET_C])
             carpet = rng.choice([CARP_A, CARP_A, CARP_B])
             ff = fr.mirrored(T_PART, bw) if rng.random() < 0.5 else fr
-            furnish_room(ff, bw, k, state, twin, blanket, carpet, keycard=(name, b, k) in KEYCARD_ROOMS)
+            furnish_room(ff, bw, k, state, twin, blanket, carpet, keycard=(name, b, k) in KEYCARD_ROOMS, rid=len(room_log))
             room_log.append((name, b, k, state))
             # a few shop-window mannequins standing at open windows, looking out over the atrium
             if name in "WE" and state in ("lit_open", "dark_open", "tv") and MRNG.random() < 0.15:
@@ -2655,8 +2658,14 @@ def export():
     xml.append('\t<group name="curtains" pos="0 0 0">\n')
     for i, c in enumerate(CURTAINS):
         o = body_origin(c["arr"], c["gmin"])
-        tg = f"curtain cid={c['cid']} sx={c['slide'][0] * 0.1:.2f} sz={c['slide'][1] * 0.1:.2f}" + (" startopen" if c["start_open"] else "")
+        tg = f"curtain cid={c['cid']} sx={c['slide'][0] * 0.1:.2f} sz={c['slide'][1] * 0.1:.2f}" + (" startopen" if c["start_open"] else "") \
+             + (f" room={c['rid']}" if c["lit"] else "")
         xml.append(f'\t\t<body name="curtain{i}" tags="{tg}" pos="{f3(o)}"><vox pos="0 0 0" file="MOD/vox/{shape_file("curtain", c["arr"])}.vox" object="shape"/></body>\n')
+    xml.append('\t</group>\n')
+    xml.append('\t<group name="roomswitches" pos="0 0 0">\n')
+    for (sarr, smin, rid, on, tv) in ROOM_SWITCHES:
+        xml.append(f'\t\t<vox tags="roomswitch room={rid} on={int(on)} tv={int(tv)}" pos="{f3(body_origin(sarr, smin))}" '
+                   f'file="MOD/vox/{shape_file("switch", sarr)}.vox" object="shape"/>\n')
     xml.append('\t</group>\n')
     xml.append('\t<group name="mission" pos="0 0 0">\n')
     bo = body_origin(BELL["arr"], BELL["gmin"])
@@ -2768,7 +2777,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.19\n"
+        f.write("name = Liminal Atrium v3.20\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
@@ -2776,7 +2785,7 @@ def export():
                 "Dreamcore mission SWEET DREAMS: ring the front-desk bell, follow the pastel dreamers to six lost memories and wake up.\n"
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
-                 doors=len(DOORS), door_files=len(door_files), curtains=len(CURTAINS), keycards=len(KEYCARDS),
+                 doors=len(DOORS), door_files=len(door_files), curtains=len(CURTAINS), switches=len(ROOM_SWITCHES), keycards=len(KEYCARDS),
                  mannequins=len(MANNEQUINS), decor_dreamers=len(DECOR_MQ), lamp_shapes=len(lamps), lamp_files=len(lamp_files), lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
                  rooms=len(room_log), lit=sum(1 for r in room_log if r[3].startswith("lit")),
                  tv=sum(1 for r in room_log if r[3] == "tv"))
@@ -2792,7 +2801,7 @@ if __name__ == "__main__":
             arr = PROP_SHAPES[pname]; sx, sy, sz = arr.shape
             reg = Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz]
             reg[arr > 0] = arr[arr > 0]
-        stamps = [(c_["arr"], c_["gmin"]) for c_ in CURTAINS] + [(k_["arr"], k_["gmin"]) for k_ in KEYCARDS] + \
+        stamps = [(c_["arr"], c_["gmin"]) for c_ in CURTAINS] + [(w_[0], w_[1]) for w_ in ROOM_SWITCHES] + [(k_["arr"], k_["gmin"]) for k_ in KEYCARDS] + \
                  [(m_["arr"], m_["gmin"]) for m_ in MANNEQUINS + DECOR_MQ] + [(BELL["arr"], BELL["gmin"])] + [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
             + [(c_[0], c_[1]) for c_ in CALLS]
         for arr, (gx, gy, gz) in stamps:

@@ -367,6 +367,20 @@ report("all 4 elevators stop at B1 (landing door + call button)", len(calls_b1) 
        sum(1 for d in ns["DOORS"] if "elevdoor" in d["tag"] and "floor=-1" in d["tag"]) == 4, str(calls_b1))
 mall = [sp for sp in ns["SOUND_SPOTS"] if sp[0] == "mall"]
 report(f"{len(mall)} arcade music speakers sit in open air in B1", len(mall) >= 5 and all(FULL[int(x), int(y), int(z)] == 0 and y < G0 for (_, x, y, z) in mall))
+sw_bad = []
+for (sarr, smin, rid, on, tv) in ns["ROOM_SWITCHES"]:
+    if body_hits(sarr, smin) or any(c in door_occ for c in cells_of(sarr, smin)) \
+            or not reachable(int(smin[0]), int(smin[1]) - 11, int(smin[2]), r=4, dy=4):
+        sw_bad.append(rid)
+report(f"{len(ns['ROOM_SWITCHES'])} room light switches: clear of walls / doors and within reach", not sw_bad and len(ns["ROOM_SWITCHES"]) == len(ns["room_log"]), str(sw_bad[:8]))
+per = collections.Counter()
+for l in ns["LIGHTS"]:
+    t = dict(kv.split("=") for kv in l[6].split() if "=" in kv)
+    if "room" in t: per[(t["room"], t["rl"])] += 1
+kinds_ok = all(per[(str(i), k)] == 1 for i in range(len(ns["room_log"])) for k in ("ceil", "lamp", "bath", "tv"))
+lamp_rooms = sum(1 for L in ns["LAMPS"] if any("room=" in lt[6] for lt in L["lights"]))
+mixed = [i for i, L in enumerate(ns["LAMPS"]) if len({lt[6] for lt in L["lights"]}) > 1 and any("room=" in lt[6] for lt in L["lights"])]
+report("every room: ceiling, bedside, bathroom light + TV, each its own switchable lamp", kinds_ok and not mixed and lamp_rooms == 4 * len(ns["room_log"]), f"{lamp_rooms} room lamps, mixed {mixed[:4]}")
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
