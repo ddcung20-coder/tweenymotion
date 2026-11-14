@@ -1343,8 +1343,12 @@ end
 -- Flight is arcade style: the script steers the body's velocity and attitude while the rotor runs.
 ----------------------------------------------------------------------------------------------------
 local heli = nil
-local HELI_SPEED, HELI_CLIMB, HELI_TURN = 20, 6, 1.3    -- m/s, m/s, rad/s
-local HELI_ACC = 9                                       -- m/s^2 the rotor can push sideways / up beyond gravity
+local HELI_SPEED, HELI_CLIMB, HELI_TURN = 20, 6, 1.3    -- m/s, m/s, rad/s (attitude follow rate)
+local HELI_ACC = 9                                       -- m/s^2 the rotor can push up beyond gravity
+local HELI_HACC = 5                                      -- m/s^2 sideways: the helicopter carries its momentum
+local HELI_YAW = 1.0                                     -- rad/s yaw rate at full A / D
+-- inputs are eased (the stick takes ~0.5 s to reach full and to centre again), so nothing snaps
+local EASE_F, EASE_T, EASE_L = 2.0, 2.6, 2.4
 
 local function bodyVoxels(b)
 	local count = 0
@@ -1358,7 +1362,8 @@ local function heliInit()
 	if v == 0 then return end
 	local b = GetVehicleBody(v)
 	heli = { veh = v, body = b, rotor = FindBody("helirotor", true), tail = FindBody("helitail", true),
-		rpm = 0, broken = false, rotorLost = false }
+		rpm = 0, broken = false, rotorLost = false,
+		inF = 0, inT = 0, inL = 0, yawT = nil }
 	LIMINAL_HELI = heli          -- (read by the offline tests)
 	heli.vox0 = bodyVoxels(b)
 end
@@ -1413,6 +1418,7 @@ local function heliUpdate(dt)
 	if heli.broken or heli.rotorLost or heli.rpm < 0.2 then
 		-- parked or spinning down on its skids: keep it level (a gyro with a torque limit, so a crash or
 		-- an explosion can still flip it; once it is past 40 degrees it is left alone)
+		heli.yawT = nil; heli.inF, heli.inT, heli.inL = 0, 0, 0
 		if not heli.broken and up[2] > 0.77 then
 			local _, yawP = GetQuatEuler(t.rot)
 			local m = GetBodyMass(b)
@@ -1432,22 +1438,32 @@ local function heliUpdate(dt)
 		lift = -0.35                       -- pilot got out: settle down gently
 	end
 	if t.pos[2] > 90 and lift > 0 then lift = 0 end
+	heli.inF = heli.inF + (fwd - heli.inF) * math.min(1, dt * EASE_F)
+	heli.inT = heli.inT + (turn - heli.inT) * math.min(1, dt * EASE_T)
+	heli.inL = heli.inL + (lift - heli.inL) * math.min(1, dt * EASE_L)
+	fwd, turn, lift = heli.inF, heli.inT, heli.inL
 	local power = heli.rpm
 	-- heading of the real body (so turning always moves the nose, whatever the physics did)
 	local _, yaw = GetQuatEuler(t.rot)
+	-- the heading we steer to turns at a rate set by the eased A / D (smooth start and stop);
+	-- if something knocked the body far off it, it re-syncs instead of whipping back
+	if heli.yawT == nil then heli.yawT = yaw end
+	heli.yawT = heli.yawT + turn * math.deg(HELI_YAW) * dt
+	local dyaw = (heli.yawT - yaw + 540) % 360 - 180
+	if math.abs(dyaw) > 25 then heli.yawT = yaw + (dyaw > 0 and 25 or -25) end
 	local f = Vec(-math.sin(math.rad(yaw)), 0, -math.cos(math.rad(yaw)))
 	local want = VecAdd(VecScale(f, fwd * HELI_SPEED), Vec(0, lift * HELI_CLIMB, 0))
 	-- velocity through physics constraints: limited force, so collisions still push back
 	local m = GetBodyMass(b)
 	local com = TransformToParentPoint(t, GetBodyCenterOfMass(b))
-	local side = m * HELI_ACC * dt * power
+	local side = m * HELI_HACC * dt * power
 	local vert = m * (9.81 + HELI_ACC) * dt * power
 	ConstrainVelocity(b, 0, com, Vec(1, 0, 0), want[1], -side, side)
 	ConstrainVelocity(b, 0, com, Vec(0, 0, 1), want[3], -side, side)
 	ConstrainVelocity(b, 0, com, Vec(0, 1, 0), want[2], -vert, vert)
 	-- attitude: nose dips when flying forward, banks into turns, yaw follows A / D
 	-- (the target heading leads the real one while A / D is held; with no input it holds the heading)
-	local target = QuatEuler(-fwd * 10, yaw + turn * 30, turn * 7)
+	local target = QuatEuler(-fwd * 10, heli.yawT, turn * 9)
 	ConstrainOrientation(b, 0, t.rot, target, HELI_TURN * power)
 end
 
@@ -1521,36 +1537,9 @@ local function respawnDraw()
 end
 
 ----------------------------------------------------------------------------------------------------
--- the map's own spawn menu (N key, or "Liminal Spawn" in the pause menu)
+-- spawning: the map has no spawn menu of its own. Teardown's built-in spawn menu (pause menu -> Spawn)
+-- lists the base game and every enabled mod; this map's props are in it under "Liminal Atrium" (spawn.txt)
 ----------------------------------------------------------------------------------------------------
-local SPAWN_ITEMS = {
-	{ "Saloon car (drivable)", "car_a", "salooncar" }, { "Station wagon (drivable)", "car_b", "stationwagon" },
-	{ "SUV (drivable)", "car_c", "suv1" }, { "Van (drivable)", "car_a", "van" },
-	{ "Luggage cart", "luggage_cart" }, { "Beach ball", "beach_ball" }, { "Swim ring", "swim_ring" },
-	{ "Kickboard", "kickboard" }, { "Wooden crate", "crate" }, { "Red barrel", "barrel" },
-	{ "Lobby sofa", "sofa" }, { "Old TV", "crt_tv" },
-}
-local menuOpen = false
-
-local function spawnItem(id, kind)
-	local ct = GetCameraTransform()
-	local fwd = TransformToParentVec(ct, Vec(0, 0, -1))
-	local pos = VecAdd(ct.pos, VecScale(fwd, 4))
-	pos[2] = pos[2] + 0.5
-	local yaw = math.deg(math.atan2(-fwd[1], -fwd[3]))
-	local t = Transform(pos, QuatEuler(0, yaw, 0))
-	if not (kind and spawnVehicle(kind, t)) then
-		Spawn("MOD/prefab/" .. id .. ".xml", t)
-	end
-	PlaySound(snd.click, ct.pos, 0.6)
-end
-
-local function spawnMenuTick()
-	if PauseMenuButton and PauseMenuButton("Liminal Spawn") then menuOpen = true end
-	if InputPressed("n") then menuOpen = not menuOpen end
-	if menuOpen and InputPressed("esc") then menuOpen = false end
-end
-
 local function drawAmmoDebug()
 	local id = currentTool() or "?"
 	local lines = { "LIMINAL AMMO DEBUG (K)", "tool: " .. tostring(id),
@@ -1586,32 +1575,6 @@ function draw()
 	powerDraw()
 	respawnDraw()
 	if ammoDebug then drawAmmoDebug() end
-	if not menuOpen then return end
-	UiMakeInteractive()
-	UiPush()
-		local w, rowH = 360, 38
-		local h = 80 + #SPAWN_ITEMS * rowH + 50
-		UiTranslate(UiCenter() - w / 2, UiMiddle() - h / 2)
-		UiColor(0.05, 0.04, 0.08, 0.85)
-		UiRect(w, h)
-		UiColor(1, 1, 1, 1)
-		UiFont("bold.ttf", 26)
-		UiTranslate(w / 2, 40)
-		UiAlign("center middle")
-		UiText("LIMINAL SPAWN")
-		UiFont("regular.ttf", 22)
-		UiTranslate(0, 40)
-		for i = 1, #SPAWN_ITEMS do
-			UiColor(0.85, 0.8, 1, 1)
-			if UiTextButton(SPAWN_ITEMS[i][1], w - 40, rowH - 6) then
-				spawnItem(SPAWN_ITEMS[i][2], SPAWN_ITEMS[i][3])
-			end
-			UiTranslate(0, rowH)
-		end
-		UiTranslate(0, 10)
-		UiColor(1, 0.6, 0.6, 1)
-		if UiTextButton("Close (N)", w - 40, rowH - 6) then menuOpen = false end
-	UiPop()
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -1680,7 +1643,6 @@ function tick(dt)
 	flickerTick(dt, cam)
 	spotsTick(cam)
 	radioTick(cam)
-	spawnMenuTick()
 end
 
 function update(dt)

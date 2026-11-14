@@ -548,6 +548,16 @@ report("helicopter is breakable (mostly plastic / glass: metal only for skids, m
        f"body {hard_frac(hb_):.0%} hard, blades {hard_frac(ns['HELI_ROTOR'][:, 8, :]):.0%} hard")
 report("main rotor: shaft in the mast, both joint points inside rotor + mast", joints_ok(RO_, H_["rotor_gmin"], [(50, 2, 50), (50, 5, 50)]))
 report("tail rotor: shaft in the fin gearbox, both joint points inside rotor + gearbox", joints_ok(TA_, H_["tail_gmin"], [(0, 10, 10), (3, 10, 10)]))
+# spin axis = joint line = blade / shaft centre = mast centre (else the rotor orbits instead of spinning in place)
+bl_ = np.argwhere(RO_[:, 8, :] > 0) + 0.5; sh_ = np.argwhere(RO_[:, 0, :] > 0) + 0.5
+mast_ = np.argwhere(ns["HELI_BODY"][:, 33, 20:35] > 0) + [0.5, 20.5]
+ax_r = (H_["rotor_gmin"][0] + 50.0, H_["rotor_gmin"][2] + 50.0)
+ax_m = (H_["gmin"][0] + mast_[:, 0].mean(), H_["gmin"][2] + mast_[:, 1].mean())
+tb_ = np.argwhere(TA_[4] > 0) + 0.5
+centred = (np.allclose(bl_.mean(0), 50.0) and np.allclose(sh_.mean(0), 50.0) and np.allclose(ax_r, ax_m)
+           and np.allclose(tb_.mean(0), 10.0))
+report("rotors centred on their spin axes (blades, shaft, joints and mast share one line)", centred,
+       f"blades {bl_.mean(0)}, shaft {sh_.mean(0)}, axis {ax_r} vs mast {ax_m}, tail {tb_.mean(0)}")
 blade_hit = sum(1 for (a, b, c) in zip(*np.nonzero(RO_)) if b >= 8 and body_cell(H_["rotor_gmin"], a, b, c)) + \
             sum(1 for (a, b, c) in zip(*np.nonzero(TA_)) if a >= 4 and body_cell(H_["tail_gmin"], a, b, c))
 report("rotor blades clear the helicopter body (only the shafts sit inside)", blade_hit == 0, f"{blade_hit} cells")

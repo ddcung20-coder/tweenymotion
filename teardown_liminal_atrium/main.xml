@@ -3887,16 +3887,16 @@
 			</vox>
 		</body>
 	</vehicle>
-	<body name="helirotor" tags="helirotor" pos="0 27.6 -12.5" dynamic="true">
+	<body name="helirotor" tags="helirotor" pos="0 27.6 -12.6" dynamic="true">
 		<vox pos="0 0 0" file="MOD/vox/heli_rotor.vox" object="shape" density="0.25">
-			<joint pos="0.1 0.25 0" type="ball" size="0.1"/>
-			<joint pos="0.1 0.55 0" type="ball" size="0.1"/>
+			<joint pos="0 0.25 0" type="ball" size="0.1"/>
+			<joint pos="0 0.55 0" type="ball" size="0.1"/>
 		</vox>
 	</body>
-	<body name="helitail" tags="helitail" pos="0 26.7 -4" dynamic="true">
+	<body name="helitail" tags="helitail" pos="0 26.7 -4.1" dynamic="true">
 		<vox pos="0 0 0" file="MOD/vox/heli_tail.vox" object="shape" density="0.25">
-			<joint pos="-0.15 1.1 0" type="ball" size="0.1"/>
-			<joint pos="0.15 1.1 0" type="ball" size="0.1"/>
+			<joint pos="-0.15 1 0" type="ball" size="0.1"/>
+			<joint pos="0.15 1 0" type="ball" size="0.1"/>
 		</vox>
 	</body>
 	<group name="rooftop" pos="0 0 0">

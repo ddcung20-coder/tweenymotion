@@ -3444,7 +3444,7 @@ def helicopter_model():
     m[8:16, 30:32, 22:40] = SHEET
     m[10:14, 27:30, 44:47] = DARK_METAL
     m[10:14, 32:38, 25:29] = DARK_METAL
-    m[10:14, 29:34, 109:116] = DARK_METAL                                                     # tail rotor gearbox on the fin
+    m[10:14, 29:33, 108:116] = DARK_METAL                                                     # tail rotor gearbox (centred y 31, z 112)
     # skids + struts
     m[7:17, 7:9, 6:20] = ELEV_RAIL                                     # ballast under the cockpit floor (heavy metal)
     for sa in (2, 20):
@@ -3463,19 +3463,22 @@ def helicopter_model():
 def rotor_model(R_=50):
     """main rotor = its own body: blades (y 8), hub, and a shaft (y 0..5) that sits inside the mast,
     held there by two ball joints on the shaft axis (= a hinge about the vertical)."""
-    r = np.zeros((2 * R_ + 1, 9, 2 * R_ + 1), np.uint8)
-    r[:, 8, R_ - 1:R_ + 2] = UPHOL; r[R_ - 1:R_ + 2, 8, :] = UPHOL                   # plastic blades
-    r[:3, 8, R_ - 1:R_ + 2] = ART2; r[-3:, 8, R_ - 1:R_ + 2] = ART2
-    r[R_ - 1:R_ + 2, 8, :3] = ART2; r[R_ - 1:R_ + 2, 8, -3:] = ART2
-    r[R_ - 3:R_ + 4, 6:9, R_ - 3:R_ + 4] = DARK_METAL
+    # even size: blades, hub and shaft are all centred on the same line (grid x = z = R_), which is
+    # exactly the joint axis and the mast centre -> the rotor spins in place, it does not orbit
+    r = np.zeros((2 * R_, 9, 2 * R_), np.uint8)
+    r[:, 8, R_ - 1:R_ + 1] = UPHOL; r[R_ - 1:R_ + 1, 8, :] = UPHOL                   # plastic blades
+    r[:3, 8, R_ - 1:R_ + 1] = ART2; r[-3:, 8, R_ - 1:R_ + 1] = ART2
+    r[R_ - 1:R_ + 1, 8, :3] = ART2; r[R_ - 1:R_ + 1, 8, -3:] = ART2
+    r[R_ - 3:R_ + 3, 6:8, R_ - 3:R_ + 3] = DARK_METAL                                # hub (small at blade height:
+    r[R_ - 2:R_ + 2, 8, R_ - 2:R_ + 2] = DARK_METAL                                  #  the blades stay breakable)
     r[R_ - 1:R_ + 1, 0:6, R_ - 1:R_ + 1] = CHROME
     return r
 
 def tail_rotor_model(R_=10):
     """tail rotor body: shaft along x (x 0..4, inside the gearbox) and the blades at x = 4."""
-    t = np.zeros((5, 2 * R_ + 1, 2 * R_ + 1), np.uint8)
-    t[4, R_ - 1:R_ + 2, :] = UPHOL; t[4, :, R_ - 1:R_ + 2] = UPHOL
-    t[3:5, R_ - 2:R_ + 3, R_ - 2:R_ + 3] = DARK_METAL
+    t = np.zeros((5, 2 * R_, 2 * R_), np.uint8)                       # (even size: centred on its axis)
+    t[4, R_ - 1:R_ + 1, :] = UPHOL; t[4, :, R_ - 1:R_ + 1] = UPHOL
+    t[3:5, R_ - 2:R_ + 2, R_ - 2:R_ + 2] = DARK_METAL
     t[0:4, R_ - 1:R_ + 1, R_ - 1:R_ + 1] = CHROME
     return t
 
@@ -3854,14 +3857,14 @@ def export():
     ro_ = org(HELI_ROTOR, HELI["rotor_gmin"])
     xml.append(f'\t<body name="helirotor" tags="helirotor" pos="{f3(ro_)}" dynamic="true">\n'
                f'\t\t<vox pos="0 0 0" file="MOD/vox/heli_rotor.vox" object="shape" density="0.25">\n'
-               f'\t\t\t<joint pos="{f3(joint_rel(HELI_ROTOR, 51, 2.5, 51))}" type="ball" size="0.1"/>\n'
-               f'\t\t\t<joint pos="{f3(joint_rel(HELI_ROTOR, 51, 5.5, 51))}" type="ball" size="0.1"/>\n'
+               f'\t\t\t<joint pos="{f3(joint_rel(HELI_ROTOR, 50, 2.5, 50))}" type="ball" size="0.1"/>\n'
+               f'\t\t\t<joint pos="{f3(joint_rel(HELI_ROTOR, 50, 5.5, 50))}" type="ball" size="0.1"/>\n'
                f'\t\t</vox>\n\t</body>\n')
     to_ = org(HELI_TAIL, HELI["tail_gmin"])
     xml.append(f'\t<body name="helitail" tags="helitail" pos="{f3(to_)}" dynamic="true">\n'
                f'\t\t<vox pos="0 0 0" file="MOD/vox/heli_tail.vox" object="shape" density="0.25">\n'
-               f'\t\t\t<joint pos="{f3(joint_rel(HELI_TAIL, 0.5, 11, 11))}" type="ball" size="0.1"/>\n'
-               f'\t\t\t<joint pos="{f3(joint_rel(HELI_TAIL, 3.5, 11, 11))}" type="ball" size="0.1"/>\n'
+               f'\t\t\t<joint pos="{f3(joint_rel(HELI_TAIL, 0.5, 10, 10))}" type="ball" size="0.1"/>\n'
+               f'\t\t\t<joint pos="{f3(joint_rel(HELI_TAIL, 3.5, 10, 10))}" type="ball" size="0.1"/>\n'
                f'\t\t</vox>\n\t</body>\n')
     xml.append('\t<group name="rooftop" pos="0 0 0">\n')
     for (nm_, arr_, gm_, lts_) in ROOF_SHAPES:
@@ -3964,7 +3967,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.36\n"
+        f.write("name = Liminal Atrium v3.37\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
