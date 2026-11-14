@@ -554,19 +554,19 @@ for (wx0, wx1) in ((RX0 - 2, RX0), (RX1, RX1 + 2)):              # steel guard r
 box(RX0 - 2, RX1 + 2, G0 + 10, G0 + 11, RZ_END, RZ_END + 1, STEEL)
 # tunnel: lined concrete box under the sidewalk, into the building's west wall
 box(RX1, IX0, YB - 1, YB + 33, TZ0 - 2, TZ1 + 2, SLAB)
-box(RX1, bx0, YB, YB + 30, TZ0, TZ1, 0)
-box(bx0, IX0, YB, YB + 26, TZ0, TZ1, 0)                          # lower lintel in the building wall
+box(RX1, bx0, YB, YB + 32, TZ0, TZ1, 0)                           # 3.2 m clear: vans fit
+box(bx0, IX0, YB, YB + 32, TZ0, TZ1, 0)
 box(RX1, IX0, YB - 1, YB, TZ0, TZ1, STAIR_CONC)
-for z in range(TZ0, TZ1, 10):                                     # yellow / black clearance bar over the entry
-    box(RX1, RX1 + 1, YB + 28, YB + 30, z, z + 5, YELLOW_PAINT)
-    box(RX1, RX1 + 1, YB + 28, YB + 30, z + 5, z + 10, TIRE)
+for z in range(TZ0 - 2, TZ1 + 2, 10):                             # yellow / black stripes on the face above the mouth
+    paint(RX1, RX1 + 1, YB + 32, YB + 35, z, z + 5, YELLOW_PAINT, [SLAB])
+    paint(RX1, RX1 + 1, YB + 32, YB + 35, z + 5, z + 10, TIRE, [SLAB])
 # "P" sign by the ramp entrance (glowing letter on a blue panel, facing the street)
 box(RX1, RX1 + 2, G0 + 3, G0 + 30, 61, 63, STEEL)
-box(RX1 - 12, RX1 + 2, G0 + 18, G0 + 30, 60, 61, BLANKET_C)
+box(RX1, RX1 + 14, G0 + 18, G0 + 30, 60, 61, BLANKET_C)                 # (beside the ramp, not over it)
 for r_, row in enumerate(["####.", "#...#", "####.", "#....", "#...."]):
     for c_, cc in enumerate(row):
         if cc == "#":
-            xx = RX1 - 3 - c_ * 2
+            xx = RX1 + 11 - c_ * 2
             yy = G0 + 27 - r_ * 2
             box(xx - 1, xx + 1, yy - 1, yy + 1, 59, 60, CEIL_LAMP)
 
@@ -1584,21 +1584,28 @@ elevators(corner["NW"], "NW"); elevators(corner["SE"], "SE")
 # ============================================================================
 # 8. Roof: HVAC, ducts, vents, rooftop sign
 # ============================================================================
-for i in range(5):
-    hx = bx0 + 20 + i * 60
-    for hz in (bz0 + 14, bz1 - 34):
-        box(hx, hx + 22, ROOF_Y, ROOF_Y + 12, hz, hz + 18, HVAC)
-        box(hx - 1, hx + 23, ROOF_Y, ROOF_Y + 2, hz - 1, hz + 19, DARK_METAL)
-        box(hx + 3, hx + 19, ROOF_Y + 12, ROOF_Y + 13, hz + 3, hz + 15, DARK_METAL)
-        for gx in range(hx + 2, hx + 21, 3):
-            box(gx, gx + 1, ROOF_Y + 2, ROOF_Y + 10, hz - 1, hz, DARK_METAL)
-        # fan on top
-        cxf, czf = hx + 11, hz + 9
-        for a in range(-5, 6):
-            box(cxf + a, cxf + a + 1, ROOF_Y + 13, ROOF_Y + 14, czf - 5 + abs(a) // 2, czf + 5 - abs(a) // 2, CABLE)
-box(ax0 - 24, ax0 - T_FAC, ROOF_Y + 2, ROOF_Y + 8, bz0 + 30, bz0 + 36, HVAC)
-box(ax1 + T_FAC, ax1 + 24, ROOF_Y + 2, ROOF_Y + 8, bz1 - 36, bz1 - 30, HVAC)
+CORNER_RECTS = [corner[k_]._rect(-T_PART - 1, CB + 1, -T_PART - 1, CB + 1) for k_ in corner]   # penthouses / lift rooms
+def roof_clear(x0, x1, z0, z1, m=4):
+    return not any(x0 < b + m and x1 > a - m and z0 < d + m and z1 > c - m for (a, b, c, d) in CORNER_RECTS)
+HVAC_SPOTS = [(bx0 + 20 + i * 60, hz) for i in range(5) for hz in (bz0 + 14, bz1 - 34)]
+HVAC_SPOTS = [(hx, hz) for (hx, hz) in HVAC_SPOTS if roof_clear(hx - 1, hx + 23, hz - 1, hz + 19)]
+HVAC_SPOTS += [(bx1 - 46, 236), (bx1 - 46, 316)]                      # (the corner ones moved to the east roof)
+for (hx, hz) in HVAC_SPOTS:
+    box(hx, hx + 22, ROOF_Y, ROOF_Y + 12, hz, hz + 18, HVAC)
+    box(hx - 1, hx + 23, ROOF_Y, ROOF_Y + 2, hz - 1, hz + 19, DARK_METAL)
+    box(hx + 3, hx + 19, ROOF_Y + 12, ROOF_Y + 13, hz + 3, hz + 15, DARK_METAL)
+    for gx in range(hx + 2, hx + 21, 3):
+        box(gx, gx + 1, ROOF_Y + 2, ROOF_Y + 10, hz - 1, hz, DARK_METAL)
+    # fan on top
+    cxf, czf = hx + 11, hz + 9
+    for a in range(-5, 6):
+        box(cxf + a, cxf + a + 1, ROOF_Y + 13, ROOF_Y + 14, czf - 5 + abs(a) // 2, czf + 5 - abs(a) // 2, CABLE)
+for (dx0_, dx1_, dz0_, dz1_) in ((ax0 - 24, ax0 - T_FAC, bz0 + 30, bz0 + 36), (ax1 + T_FAC, ax1 + 24, bz1 - 36, bz1 - 30)):
+    if roof_clear(dx0_, dx1_, dz0_, dz1_, 1):
+        box(dx0_, dx1_, ROOF_Y + 2, ROOF_Y + 8, dz0_, dz1_, HVAC)
 for (vx, vz) in [(bx0 + 30, bz0 + 70), (bx1 - 30, bz0 + 120), (bx0 + 30, bz1 - 120), (bx1 - 30, bz1 - 80)]:
+    if not roof_clear(vx - 1, vx + 5, vz - 1, vz + 5, 2):
+        continue
     box(vx, vx + 4, ROOF_Y, ROOF_Y + 8, vz, vz + 4, STEEL)
     box(vx - 1, vx + 5, ROOF_Y + 8, ROOF_Y + 9, vz - 1, vz + 5, STEEL)
 # rooftop sign "HOTEL" on the south edge (5x7 font, x2)
@@ -1621,8 +1628,7 @@ for li, ch in enumerate(word):
             if cc == "#":
                 xx = sx0 + (len(word) - 1 - li) * 12 + (4 - c_) * 2   # mirrored: read from the south
                 yy = ROOF_Y + 6 + (6 - r_) * 2
-                lamp = STREET_LMP if not (li == 3 and r_ in (2, 3)) else 0   # one flickering-dead letter part
-                box(xx, xx + 2, yy, yy + 2, sz_, sz_ + 2, lamp if lamp else DARK_METAL)
+                box(xx, xx + 2, yy, yy + 2, sz_, sz_ + 2, STREET_LMP)
 light((bx0 + bx1) / 2, ROOF_Y + 14, sz_ - 4, (1.0, 0.75, 0.45), 5.0, 0.5)
 
 # street lamps
@@ -2329,13 +2335,12 @@ TUBE_N = [0]
 def tube(x, z):
     """twin fluorescent batten; every 4th one flickers (buzz), one is dead."""
     n_ = TUBE_N[0]; TUBE_N[0] += 1
-    box(x - 1, x + 2, YC - 1, YC, z + 1, z + 2, STEEL); box(x - 1, x + 2, YC - 1, YC, z + 8, z + 9, STEEL)
-    box(x - 1, x + 2, YC - 2, YC - 1, z, z + 10, STEEL)
+    box(x - 1, x + 2, YC - 1, YC, z, z + 10, STEEL)                   # surface-mounted: 3.2 m clear under it
     dead = n_ == 5
-    box(x - 1, x, YC - 3, YC - 2, z, z + 10, CEIL if dead else CEIL_LAMP)
-    box(x + 1, x + 2, YC - 3, YC - 2, z, z + 10, CEIL if dead else CEIL_LAMP)
+    box(x - 1, x, YC - 2, YC - 1, z, z + 10, CEIL if dead else CEIL_LAMP)
+    box(x + 1, x + 2, YC - 2, YC - 1, z, z + 10, CEIL if dead else CEIL_LAMP)
     if not dead:
-        light(x + 0.5, YC - 5, z + 5, (0.86, 0.95, 1.0), 1.9, 0.3, "flicker" if n_ % 4 == 1 else "")
+        light(x + 0.5, YC - 4, z + 5, (0.86, 0.95, 1.0), 1.9, 0.3, "flicker" if n_ % 4 == 1 else "")
 for z in (100, 170, 240, 320, 375):
     tube((AISLE0 + AISLE1) // 2, z)
 for z in (130, 210, 350):
@@ -2343,7 +2348,7 @@ for z in (130, 210, 350):
         if not in_stair(tx, z + 5, 8):
             tube(tx, z)
 box(IX0 + 10, IX0 + 12, YC - 2, YC, IZ0, PZ1, STEEL); box(PX1 - 12, PX1 - 10, YC - 2, YC, IZ0, PZ1, STEEL)
-ftext(Frame(IX0 - 1, TZ1 - 1, 0, -1, -1, 0), "EXIT", (TZ1 - TZ0) // 2, YC - 1, -1, EXIT_SIGN)
+ftext(Frame(IX0 - 1, TZ1 - 1, 0, -1, -1, 0), "EXIT", -12, YC - 2, -1, EXIT_SIGN)       # on the wall beside the tunnel mouth
 for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "E", 258), ("stationwagon", "car_c", "W", 216),
                                 ("suv1", "car_b", "W", 372), ("castanet-500l-gt", "car_b", "E", 163)):
     cxp_ = IX0 + 28 if side_ == "W" else PX1 - 2 - 28          # rear 0.2 m off the wall (5.2 m car)
@@ -2372,7 +2377,7 @@ for (xa, xb, za, zb) in ((IX0 - 1, IX0, IZ0, PZ1), (IX0, PX1 - 2, IZ0 - 1, IZ0),
 for bz in sorted(set(c_[1] for c_ in COLS)):      # (all clear of the EXIT sign over the tunnel mouth)
     xs_ = [x for x in range(IX0, PX1 - 2) if garage_ok(x, x + 1, bz - 2, bz + 2, 1)]
     for x in xs_:
-        box(x, x + 1, YC - 4, YC, bz - 2, bz + 2, SLAB)
+        box(x, x + 1, YC - 2, YC, bz - 2, bz + 2, SLAB)
 box(146, 147, YC - 1, YC, IZ0, PZ1, RED)
 for z in range(IZ0 + 6, PZ1, 20):
     if garage_ok(145, 148, z, z + 1, 0):
@@ -2382,11 +2387,11 @@ for z in range(IZ0, PZ1):
         box(218, 224, YC - 1, YC, z, z + 1, STEEL)
         box(219, 223, YC - 2, YC - 1, z, z + 1, TIRE if z % 3 else CABLE)   # cables in the tray
 DZ1 = 392
-box(175, 182, YC - 4, YC, IZ0, DZ1, HVAC)
+box(175, 182, YC - 2, YC, IZ0, DZ1, HVAC)
 for z in range(IZ0 + 14, DZ1 - 6, 30):
-    box(176, 181, YC - 5, YC - 4, z, z + 6, DARK_METAL)                   # supply grilles
+    box(176, 181, YC - 2, YC - 1, z, z + 6, DARK_METAL)                   # supply grilles (flush with the duct)
     for gz in range(z, z + 6, 2):
-        box(177, 180, YC - 5, YC - 4, gz, gz + 1, HVAC)
+        box(177, 180, YC - 2, YC - 1, gz, gz + 1, HVAC)
 # bay numbers on the walls, wheel stops, oil stains
 for (lbl_, bays_, west_) in (("A", WEST_BAYS, True), ("B", EAST_BAYS, False)):
     for i, z in enumerate(bays_):
@@ -2430,7 +2435,7 @@ box(IX0 + 1, IX0 + 2, YB + 6, YB + 12, 202, 206, CEIL)
 box(IX0 + 30, IX0 + 40, YB + 6, YB + 22, IZ0, IZ0 + 2, DARK_METAL)
 box(IX0 + 33, IX0 + 37, YB + 16, YB + 19, IZ0 + 2, IZ0 + 3, YELLOW_PAINT)
 box(PX1 - 12, PX1 - 8, YB, YB + 9, PZ1 - 6, PZ1 - 2, DUMPSTER)
-for (cx_, cz_) in ((158, 186), (168, 186), (163, 210)):
+for (cx_, cz_) in ((95, 128), (95, 140), (99, 152)):             # cones parked on the stair walkway, off the aisle
     box(cx_ - 2, cx_ + 3, YB, YB + 1, cz_ - 2, cz_ + 3, TIRE)
     box(cx_ - 1, cx_ + 2, YB + 1, YB + 5, cz_ - 1, cz_ + 2, WALL_ORANGE)
     box(cx_ - 1, cx_ + 2, YB + 3, YB + 4, cz_ - 1, cz_ + 2, CEIL)
@@ -2807,7 +2812,7 @@ NC0 = 126                   # north curb
 RZ0, RZ1 = 54, 126          # carriageway (2 x 3.6 m)
 SC0 = 52                    # south curb
 SS0, SS1 = 26, 52           # south sidewalk
-DRIVEWAYS = [(70, 170), (300, 400)]
+DRIVEWAYS = [(70, 170), (300, 400), (4, 58)]          # (the last: the car-park ramp)
 def on_drive(x):
     return any(a <= x < b for (a, b) in DRIVEWAYS)
 for x in range(W):
@@ -3920,7 +3925,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.34\n"
+        f.write("name = Liminal Atrium v3.35\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

@@ -3347,31 +3347,31 @@
 		<vox name="lamp949" pos="13.8 3 8.6" file="MOD/vox/lamp_19.vox" object="shape">
 			<light pos="0.05 -0.2 -0.05" type="sphere" color="1 0.85 0.62" scale="1.6" size="0.25"/>
 		</vox>
-		<vox name="lamp950" pos="-7.6 3.4 -28" file="MOD/vox/lamp_20.vox" object="shape">
+		<vox name="lamp950" pos="-7.6 3.5 -28" file="MOD/vox/lamp_20.vox" object="shape">
 			<light pos="0.15 -0.2 0" type="sphere" color="0.86 0.95 1" scale="1.9" size="0.3"/>
 		</vox>
-		<vox name="lamp951" pos="-7.6 3.4 -21" file="MOD/vox/lamp_20.vox" object="shape">
+		<vox name="lamp951" pos="-7.6 3.5 -21" file="MOD/vox/lamp_20.vox" object="shape">
 			<light tags="flicker" pos="0.15 -0.2 0" type="sphere" color="0.86 0.95 1" scale="1.9" size="0.3"/>
 		</vox>
-		<vox name="lamp952" pos="-7.6 3.4 -14" file="MOD/vox/lamp_20.vox" object="shape">
+		<vox name="lamp952" pos="-7.6 3.5 -14" file="MOD/vox/lamp_20.vox" object="shape">
 			<light pos="0.15 -0.2 0" type="sphere" color="0.86 0.95 1" scale="1.9" size="0.3"/>
 		</vox>
-		<vox name="lamp953" pos="-7.6 3.4 -6" file="MOD/vox/lamp_20.vox" object="shape">
+		<vox name="lamp953" pos="-7.6 3.5 -6" file="MOD/vox/lamp_20.vox" object="shape">
 			<light pos="0.15 -0.2 0" type="sphere" color="0.86 0.95 1" scale="1.9" size="0.3"/>
 		</vox>
-		<vox name="lamp954" pos="-7.6 3.4 -0.5" file="MOD/vox/lamp_20.vox" object="shape">
+		<vox name="lamp954" pos="-7.6 3.5 -0.5" file="MOD/vox/lamp_20.vox" object="shape">
 			<light pos="0.15 -0.2 0" type="sphere" color="0.86 0.95 1" scale="1.9" size="0.3"/>
 		</vox>
-		<vox name="lamp955" pos="-12.6 3.4 -16.7" file="MOD/vox/lamp_21.vox" object="shape">
+		<vox name="lamp955" pos="-12.6 3.5 -16.7" file="MOD/vox/lamp_21.vox" object="shape">
 			<light pos="0.15 -0.2 -0.3" type="sphere" color="0.86 0.95 1" scale="1.9" size="0.3"/>
 		</vox>
-		<vox name="lamp956" pos="-2.4 3.4 -16.7" file="MOD/vox/lamp_21.vox" object="shape">
+		<vox name="lamp956" pos="-2.4 3.5 -16.7" file="MOD/vox/lamp_21.vox" object="shape">
 			<light pos="0.15 -0.2 -0.3" type="sphere" color="0.86 0.95 1" scale="1.9" size="0.3"/>
 		</vox>
-		<vox name="lamp957" pos="-12.6 3.4 -3.2" file="MOD/vox/lamp_22.vox" object="shape">
+		<vox name="lamp957" pos="-12.6 3.5 -3.2" file="MOD/vox/lamp_22.vox" object="shape">
 			<light pos="0.15 -0.2 0.2" type="sphere" color="0.86 0.95 1" scale="1.9" size="0.3"/>
 		</vox>
-		<vox name="lamp958" pos="-2.4 3.4 -3.2" file="MOD/vox/lamp_22.vox" object="shape">
+		<vox name="lamp958" pos="-2.4 3.5 -3.2" file="MOD/vox/lamp_22.vox" object="shape">
 			<light tags="flicker" pos="0.15 -0.2 0.2" type="sphere" color="0.86 0.95 1" scale="1.9" size="0.3"/>
 		</vox>
 		<vox name="lamp959" pos="-12.4 3.6 -25.5" file="MOD/vox/lamp_6.vox" object="shape">

@@ -50,8 +50,8 @@ class Sheet:
         self.title, self.sub, self.sheet = title, sub, sheet
         self.d = ImageDraw.Draw(self.im, "RGBA")
 
-    def P(self, x, z):                    # grid (x, z) -> pixel; north (+z) up, east (+x) right
-        return self.ml + (x - self.x0) * S, self.mt + (self.z1 - z) * S
+    def P(self, x, z):                    # grid (x, z) -> pixel; +z up the sheet. Teardown is right-handed with y up,
+        return self.ml + (self.x1 - x) * S, self.mt + (self.z1 - z) * S       # so seen from above +x runs to the LEFT
 
     def grid(self):
         d = self.d
@@ -68,7 +68,7 @@ class Sheet:
 
     def layer(self, mask, color, alpha, mode="fill", width=3, hatch=None):
         """mask over the sheet's (x, z) window -> pixels."""
-        m = np.flipud(mask.T)                                      # rows = z descending, cols = x
+        m = np.flipud(np.fliplr(mask.T))                           # rows = z descending, cols = x descending
         big = np.kron(m, np.ones((S, S), bool))
         if mode == "outline":
             big = big & ~ndimage.binary_erosion(big, iterations=width, border_value=0)
@@ -129,7 +129,7 @@ class Sheet:
     # ---- sheet furniture: structural grid, dimensions, north arrow, scale bar, title block
     def struct_grid(self, xs, zs):
         top, left = self.mt - 70, self.ml - 70
-        for i, x in enumerate(xs):
+        for i, x in enumerate(sorted(xs, reverse=True)):            # numbered left to right on the sheet
             px, _ = self.P(x, 0)
             self.dashed((px, top + 22), (px, self.mt + self.hpx), (90, 140, 210), 1, 18, 8)
             self.d.ellipse([px - 22, top - 22, px + 22, top + 22], outline=INK, width=3)
@@ -411,10 +411,8 @@ for key in ("SW", "NE"):
     px, pz = s.P(x, z); s.text((px, pz + 24), None, "PENTHOUSE", 14, SOFT, f=FONT)
 for key in ("NW", "SE"):
     x, z = ns["corner"][key].pt(10, 22); s.text(x, z, "LIFT MACHINE ROOM", 14, rot=90)
-for i in range(5):
-    hx = bx0 + 20 + i * 60
-    for hz in (bz0 + 14, bz1 - 34):
-        s.text(hx + 11, hz + 9, "HVAC", 14, SOFT)
+for (hx, hz) in ns["HVAC_SPOTS"]:
+    s.text(hx + 11, hz + 9, "HVAC", 14, SOFT)
 s.frame_and_title(["Glasshouse: glass barrel vault with lantern cupola (not shown), lily pond, palms, beds.",
                    "Yellow: helipad markings on the upper roof (dashed outline = upper roof edge)."])
 pages.append(("A-107_ROOF", s))

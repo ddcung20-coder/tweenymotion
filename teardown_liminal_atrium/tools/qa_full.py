@@ -451,6 +451,24 @@ pond = [p_ for p_ in ns["POOLS"] if abs(p_[0] - (RY_ + 4.5)) < 0.01]
 pond_ok = len(pond) == 1 and all(np.hypot(px_ - gx_c, pz_ - gz_c) < 10.5 for (px_, pz_) in pond[0][2])
 report(f"rooftop glasshouse: path clear, {n_leaf} leaf + {n_flower} flower voxels, pond water inside its rim",
        path_block == 0 and n_leaf > 4000 and n_flower > 800 and pond_ok, f"path_block={path_block} pond_ok={pond_ok}")
+RYq = ns["ROOF_Y"]; rbad = 0
+for (a_, b_, c_, d_) in ns["CORNER_RECTS"]:
+    rbad += int(np.isin(FULL[a_ - 2:b_ + 2, RYq:RYq + 16, c_ - 2:d_ + 2], [ns["HVAC"]]).sum())
+report(f"roof: {len(ns['HVAC_SPOTS'])} HVAC units, ducts and vents clear of the stair penthouses / lift machine rooms", rbad == 0, f"{rbad} voxels")
+# a van (2.2 m wide, up to 3.0 m tall) drives street -> ramp -> tunnel -> car-park aisle without touching anything
+YBq, A0q, A1q = ns["YB"], ns["AISLE0"], ns["AISLE1"]
+van_path = [("tunnel", FULL[ns["RX1"]:ns["IX0"], YBq:YBq + 31, ns["TZ0"] + 4:ns["TZ1"] - 4]),
+            ("ramp bottom", FULL[ns["RX0"] + 2:ns["RX1"] - 2, YBq:YBq + 31, ns["RZ_BOT"]:ns["RZ_END"]]),
+            ("aisle", FULL[A0q + 7:A1q - 7, YBq:YBq + 31, 162:ns["PZ1"] - 2]),
+            ("aisle by the stair core", FULL[158:A1q - 7, YBq:YBq + 31, ns["IZ0"] + 2:162])]
+ramp_bad = 0
+for zq in range(ns["RZ_TOP"] - 4, ns["RZ_BOT"]):
+    ry_ = ns["ramp_y"](zq)
+    ramp_bad += int((FULL[ns["RX0"] + 2:ns["RX1"] - 2, ry_:ry_ + 31, zq] > 0).sum())
+van_bad = [n_ for (n_, r_) in van_path if (r_ > 0).any()] + (["ramp"] if ramp_bad else [])
+RO_ = ns["ROAD"]; G0q = ns["G0"]
+drive_ok = not (RO_[ns["RX0"]:ns["RX1"], G0q:G0q + 2, ns["NC0"]:] > 0).any()
+report("van clearance 3.0 m: street driveway, ramp, tunnel, car-park aisle", not van_bad and drive_ok, f"{van_bad} driveway_ok={drive_ok}")
 report(f"{len(ns['CAR_SPOTS'])} car spots: free space + ground for a base-game vehicle", not car_bad and len(ns["CAR_SPOTS"]) >= 7, str(car_bad))
 RO = ns["ROAD"]; RD_ = ns["RD"]
 r_isl = 0
