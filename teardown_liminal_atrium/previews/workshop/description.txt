@@ -1,0 +1,45 @@
+[h1]Liminal Atrium[/h1]
+A deserted hotel at night. Six floors of fully furnished rooms around a purple-lit atrium, a basement car park and luxury arcade, an indoor poolroom, a rooftop glasshouse and a helipad with a flyable helicopter. Sandbox - break everything.
+
+[h2]What's inside[/h2]
+[list]
+[*]6 guest floors, 140+ furnished rooms (bed, bathroom, TV, curtains) - each floor's corridor has its own theme
+[*]Room light and TV switches, curtains you can open and close (E)
+[*]Electrical room on every floor: switch the floor's power with E, or destroy it for a blackout
+[*]4 working elevators (B1 - 6F) with call buttons, landing doors and floor buttons
+[*]B1: underground car park (ramp from the street, drivable cars) + luxury shopping arcade with boutiques, restaurant, café, fountain and automatic doors
+[*]Poolroom annex: real water pool, spa, loungers, lifeguard chair
+[*]Rooftop glasshouse "FLORA": glass vault and cupola, lily pond, palms, flower beds, wisteria
+[*]Helipad with a drivable, breakable helicopter (W/S forward/back, A/D turn, Space/Ctrl up/down)
+[*]Base-game drivable cars in the parking lot, street and car park
+[*]Dreamcore mission [b]SWEET DREAMS[/b]: ring the front-desk bell, follow the pastel dreamers to six lost memories and wake up (M or the pause menu stops it)
+[*]Respawn in the lobby when you die
+[/list]
+
+[h2]Controls[/h2]
+E - interact (switches, curtains, elevator buttons, power, cars, helicopter)
+M - stop the mission
+
+---------------------------------------------------------------
+
+[h1]리미널 아트리움[/h1]
+한밤중의 텅 빈 호텔. 보라빛 아트리움을 둘러싼 6층 객실, 지하주차장과 명품 상가, 실내 수영장, 옥상 유리 식물정원, 날 수 있는 헬기가 있는 헬리패드. 샌드박스 - 전부 부숴도 됩니다.
+
+[h2]구성[/h2]
+[list]
+[*]6개 층, 가구가 갖춰진 객실 140여 개 (침대, 욕실, TV, 커튼) - 층마다 다른 테마의 복도
+[*]객실 조명·TV 스위치, 여닫는 커튼 (E)
+[*]층마다 전기실: E로 그 층 전원 끄기/켜기, 부수면 그 층 정전
+[*]작동하는 엘리베이터 4대 (지하 1층 - 6층), 호출 버튼·승강장 문·층 버튼
+[*]지하 1층: 도로에서 경사로로 들어가는 지하주차장(운전 가능한 차) + 부티크·레스토랑·카페·분수·자동문이 있는 명품 상가
+[*]수영장 별관: 진짜 물이 있는 수영장, 스파, 선베드, 안전요원 의자
+[*]옥상 유리 식물정원 "FLORA": 유리 지붕과 큐폴라, 연못, 야자수, 꽃밭, 등나무
+[*]헬리패드와 운전·파괴 가능한 헬기 (W/S 전진/후진, A/D 회전, Space/Ctrl 상승/하강)
+[*]주차장·도로·지하주차장에 기본 게임 운전 가능 차량
+[*]드림코어 미션 [b]SWEET DREAMS[/b]: 프런트 벨을 누르고 파스텔 드리머를 따라 잃어버린 기억 6개를 모으면 깨어납니다 (M 또는 일시정지 메뉴로 중단)
+[*]죽으면 로비에서 부활
+[/list]
+
+[h2]조작[/h2]
+E - 상호작용 (스위치, 커튼, 엘리베이터 버튼, 전원, 차, 헬기)
+M - 미션 중단

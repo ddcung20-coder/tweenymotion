@@ -13,7 +13,7 @@ import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ap = argparse.ArgumentParser()
-ap.add_argument("shot", choices=["exterior", "atrium", "helipad", "glasshouse", "garden", "garage"])
+ap.add_argument("shot", choices=["exterior", "atrium", "helipad", "glasshouse", "garden", "garage", "pool", "arcade"])
 ap.add_argument("--w", type=int, default=1280); ap.add_argument("--h", type=int, default=720)
 ap.add_argument("--spp", type=int, default=128); ap.add_argument("--out", default=None)
 ap.add_argument("--debug", default="")          # nolights / noemit / nosky (diagnostics)
@@ -114,7 +114,7 @@ def in_atrium(gx, gy, gz):
 GH = ns["GLASSHOUSE"]; GXC_, PCZ_ = GH["plaza"]; YB_ = ns["YB"]
 # the rooftop glasshouse from the roof outside (south-west), and inside from the foyer down the path
 SHOTS["glasshouse"] = dict(cam=(GH["x0"] - 50, ROOF_Y + 62, GH["z0"] - 70 + RD), look=(GXC_ + 6, ROOF_Y + 22, PCZ_ - 10 + RD), fov=52,
-                           crop=(0, W, ROOF_Y - 30, HN, 0, D + RD), sky=(0.035, 0.028, 0.07), moon=0.5, fog=(0.10, 0.08, 0.16, 300.0),
+                           crop=(0, W, 0, HN, 0, D + RD), sky=(0.035, 0.028, 0.07), moon=0.5, fog=(0.10, 0.08, 0.16, 300.0),
                            lights=lambda gx, gy, gz: gy >= ROOF_Y - 2)
 SHOTS["garden"] = dict(cam=(GXC_ - 3, ROOF_Y + 15, GH["z0"] + 5 + RD), look=(GXC_ + 1, ROOF_Y + 17, PCZ_ + RD), fov=72,
                        crop=(GH["x0"] - 30, GH["x1"] + 30, ROOF_Y - 4, HN, GH["z0"] - 40 + RD, GH["z1"] + 30 + RD),
@@ -125,6 +125,17 @@ SHOTS["garage"] = dict(cam=(ns["AISLE0"] + 14, YB_ + 17, ns["PZ1"] - 8 + RD), lo
                        crop=(ns["IX0"] - 4, ns["PX1"] + 4, YB_ - 3, YB_ + 40, ns["IZ0"] - 4 + RD, ns["PZ1"] + 4 + RD),
                        sky=(0.0, 0.0, 0.0), moon=0.0, fog=(0.05, 0.05, 0.06, 400.0),
                        lights=lambda gx, gy, gz: ns["IX0"] <= gx <= ns["PX1"] and ns["IZ0"] <= gz <= ns["PZ1"] and gy < ns["G0"] - 2)
+# the poolrooms hall from its south-west corner, and the B1 arcade promenade looking north
+ix0_, ix1_, iz0_, iz1_, DY_ = (ns[k] for k in ("ix0", "ix1", "iz0", "iz1", "DY"))
+SHOTS["pool"] = dict(cam=(ix0_ + 14, DY_ + 17, iz0_ + 12 + RD), look=(ns["cxN"] + 30, DY_ + 2, ns["pz1"] + RD), fov=70,
+                     crop=(ix0_ - 6, ix1_ + 6, DY_ - 30, DY_ + ns["HALL_H"] + 6, iz0_ - 6 + RD, iz1_ + 6 + RD),
+                     sky=(0.02, 0.02, 0.04), moon=0.0, fog=(0.05, 0.06, 0.08, 500.0),
+                     lights=lambda gx, gy, gz: ix0_ <= gx <= ix1_ and iz0_ <= gz <= iz1_ and gy >= DY_ - 25)
+PRM0_, PRM1_ = ns["PRM0"], ns["PRM1"]
+SHOTS["arcade"] = dict(cam=((PRM0_ + PRM1_) / 2 - 4, YB_ + 15, ns["IZ0"] + 8 + RD), look=((PRM0_ + PRM1_) / 2 + 2, YB_ + 10, ns["IZ0"] + 220 + RD), fov=68,
+                       crop=(ns["PX1"] - 4, ns["IX1"] + 6, YB_ - 3, ns["G0"], ns["IZ0"] - 6 + RD, ns["IZ1"] + 6 + RD),
+                       sky=(0.0, 0.0, 0.0), moon=0.0, fog=(0.05, 0.045, 0.06, 500.0),
+                       lights=lambda gx, gy, gz: gx >= ns["PX1"] - 2 and gy < ns["G0"] - 2 and gz <= ns["IZ1"] + 2)
 SHOTS["exterior"]["lights"] = lambda gx, gy, gz: outdoor(gx, gy, gz) and gz < bz1
 SHOTS["atrium"]["lights"] = in_atrium
 SHOTS["helipad"]["lights"] = lambda gx, gy, gz: gy >= ROOF_Y - 2
@@ -293,7 +304,7 @@ def blur(a, s_):
     return np.stack([gaussian_filter(a[..., k], s_) for k in range(3)], -1)
 bright = np.clip(rgb - 0.9, 0, None)
 bloom = 0.35 * blur(bright, args.w / 160) + 0.25 * blur(bright, args.w / 40)
-expo = {"exterior": 1.6, "atrium": 1.5, "helipad": 1.5, "glasshouse": 1.5, "garden": 1.4, "garage": 1.4}[args.shot]
+expo = {"exterior": 1.6, "atrium": 1.5, "helipad": 1.5, "glasshouse": 1.5, "garden": 1.4, "garage": 1.4, "pool": 0.45, "arcade": 0.6}[args.shot]
 def aces(x):
     a_, b_, c_, d_, e_ = 2.51, 0.03, 2.43, 0.59, 0.14
     return np.clip((x * (a_ * x + b_)) / (x * (c_ * x + d_) + e_), 0, 1)
