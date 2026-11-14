@@ -569,17 +569,11 @@ centred = (np.allclose(bl_.mean(0), 50.0) and np.allclose(sh_.mean(0), 50.0) and
            and np.allclose(tb_.mean(0), 10.0))
 report("rotors centred on their spin axes (blades, shaft, joints and mast share one line)", centred,
        f"blades {bl_.mean(0)}, shaft {sh_.mean(0)}, axis {ax_r} vs mast {ax_m}, tail {tb_.mean(0)}")
-# v3.40: penthouse jacuzzi water inside its rim, piano resting on the floor clear of the world, staff rooms
+# v3.40: penthouse jacuzzi water inside its rim, staff rooms
 PHq = ns["PENTHOUSE"]
 jac = [p_ for p_ in ns["POOLS"] if abs(p_[0] - (ns["ROOF_Y"] + 5.0)) < 0.01]
 jac_ok = len(jac) == 1 and all(FULL[int(px_), ns["ROOF_Y"] + 2, int(pz_)] == 0 for (px_, pz_) in jac[0][2])
 report("penthouse: jacuzzi water polygon inside an empty tub", jac_ok)
-pa_, pg_ = ns["PIANO_ARR"], ns["PIANO_GMIN"]
-p_rest = (FULL[pg_[0]:pg_[0] + pa_.shape[0], pg_[1] - 1, pg_[2]:pg_[2] + pa_.shape[2]][pa_[:, 0, :] > 0] > 0).all()
-report("grand piano: own shape, legs on the atrium floor, overlapping nothing", hits(pa_, pg_) == 0 and p_rest and
-       'tags="piano"' in open("main.xml").read())
-hard_p = np.isin(pa_[pa_ > 0], list(range(137, 153)) + list(range(169, 177))).mean()
-report(f"grand piano breakable (heavy/hard metal {hard_p:.0%})", hard_p < 0.05)
 boh_ok = len(ns["BOH"]) == 3 and all(len([1 for r in ns["room_log"] if r[0] == "N" and r[2] == 0]) == 0 for _ in [0])
 report("back of house replaces the ground-floor north rooms (kitchen, laundry, boiler)", boh_ok)
 blade_hit = sum(1 for (a, b, c) in zip(*np.nonzero(RO_)) if b >= 8 and body_cell(H_["rotor_gmin"], a, b, c)) + \
@@ -619,7 +613,7 @@ report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in 
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
 LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "heli_rotor.ogg",
-         "piano.ogg", "boiler.ogg", "laundry.ogg"}
+         "boiler.ogg", "laundry.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)
     peak = float(np.abs(x).max())

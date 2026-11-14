@@ -291,66 +291,13 @@ save("breaker.ogg", clunk + crack, 0.8)
 print("breaker sound written")
 
 # ======================================================================================================
-# v3.40: rain, glasshouse rain, self-playing grand piano (original piece), piano wreck, boiler, laundry
+# v3.40: boiler and laundry machine loops (no rain sound, no piano)
 # ======================================================================================================
 def wrap_tail(buf, n):
     """fold the part past n back onto the start: seamless loop."""
     out = buf[:n].copy()
     out[:len(buf) - n] += buf[n:]
     return out
-
-# --- grand piano: an original slow 3/4 piece (rubato-free, 64 bpm), additive piano voice ----------------
-def piano_note(m, dur, vel=1.0):
-    f0 = midi(m)
-    tt_ = t(dur)
-    B = 0.0004                                                   # string inharmonicity
-    x = np.zeros(len(tt_))
-    for k in range(1, 12):
-        fk = f0 * k * np.sqrt(1 + B * k * k)
-        if fk > 12000:
-            break
-        amp = (1 / k ** 1.1) * (1.0 if k < 3 else 0.7)
-        dec = (2.8 if m < 60 else 1.9) / (1 + 0.35 * (k - 1))
-        x += amp * np.sin(2 * np.pi * fk * tt_ + rng.uniform(0, 6.28)) * np.exp(-tt_ / dec)
-    hammer = bandpass(rng.standard_normal(len(tt_)), 300, 4000) * env(len(tt_), 0.0005, 0.012) * 0.25
-    return (x * env(len(tt_), 0.002, 30) + hammer) * vel
-BPM = 64; beat = 60 / BPM
-# bass on beat 1, chord on beats 2-3 (waltz accompaniment); D major, modal and drifting
-prog = [(38, [57, 62, 66]), (35, [54, 59, 62]), (43, [55, 59, 62, 66]), (45, [57, 61, 64]),
-        (38, [57, 62, 66]), (42, [57, 61, 66]), (43, [59, 62, 67]), (33, [57, 60, 64, 67]),
-        (38, [54, 57, 62]), (47, [54, 59, 62]), (43, [55, 59, 64]), (40, [55, 59, 62, 64]),
-        (38, [57, 62, 66]), (45, [57, 61, 64, 67]), (43, [55, 59, 62]), (45, [57, 61, 64])]
-# melody: (bar, beat offset, midi, beats)
-mel = [(0, 0, 78, 3), (1, 0, 76, 2), (1, 2, 74, 1), (2, 0, 74, 1.5), (2, 1.5, 76, 1.5), (3, 0, 73, 3),
-       (4, 0, 78, 2), (4, 2, 81, 1), (5, 0, 79, 3), (6, 0, 78, 1), (6, 1, 76, 1), (6, 2, 74, 1), (7, 0, 76, 3),
-       (8, 0, 74, 3), (9, 0, 71, 2), (9, 2, 73, 1), (10, 0, 74, 1.5), (10, 1.5, 76, 1.5), (11, 0, 74, 3),
-       (12, 0, 78, 2), (12, 2, 76, 1), (13, 0, 73, 3), (14, 0, 71, 1.5), (14, 1.5, 74, 1.5), (15, 0, 74, 3)]
-bars = len(prog); L = bars * 3 * beat; n = int(L * SR)
-pno = np.zeros(n + 6 * SR)
-for bi, (bass, ch) in enumerate(prog):
-    s0 = int(bi * 3 * beat * SR)
-    note = piano_note(bass, 4.0, 0.55); pno[s0:s0 + len(note)] += note
-    for bt in (1, 2):
-        s1 = s0 + int(bt * beat * SR)
-        for m in ch:
-            note = piano_note(m, 2.6, 0.16); pno[s1:s1 + len(note)] += note
-for (bar, off, m, dur) in mel:
-    s0 = int((bar * 3 + off) * beat * SR)
-    note = piano_note(m, max(dur * beat + 1.5, 2.5), 0.42); pno[s0:s0 + len(note)] += note
-pno = wrap_tail(pno, n)
-room = pno.copy()
-for delay, g in ((0.031, 0.35), (0.067, 0.28), (0.113, 0.2), (0.19, 0.14), (0.31, 0.09), (0.52, 0.05)):
-    room += g * np.roll(lowpass(pno, 5000), int(delay * SR))       # hall-ish early reflections (circular)
-save("piano.ogg", lowpass(room, 9000), 0.7)
-
-# --- piano wreck: a crashing cluster, a snapped string whipping, wood splintering -------------------------
-sec = 4.0; n = int(sec * SR); tt = t(sec)
-crash = np.zeros(n)
-for m in (31, 33, 36, 37, 40, 44, 45, 49, 52, 56, 57, 61, 64, 68):
-    crash += piano_note(m, sec, 0.35)[:n]
-snap = np.sin(2 * np.pi * (900 * np.exp(-tt / 0.25) + 200) * tt) * env(n, 0.001, 0.4) * 0.5
-wood = bandpass(rng.standard_normal(n), 200, 3500) * env(n, 0.001, 0.09) * 1.2
-save("piano_crash.ogg", crash + snap + wood, 0.85)
 
 # --- boiler room: burner roar + 50 Hz hum + pipe ticks (seamless 10 s loop) ---------------------------------
 L = 10.0; n = int(L * SR); tt = t(L)

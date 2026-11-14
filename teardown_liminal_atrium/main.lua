@@ -110,8 +110,6 @@ local function loadSounds()
 	snd.dreamhum  = LoadSound("MOD/snd/dream_hum.ogg")
 	snd.checkout  = LoadSound("MOD/snd/checkout.ogg")
 	snd.pad       = LoadLoop("MOD/snd/dream_pad.ogg")
-	snd.piano     = LoadLoop("MOD/snd/piano.ogg")
-	snd.pianoCrash = LoadSound("MOD/snd/piano_crash.ogg")
 	snd.boiler    = LoadLoop("MOD/snd/boiler.ogg")
 	snd.laundry   = LoadLoop("MOD/snd/laundry.ogg")
 end
@@ -1692,40 +1690,6 @@ local function drawAmmoDebug()
 end
 
 ----------------------------------------------------------------------------------------------------
--- grand piano in the atrium: plays by itself while someone is near; wrecked, it crashes and falls silent
-----------------------------------------------------------------------------------------------------
-local piano = nil
-
-local function pianoInit()
-	local sh = FindShape("piano", true)
-	if sh == 0 then return end
-	local t = GetShapeWorldTransform(sh)
-	local sx, sy, sz = 16, 24, 24
-	if GetShapeSize then sx, sy, sz = GetShapeSize(sh) end
-	piano = { shape = sh, vox0 = GetShapeVoxelCount(sh), broken = false, timer = 0,
-		pos = TransformToParentPoint(t, Vec(sx * 0.05, 1.0, -sz * 0.05)) }
-	SetTag(sh, "interact", "Grand piano (it plays by itself)")
-	LIMINAL_PIANO = piano                         -- (read by the offline tests)
-end
-
-local function pianoTick(dt, cam)
-	if not piano or piano.broken then return end
-	piano.timer = piano.timer - dt
-	if piano.timer <= 0 then
-		piano.timer = 0.3
-		local sh = piano.shape
-		if not IsHandleValid(sh) or IsShapeBroken(sh) or GetShapeVoxelCount(sh) < piano.vox0 * 0.85 then
-			piano.broken = true
-			PlaySound(snd.pianoCrash, piano.pos, 1.0)
-			if IsHandleValid(sh) then RemoveTag(sh, "interact") end
-			return
-		end
-	end
-	local v = 0.8 * fade(dist(cam, piano.pos), 3, 13)
-	if v > 0.01 then PlayLoop(snd.piano, piano.pos, v) end
-end
-
-----------------------------------------------------------------------------------------------------
 -- time of day + weather (ESC -> "Liminal Atrium" panel): night / day, rain / clear. Saved between sessions.
 ----------------------------------------------------------------------------------------------------
 local ENV_NIGHT = {
@@ -1853,7 +1817,6 @@ function init()
 	powerApplyAll()
 	autoInit()
 	heliInit()
-	pianoInit()
 	settingsInit()
 	respawnInit()
 	missionInit()
@@ -1899,7 +1862,6 @@ function tick(dt)
 	elevTick(dt)
 	flickerTick(dt, cam)
 	spotsTick(cam)
-	pianoTick(dt, cam)
 	radioTick(cam)
 end
 

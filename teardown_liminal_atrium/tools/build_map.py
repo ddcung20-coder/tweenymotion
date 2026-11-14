@@ -3781,53 +3781,7 @@ PENTHOUSE = dict(x0=PH_X0, x1=PH_X1, z0=PH_Z0, z1=PH_Z1, terrace_z0=PT_Z0, entra
                  rooms=dict(bar=(bx_b - 10, (Z_LIV + iz1p) // 2), living=(ix0p + 22, fz), dining=(ix0p + 25, dz - 14),
                             bedroom=(ix0p + 26, bz0_b - 32), bath=(ix0p + 12, iz0p + 30), terrace=(PH_X0 + 12, PT_Z0 + 20)))
 
-# ============================================================================
-# 10f. Grand piano (v3.40) on the atrium floor beside the lobby doors: its own static shape (tag "piano");
-#      main.lua plays it when someone comes near and stops it, with a crash, once it is wrecked
-# ============================================================================
-def piano_model():
-    X_, Y_, Z_ = 16, 24, 24                     # keyboard at z = 0 (south), tail to +z
-    m = np.zeros((X_, Y_, Z_), np.uint8)
-    def left(z):                                # bent side: the case narrows toward the tail
-        return 0 if z < 9 else int(round(10 * ((z - 9) / 14) ** 1.4))
-    for z in range(3, Z_):
-        xl = left(z)
-        for x in range(xl, X_):
-            rim = x in (xl, X_ - 1) or z in (3, Z_ - 1) or (z > 9 and x <= left(z + 1))
-            if rim:
-                m[x, 6:11, z] = TV_BODY                                 # case rim
-            else:
-                m[x, 6, z] = TV_BODY                                    # bottom board
-                m[x, 8, z] = WOOD_LIGHT                                 # soundboard
-                if (x + z) % 3 == 0:
-                    m[x, 9, z] = BRASS                                  # plate / strings
-    for z in range(3, Z_):                                              # open lid, hinged on the straight side
-        xl = left(z)
-        for x in range(xl, X_):
-            yl = 11 + int(round((X_ - 1 - x) * 0.75))
-            if yl < Y_:
-                m[x, yl, z] = TV_BODY
-    m[1, 11:17, 13] = DARK_METAL                                        # lid prop
-    for (lx, lz) in ((1, 4), (X_ - 2, 4), (X_ - 3, Z_ - 3)):           # three legs with brass castors
-        m[lx - 1:lx + 1, 1:6, lz - 1:lz + 1] = TV_BODY
-        m[lx - 1:lx + 1, 0:1, lz - 1:lz + 1] = BRASS
-    m[0:X_, 6:8, 0:3] = TV_BODY                                         # key bed
-    for x in range(1, X_ - 1):
-        m[x, 8, 0:3] = CERAMIC                                           # white keys
-        if x % 7 not in (0, 3):
-            m[x, 9, 1:3] = TV_BODY                                       # black keys
-    m[0, 8:10, 0:4] = TV_BODY; m[X_ - 1, 8:10, 0:4] = TV_BODY            # key cheeks
-    m[2:X_ - 2, 9:13, 4] = TV_BODY                                      # music desk
-    m[5:11, 11:13, 3] = SHEET                                            # sheet music
-    return m
-PIANO_ARR = piano_model()
-PIANO_GMIN = (ax0 + 2 * SHORT_BAY_W + 18, G0, az0 + 40)
-pbx, pbz = PIANO_GMIN[0] + 3, PIANO_GMIN[2] - 6                         # bench
-box(pbx, pbx + 10, G0 + 4, G0 + 6, pbz, pbz + 4, TV_BODY)
-box(pbx, pbx + 10, G0 + 6, G0 + 7, pbz, pbz + 4, UPHOL2)
-for (lx_, lz_) in ((pbx, pbz), (pbx + 9, pbz), (pbx, pbz + 3), (pbx + 9, pbz + 3)):
-    box(lx_, lx_ + 1, G0, G0 + 4, lz_, lz_ + 1, TV_BODY)
-TAGGED_SHAPES = [("piano", PIANO_ARR, PIANO_GMIN, "piano")]             # (name, arr, gmin, tags): own static shapes
+TAGGED_SHAPES = []                                                     # (name, arr, gmin, tags): own static shapes
 
 # ---- the helicopter (my own design): body, main rotor, tail rotor (shapes of one vehicle body)
 def helicopter_model():
@@ -4398,7 +4352,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.43\n"
+        f.write("name = Liminal Atrium v3.44\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
