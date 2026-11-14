@@ -540,8 +540,10 @@ local function powerInit()
 	-- unlit fittings (decor sconces, the unlit ceiling lamps): their glow follows the floor's power
 	local gl = FindShapes("glow", true)
 	for i = 1, #gl do
-		local p = powerOf(tagNum(gl[i], "pw", 0))
-		p.glows[#p.glows + 1] = gl[i]
+		if not HasTag(gl[i], "room") then                 -- (a room's glows follow its switch: roomsInit)
+			local p = powerOf(tagNum(gl[i], "pw", 0))
+			p.glows[#p.glows + 1] = gl[i]
+		end
 	end
 	local gs = FindShapes("switchgear", true)
 	for i = 1, #gs do
@@ -687,7 +689,7 @@ local roomBySwitch, roomByScreen = {}, {}
 local function roomOf(id)
 	local r = rooms[id]
 	if not r then
-		r = { lights = {}, tv = {}, screens = {}, curtains = {}, on = false, tvOn = false }
+		r = { lights = {}, tv = {}, screens = {}, curtains = {}, switches = {}, on = false, tvOn = false }
 		rooms[id] = r
 	end
 	return r
@@ -710,8 +712,8 @@ local function roomApply(r)
 		local glow = r.on and floorPowered(fl)
 		if IsHandleValid(sh) and SetShapeEmissiveScale then SetShapeEmissiveScale(sh, glow and 1 or 0) end
 	end
-	if r.switch and IsHandleValid(r.switch) then
-		SetTag(r.switch, "interact", r.on and "Lights off" or "Lights on")
+	for i = 1, #r.switches do
+		if IsHandleValid(r.switches[i]) then SetTag(r.switches[i], "interact", r.on and "Lights off" or "Lights on") end
 	end
 	for i = 1, #r.screens do
 		if IsHandleValid(r.screens[i]) then SetTag(r.screens[i], "interact", r.tvOn and "Turn TV off" or "Turn TV on") end
@@ -738,6 +740,7 @@ local function roomsInit()
 	for i = 1, #sw do
 		local r = roomOf(GetTagValue(sw[i], "room"))
 		r.switch = sw[i]
+		r.switches[#r.switches + 1] = sw[i]
 		r.on = GetTagValue(sw[i], "on") == "1"
 		r.tvOn = GetTagValue(sw[i], "tv") == "1"
 		roomBySwitch[sw[i]] = r
@@ -750,7 +753,71 @@ local function roomsInit()
 			for j = 1, #shapes do r.curtains[#r.curtains + 1] = shapes[j] end
 		end
 	end
+	local gl = FindShapes("glow", true)                  -- glowing fittings of a room (the penthouse suite)
+	for i = 1, #gl do
+		if HasTag(gl[i], "room") then
+			local r = roomOf(GetTagValue(gl[i], "room"))
+			r.curtains[#r.curtains + 1] = gl[i]
+		end
+	end
 	for _, r in pairs(rooms) do roomApply(r) end
+end
+
+----------------------------------------------------------------------------------------------------
+-- penthouse smart glass: every pane is a clear body and a frosted body in the same place; one of
+-- the two is shown, the other parked under the map. The privacy switch by the suite's entrance
+-- frosts / clears them all; with the roof power off the glass goes frosted (as real privacy glass does).
+--  "smartglass" bodies (pane, frost), "phprivacy" shapes
+----------------------------------------------------------------------------------------------------
+ROOF_CIRCUIT = 6
+local smart = { panes = {}, switches = {}, frost = false, shown = nil }
+
+local function smartFrosted()
+	return smart.frost or not floorPowered(ROOF_CIRCUIT)
+end
+
+local function smartApply()
+	local fr = smartFrosted()
+	if smart.shown ~= fr then
+		smart.shown = fr
+		for i = 1, #smart.panes do
+			local p = smart.panes[i]
+			if IsHandleValid(p.body) then
+				local t = p.t
+				if p.frost ~= fr then t = Transform(VecAdd(p.t.pos, Vec(0, -60, 0)), p.t.rot) end
+				SetBodyTransform(p.body, t)
+			end
+		end
+	end
+	for i = 1, #smart.switches do
+		if IsHandleValid(smart.switches[i]) then
+			SetTag(smart.switches[i], "interact", smart.frost and "Privacy glass: clear" or "Privacy glass: frost")
+		end
+	end
+end
+
+local function smartInit()
+	local bs = FindBodies("smartglass", true)
+	for i = 1, #bs do
+		smart.panes[#smart.panes + 1] = { body = bs[i], t = GetBodyTransform(bs[i]), frost = HasTag(bs[i], "frost") }
+	end
+	smart.switches = FindShapes("phprivacy", true)
+	smartApply()
+end
+
+-- returns true when the pressed shape was the privacy switch
+local function smartInteract(s)
+	for i = 1, #smart.switches do
+		if smart.switches[i] == s then
+			if not IsShapeBroken(s) then
+				smart.frost = not smart.frost
+				smartApply()
+				PlaySound(snd.click, GetShapeWorldTransform(s).pos, 0.7)
+			end
+			return true
+		end
+	end
+	return false
 end
 
 -- returns true when the pressed shape was a room switch or a TV
@@ -779,10 +846,15 @@ end
 ----------------------------------------------------------------------------------------------------
 local roomsOfFloor = nil
 
+local function circuitName(k)
+	if k >= ROOF_CIRCUIT then return "Roof (glasshouse + penthouse)" end
+	return "Floor " .. (k + 1)
+end
+
 local function gearLabel(k)
 	local p = power[k]
-	if p.dead then return "Floor " .. (k + 1) .. " power: DESTROYED" end
-	return "Floor " .. (k + 1) .. " power: " .. (p.on and "turn OFF" or "turn ON")
+	if p.dead then return circuitName(k) .. " power: DESTROYED" end
+	return circuitName(k) .. " power: " .. (p.on and "turn OFF" or "turn ON")
 end
 
 local function applyFloor(k)
@@ -823,6 +895,7 @@ local function applyFloor(k)
 			SetTag(g.shape, "interact", gearLabel(k))
 		end
 	end
+	if k == ROOF_CIRCUIT then smartApply() end
 end
 
 local function powerApplyAll()
@@ -848,12 +921,12 @@ local function powerInteract(s)
 			if p.gears[i].shape == s then
 				local pos = GetShapeWorldTransform(s).pos
 				if p.dead then
-					powerMsg, powerMsgT = "Floor " .. (k + 1) .. ": switchgear destroyed - no power", 3
+					powerMsg, powerMsgT = circuitName(k) .. ": switchgear destroyed - no power", 3
 				else
 					p.on = not p.on
 					applyFloor(k)
 					PlaySound(snd.breaker, pos, 1.0)
-					powerMsg, powerMsgT = "Floor " .. (k + 1) .. " power " .. (p.on and "ON" or "OFF"), 2
+					powerMsg, powerMsgT = circuitName(k) .. " power " .. (p.on and "ON" or "OFF"), 2
 				end
 				return true
 			end
@@ -878,7 +951,7 @@ local function powerTick(dt)
 					sparks(VecAdd(pos, Vec(0, 1.2, 0)))
 					PlaySound(snd.breaker, pos, 1.0)
 					applyFloor(k)
-					powerMsg, powerMsgT = "Floor " .. (k + 1) .. ": power failure", 3
+					powerMsg, powerMsgT = circuitName(k) .. ": power failure", 3
 					break
 				end
 			end
@@ -1814,6 +1887,7 @@ function init()
 	curtainsInit()
 	powerInit()
 	roomsInit()
+	smartInit()
 	powerApplyAll()
 	autoInit()
 	heliInit()
@@ -1845,7 +1919,7 @@ function tick(dt)
 	if InputPressed("interact") then
 		local s = GetPlayerInteractShape()
 		if s ~= 0 then
-			interactHandled = curtainsInteract(s) or powerInteract(s) or roomsInteract(s) or missionInteract(s)
+			interactHandled = curtainsInteract(s) or powerInteract(s) or smartInteract(s) or roomsInteract(s) or missionInteract(s)
 		end
 	end
 	carsTick()

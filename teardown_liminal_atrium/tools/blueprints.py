@@ -19,6 +19,10 @@ argv_ = sys.argv; sys.argv = ["x"]
 ns = runpy.run_path(os.path.join(ROOT, "tools", "build_map.py"), run_name="blueprints")
 sys.argv = argv_
 G = ns["G"]; W, H, D = G.shape; PAL = ns["PAL"]
+for sg_ in ns["SMART_GLASS"]:                  # the penthouse's smart glass (static bodies): clear panes in the plan
+    if not sg_["frost"]:
+        gx_, gy_, gz_ = sg_["gmin"]; a_ = sg_["arr"]
+        G[gx_:gx_ + a_.shape[0], gy_:gy_ + a_.shape[1], gz_:gz_ + a_.shape[2]][a_ > 0] = a_[a_ > 0]
 g = lambda k: ns[k]
 bx0, bx1, bz0, bz1, ax0, ax1, az0, az1 = (g(k) for k in ("bx0", "bx1", "bz0", "bz1", "ax0", "ax1", "az0", "az1"))
 G0, YB, FH, FLOORS, ROOF_Y, RT = (g(k) for k in ("G0", "YB", "FH", "FLOORS", "ROOF_Y", "RT"))
@@ -416,7 +420,12 @@ for key in ("NW", "SE"):
     x, z = ns["corner"][key].pt(10, 22); s.text(x, z, "LIFTS (ROOF STOP)", 14, rot=90)
 for (hx, hz) in ns["HVAC_SPOTS"]:
     s.text(hx + 11, hz + 9, "HVAC", 14, SOFT)
+PHb = ns["PENTHOUSE"]
+s.text((PHb["x0"] + PHb["x1"]) / 2, (PHb["z0"] + PHb["z1"]) / 2, "PENTHOUSE SUITE", 22, rot=90)
+s.text((PHb["x0"] + PHb["x1"]) / 2, (PHb["terrace_z0"] + PHb["z0"]) / 2 + 14, "TERRACE", 14, SOFT)
+s.label((g("RE_X0") + g("RE_X1")) / 2, (g("RE_Z0") + g("RE_Z1")) / 2, "ELEC", sz=14)
 s.frame_and_title(["Glasshouse: glass barrel vault with lantern cupola (not shown), lily pond, palms, beds.",
+                   "Penthouse: all glass is smart glass (privacy switch by the entrance). ELEC: roof switchgear.",
                    "Yellow: helipad markings on the upper roof (dashed outline = upper roof edge)."])
 pages.append(("A-107_ROOF", s))
 

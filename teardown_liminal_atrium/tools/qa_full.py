@@ -11,6 +11,14 @@ os.chdir(ROOT)
 sys.argv = ["x"]
 ns = runpy.run_path("tools/build_map.py", run_name="qa")
 FULL = ns["G"].copy()                 # complete world (lamps included) before export cuts lamps out
+SG_ = ns["SMART_GLASS"]
+SG_GRID = np.zeros_like(FULL)          # the penthouse's smart glass (static bodies), clear panes in place
+for sg_ in SG_:
+    if not sg_["frost"]:
+        gx_, gy_, gz_ = sg_["gmin"]; a_ = sg_["arr"]
+        SG_GRID[gx_:gx_ + a_.shape[0], gy_:gy_ + a_.shape[1], gz_:gz_ + a_.shape[2]][a_ > 0] = a_[a_ > 0]
+sg_overlap = int(((FULL > 0) & (SG_GRID > 0)).sum())
+FULL[SG_GRID > 0] = SG_GRID[SG_GRID > 0]
 ns["export"]()
 G = ns["G"]; W, H, D = G.shape; PAL = ns["PAL"]
 issues = []
@@ -409,7 +417,7 @@ for l in ns["LIGHTS"]:
 NS = ns["ROOM_NSTANDS"]
 kinds_ok = all(per[(str(i), k)] == 1 for i in range(len(ns["room_log"])) for k in ("ceil", "bath", "tv")) and \
            all(per[(str(i), "lamp")] == NS[i] >= 1 for i in range(len(ns["room_log"])))
-lamp_rooms = sum(1 for L in ns["LAMPS"] if any("room=" in lt[6] for lt in L["lights"]))
+lamp_rooms = sum(1 for L in ns["LAMPS"] if any("room=" in lt[6] and "room=ph" not in lt[6] for lt in L["lights"]))
 need = sum(3 + NS[i] for i in range(len(ns["room_log"])))
 mixed = [i for i, L in enumerate(ns["LAMPS"]) if len({lt[6] for lt in L["lights"]}) > 1 and any("room=" in lt[6] for lt in L["lights"])]
 report("every room: ceiling, EVERY bedside lamp, bathroom light + TV, each its own switchable lamp", kinds_ok and not mixed and lamp_rooms == need,
@@ -543,7 +551,19 @@ report("helicopter: one solid piece, parked clear on the helipad (skids on the p
        n_h == 1 and hits(hb_, H_["gmin"]) == 0 and hits(ns["HELI_ROTOR"], H_["rotor_gmin"]) == 0 and hits(ns["HELI_TAIL"], H_["tail_gmin"]) == 0
        and (under > 0).all() and not sweep.any(), f"pieces {n_h}, under {(under > 0).mean():.2f}, sweep {int(sweep.sum())}")
 tg = H_["tail_gmin"]
-rs_bad = [nm for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"] if hits(arr_, gm_) or not (FULL[gm_[0]:gm_[0] + arr_.shape[0], gm_[1] - 1, gm_[2]:gm_[2] + arr_.shape[2]][arr_[:, 0, :] > 0] > 0).all()]
+RSG = np.zeros_like(FULL)
+for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"]:
+    RSG[gm_[0]:gm_[0] + arr_.shape[0], gm_[1]:gm_[1] + arr_.shape[1], gm_[2]:gm_[2] + arr_.shape[2]][arr_ > 0] = 1
+def rs_supported(nm, arr_, gm_):
+    below = (FULL | RSG)[gm_[0]:gm_[0] + arr_.shape[0], gm_[1] - 1, gm_[2]:gm_[2] + arr_.shape[2]][arr_[:, 0, :] > 0] > 0
+    return below.any() if nm.startswith("floodlight") else below.all()     # (a lamp head sits on its pole)
+rs_bad = [nm for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"] if hits(arr_, gm_) or not rs_supported(nm, arr_, gm_)]
+fl_heads = [(nm, gm_) for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"] if nm.startswith("floodlight")]
+fl_poles = [(nm, gm_) for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"] if nm.startswith("floodpole")]
+report("helipad: 4 floodlights, each lamp head its own shape on its own pole", len(fl_heads) == 4 and len(fl_poles) == 4
+       and all(len(l_) == 1 for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"] if nm.startswith("floodlight")))
+mk_ = [l for l in ns["LIGHTS"] if l[3] == (0.3, 1.0, 0.45) and l[1] >= ns["RT"]]
+report("helipad: edge markers carry their own lights", len(mk_) == 4, str(len(mk_)))
 report("windsock + floodlights stand on the roof, clear of everything", not rs_bad, str(rs_bad))
 def body_cell(gm, a, b, c):
     x, y, z = gm[0] + a - H_["gmin"][0], gm[1] + b - H_["gmin"][1], gm[2] + c - H_["gmin"][2]
@@ -569,6 +589,42 @@ centred = (np.allclose(bl_.mean(0), 50.0) and np.allclose(sh_.mean(0), 50.0) and
            and np.allclose(tb_.mean(0), 10.0))
 report("rotors centred on their spin axes (blades, shaft, joints and mast share one line)", centred,
        f"blades {bl_.mean(0)}, shaft {sh_.mean(0)}, axis {ax_r} vs mast {ax_m}, tail {tb_.mean(0)}")
+# v3.45: smart glass, penthouse switches, roof electrical room, HOTEL sign on the parapet
+PHq = ns["PENTHOUSE"]
+pairs_ = collections.defaultdict(list)
+for sg_ in SG_:
+    pairs_[sg_["pane"]].append(sg_)
+pair_ok = all(len(v) == 2 and {p_["frost"] for p_ in v} == {False, True} and v[0]["gmin"] == v[1]["gmin"]
+              and np.array_equal(v[0]["arr"] > 0, v[1]["arr"] > 0) for v in pairs_.values())
+left_ = sum(int(np.isin(ns["G"][x0_:x1_, y0_:y1_, z0_:z1_], [ns["GLASS"], ns["GLASS_EXT"]]).sum()) for (x0_, x1_, y0_, y1_, z0_, z1_) in ns["PH_GLASS_ZONES"])
+report("penthouse smart glass: every pane is a clear + frosted pair, none left in the world, clear of it",
+       len(pairs_) >= 20 and pair_ok and left_ == 0 and sg_overlap == 0, f"{len(pairs_)} panes, left {left_}, overlap {sg_overlap}")
+PX0, PX1, PZ0, PZ1, PTZ = PHq["x0"], PHq["x1"], PHq["z0"], PHq["z1"], PHq["terrace_z0"]
+RY = ns["ROOF_Y"]
+west_ = (FULL[PX0, RY + 1:RY + 24, PTZ:PZ0] > 0).all()
+south_ = (FULL[PX0:PX1, RY + 1:RY + 24, PTZ] > 0).sum() >= (PX1 - PX0 - 10) * 23
+east_low = (FULL[PX1 - 1, RY + 1:RY + 10, PTZ:PZ0] > 0).all() and not (FULL[PX1 - 1, RY + 12:RY + 24, PTZ + 1:PZ0] > 0).any()
+report("terrace: 2.4 m glass on the walkway (west) and lift (south) sides, low balustrade on the street side", west_ and south_ and east_low)
+tg_ = {t_[0]: t_ for t_ in ns["TAGGED_SHAPES"]}
+sw_ok = all(k_ in tg_ and body_hits(tg_[k_][1], tg_[k_][2]) == 0 and reachable(int(tg_[k_][2][0]), RY, int(tg_[k_][2][2]) - 3, r=4, dy=4)
+            for k_ in ("ph_switch_lights", "ph_switch_privacy"))
+ph_l = [l for l in ns["LIGHTS"] if "room=ph" in l[6]]
+report("penthouse: light switch + privacy switch inside the entrance, suite lights on them (room=ph, roof circuit)",
+       sw_ok and len(ph_l) >= 8 and all(f"pw={FLOORS}" in l[6] for l in ph_l), f"{len(ph_l)} lights")
+roof_gear = [g for g in ns["SWITCHGEAR"] if g["floor"] == FLOORS]
+rex0, rex1, rez0, rez1 = ns["RE_X0"], ns["RE_X1"], ns["RE_Z0"], ns["RE_Z1"]
+gh_l = [l for l in ns["LIGHTS"] if ns["GLASSHOUSE"]["x0"] <= l[0] < ns["GLASSHOUSE"]["x1"] and l[1] >= RY and ns["GLASSHOUSE"]["z0"] <= l[2] < ns["GLASSHOUSE"]["z1"]]
+vault_l = [lt for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"] if nm == "glasshouse_vault" for lt in l_]
+report("roof electrical room: one switchgear (roof circuit), reachable, glasshouse + penthouse lights on it",
+       len(roof_gear) == 1 and body_hits(roof_gear[0]["arr"], roof_gear[0]["gmin"]) == 0 and reachable((rex0 + rex1) // 2, RY, (rez0 + rez1) // 2, r=3, dy=4)
+       and all(f"pw={FLOORS}" in l[6] for l in gh_l) and all(ns["power_floor"](int(v[0]), int(v[1]), int(v[2])) == FLOORS for v in vault_l),
+       f"{len(gh_l)} glasshouse lights, {len(vault_l)} vault lights")
+span_ = [x for x in range(bx0, bx1) if FULL[x, RY + 20, bz0 + 4] == ns["DARK_METAL"]]
+gap_ = [x for x in span_ if not (FULL[x, RY:RY + 18, bz0 + 4] > 0).all()]
+gap_ = gap_ if len(span_) >= 50 else ["no sign panel"]
+report("roof: no dead-end sliver between the HOTEL sign and the parapet", not gap_, str(gap_[:4]))
+sl_ = ns["G"][bx0 + 4:ns["GLASSHOUSE"]["x0"], RY:RY + 4, ns["GLASSHOUSE"]["z0"]:ns["GLASSHOUSE"]["z1"]]
+report("roof: the 40 cm gap west of the glasshouse is a hedge planter, not a passage", bool((sl_ > 0).all()))
 # v3.40: penthouse jacuzzi water inside its rim, staff rooms
 PHq = ns["PENTHOUSE"]
 jac = [p_ for p_ in ns["POOLS"] if abs(p_[0] - (ns["ROOF_Y"] + 5.0)) < 0.01]
@@ -599,7 +655,7 @@ report("pool water / spa / radio are heard only in the pool hall (+ quieter in i
 report("respawn point exists (lobby spawn)", any(l.get("tags") == "respawn" for l in root.iter("location")))
 sg_bad = [i for i, g in enumerate(ns["SWITCHGEAR"]) if body_hits(g["arr"], g["gmin"])]
 fl_ = collections.Counter(g["floor"] for g in ns["SWITCHGEAR"])
-report("electrical rooms: 2 switchgears per floor, clear of walls", not sg_bad and all(fl_[k] == 2 for k in range(FLOORS)), str(sg_bad))
+report("electrical rooms: 2 switchgears per floor (+1 on the roof), clear of walls", not sg_bad and all(fl_[k] == 2 for k in range(FLOORS)) and fl_[FLOORS] == 1, str(sg_bad))
 pw_ = collections.Counter()
 for l in ns["LIGHTS"]:
     for kv in l[6].split():

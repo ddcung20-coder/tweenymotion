@@ -163,6 +163,7 @@ RED        = P(169, (176, 30, 30), "metal", rough=0.4, metal=0.3)
 TIRE       = P(170, (24, 24, 24), "metal", rough=0.9, metal=0.0)
 DUMPSTER   = P(171, (40, 82, 52), "metal", rough=0.6, metal=0.4)
 POOL_LAMP  = P(172, (150, 232, 255), "emit", flux=2, weight=0.8)
+FROST      = P(173, (214, 222, 232), "metal", rough=0.35, metal=0.0)   # smart glass, frosted
 BASE_STONE = P(177, (122, 118, 112)); BASE_STONE2 = P(178, (110, 106, 100))
 PILLAR     = P(179, (196, 188, 172))
 
@@ -1478,6 +1479,23 @@ def car_style(a, b, c, A, B, C):
         return TV_BODY
     return 0
 
+def gear_style(a_, b_, c_, A, B, C):
+    if c_ > 0:
+        return UPHOL if (b_ in (0, B - 1) or a_ in (0, A - 1)) else SHEET
+    if b_ in (0, B - 1) or a_ % 6 == 0 or a_ == A - 1:
+        return UPHOL                                                    # cabinet frames
+    if b_ == B - 2:
+        return WALL_ORANGE                                              # warning band
+    if b_ == 17 and a_ % 6 in (2, 4):
+        return EXIT_SIGN                                                # status lights
+    if 18 <= b_ <= 19 and A // 2 - 1 <= a_ <= A // 2 + 1:
+        return TV_SCREEN                                                # meter
+    if 5 <= b_ <= 13 and b_ % 2 == 1 and a_ % 6 in (2, 3, 4):
+        return CURT_DARK                                                # breaker rows
+    if 8 <= b_ <= 12 and A // 2 - 4 <= a_ <= A // 2 - 3:
+        return BLANKET_B                                                # main breaker lever
+    return SHEET
+
 def elevators(fr, key):
     for k in range(FLOORS):
         y = fy(k)
@@ -1557,22 +1575,6 @@ def elevators(fr, key):
                  hinge=(35, 0), open_dir=(0, 1), stop=DARK_METAL)
         fr.paint(22, 44, y - 1, y, 0, 44, STAIR_CONC)
         fr.box(24, 44, y - 1, y, 33, 34, YELLOW_PAINT)                          # keep-clear line
-        def gear_style(a_, b_, c_, A, B, C):
-            if c_ > 0:
-                return UPHOL if (b_ in (0, B - 1) or a_ in (0, A - 1)) else SHEET
-            if b_ in (0, B - 1) or a_ % 6 == 0 or a_ == A - 1:
-                return UPHOL                                                    # cabinet frames
-            if b_ == B - 2:
-                return WALL_ORANGE                                              # warning band
-            if b_ == 17 and a_ % 6 in (2, 4):
-                return EXIT_SIGN                                                # status lights
-            if 18 <= b_ <= 19 and A // 2 - 1 <= a_ <= A // 2 + 1:
-                return TV_SCREEN                                                # meter
-            if 5 <= b_ <= 13 and b_ % 2 == 1 and a_ % 6 in (2, 3, 4):
-                return CURT_DARK                                                # breaker rows
-            if 8 <= b_ <= 12 and A // 2 - 4 <= a_ <= A // 2 - 3:
-                return BLANKET_B                                                # main breaker lever
-            return SHEET
         garr, gmin = frame_shape(fr, 24, 43, y, y + 22, 37, 43, gear_style)
         SWITCHGEAR.append(dict(arr=garr, gmin=gmin, floor=k, corner=key))
         fr.box(23, 28, y, y + 14, 8, 24, HVAC)                                  # transformer
@@ -1632,18 +1634,18 @@ FONT = {
 }
 word = "HOTEL"
 sx0 = (bx0 + bx1) // 2 - (len(word) * 12) // 2
-sz_ = bz0 + 8
-box(sx0 - 4, sx0 + len(word) * 12, ROOF_Y, ROOF_Y + 22, sz_ + 2, sz_ + 3, DARK_METAL)   # backing panel holds the letters
+sz_ = bz0 + T_EXT - 2                  # letters stand on the parapet, the panel against its inner face (no gap behind)
+box(sx0 - 4, sx0 + len(word) * 12, ROOF_Y, ROOF_Y + 28, sz_ + 2, sz_ + 3, DARK_METAL)   # backing panel holds the letters
 for i in range(sx0 - 2, sx0 + len(word) * 12, 10):
-    box(i, i + 1, ROOF_Y, ROOF_Y + 22, sz_ + 3, sz_ + 4, DARK_METAL)
+    box(i, i + 1, ROOF_Y, ROOF_Y + 28, sz_ + 3, sz_ + 4, DARK_METAL)
 for li, ch in enumerate(word):
     for r_, row in enumerate(FONT[ch]):
         for c_, cc in enumerate(row):
             if cc == "#":
                 xx = sx0 + (len(word) - 1 - li) * 12 + (4 - c_) * 2   # mirrored: read from the south
-                yy = ROOF_Y + 6 + (6 - r_) * 2
+                yy = ROOF_Y + 13 + (6 - r_) * 2
                 box(xx, xx + 2, yy, yy + 2, sz_, sz_ + 2, STREET_LMP)
-light((bx0 + bx1) / 2, ROOF_Y + 14, sz_ - 4, (1.0, 0.75, 0.45), 5.0, 0.5)
+light((bx0 + bx1) / 2, ROOF_Y + 21, sz_ - 4, (1.0, 0.75, 0.45), 5.0, 0.5)
 
 # street lamps
 for (sx, sz) in [(bx0 - 14, bz0 - 14), (bx1 + 12, bz0 - 14), (bx0 - 14, bz1 + 12), (bx1 + 12, bz1 + 12),
@@ -3118,7 +3120,7 @@ box(HCX - 10, HCX + 10, RT - 1, RT, HCZ - 3, HCZ + 3, PAINT_LINE)
 for a_ in range(0, 360, 30):
     ex = int(round(HCX + 70 * np.cos(np.radians(a_)))); ez = int(round(HCZ + 70 * np.sin(np.radians(a_))))
     box(ex, ex + 2, RT, RT + 1, ez, ez + 2, EXIT_SIGN)
-    if a_ % 90 == 45:
+    if a_ % 90 == 0:                                                # every third marker carries a light
         light(ex + 1, RT + 2, ez + 1, (0.3, 1.0, 0.45), 1.2, 0.1)
 # perimeter railing round the upper roof (gap where the stairs arrive), windsock, floodlights
 for (xa_, xb_, za_, zb_) in ((ax0, ax1, az0 - 4, az0 - 3), (ax0, ax1, az1 + 3, az1 + 4), (ax0 - 4, ax0 - 3, az0 - 4, az1 + 4), (ax1 + 3, ax1 + 4, az0 - 4, az1 + 4)):
@@ -3143,11 +3145,12 @@ for k in range(12):
             if dy * dy + dz * dz <= rr_ * rr_ + 1:
                 ws[14 - k, 22 + dy, 3 + dz] = WALL_ORANGE if (k // 3) % 2 == 0 else CEIL
 ROOF_SHAPES.append(("windsock", ws, (ax1 - 8 - 15, RT, az0 + 6 - 3), []))
-for (fx_, fz_) in ((ax0 + 4, az0 + 4), (ax1 - 10, az1 - 10)):
-    fl_ = np.zeros((6, 17, 6), np.uint8)
-    fl_[0:2, 0:15, 0:2] = STEEL                                   # pole in one corner
-    fl_[0:6, 15:17, 0:6] = CEIL_LAMP                              # lamp head over the pad side
-    ROOF_SHAPES.append((f"floodlight{len(ROOF_SHAPES)}", fl_, (fx_, RT, fz_), [(fx_ + 4, RT + 13, fz_ + 4, (1.0, 0.95, 0.85), 3.5, 0.3)]))
+# four floodlights, one per corner; pole and lamp head are separate shapes (a shot pole leaves the lamp lit)
+for (fx_, fz_) in ((ax0 + 4, az0 + 4), (ax1 - 10, az1 - 10), (ax0 + 4, az1 - 10), (ax1 - 10, az0 + 10)):
+    po_ = np.zeros((2, 15, 2), np.uint8); po_[:, :, :] = STEEL
+    ROOF_SHAPES.append((f"floodpole{len(ROOF_SHAPES)}", po_, (fx_, RT, fz_), []))
+    hd_ = np.zeros((6, 2, 6), np.uint8); hd_[:, :, :] = CEIL_LAMP
+    ROOF_SHAPES.append((f"floodlight{len(ROOF_SHAPES)}", hd_, (fx_, RT + 15, fz_), [(fx_ + 4, RT + 13, fz_ + 4, (1.0, 0.95, 0.85), 2.4, 0.3)]))
 
 # ============================================================================
 # 10d. Rooftop glasshouse "FLORA" on the west roof (in front of the SW stair penthouse door):
@@ -3628,11 +3631,12 @@ box(bx_b, bx_b + 1, PY + 1, PY + 9, Z_LIV + 6, iz1p - 6, BRASS)                #
 for zs in range(Z_LIV + 9, iz1p - 8, 7):                                         # bar stools
     box(bx_b - 6, bx_b - 5, PY, PY + 7, zs, zs + 1, BRASS)
     box(bx_b - 8, bx_b - 3, PY + 7, PY + 8, zs - 2, zs + 3, UPHOL)
-for sy_ in (PY + 14, PY + 19):                                                   # back-bar shelves on the glass wall
-    box(ix1p - 2, ix1p + 1, sy_, sy_ + 1, Z_LIV + 8, iz1p - 8, PICFRAME)
+box(ix1p - 1, ix1p + 1, PY, PY + 24, Z_LIV + 7, iz1p - 7, WOOD_DARK)             # back-bar panel (the glass is smart glass)
+for sy_ in (PY + 14, PY + 19):                                                   # back-bar shelves on the panel
+    box(ix1p - 2, ix1p - 1, sy_, sy_ + 1, Z_LIV + 8, iz1p - 8, PICFRAME)
     for zb in range(Z_LIV + 9, iz1p - 9, 2):
         box(ix1p - 2, ix1p - 1, sy_ + 1, sy_ + 3 + (zb % 3 == 0), zb, zb + 1, PRNG.choice((GLASS_DOOR, BRASS, CAR_C, DUMPSTER)))
-box(ix1p - 2, ix1p + 1, PY + 13, PY + 14, Z_LIV + 8, iz1p - 8, COVE_LAMP)        # back-bar glow strip
+box(ix1p - 2, ix1p - 1, PY + 13, PY + 14, Z_LIV + 8, iz1p - 8, COVE_LAMP)        # back-bar glow strip
 light(ix1p - 4, PY + 13, (Z_LIV + iz1p) / 2, (0.85, 0.65, 1.0), 1.2, 0.2)
 # ---- living room: fireplace on the west wall, velvet L sofa, marble table, rug
 fz = (Z_DIN + Z_LIV) // 2 + 10
@@ -3715,20 +3719,23 @@ box(ix0p + 18, ix0p + 20, PCEIL - 2, PCEIL, iz0p + 6, iz0p + 8, CHROME)         
 for x in range(PH_X0, PH_X1):
     for z in range(PT_Z0, PH_Z0):
         G[x, PY - 1, z] = WOOD_MED if (x // 2) % 2 else WOOD_MED2
-for (xa_, xb_, za_, zb_) in ((PH_X0, PH_X0 + 1, PT_Z0, PH_Z0), (PH_X1 - 1, PH_X1, PT_Z0, PH_Z0)):
-    box(xa_, xb_, PY, PY + 1, za_, zb_, PICFRAME)
-    box(xa_, xb_, PY + 1, PY + 10, za_, zb_, GLASS)
-    box(xa_, xb_, PY + 10, PY + 11, za_, zb_, PICFRAME)
+# east side (the street view): low glass balustrade; west side (the roof walkway): 2.4 m glass wall
+box(PH_X1 - 1, PH_X1, PY, PY + 1, PT_Z0, PH_Z0, PICFRAME)
+box(PH_X1 - 1, PH_X1, PY + 1, PY + 10, PT_Z0, PH_Z0, GLASS)
+box(PH_X1 - 1, PH_X1, PY + 10, PY + 11, PT_Z0, PH_Z0, PICFRAME)
 for z in range(PT_Z0, PH_Z0, 10):
-    for xp_ in (PH_X0, PH_X1 - 1):
-        box(xp_, xp_ + 1, PY, PY + 11, z, z + 1, PICFRAME)
-# south side (facing the roof lift landing): a 2.4 m slatted privacy screen with a wooden door
-box(PH_X0, PH_X1, PY, PY + 24, PT_Z0, PT_Z0 + 1, WOOD_MED)
-for x in range(PH_X0, PH_X1, 3):
-    box(x, x + 1, PY, PY + 24, PT_Z0, PT_Z0 + 1, WOOD_MED2)
-box(PH_X0, PH_X1, PY + 24, PY + 25, PT_Z0, PT_Z0 + 1, WOOD_DARK)
-for x in range(PH_X0, PH_X1, 12):
-    box(x, x + 1, PY, PY + 25, PT_Z0, PT_Z0 + 1, WOOD_DARK)
+    box(PH_X1 - 1, PH_X1, PY, PY + 11, z, z + 1, PICFRAME)
+box(PH_X0, PH_X0 + 1, PY, PY + 1, PT_Z0, PH_Z0, PICFRAME)
+box(PH_X0, PH_X0 + 1, PY + 1, PY + 24, PT_Z0, PH_Z0, GLASS)
+box(PH_X0, PH_X0 + 1, PY + 24, PY + 25, PT_Z0, PH_Z0, PICFRAME)
+for z in range(PT_Z0, PH_Z0, 12):
+    box(PH_X0, PH_X0 + 1, PY, PY + 25, z, z + 1, PICFRAME)
+# south side (facing the roof lift landing): a 2.4 m glass screen with a wooden door
+box(PH_X0, PH_X1, PY, PY + 1, PT_Z0, PT_Z0 + 1, PICFRAME)
+box(PH_X0, PH_X1, PY + 1, PY + 24, PT_Z0, PT_Z0 + 1, GLASS)
+box(PH_X0, PH_X1, PY + 24, PY + 25, PT_Z0, PT_Z0 + 1, PICFRAME)
+for x in list(range(PH_X0, PH_X1, 12)) + [PH_X1 - 1]:
+    box(x, x + 1, PY, PY + 25, PT_Z0, PT_Z0 + 1, PICFRAME)
 GATE_X = (PH_X1 - 21, PH_X1 - 11)                                                  # door to the SE lift (roof stop)
 box(GATE_X[0] - 1, GATE_X[1] + 1, PY, PY + 23, PT_Z0, PT_Z0 + 1, WOOD_DARK)
 box(GATE_X[0], GATE_X[1], PY, PY + 22, PT_Z0, PT_Z0 + 1, 0)
@@ -3777,11 +3784,72 @@ for (ppx, ppz) in ((PH_X1 - 8, PT_Z0 + 6), (PH_X1 - 8, PH_Z0 - 12)):            
     mo[4, :5, 4] = True                                                          # (the trunk top is the anchor)
     mo = keep_connected(mo, [(4, 0, 4)]) & (G[Xo, Yo, Zo] == 0)
     G[Xo[mo], Yo[mo], Zo[mo]] = np.where((Xo[mo] + Yo[mo] + Zo[mo]) % 3 > 0, LEAF2, LEAF3)
+# ---- switches inside the entrance: lights (a room switch, room "ph") and privacy glass
+TAGGED_SHAPES = []                                                     # (name, arr, gmin, tags): own static shapes
+PH_SW = (ENT_X + 13, PY + 11, PH_Z1 - 3)                                 # on the north wall, right of the door (inside)
+sw_ = np.full((2, 3, 1), SWITCH, np.uint8); sw_[:, 1, 0] = DARK_METAL
+TAGGED_SHAPES.append(("ph_switch_lights", sw_, PH_SW, "roomswitch room=ph on=1 tv=0"))
+pv_ = np.full((2, 3, 1), BRASS, np.uint8); pv_[:, 1, 0] = FROST
+TAGGED_SHAPES.append(("ph_switch_privacy", pv_, (PH_SW[0] + 4, PH_SW[1], PH_SW[2]), "phprivacy"))
+# ---- smart glass: every pane of the suite and the terrace is a pair of static bodies, clear and frosted;
+#      main.lua shows one of each pair (privacy switch, and frosted when the roof power is off)
+SMART_GLASS = []                                                       # dict(arr, gmin, frost, pane)
+PH_GLASS_ZONES = [(PH_X1 - 1, PH_X1, PY + 1, PCEIL - 1, PH_Z0, PH_Z1),             # east wall
+                  (PH_X0 + 2, PH_X1 - 2, PY + 1, PCEIL - 1, PH_Z0 + 1, PH_Z0 + 2),   # south wall
+                  (ix0p + 22, ix0p + 23, PY, PY + 22, iz0p, iz0p + 14),              # shower screen
+                  (PH_X0, PH_X0 + 1, PY + 1, PY + 24, PT_Z0, PH_Z0),                 # terrace west
+                  (PH_X0, PH_X1, PY + 1, PY + 24, PT_Z0, PT_Z0 + 1),                 # terrace south
+                  (PH_X1 - 1, PH_X1, PY + 1, PY + 10, PT_Z0, PH_Z0)]                 # terrace east (low)
+from scipy import ndimage as _ndi_sg
+for (x0_, x1_, y0_, y1_, z0_, z1_) in PH_GLASS_ZONES:
+    reg_ = G[x0_:x1_, y0_:y1_, z0_:z1_]
+    lab_, n_ = _ndi_sg.label(np.isin(reg_, [GLASS, GLASS_EXT]))
+    for i_, sl_ in enumerate(_ndi_sg.find_objects(lab_)):
+        m_ = lab_[sl_] == i_ + 1
+        clear_ = np.where(m_, reg_[sl_], 0).astype(np.uint8)
+        gm_ = (x0_ + sl_[0].start, y0_ + sl_[1].start, z0_ + sl_[2].start)
+        pane_ = len(SMART_GLASS) // 2
+        SMART_GLASS.append(dict(arr=clear_, gmin=gm_, frost=False, pane=pane_))
+        SMART_GLASS.append(dict(arr=np.where(m_, FROST, 0).astype(np.uint8), gmin=gm_, frost=True, pane=pane_))
+        reg_[sl_][m_] = 0
+PH_INTERIOR = (ix0p, ix1p, PY, PCEIL, iz0p, iz1p)
 PENTHOUSE = dict(x0=PH_X0, x1=PH_X1, z0=PH_Z0, z1=PH_Z1, terrace_z0=PT_Z0, entrance_x=ENT_X, ceil=PCEIL,
                  rooms=dict(bar=(bx_b - 10, (Z_LIV + iz1p) // 2), living=(ix0p + 22, fz), dining=(ix0p + 25, dz - 14),
                             bedroom=(ix0p + 26, bz0_b - 32), bath=(ix0p + 12, iz0p + 30), terrace=(PH_X0 + 12, PT_Z0 + 20)))
 
-TAGGED_SHAPES = []                                                     # (name, arr, gmin, tags): own static shapes
+# ============================================================================
+# 10f. Roof electrical room (v3.45): one switchgear for the roof (glasshouse + penthouse + terrace),
+#      against the west parapet north of the glasshouse; steel door to the plaza.
+# ============================================================================
+RE_X0, RE_X1, RE_Z0, RE_Z1 = bx0 + T_EXT, bx0 + T_EXT + 20, GZ1, GZ1 + 20
+box(RE_X0, RE_X1, ROOF_Y, ROOF_Y + 24, RE_Z0, RE_Z1, BRICK)
+box(RE_X0 + 2, RE_X1 - 2, ROOF_Y, ROOF_Y + 24, RE_Z0 + 2, RE_Z1 - 2, 0)
+box(RE_X0 - 1, RE_X1 + 1, ROOF_Y + 24, ROOF_Y + 26, RE_Z0, RE_Z1 + 1, SLAB)
+box(RE_X0, RE_X1 + 1, ROOF_Y + 25, ROOF_Y + 26, RE_Z0, RE_Z1 + 1, EXT_TRIM)
+paint(RE_X0 + 2, RE_X1 - 2, ROOF_Y - 1, ROOF_Y, RE_Z0 + 2, RE_Z1 - 2, STAIR_CONC)
+RE_DZ = RE_Z0 + 3                                                       # door in the east wall, opens out
+box(RE_X1 - 2, RE_X1, ROOF_Y, ROOF_Y + 21, RE_DZ, RE_DZ + 9, 0)
+add_door(Frame(RE_X1 - 1, RE_DZ, 0, 1, 1, 0), 0, 9, ROOF_Y, ROOF_Y + 21, 0, 1,
+         steel_door, hinge=(0, 1), open_dir=(0, 1), stop=DARK_METAL)
+ftext(Frame(RE_X1, 0, 0, -1, -1, 0), "ELEC", -(RE_DZ + 4), ROOF_Y + 27, 0, YELLOW_PAINT)
+for zz in range(RE_DZ, RE_DZ + 9, 2):                                   # hazard stripes on the threshold
+    box(RE_X1 - 2, RE_X1, ROOF_Y - 1, ROOF_Y, zz, zz + 1, YELLOW_PAINT)
+re_fr = Frame(0, 0, 1, 0, 0, 1)
+garr, gmin = frame_shape(re_fr, RE_X0 + 2, RE_X0 + 16, ROOF_Y, ROOF_Y + 22, RE_Z1 - 7, RE_Z1 - 2, gear_style)
+SWITCHGEAR.append(dict(arr=garr, gmin=gmin, floor=FLOORS, corner="roof"))
+box(RE_X0 + 2, RE_X0 + 6, ROOF_Y, ROOF_Y + 12, RE_Z0 + 2, RE_Z0 + 10, HVAC)      # transformer
+for zz in range(RE_Z0 + 3, RE_Z0 + 10, 3):
+    box(RE_X0 + 6, RE_X0 + 7, ROOF_Y + 2, ROOF_Y + 11, zz, zz + 1, DARK_METAL)
+box(RE_X0 + 8, RE_X0 + 11, ROOF_Y + 23, ROOF_Y + 24, RE_Z0 + 8, RE_Z0 + 11, CEIL_LAMP)
+light(RE_X0 + 9.5, ROOF_Y + 21.5, RE_Z0 + 9.5, (1.0, 0.95, 0.85), 1.2, 0.2)
+ROOF_POWER_ZONES = [(GX0 - 3, GX1 + 3, GZ0 - 3, GZ1 + 1), (PH_X0 - 2, PH_X1 + 2, PT_Z0 - 2, PH_Z1 + 2), (RE_X0, RE_X1, RE_Z0, RE_Z1)]
+# the 40 cm gap between the glasshouse and the west parapet read as a passage: a hedge planter fills it
+box(bx0 + T_EXT, GX0, ROOF_Y, ROOF_Y + 5, GZ0 - 2, GZ1, BRICK)
+box(bx0 + T_EXT, GX0, ROOF_Y + 4, ROOF_Y + 5, GZ0 - 1, GZ1 - 1, SOIL)
+Xh, Zh = np.meshgrid(np.arange(bx0 + T_EXT, GX0), np.arange(GZ0 - 1, GZ1 - 1), indexing="ij")
+Hh = 3 + (hash3(Xh, np.full_like(Xh, ROOF_Y), Zh, 91) * 3).astype(int)
+for (x, z, h_) in zip(Xh.ravel(), Zh.ravel(), Hh.ravel()):
+    box(x, x + 1, ROOF_Y + 5, ROOF_Y + 5 + h_, z, z + 1, LEAF2 if (x + z) % 3 else LEAF3)
 
 # ---- the helicopter (my own design): body, main rotor, tail rotor (shapes of one vehicle body)
 def helicopter_model():
@@ -3872,6 +3940,11 @@ HELI = dict(gmin=(hx0, RT, hz0),
             seat=(7, 12, 16), light=(12, 4, 7))
 
 def power_floor(gx, gy, gz):
+    if gy >= ROOF_Y - 1:
+        for (x0_, x1_, z0_, z1_) in ROOF_POWER_ZONES:
+            if x0_ <= gx < x1_ and z0_ <= gz < z1_:
+                return FLOORS                         # the roof circuit (glasshouse, penthouse, roof electrical room)
+        return None
     if not (bx0 <= gx < bx1 and bz0 <= gz < bz1) or (ax0 <= gx < ax1 and az0 <= gz < az1):
         return None                                   # outside the hotel ring, or in the atrium (own supply)
     for k in range(FLOORS):
@@ -3881,6 +3954,9 @@ def power_floor(gx, gy, gz):
 _lt = []
 for (gx, gy, gz, rgb, scale, size, tags) in LIGHTS:
     k = power_floor(gx, gy, gz)
+    if k == FLOORS and "room=" not in tags and PH_INTERIOR[0] <= gx < PH_INTERIOR[1] and PH_INTERIOR[2] <= gy < PH_INTERIOR[3] \
+            and PH_INTERIOR[4] <= gz < PH_INTERIOR[5]:
+        tags = (tags + " room=ph rl=ceil").strip()     # the suite's lights hang on its switch by the entrance
     _lt.append((gx, gy, gz, rgb, scale, size, (tags + f" pw={k}").strip() if k is not None else tags))
 LIGHTS[:] = _lt
 
@@ -3998,7 +4074,7 @@ def export():
     #      lamps) on a hotel floor become small shapes on that floor's circuit, so a blackout darkens them too
     from scipy import ndimage as _ndi
     GLOW_IDX = np.array([CEIL_LAMP, COVE_LAMP, LAMPSHADE], np.uint8)
-    gx0_, gx1_, gy0_, gy1_, gz0_, gz1_ = bx0, bx1, G0 - SLAB_T, ROOF_Y, bz0, bz1
+    gx0_, gx1_, gy0_, gy1_, gz0_, gz1_ = bx0, bx1, G0 - SLAB_T, min(H, 256), bz0, bz1
     glab_, gn_ = _ndi.label(np.isin(G[gx0_:gx1_, gy0_:gy1_, gz0_:gz1_], GLOW_IDX))
     GLOWS.clear()
     for i_, sl_ in enumerate(_ndi.find_objects(glab_)):
@@ -4016,7 +4092,8 @@ def export():
             lamp_files[key] = f"lamp_{len(lamp_files)}"
             write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr)
         sx, sy, sz = arr.shape
-        GLOWS.append(dict(file=lamp_files[key], floor=k_, arr=arr, gmin=tuple(int(v) for v in mn),
+        in_ph = all(PH_INTERIOR[2 * a] <= c_[a] < PH_INTERIOR[2 * a + 1] for a in range(3))
+        GLOWS.append(dict(file=lamp_files[key], floor=k_, arr=arr, gmin=tuple(int(v) for v in mn), room="ph" if in_ph else None,
                           pos=((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)))
     # Few, large shapes (<= 256 per axis), split only along party-wall planes and never
     # horizontally: Teardown judges support per shape, so seams through structure make
@@ -4154,6 +4231,12 @@ def export():
              + (f" room={c['rid']}" if c["lit"] else "")
         xml.append(f'\t\t<body name="curtain{i}" tags="{tg}" pos="{f3(o)}"><vox pos="0 0 0" file="MOD/vox/{shape_file("curtain", c["arr"])}.vox" object="shape"/></body>\n')
     xml.append('\t</group>\n')
+    xml.append('\t<group name="smartglass" pos="0 0 0">\n')
+    for i, sg in enumerate(SMART_GLASS):
+        o = body_origin(sg["arr"], sg["gmin"])
+        xml.append(f'\t\t<body name="smartglass{i}" tags="smartglass pane={sg["pane"]}' + (' frost' if sg["frost"] else '') +
+                   f'" pos="{f3(o)}"><vox pos="0 0 0" file="MOD/vox/{shape_file("smartglass", sg["arr"])}.vox" object="shape"/></body>\n')
+    xml.append('\t</group>\n')
     xml.append('\t<group name="electrical" pos="0 0 0">\n')
     for g in SWITCHGEAR:
         xml.append(f'\t\t<vox tags="switchgear floor={g["floor"]} corner={g["corner"]}" pos="{f3(body_origin(g["arr"], g["gmin"]))}" '
@@ -4195,7 +4278,7 @@ def export():
             xml.append(light_xml(rel, rgb, scale, size, ltags=ltags))
         xml.append('\t\t</vox>\n')
     for i, L in enumerate(GLOWS):
-        xml.append(f'\t\t<vox name="glow{i}" tags="glow pw={L["floor"]}" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
+        xml.append(f'\t\t<vox name="glow{i}" tags="glow pw={L["floor"]}{' room=' + L['room'] if L.get('room') else ''}" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
     xml.append('\t</group>\n')
     for pool_ in POOLS:
         sy_, dep, pts = pool_[:3]
@@ -4256,7 +4339,9 @@ def export():
         o_ = org(arr_, gm_)
         xml.append(f'\t\t<vox name="{nm_}" pos="{f3(o_)}" file="MOD/vox/{nm_}.vox" object="shape"' + ('>\n' if lts_ else '/>\n'))
         for (lx_, ly_, lz_, rgb_, sc_, sz_) in lts_:
-            xml.append(light_xml(((lx_ + 0.5) * 0.1 - CX - o_[0], ly_ * 0.1 - o_[1], (lz_ + 0.5) * 0.1 - CZ - o_[2]), rgb_, sc_, sz_))
+            k_ = power_floor(int(lx_), int(ly_), int(lz_))
+            xml.append(light_xml(((lx_ + 0.5) * 0.1 - CX - o_[0], ly_ * 0.1 - o_[1], (lz_ + 0.5) * 0.1 - CZ - o_[2]), rgb_, sc_, sz_,
+                                 ltags=f"pw={k_}" if k_ is not None else ""))
         if lts_:
             xml.append('\t\t</vox>\n')
     xml.append('\t</group>\n')
@@ -4352,7 +4437,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.44\n"
+        f.write("name = Liminal Atrium v3.45\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
@@ -4378,7 +4463,7 @@ if __name__ == "__main__":
             reg[arr > 0] = arr[arr > 0]
         stamps = [(c_["arr"], c_["gmin"]) for c_ in CURTAINS] + [(w_[0], w_[1]) for w_ in ROOM_SWITCHES] + [(g_["arr"], g_["gmin"]) for g_ in SWITCHGEAR] + [(k_["arr"], k_["gmin"]) for k_ in KEYCARDS] + \
                  [(m_["arr"], m_["gmin"]) for m_ in MANNEQUINS + DECOR_MQ] + [(BELL["arr"], BELL["gmin"])] + [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(L_["arr"], L_["gmin"]) for L_ in GLOWS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
-            + [(c_[0], c_[1]) for c_ in CALLS] + [(t_[1], t_[2]) for t_ in TAGGED_SHAPES]
+            + [(c_[0], c_[1]) for c_ in CALLS] + [(t_[1], t_[2]) for t_ in TAGGED_SHAPES] + [(g_["arr"], g_["gmin"]) for g_ in SMART_GLASS if not g_["frost"]]
         for arr, (gx, gy, gz) in stamps:
             sx, sy, sz = arr.shape
             Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz][arr > 0] = arr[arr > 0]
