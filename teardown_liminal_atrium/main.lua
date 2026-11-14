@@ -112,8 +112,6 @@ local function loadSounds()
 	snd.pad       = LoadLoop("MOD/snd/dream_pad.ogg")
 	snd.piano     = LoadLoop("MOD/snd/piano.ogg")
 	snd.pianoCrash = LoadSound("MOD/snd/piano_crash.ogg")
-	snd.rain      = LoadLoop("MOD/snd/rain.ogg")
-	snd.rainGlass = LoadLoop("MOD/snd/rain_glass.ogg")
 	snd.boiler    = LoadLoop("MOD/snd/boiler.ogg")
 	snd.laundry   = LoadLoop("MOD/snd/laundry.ogg")
 end
@@ -1742,7 +1740,6 @@ local ENV_DAY = {
 }
 settings = { day = false, rain = true }
 local panelOpen = false
-local rainVol, glassVol, rainTimer, rainExposed = 0, 0, 0, false
 
 local function envSet(name, v)
 	if not SetEnvironmentProperty then return end
@@ -1785,38 +1782,6 @@ end
 local function panelTick()
 	if PauseMenuButton and PauseMenuButton("Liminal Atrium") then panelOpen = true end
 	if panelOpen and InputPressed("esc") then panelOpen = false end
-end
-
-local function zoneOf(p, kind)
-	for i = 1, #zones do
-		local z = zones[i]
-		if z.kind == kind and p[1] >= z.x0 and p[1] <= z.x1 and p[2] >= z.y0 and p[2] <= z.y1 and p[3] >= z.z0 and p[3] <= z.z1 then
-			return true
-		end
-	end
-	return false
-end
-
--- rain you hear: loud outdoors, drumming under the glass vault, a muffled hiss indoors, nothing down in B1
-local function rainTick(dt, cam)
-	local tr, tg = 0, 0
-	if settings.rain then
-		rainTimer = rainTimer - dt
-		if rainTimer <= 0 then
-			rainTimer = 0.25
-			local hit = QueryRaycast(cam, Vec(0, 1, 0), 60)
-			rainExposed = not hit
-		end
-		if zoneOf(cam, "glasshouse") then tr, tg = 0.2, 0.85
-		elseif zoneOf(cam, "basement") then tr = 0
-		elseif rainExposed then tr = 0.75
-		else tr = 0.14 end
-	end
-	local k = math.min(1, dt * 2.5)
-	rainVol = rainVol + (tr - rainVol) * k
-	glassVol = glassVol + (tg - glassVol) * k
-	if rainVol > 0.01 then PlayLoop(snd.rain, cam, rainVol) end
-	if glassVol > 0.01 then PlayLoop(snd.rainGlass, cam, glassVol) end
 end
 
 local function drawPanel()
@@ -1935,7 +1900,6 @@ function tick(dt)
 	flickerTick(dt, cam)
 	spotsTick(cam)
 	pianoTick(dt, cam)
-	rainTick(dt, cam)
 	radioTick(cam)
 end
 

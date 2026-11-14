@@ -1417,15 +1417,16 @@ def stairwell(fr):
         for p in range(12, 36):
             fr.box(p, p + 1, y + int((p - 12) / 3) * 2 + 9, y + int((p - 12) / 3) * 2 + 12, 0, 1, WOOD_MED)
     y = ROOF_Y
-    fr.box(-T_PART, CB, y, y + 28, -T_PART, CB, STAIR_WALL)
-    fr.paint(-T_PART, CB, y, y + 28, -T_PART, CB, BRICK, [STAIR_WALL])
-    fr.box(0, CB - T_FAC, y, y + 26, 0, CB - T_FAC, 0)
-    fr.box(-T_PART - 1, CB + 1, y + 28, y + 30, -T_PART - 1, CB + 1, EXT_TRIM)
-    fr.box(-T_PART, CB, y + 30, y + 31, -T_PART, CB, ROOF)
+    HH = ATR_TOP + 3 - ROOF_Y - 2                    # head house: its roof ends level with the atrium wall top
+    fr.box(-T_PART, CB, y, y + HH, -T_PART, CB, STAIR_WALL)
+    fr.paint(-T_PART, CB, y, y + HH, -T_PART, CB, BRICK, [STAIR_WALL])
+    fr.box(0, CB - T_FAC, y, y + HH - 1, 0, CB - T_FAC, 0)
+    fr.box(-T_PART - 1, CB - T_FAC, y + HH, y + HH + 1, -T_PART - 1, CB - T_FAC, EXT_TRIM)
+    fr.box(-T_PART, CB - T_FAC, y + HH + 1, y + HH + 2, -T_PART, CB - T_FAC, ROOF)
     fr.box(20, 30, y, y + 21, CB - T_FAC, CB, 0)
     fr.box(19, 31, y + 21, y + 23, CB - 1, CB + 1, LINTEL)
-    fr.box(23, 27, y + 23, y + 25, CB, CB + 1, CEIL_LAMP)
-    fr.light(10, y + 24, 10, (1.0, 0.95, 0.85), 1.6, 0.2)
+    fr.box(23, 27, y + 21, y + 22, CB + 1, CB + 2, CEIL_LAMP)
+    fr.light(10, y + HH - 3, 10, (1.0, 0.95, 0.85), 1.6, 0.2)
 
 DIGITS = {
     "1": [".#.", "##.", ".#.", ".#.", "###"], "2": ["##.", "..#", ".#.", "#..", "###"],
@@ -1600,7 +1601,7 @@ def roof_clear(x0, x1, z0, z1, m=4):
 HVAC_SPOTS = [(bx0 + 20 + i * 60, hz) for i in range(5) for hz in (bz0 + 14, bz1 - 34)]
 HVAC_SPOTS = [(hx, hz) for (hx, hz) in HVAC_SPOTS if roof_clear(hx - 1, hx + 23, hz - 1, hz + 19)]
 # the east roof carries the penthouse suite and its terrace (section 10e): keep roof plant off it
-PH_X0, PH_X1, PH_Z0, PH_Z1 = ax1 + T_FAC + 6, bx1 - T_EXT - 4, 228, 404      # suite (outer walls)
+PH_X0, PH_X1, PH_Z0, PH_Z1 = ax1 + T_FAC + 10, bx1 - T_EXT, 228, 404     # suite (outer walls; 1 m walkway west)
 PT_Z0 = 168                                                                    # terrace from here to PH_Z0
 CORNER_RECTS.append((PH_X0 - 2, PH_X1 + 2, PT_Z0 - 2, PH_Z1 + 2))
 for (hx, hz) in HVAC_SPOTS:
@@ -3156,7 +3157,7 @@ for (fx_, fz_) in ((ax0 + 4, az0 + 4), (ax1 - 10, az1 - 10)):
 #      hanging baskets, lamp posts and benches.
 # ============================================================================
 GRNG = random.Random(123)
-GX0, GX1, GZ0, GZ1 = bx0 + 8, ax0 - 8, 196, 396        # 5.6 x 20 m footprint
+GX0, GX1, GZ0, GZ1 = bx0 + 8, ax0 - 14, 196, 396       # 5.0 x 20 m footprint (1 m walkway to the atrium wall)
 GXC = (GX0 + GX1) // 2
 GEAVE = ROOF_Y + 32                                       # glass walls up to here, the vault shape above
 PCZ = (GZ0 + GZ1) // 2                                    # round plaza / pond centre
@@ -3241,6 +3242,14 @@ for x in range(GXC - 9, GXC + 9):
         elif abs(dx_) < 8.2 and (y < ROOF_Y + 18 or (y - ROOF_Y - 18) ** 2 + dx_ * dx_ < 67):
             box(x, x + 1, y, y + 1, GZ0, GZ0 + 3, SWITCH)
 box(GXC - 7, GXC + 7, ROOF_Y - 1, ROOF_Y, GZ0, GZ0 + 3, MARBLE_W)                 # threshold
+for x in range(GXC - 9, GXC + 9):                                                  # north door (same arch)
+    for y in range(ROOF_Y, ROOF_Y + 26):
+        dx_ = x + 0.5 - GXC
+        if abs(dx_) < 7 and (y < ROOF_Y + 18 or (y - ROOF_Y - 18) ** 2 + dx_ * dx_ < 49):
+            box(x, x + 1, y, y + 1, GZ1 - 3, GZ1, 0)
+        elif abs(dx_) < 8.2 and (y < ROOF_Y + 18 or (y - ROOF_Y - 18) ** 2 + dx_ * dx_ < 67):
+            box(x, x + 1, y, y + 1, GZ1 - 3, GZ1, SWITCH)
+box(GXC - 7, GXC + 7, ROOF_Y - 1, ROOF_Y, GZ1 - 3, GZ1, MARBLE_W)
 box(GXC - 12, GXC + 12, GEAVE - 9, GEAVE - 3, GZ0, GZ0 + 1, SWITCH)               # name board
 ftext(Frame(GXC, GZ0, -1, 0, 0, 1), "FLORA", 0, GEAVE - 3, -1, BRASS)
 light(GXC + 0.5, GEAVE + 1, GZ0 - 7, (1.0, 0.85, 0.62), 1.2, 0.2)
@@ -3439,7 +3448,7 @@ for i in range(6):                                                              
                 G[lx_ + dx, ROOF_Y + 4, lz_ + dz] = LEAF2
     if i % 3 == 0:
         G[lx_, ROOF_Y + 5, lz_] = DREAM_PINK; G[lx_, ROOF_Y + 6, lz_] = DREAM_CLOUD
-for a_ in (60, 240):
+for a_ in (30, 210):                                                           # (between the lily pads)
     lx_ = int(round(GXC + (POND_R - 0.8) * np.cos(np.radians(a_)))); lz_ = int(round(PCZ + (POND_R - 0.8) * np.sin(np.radians(a_))))
     G[lx_, ROOF_Y, lz_] = POOL_LAMP
     light(lx_ + 0.5 - np.cos(np.radians(a_)) * 1.5, ROOF_Y + 1.5, lz_ + 0.5 - np.sin(np.radians(a_)) * 1.5, (0.65, 0.85, 1.0), 0.9, 0.1)
@@ -3462,23 +3471,6 @@ def g_bench(x0_, z0_, along_z, face):
         box(x0_ + 1, x0_ + 11, ROOF_Y + 6, ROOF_Y + 7, bzk, bzk + 1, WOOD_DARK)
 g_bench(GXC - 22, GZ1 - 10, False, -1)
 g_bench(GXC + 10, GZ1 - 10, False, -1)
-# north terrace: three-tier marble planter with trailing flowers
-for (r0_, y0_, y1_) in ((5.5, 0, 3), (4.2, 3, 7), (2.6, 7, 11)):
-    for x in range(GXC - 6, GXC + 6):
-        for z in range(GZ1 - 16, GZ1 - 4):
-            d_ = np.hypot(x + 0.5 - GXC, z + 0.5 - (GZ1 - 10))
-            if d_ < r0_:
-                box(x, x + 1, ROOF_Y + y0_, ROOF_Y + y1_, z, z + 1, MARBLE_W if d_ >= r0_ - 1.2 else SOIL)
-                if d_ >= r0_ - 1.2 and y1_ - y0_ > 0:
-                    G[x, ROOF_Y + y1_ - 1, z] = MARBLE_BG
-                    if GRNG.random() < 0.35 and G[x, ROOF_Y + y1_, z] == 0:
-                        G[x, ROOF_Y + y1_, z] = GRNG.choice((LEAF, ROSE, DREAM_LILAC, DREAM_PINK))
-for x in range(GXC - 3, GXC + 3):
-    for z in range(GZ1 - 13, GZ1 - 7):
-        for y in range(ROOF_Y + 11, ROOF_Y + 15):
-            d2 = (x + 0.5 - GXC) ** 2 + (z + 0.5 - (GZ1 - 10)) ** 2 + ((y - ROOF_Y - 11) * 1.3) ** 2
-            if d2 < 7 and G[x, y, z] == 0:
-                G[x, y, z] = GRNG.choice((LEAF2, DREAM_LILAC, DREAM_CLOUD, LEAF)) if y > ROOF_Y + 11 else LEAF3
 # entrance foyer: two terracotta urns with clipped bay balls
 for ux_ in (GXC - 17, GXC + 16):
     uz_ = GZ0 + 9
@@ -3575,7 +3567,7 @@ GLASSHOUSE = dict(x0=GX0, x1=GX1, z0=GZ0, z1=GZ1, eave=GEAVE, plaza=(GXC, PCZ), 
 # ============================================================================
 PRNG = random.Random(4040)
 PY = ROOF_Y; PCEIL = PY + 28                                 # 2.8 m rooms, roof slab above
-box(PH_X0 - 1, PH_X1 + 1, PY, PY + 34, PT_Z0 - 1, PH_Z1 + 1, 0)
+box(PH_X0 - 1, PH_X1, PY, PY + 34, PT_Z0 - 1, PH_Z1 + 1, 0)
 ix0p, ix1p, iz0p, iz1p = PH_X0 + 2, PH_X1 - 2, PH_Z0 + 2, PH_Z1 - 2      # interior
 Z_BATH, Z_BED, Z_DIN, Z_LIV = iz0p + 34, iz0p + 72, iz0p + 102, iz0p + 150   # partitions (south -> north)
 # floors: oak parquet, marble in the bathroom
@@ -4336,8 +4328,6 @@ def export():
                    f'y1={gy1 * 0.1:.2f} z0={gz0 * 0.1 - CZ:.2f} z1={gz1 * 0.1 - CZ:.2f}" pos="{f3(((gx0 + gx1) * 0.05 - CX, gy0 * 0.1, (gz0 + gz1) * 0.05 - CZ))}"/>\n')
     zone("hall", ix0, ix1, DY - 20, DY + HALL_H + 2, iz0, iz1)
     zone("connector", cxN - CW, cxN + CW, G0 - 2, DY + 30, bz1 - 20, AZ0 + 4)
-    zone("glasshouse", GLASSHOUSE["x0"], GLASSHOUSE["x1"], ROOF_Y - 2, GLASSHOUSE["eave"] + 30, GLASSHOUSE["z0"], GLASSHOUSE["z1"])
-    zone("basement", 0, W, 0, G0 - SLAB_T, bz0 - 40, AZ0)            # B1 car park / arcade / ramp tunnel: no rain heard
     xml.append(f'\t<location tags="respawn" pos="{f3(spawn)}" rot="0 180 0"/>\n')
     for (kind, sx_, sy_, sz_) in SOUND_SPOTS:
         xml.append(f'\t<location tags="ambsound kind={kind}" pos="{f3((sx_ * 0.1 - CX, sy_ * 0.1, sz_ * 0.1 - CZ))}"/>\n')
@@ -4408,7 +4398,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.42\n"
+        f.write("name = Liminal Atrium v3.43\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

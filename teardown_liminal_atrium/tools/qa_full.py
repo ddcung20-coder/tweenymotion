@@ -157,6 +157,9 @@ YB = ns["YB"]
 checks["B1 car-park ramp (top, street level)"] = (30, G0, 66)
 for (rn_, (rx_, rz_)) in ns["PENTHOUSE"]["rooms"].items():
     checks[f"penthouse: {rn_}"] = (rx_, ns["ROOF_Y"], rz_)
+checks["roof walkway beside the glasshouse (atrium side)"] = (ns["GLASSHOUSE"]["x1"] + 5, ns["ROOF_Y"], 300)
+checks["roof walkway beside the penthouse (atrium side)"] = (ns["PENTHOUSE"]["x0"] - 5, ns["ROOF_Y"], 300)
+checks["roof north of the glasshouse (through its north door)"] = ((ns["GLASSHOUSE"]["x0"] + ns["GLASSHOUSE"]["x1"]) // 2, ns["ROOF_Y"], ns["GLASSHOUSE"]["z1"] + 10)
 for key_ in ("NW", "SE"):
     xr_, zr_ = ns["corner"][key_].pt(-6, 22)
     checks[f"roof lift landing {key_}"] = (xr_, ns["ROOF_Y"], zr_)
@@ -616,7 +619,7 @@ report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in 
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
 LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "heli_rotor.ogg",
-         "piano.ogg", "rain.ogg", "rain_glass.ogg", "boiler.ogg", "laundry.ogg"}
+         "piano.ogg", "boiler.ogg", "laundry.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)
     peak = float(np.abs(x).max())

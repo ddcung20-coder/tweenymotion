@@ -19,11 +19,11 @@
 		<vox name="c_1_0_3" pos="0 0 26.7" file="MOD/vox/c_1_0_3.vox" object="shape"/>
 		<vox name="c_2_0_3" pos="17.6 0 26.7" file="MOD/vox/c_2_0_3.vox" object="shape"/>
 		<light pos="0.05 6.9 -31.3" type="sphere" color="1 0.85 0.65" scale="4" size="0.4"/>
-		<light pos="-11.75 24.4 -26.65" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
-		<light pos="11.75 24.4 8.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light pos="-11.75 24 -26.65" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
+		<light pos="11.75 24 8.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		<light pos="6.6 5.8 18.5" type="sphere" color="0.5 0.9 1" scale="1.4" size="0.3"/>
-		<light pos="-11.55 25.3 -19.6" type="sphere" color="1 0.85 0.62" scale="1.2" size="0.2"/>
-		<light pos="11.7 24 -18.7" type="sphere" color="1 0.8 0.55" scale="2.2" size="0.4"/>
+		<light pos="-11.85 25.3 -19.6" type="sphere" color="1 0.85 0.62" scale="1.2" size="0.2"/>
+		<light pos="12.1 24 -18.7" type="sphere" color="1 0.8 0.55" scale="2.2" size="0.4"/>
 	</group>
 	<vox name="poolradio" tags="radio" pos="0.9 6.6 30.2" file="MOD/vox/radio.vox" object="shape"/>
 	<group name="curtains" pos="0 0 0">
@@ -3339,91 +3339,85 @@
 		<vox name="lamp950" pos="12.4 3.6 6.9" file="MOD/vox/lamp_6.vox" object="shape">
 			<light pos="-0.05 -0.2 -0.05" type="sphere" color="1 0.95 0.85" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp951" pos="-13.3 22.2 -10.5" file="MOD/vox/lamp_26.vox" object="shape">
+		<vox name="lamp951" pos="-13.6 22.2 -10.5" file="MOD/vox/lamp_26.vox" object="shape">
 			<light pos="0.05 0.2 -0.05" type="sphere" color="0.78 0.6 1" scale="1.3" size="0.15"/>
 		</vox>
-		<vox name="lamp952" pos="-9.4 22.2 -10.5" file="MOD/vox/lamp_26.vox" object="shape">
+		<vox name="lamp952" pos="-13.6 22.2 -7" file="MOD/vox/lamp_26.vox" object="shape">
 			<light pos="0.05 0.2 -0.05" type="sphere" color="0.78 0.6 1" scale="1.3" size="0.15"/>
 		</vox>
-		<vox name="lamp953" pos="-13.3 22.2 -7" file="MOD/vox/lamp_26.vox" object="shape">
-			<light pos="0.05 0.2 -0.05" type="sphere" color="0.78 0.6 1" scale="1.3" size="0.15"/>
+		<vox name="lamp953" pos="-11.3 22 -8.5" file="MOD/vox/lamp_27.vox" object="shape">
+			<light pos="-0.08 0.15 -0.125" type="sphere" color="0.65 0.85 1" scale="0.9" size="0.1"/>
 		</vox>
-		<vox name="lamp954" pos="-9.4 22.2 -7" file="MOD/vox/lamp_26.vox" object="shape">
-			<light pos="0.05 0.2 -0.05" type="sphere" color="0.78 0.6 1" scale="1.3" size="0.15"/>
+		<vox name="lamp954" pos="-12.5 22 -9.1" file="MOD/vox/lamp_27.vox" object="shape">
+			<light pos="0.18 0.15 0.025" type="sphere" color="0.65 0.85 1" scale="0.9" size="0.1"/>
 		</vox>
-		<vox name="lamp955" pos="-11.3 22 -8.2" file="MOD/vox/lamp_27.vox" object="shape">
-			<light pos="-0.025 0.15 -0.18" type="sphere" color="0.65 0.85 1" scale="0.9" size="0.1"/>
-		</vox>
-		<vox name="lamp956" pos="-11.9 22 -9.4" file="MOD/vox/lamp_27.vox" object="shape">
-			<light pos="0.125 0.15 0.08" type="sphere" color="0.65 0.85 1" scale="0.9" size="0.1"/>
-		</vox>
-		<vox name="lamp957" pos="-12.4 23.8 -15.6" file="MOD/vox/lamp_28.vox" object="shape">
+		<vox name="lamp955" pos="-12.7 23.8 -15.6" file="MOD/vox/lamp_28.vox" object="shape">
 			<light pos="0.05 -0.08 -0.05" type="sphere" color="1 0.8 0.55" scale="1.8" size="0.15"/>
 		</vox>
-		<vox name="lamp958" pos="-10.9 23.8 -15.6" file="MOD/vox/lamp_28.vox" object="shape">
+		<vox name="lamp956" pos="-11.2 23.8 -15.6" file="MOD/vox/lamp_28.vox" object="shape">
 			<light pos="0.05 -0.08 -0.05" type="sphere" color="1 0.8 0.55" scale="1.8" size="0.15"/>
 		</vox>
-		<vox name="lamp959" pos="-12.4 23.8 -12.8" file="MOD/vox/lamp_28.vox" object="shape">
+		<vox name="lamp957" pos="-12.7 23.8 -12.8" file="MOD/vox/lamp_28.vox" object="shape">
 			<light pos="0.05 -0.08 -0.05" type="sphere" color="1 0.8 0.55" scale="1.8" size="0.15"/>
 		</vox>
-		<vox name="lamp960" pos="-10.9 23.8 -12.8" file="MOD/vox/lamp_28.vox" object="shape">
+		<vox name="lamp958" pos="-11.2 23.8 -12.8" file="MOD/vox/lamp_28.vox" object="shape">
 			<light pos="0.05 -0.08 -0.05" type="sphere" color="1 0.8 0.55" scale="1.8" size="0.15"/>
 		</vox>
-		<vox name="lamp961" pos="-12.4 23.8 -4.6" file="MOD/vox/lamp_28.vox" object="shape">
+		<vox name="lamp959" pos="-12.7 23.8 -4.6" file="MOD/vox/lamp_28.vox" object="shape">
 			<light pos="0.05 -0.08 -0.05" type="sphere" color="1 0.8 0.55" scale="1.8" size="0.15"/>
 		</vox>
-		<vox name="lamp962" pos="-10.9 23.8 -4.6" file="MOD/vox/lamp_28.vox" object="shape">
+		<vox name="lamp960" pos="-11.2 23.8 -4.6" file="MOD/vox/lamp_28.vox" object="shape">
 			<light pos="0.05 -0.08 -0.05" type="sphere" color="1 0.8 0.55" scale="1.8" size="0.15"/>
 		</vox>
-		<vox name="lamp963" pos="-12.4 23.8 -1.6" file="MOD/vox/lamp_28.vox" object="shape">
+		<vox name="lamp961" pos="-12.7 23.8 -1.6" file="MOD/vox/lamp_28.vox" object="shape">
 			<light pos="0.05 -0.08 -0.05" type="sphere" color="1 0.8 0.55" scale="1.8" size="0.15"/>
 		</vox>
-		<vox name="lamp964" pos="-10.9 23.8 -1.6" file="MOD/vox/lamp_28.vox" object="shape">
+		<vox name="lamp962" pos="-11.2 23.8 -1.6" file="MOD/vox/lamp_28.vox" object="shape">
 			<light pos="0.05 -0.08 -0.05" type="sphere" color="1 0.8 0.55" scale="1.8" size="0.15"/>
 		</vox>
-		<vox name="lamp965" pos="11.8 24.7 1" file="MOD/vox/lamp_5.vox" object="shape">
+		<vox name="lamp963" pos="12.2 24.7 1" file="MOD/vox/lamp_5.vox" object="shape">
 			<light pos="0.05 -0.15 -0.05" type="sphere" color="1 0.82 0.6" scale="1.6" size="0.25"/>
 		</vox>
-		<vox name="lamp966" pos="10.4 24.7 -1.8" file="MOD/vox/lamp_5.vox" object="shape">
+		<vox name="lamp964" pos="10.8 24.7 -1.8" file="MOD/vox/lamp_5.vox" object="shape">
 			<light pos="0.05 -0.15 -0.05" type="sphere" color="1 0.82 0.6" scale="1.6" size="0.25"/>
 		</vox>
-		<vox name="lamp967" pos="13 24.7 -1.8" file="MOD/vox/lamp_5.vox" object="shape">
+		<vox name="lamp965" pos="13.4 24.7 -1.8" file="MOD/vox/lamp_5.vox" object="shape">
 			<light pos="0.05 -0.15 -0.05" type="sphere" color="1 0.82 0.6" scale="1.6" size="0.25"/>
 		</vox>
-		<vox name="lamp968" pos="11.7 24.7 -6.7" file="MOD/vox/lamp_5.vox" object="shape">
+		<vox name="lamp966" pos="12.1 24.7 -6.7" file="MOD/vox/lamp_5.vox" object="shape">
 			<light pos="0.05 -0.15 -0.05" type="sphere" color="1 0.82 0.6" scale="1.6" size="0.25"/>
 		</vox>
-		<vox name="lamp969" pos="11.7 24.7 -9.8" file="MOD/vox/lamp_5.vox" object="shape">
+		<vox name="lamp967" pos="12.1 24.7 -9.8" file="MOD/vox/lamp_5.vox" object="shape">
 			<light pos="0.05 -0.15 -0.05" type="sphere" color="1 0.82 0.6" scale="1.6" size="0.25"/>
 		</vox>
-		<vox name="lamp970" pos="10.4 24.7 -10.5" file="MOD/vox/lamp_5.vox" object="shape">
+		<vox name="lamp968" pos="10.8 24.7 -10.5" file="MOD/vox/lamp_5.vox" object="shape">
 			<light pos="0.05 -0.15 -0.05" type="sphere" color="1 0.82 0.6" scale="1.6" size="0.25"/>
 		</vox>
-		<vox name="lamp971" pos="12.2 24.7 -13.8" file="MOD/vox/lamp_5.vox" object="shape">
+		<vox name="lamp969" pos="12.6 24.7 -13.8" file="MOD/vox/lamp_5.vox" object="shape">
 			<light pos="0.05 -0.15 -0.05" type="sphere" color="1 0.82 0.6" scale="1.6" size="0.25"/>
 		</vox>
-		<vox name="lamp972" pos="14.1 23.3 0.6" file="MOD/vox/lamp_29.vox" object="shape">
+		<vox name="lamp970" pos="14.5 23.3 0.6" file="MOD/vox/lamp_29.vox" object="shape">
 			<light pos="-0.3 0 0" type="sphere" color="0.85 0.65 1" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="lamp973" pos="9.4 22.3 -1.9" file="MOD/vox/lamp_30.vox" object="shape">
+		<vox name="lamp971" pos="9.8 22.3 -1.9" file="MOD/vox/lamp_30.vox" object="shape">
 			<light pos="0.3 0.2 0" type="sphere" color="1 0.55 0.25" scale="1.6" size="0.2"/>
 		</vox>
-		<vox name="lamp974" pos="11.7 23.8 -6.1" file="MOD/vox/lamp_31.vox" object="shape">
+		<vox name="lamp972" pos="12.1 23.8 -6.1" file="MOD/vox/lamp_31.vox" object="shape">
 			<light pos="0.05 -0.15 -0.05" type="sphere" color="1 0.8 0.55" scale="1.4" size="0.2"/>
 		</vox>
-		<vox name="lamp975" pos="10.7 22.9 -8.8" file="MOD/vox/lamp_32.vox" object="shape">
+		<vox name="lamp973" pos="11.1 22.9 -8.8" file="MOD/vox/lamp_32.vox" object="shape">
 			<light pos="0.05 0.45 -0.05" type="sphere" color="1 0.8 0.55" scale="0.9" size="0.15"/>
 		</vox>
-		<vox name="lamp976" pos="14 22.9 -8.8" file="MOD/vox/lamp_32.vox" object="shape">
+		<vox name="lamp974" pos="14.4 22.9 -8.8" file="MOD/vox/lamp_32.vox" object="shape">
 			<light pos="0.05 0.45 -0.05" type="sphere" color="1 0.8 0.55" scale="0.9" size="0.15"/>
 		</vox>
-		<vox name="lamp977" pos="13.3 22.1 -18.8" file="MOD/vox/lamp_27.vox" object="shape">
+		<vox name="lamp975" pos="13.7 22.1 -18.8" file="MOD/vox/lamp_27.vox" object="shape">
 			<light pos="-0.054 0.15 -0.11" type="sphere" color="0.55 0.85 1" scale="0.9" size="0.1"/>
 		</vox>
-		<vox name="lamp978" pos="11.9 22.1 -18.8" file="MOD/vox/lamp_27.vox" object="shape">
+		<vox name="lamp976" pos="12.3 22.1 -18.8" file="MOD/vox/lamp_27.vox" object="shape">
 			<light pos="0.154 0.15 -0.11" type="sphere" color="0.55 0.85 1" scale="0.9" size="0.1"/>
 		</vox>
-		<vox name="lamp979" pos="12.6 22.1 -20" file="MOD/vox/lamp_27.vox" object="shape">
+		<vox name="lamp977" pos="13 22.1 -20" file="MOD/vox/lamp_27.vox" object="shape">
 			<light pos="0.05 0.15 0.07" type="sphere" color="0.55 0.85 1" scale="0.9" size="0.1"/>
 		</vox>
 		<vox name="glow0" tags="glow pw=0" pos="-14.7 5.6 -28.4" file="MOD/vox/lamp_33.vox" object="shape"/>
@@ -3868,7 +3862,7 @@
 		<vertex pos="1.000 1.400"/>
 		<vertex pos="-1.000 1.400"/>
 	</water>
-	<water type="polygon" pos="-11.600 22.45 -8.900" size="1.44 1.44" depth="0.45" wave="0.01" ripple="0.3" motion="0.04" foam="0">
+	<water type="polygon" pos="-11.900 22.45 -8.900" size="1.44 1.44" depth="0.45" wave="0.01" ripple="0.3" motion="0.04" foam="0">
 		<vertex pos="0.720 0.000"/>
 		<vertex pos="0.624 0.360"/>
 		<vertex pos="0.360 0.624"/>
@@ -3882,7 +3876,7 @@
 		<vertex pos="0.360 -0.624"/>
 		<vertex pos="0.624 -0.360"/>
 	</water>
-	<water type="polygon" pos="12.600 22.50 -19.300" size="1.66 1.66" depth="0.40" wave="0.04" ripple="0.5" motion="0.3" foam="0.4">
+	<water type="polygon" pos="13.000 22.50 -19.300" size="1.66 1.66" depth="0.40" wave="0.04" ripple="0.5" motion="0.3" foam="0.4">
 		<vertex pos="0.830 0.000"/>
 		<vertex pos="0.719 0.415"/>
 		<vertex pos="0.415 0.719"/>
@@ -3928,7 +3922,7 @@
 		<vox name="floodlight2" pos="7.3 24.6 3.6" file="MOD/vox/floodlight2.vox" object="shape">
 			<light pos="0.15 1.3 0.15" type="sphere" color="1 0.95 0.85" scale="3.5" size="0.3"/>
 		</vox>
-		<vox name="glasshouse_vault" pos="-11.6 25.2 -8.9" file="MOD/vox/glasshouse_vault.vox" object="shape">
+		<vox name="glasshouse_vault" pos="-11.9 25.2 -8.9" file="MOD/vox/glasshouse_vault.vox" object="shape">
 			<light pos="0.05 1.3 -5.95" type="sphere" color="1 0.84 0.62" scale="1.3" size="0.2"/>
 			<light pos="0.05 1.3 0.05" type="sphere" color="1 0.84 0.62" scale="1.3" size="0.2"/>
 			<light pos="0.05 1.3 6.05" type="sphere" color="1 0.84 0.62" scale="1.3" size="0.2"/>
@@ -3964,8 +3958,6 @@
 	<location tags="carspawn kind=castanet-500l-gt fallback=car_b" pos="-3.00 0.45 -20.95" rot="0 90 0"/>
 	<location tags="soundzone kind=hall x0=-9.60 x1=9.60 y0=4.00 y1=12.20 z0=15.90 z1=35.10" pos="0 4 25.5"/>
 	<location tags="soundzone kind=connector x0=-1.40 x1=1.40 y0=3.80 y1=9.00 z0=9.50 z1=15.90" pos="0 3.8 12.7"/>
-	<location tags="soundzone kind=glasshouse x0=-14.40 x1=-8.80 y0=21.80 y1=28.20 z0=-18.90 z1=1.10" pos="-11.6 21.8 -8.9"/>
-	<location tags="soundzone kind=basement x0=-23.60 x1=23.60 y0=0.00 y1=3.70 z0=-34.10 z1=15.50" pos="0 0 -9.3"/>
 	<location tags="respawn" pos="0 4.1 -21.1" rot="0 180 0"/>
 	<location tags="ambsound kind=pool" pos="0 6 25"/>
 	<location tags="ambsound kind=spa" pos="6.6 6 18.5"/>
@@ -5716,12 +5708,12 @@
 			<joint pos="0 0.2 -0.5" type="ball" size="0.1" collide="true"/>
 			<joint pos="0 1.9 -0.5" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door345" tags="hoteldoor" pos="10.9 22.05 1.9" rot="0 0 0" dynamic="true">
+		<body name="door345" tags="hoteldoor" pos="11.3 22.05 1.9" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_21.vox" object="shape"/>
 			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
 			<joint pos="0.5 2 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door346" tags="hoteldoor" pos="12.8 22.05 -21.6" rot="0 0 0" dynamic="true">
+		<body name="door346" tags="hoteldoor" pos="13.2 22.05 -21.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_22.vox" object="shape"/>
 			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
 			<joint pos="0.5 1.9 -0.1" type="ball" size="0.1" collide="true"/>

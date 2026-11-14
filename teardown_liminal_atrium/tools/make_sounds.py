@@ -299,28 +299,6 @@ def wrap_tail(buf, n):
     out[:len(buf) - n] += buf[n:]
     return out
 
-# --- rain: steady wash + scattered drops + distant low rumble (seamless 8 s loop) ---------------------
-L = 8.0; n = int(L * SR)
-wash = bandpass(loop_noise(L, 0.6), 250, 9000) * 0.55 + lowpass(loop_noise(L, 1.6), 300) * 0.35
-drops = np.zeros(n + SR)
-for k in range(900):
-    s0 = int(rng.uniform(0, L) * SR); m = int(0.03 * SR)
-    f = rng.uniform(1800, 6500)
-    d = np.sin(2 * np.pi * f * t(0.03)) * env(m, 0.0003, rng.uniform(0.003, 0.008))
-    drops[s0:s0 + m] += d * rng.uniform(0.05, 0.35)
-save("rain.ogg", wash + lowpass(wrap_tail(drops, n), 8000), 0.6)
-
-# --- rain on the glass vault: dense bright ticks, ringing a little (seamless 6 s loop) -------------------
-L = 6.0; n = int(L * SR)
-ticks = np.zeros(n + SR)
-for k in range(2600):
-    s0 = int(rng.uniform(0, L) * SR); m = int(0.06 * SR)
-    f = rng.uniform(2500, 7000)
-    d = np.sin(2 * np.pi * f * t(0.06)) * env(m, 0.0002, rng.uniform(0.004, 0.02))
-    ticks[s0:s0 + m] += d * rng.uniform(0.05, 0.4)
-glass = wrap_tail(ticks, n)
-save("rain_glass.ogg", glass + bandpass(loop_noise(L, 0.5), 1500, 10000) * 0.25, 0.6)
-
 # --- grand piano: an original slow 3/4 piece (rubato-free, 64 bpm), additive piano voice ----------------
 def piano_note(m, dur, vel=1.0):
     f0 = midi(m)
