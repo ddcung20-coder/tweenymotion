@@ -1,0 +1,11 @@
+prefab/luggage_cart.xml : Liminal Atrium/Luggage cart
+prefab/beach_ball.xml : Liminal Atrium/Beach ball
+prefab/swim_ring.xml : Liminal Atrium/Swim ring
+prefab/kickboard.xml : Liminal Atrium/Kickboard
+prefab/crate.xml : Liminal Atrium/Wooden crate
+prefab/barrel.xml : Liminal Atrium/Red barrel
+prefab/sofa.xml : Liminal Atrium/Lobby sofa
+prefab/crt_tv.xml : Liminal Atrium/Old TV
+prefab/bowling_pin.xml : Liminal Atrium/Bowling pin
+prefab/bowling_ball.xml : Liminal Atrium/Bowling ball (red)
+prefab/bowling_ball2.xml : Liminal Atrium/Bowling ball (blue)

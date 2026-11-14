@@ -1,0 +1,7 @@
+<prefab version="1.6.0">
+	<group name="luggage_cart">
+		<body dynamic="true">
+			<vox pos="0 0 0" file="MOD/vox/luggage_cart.vox" object="shape"/>
+		</body>
+	</group>
+</prefab>
