@@ -488,7 +488,7 @@ EMIT_W = [ns[k] for k in ("CEIL_LAMP", "COVE_LAMP", "LAMPSHADE")]
 left_glow = 0
 for kq in range(FLOORS):
     yq = fy(kq)
-    reg_ = G[bx0:bx1, yq:yq + FH - 3, bz0:bz1].copy()
+    reg_ = G[bx0:bx1, yq:yq + ns["FH"] - 3, bz0:bz1].copy()
     reg_[ns["ax0"] - bx0:ns["ax1"] - bx0, :, ns["az0"] - bz0:ns["az1"] - bz0] = 0
     left_glow += int(np.isin(reg_, EMIT_W).sum())
 glow_pw = len(re.findall(r'tags="glow pw=\d"', open("main.xml").read()))
