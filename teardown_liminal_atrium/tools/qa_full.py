@@ -744,6 +744,21 @@ sh_[bx0 - 4:bx1 + 4, G0 + 16:ns["ROOF_Y"] + 12, bz0 - 4:bz1 + 4] = True     # (a
 sh_[bx0:bx1, :, bz0:bz1] = False
 poke = int((sh_ & (FULL > 0) & ~np.isin(FULL, okf)).sum())
 report("outer walls: no carpet pattern or leaves sticking out of the facade", poke == 0, f"{poke} voxels")
+# v3.52: no dark patches on the basement floors and the ground floor (every floor cell within 5.5 m of a light)
+Lq = np.array([(l[0], l[1], l[2]) for l in ns["LIGHTS"]] + [(lt[0], lt[1], lt[2]) for r_ in ns["ROOF_SHAPES"] for lt in r_[3]])
+dark_ = []
+for (nm_, yq) in (("B2", ns["YB2"]), ("B1", YB), ("1F", G0)):
+    x0q, x1q, z0q, z1q = ns["IX0"], ns["IX1"], ns["IZ0"], ns["IZ1"]
+    fl_q = (FULL[x0q:x1q, yq - 1, z0q:z1q] > 0) & ~(FULL[x0q:x1q, yq:yq + 18, z0q:z1q] > 0).any(1)
+    Ly_ = Lq[np.abs(Lq[:, 1] - (yq + 15)) < 22]
+    Xq, Zq = np.nonzero(fl_q)
+    dq = np.full(len(Xq), 1e9)
+    for (lx_, ly_, lz_) in Ly_:
+        dq = np.minimum(dq, np.hypot(Xq + x0q - lx_, Zq + z0q - lz_))
+    dm = np.zeros(fl_q.shape, bool); dm[Xq[dq > 55], Zq[dq > 55]] = True
+    lb_, nb_ = ndimage.label(dm)
+    dark_ += [(nm_, int(c)) for c in np.bincount(lb_.ravel())[1:] if c > 60]
+report("lighting: no dark patch (> 0.6 m², over 5.5 m from any light) on B2, B1 or the ground floor", not dark_, str(dark_))
 # v3.47: HOTEL letters each their own lamp, penthouse TV, public-address announcement
 let_ = [r_ for r_ in ns["ROOF_SHAPES"] if r_[0].startswith("hotel_letter")]
 sign_left = int((FULL[bx0:bx1, RY + 10:RY + 30, bz0:bz0 + 8] == ns["STREET_LMP"]).sum())

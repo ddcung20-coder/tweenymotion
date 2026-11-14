@@ -884,6 +884,11 @@ for (x0_, x1_) in ((DX0 + 19, DX0 + 42), (DX0 + 47, DX0 + 71)):
 for (tx_, tz_) in ((ax0 + 60, az0 + 60), (ax0 + 40, az0 + 80)):              # a couple of café tables in the middle
     round_table(tx_, tz_, r=3)
     tub_chair(tx_ - 7, tz_ - 1); tub_chair(tx_ + 6, tz_ - 1)
+for (fx_, fz_) in ((ax0 + 50, az0 + 50), (ax0 + 72, az0 + 86)):              # (v3.52) brass floor lamps between them
+    box(fx_ - 1, fx_ + 2, G0, G0 + 1, fz_ - 1, fz_ + 2, BRASS)
+    box(fx_, fx_ + 1, G0 + 1, G0 + 16, fz_, fz_ + 1, BRASS)
+    box(fx_ - 1, fx_ + 2, G0 + 16, G0 + 19, fz_ - 1, fz_ + 2, LAMPSHADE)
+    light(fx_ + 1.5, G0 + 15, fz_ + 0.5, (1.0, 0.8, 0.5), 1.5, 0.2)
 ATRIUM = dict(pody=PODY, zp=ZP, door=(DX0, DX0 + 10), bar=(BAR_X0, BAR_X1, BAR_Z0), stair=(ax0, ax0 + 16, ZP - 45))
 
 # atrium lights (purple, as in the photo)
@@ -3496,6 +3501,21 @@ for z in (200, 330):
 for z in (100, 420):
     tube2(R3_X0 + 25, z)
 box(CP_X0 + 30, CP_X0 + 33, YC2 - 2, YC2, 160, IZ1 - 70, STEEL)                 # sprinkler main
+# (v3.52) more battens where the car park was dark: the north plaza, the lift lobby, mid west bays, south bays
+for (tx_, tz_) in ((sum(CP_AISLE) // 2, 455), (R3_X0 + 25, 400), (R3_X0 + 25, 465), (CP_X0 + 25, 266), (R3_X0 + 25, 150),
+                   (CP_X0 + 25, 385)):
+    tube2(tx_, tz_)
+def lobby_light(x, z, top, rgb=(1.0, 0.9, 0.75), sc=1.6):
+    box(x - 3, x + 4, top - 1, top, z - 3, z + 4, BRASS)
+    box(x - 2, x + 3, top - 2, top - 1, z - 2, z + 3, CEIL_LAMP)
+    light(x + 0.5, top - 4, z + 0.5, rgb, sc, 0.3)
+lobby_light(CP_X0 + 9, 455, YC2)                                                 # B2 NW lift lobby
+lobby_light(CP_X0 + 9, 125, YC2)                                                 # B2 SW stair lobby
+lobby_light(FS_X1 - 9, 118, YC2)                                                 # B2 SE lift lobby (food street)
+lobby_light(FS_X1 - 9, 140, YC2)
+lobby_light(FS_X1 - 9, 452, YC2)                                                 # B2 NE stair lobby (food street)
+tube(R3_X0 + 25, 140)                                                            # B1: the turn into the ramp
+tube(IX0 + 25, 280)                                                              # B1: the tunnel mouth
 for (lbl_, bays_, west_) in (("C", W2_BAYS, True), ("D", E2_BAYS, False)):
     for i, z in enumerate(bays_):
         zc = z + 12
@@ -5497,7 +5517,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.51\n"
+        f.write("name = Liminal Atrium v3.52\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
