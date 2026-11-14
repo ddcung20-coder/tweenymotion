@@ -204,6 +204,7 @@ D = AZ1 + 30
 G = np.zeros((W, H, D), dtype=np.uint8)
 LIGHTS = []   # (gx, gy, gz, rgb, scale, size, tags)
 LAMPS = []    # filled by export(): lamp shapes cut out of the world
+NEONS = []    # filled by export(): every other glowing fitting, as its own small shape (signs, neon, markers)
 GLOWS = []    # filled by export(): unlit light fittings on a hotel floor (own shapes, on the floor's circuit)
 PROPS = []    # (name, gx, gy, gz, rot_y)
 
@@ -3560,7 +3561,7 @@ for (xa, xb, za, zb) in ((ax0 - 1, ax0, BW_Z0, BW_Z1), (ax1, ax1 + 1, BW_Z0, BW_
 for x in range(ax0, ax1):
     for z in range(BW_Z0, BW_Z1):
         h_ = (x * 7 + z * 13 + (x * z) % 11) % 23
-        G[x, G0 - 1, z] = (MEMORY if h_ == 0 else POOL_LAMP if h_ == 1 else YELLOW_PAINT if h_ == 2 else CARP_BL2 if (x + z) % 2 else CARP_BL)
+        G[x, G0 - 1, z] = (ROSE if h_ == 0 else POOL_TILE if h_ == 1 else YELLOW_PAINT if h_ == 2 else CARP_BL2 if (x + z) % 2 else CARP_BL)
 for i_, lx in enumerate(LANE_X):
     for x in range(lx, lx + 12):                                                  # maple boards
         G[x, G0 - 1, FOUL_Z:DECK_Z] = WOOD_LIGHT if (x - lx) % 3 else PARQUET
@@ -5165,6 +5166,50 @@ def export():
         in_ph = all(PH_INTERIOR[2 * a] <= c_[a] < PH_INTERIOR[2 * a + 1] for a in range(3))
         GLOWS.append(dict(file=lamp_files[key], floor=k_, arr=arr, gmin=tuple(int(v) for v in mn), room="ph" if in_ph else None,
                           pos=((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)))
+    # (v3.53) every glowing voxel still in the world (signs, neon, markers, screens, the atrium cove...)
+    #      becomes its own small static shape: the game darkens a damaged shape's emissive voxels, so a
+    #      shot anywhere in a big world shape used to switch off every sign embedded in it
+    EMIT_IDX = np.array([i for i, v in PAL.items() if v[1] == "emit"], np.uint8)
+    em_ = np.isin(G, EMIT_IDX)
+    NEONS.clear()
+    if em_.any():
+        nz_ = np.argwhere(em_); lo_ = np.maximum(nz_.min(0) - 3, 0); hi_ = np.minimum(nz_.max(0) + 4, G.shape)
+        sub_ = em_[lo_[0]:hi_[0], lo_[1]:hi_[1], lo_[2]:hi_[2]]
+        nlab_, nn_ = _ndi.label(_ndi.binary_dilation(sub_, iterations=2))
+        nlab_[~sub_] = 0
+        for i_, sl_ in enumerate(_ndi.find_objects(nlab_)):
+            if sl_ is None:
+                continue
+            V = np.argwhere(nlab_[sl_] == i_ + 1) + [sl_[a].start + lo_[a] for a in range(3)]
+            if len(V) == 0:
+                continue
+            cell_ = (V - V.min(0)) // 200                      # (huge strips are cut into <= 200-voxel pieces)
+            for key_c in {tuple(c) for c in cell_}:
+                W_ = V[(cell_ == key_c).all(1)]
+                vals_ = G[W_[:, 0], W_[:, 1], W_[:, 2]].copy()
+                G[W_[:, 0], W_[:, 1], W_[:, 2]] = 0
+                # whatever only the glowing part was holding up (brass studs, chrome caps) goes with it
+                b0_ = np.maximum(W_.min(0) - 3, 0); b1_ = np.minimum(W_.max(0) + 4, G.shape)
+                loc_ = G[b0_[0]:b1_[0], b0_[1]:b1_[1], b0_[2]:b1_[2]] > 0
+                llab_, ln_ = _ndi.label(loc_)
+                if ln_:
+                    edge_ = set(np.unique(np.concatenate([llab_[[0, -1]].ravel(), llab_[:, [0, -1]].ravel(), llab_[:, :, [0, -1]].ravel()])))
+                    loose_ = np.isin(llab_, [k for k in range(1, ln_ + 1) if k not in edge_])
+                    if loose_.any():
+                        U_ = np.argwhere(loose_) + b0_
+                        vals_ = np.concatenate([vals_, G[U_[:, 0], U_[:, 1], U_[:, 2]]])
+                        G[U_[:, 0], U_[:, 1], U_[:, 2]] = 0
+                        W_ = np.concatenate([W_, U_])
+                mn = W_.min(0); mx = W_.max(0) + 1
+                arr = np.zeros(tuple(mx - mn), np.uint8)
+                arr[W_[:, 0] - mn[0], W_[:, 1] - mn[1], W_[:, 2] - mn[2]] = vals_
+                key = (arr.shape, arr.tobytes())
+                if key not in lamp_files:
+                    lamp_files[key] = f"lamp_{len(lamp_files)}"
+                    write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr)
+                sx, sy, sz = arr.shape
+                NEONS.append(dict(file=lamp_files[key], arr=arr, gmin=tuple(int(v) for v in mn),
+                                  pos=((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)))
     # Few, large shapes (<= 256 per axis), split only along party-wall planes and never
     # horizontally: Teardown judges support per shape, so seams through structure make
     # whole slabs of wall drop off when something near a seam is shot.
@@ -5351,6 +5396,8 @@ def export():
         xml.append('\t\t</vox>\n')
     for i, L in enumerate(GLOWS):
         xml.append(f'\t\t<vox name="glow{i}" tags="glow pw={L["floor"]}{' room=' + L['room'] if L.get('room') else ''}" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
+    for i, L in enumerate(NEONS):
+        xml.append(f'\t\t<vox name="neon{i}" tags="neon" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
     for i, L in enumerate(BANQUET_GLOWS):
         xml.append(f'\t\t<vox name="bqglow{i}" tags="glow room=banquet" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
     xml.append('\t</group>\n')
@@ -5517,7 +5564,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.52\n"
+        f.write("name = Liminal Atrium v3.53\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
@@ -5526,7 +5573,7 @@ def export():
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
                  doors=len(DOORS), door_files=len(door_files), curtains=len(CURTAINS), switches=len(ROOM_SWITCHES), keycards=len(KEYCARDS),
-                 mannequins=len(MANNEQUINS), decor_dreamers=len(DECOR_MQ), lamp_shapes=len(lamps), glow_shapes=len(GLOWS), lamp_files=len(lamp_files), lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
+                 mannequins=len(MANNEQUINS), decor_dreamers=len(DECOR_MQ), lamp_shapes=len(lamps), glow_shapes=len(GLOWS), neon_shapes=len(NEONS), lamp_files=len(lamp_files), lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
                  rooms=len(room_log), lit=sum(1 for r in room_log if r[3].startswith("lit")),
                  tv=sum(1 for r in room_log if r[3] == "tv"))
     print(json.dumps(stats))

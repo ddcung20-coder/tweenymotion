@@ -77,6 +77,9 @@ for (z0, z1, XS) in BANDS:
             grounded = set(np.unique(lab[:, ys_.min():ys_.min() + 2, :])) - {0}
             isl += n - len(grounded)
 report("no floating pieces inside any world shape", isl == 0, f"{isl} islands")
+EMIT_ = [i for i, v in PAL.items() if v[1] == "emit"]
+em_left = int(np.isin(G, EMIT_).sum())
+report("no glowing voxel left inside a world shape (shots nearby can't switch signs off)", em_left == 0, f"{em_left} left, {len(ns['NEONS'])} neon shapes")
 for L in ns["LAMPS"]:
     pass
 buried = sum(1 for l in ns["LIGHTS"] if FULL[int(l[0]), int(l[1]), int(l[2])] > 0)
