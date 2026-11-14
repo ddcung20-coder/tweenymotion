@@ -441,14 +441,14 @@ report(f"car park: {len(ns['WEST_BAYS']) + len(ns['EAST_BAYS'])} bays painted, f
 GH_ = ns["GLASSHOUSE"]; RY_ = ns["ROOF_Y"]; gx_c, gz_c = GH_["plaza"]
 path_block = 0
 for z in range(GH_["z0"] + 16, GH_["z1"] - 16):        # (foyer / terrace have urns, a planter, benches)
-    if abs(z - gz_c) > 21:
+    if abs(z - gz_c) > ns["PR"] + 1:
         path_block += int((G[ns["PW0"] + 1:ns["PW1"] - 1, RY_:RY_ + 17, z] > 0).sum())
 LEAFS = [ns[k] for k in ("LEAF", "LEAF2", "LEAF3", "LAWN")]
 FLOWERS = [ns[k] for k in ("ROSE", "DREAM_PINK", "DREAM_LILAC", "DREAM_CLOUD", "WALL_BLUE", "WALL_MAUVE")]
 sub_ = FULL[GH_["x0"]:GH_["x1"], RY_:GH_["eave"], GH_["z0"]:GH_["z1"]]
 n_leaf, n_flower = int(np.isin(sub_, LEAFS).sum()), int(np.isin(sub_, FLOWERS).sum())
 pond = [p_ for p_ in ns["POOLS"] if abs(p_[0] - (RY_ + 4.5)) < 0.01]
-pond_ok = len(pond) == 1 and all(np.hypot(px_ - gx_c, pz_ - gz_c) < 10.5 for (px_, pz_) in pond[0][2])
+pond_ok = len(pond) == 1 and all(np.hypot(px_ - gx_c, pz_ - gz_c) < ns["POND_R"] for (px_, pz_) in pond[0][2])
 report(f"rooftop glasshouse: path clear, {n_leaf} leaf + {n_flower} flower voxels, pond water inside its rim",
        path_block == 0 and n_leaf > 4000 and n_flower > 800 and pond_ok, f"path_block={path_block} pond_ok={pond_ok}")
 RYq = ns["ROOF_Y"]; rbad = 0
@@ -483,6 +483,20 @@ for d_ in ns["DOORS"]:
     if (pocket > 0).any() or not (skin > 0).all():
         pk_bad.append(t_["shaft"] + "/" + t_["floor"])
 report("elevator landing doors open into a hidden wall pocket (28 doors)", not pk_bad, str(pk_bad[:8]))
+# blackout: no glowing fitting left in the world shapes of a hotel floor (lamps / glows are own shapes on the circuit)
+EMIT_W = [ns[k] for k in ("CEIL_LAMP", "COVE_LAMP", "LAMPSHADE")]
+left_glow = 0
+for kq in range(FLOORS):
+    yq = fy(kq)
+    reg_ = G[bx0:bx1, yq:yq + FH - 3, bz0:bz1].copy()
+    reg_[ns["ax0"] - bx0:ns["ax1"] - bx0, :, ns["az0"] - bz0:ns["az1"] - bz0] = 0
+    left_glow += int(np.isin(reg_, EMIT_W).sum())
+glow_pw = len(re.findall(r'tags="glow pw=\d"', open("main.xml").read()))
+report(f"blackout covers every light fitting on the hotel floors ({glow_pw} unlit fittings on the circuit)", left_glow <= 6 * FLOORS and glow_pw > 100, f"{left_glow} emissive voxels left in world shapes")
+# helicopter: centre of mass inside the skids, well ahead of their rear ends
+hb_q = ns["HELI_BODY"]; hv_ = np.argwhere(hb_q > 0); sk_ = np.argwhere(hb_q[:, 0:2, :] > 0)
+com_c = hv_[:, 2].mean()
+report(f"helicopter sits level: centre of mass c={com_c:.1f}, skids c {sk_[:, 2].min()}-{sk_[:, 2].max()}", sk_[:, 2].min() + 8 < com_c < sk_[:, 2].max() - 15)
 report(f"{len(ns['CAR_SPOTS'])} car spots: free space + ground for a base-game vehicle", not car_bad and len(ns["CAR_SPOTS"]) >= 7, str(car_bad))
 RO = ns["ROAD"]; RD_ = ns["RD"]
 r_isl = 0

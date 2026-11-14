@@ -197,6 +197,7 @@ D = AZ1 + 30
 G = np.zeros((W, H, D), dtype=np.uint8)
 LIGHTS = []   # (gx, gy, gz, rgb, scale, size, tags)
 LAMPS = []    # filled by export(): lamp shapes cut out of the world
+GLOWS = []    # filled by export(): unlit light fittings on a hotel floor (own shapes, on the floor's circuit)
 PROPS = []    # (name, gx, gy, gz, rot_y)
 
 def box(x0, x1, y0, y1, z0, z1, c):
@@ -1547,6 +1548,8 @@ def elevators(fr, key):
         # electrical room of this floor: switchgear (separate shape: E switches the floor's power,
         # destroying it blacks the floor out for good), transformer, cable tray, safety markings
         fr.box(26, 35, y, y + 21, -T_PART, 0, 0)
+        add_door(fr, 26, 35, y, y + 21, -1, 0, lambda a, b, c, A, B, C: steel_door(A - 1 - a, b, c, A, B, C),
+                 hinge=(35, 0), open_dir=(0, 1), stop=DARK_METAL)
         fr.paint(22, 44, y - 1, y, 0, 44, STAIR_CONC)
         fr.box(24, 44, y - 1, y, 33, 34, YELLOW_PAINT)                          # keep-clear line
         def gear_style(a_, b_, c_, A, B, C):
@@ -2992,7 +2995,9 @@ GX0, GX1, GZ0, GZ1 = bx0 + 8, ax0 - 8, 196, 396        # 5.6 x 20 m footprint
 GXC = (GX0 + GX1) // 2
 GEAVE = ROOF_Y + 32                                       # glass walls up to here, the vault shape above
 PCZ = (GZ0 + GZ1) // 2                                    # round plaza / pond centre
-PW0, PW1 = GXC - 6, GXC + 6                               # central path
+PW0, PW1 = GXC - 10, GXC + 10                             # central path (2 m)
+PR = 22                                                   # plaza radius
+POND_R = 7.5                                              # pond water radius
 SEAMS_Z = (az0 + 2 * LONG_BAY_W, az0 + 6 * LONG_BAY_W)    # world shape seams: keep plants clear of them
 box(GX0 - 2, GX1 + 2, ROOF_Y, GEAVE, GZ0 - 2, GZ1 + 2, 0)    # (a roof vent stood here)
 def g_rad(x, z):
@@ -3001,16 +3006,16 @@ def g_band(x, z):
     return x < GX0 + 3 or x >= GX1 - 3 or z < GZ0 + 3 or z >= GZ1 - 3
 FOYER1, TERR0 = GZ0 + 16, GZ1 - 16                        # tiled entrance foyer / north terrace
 def g_paved(x, z):
-    return PW0 <= x < PW1 or g_rad(x, z) < 20 or z < FOYER1 or z >= TERR0
+    return PW0 <= x < PW1 or g_rad(x, z) < PR or z < FOYER1 or z >= TERR0
 # ---- floor: encaustic tiles on the path, foyer and terrace, a rosette on the plaza
 for x in range(GX0 + 3, GX1 - 3):
     for z in range(GZ0 + 3, GZ1 - 3):
         if not g_paved(x, z):
             continue
         r_ = g_rad(x, z)
-        if r_ < 20:
+        if r_ < PR:
             ang = (np.degrees(np.arctan2(z + 0.5 - PCZ, x + 0.5 - GXC)) + 360) % 45
-            c = MARBLE_B if r_ >= 18.5 else (CARP_OR if (ang < 4 or ang > 41) and r_ > 13 else
+            c = MARBLE_B if r_ >= PR - 1.5 else (CARP_OR if (ang < 4 or ang > 41) and r_ > POND_R + 3 else
                                             (MARBLE_W if int(r_) % 3 == 0 else MARBLE_BG))
         else:
             dz_ = abs(((z - GZ0) % 12) - 6); dx_ = abs(((x - GXC) % 12) - 6) if not (PW0 <= x < PW1) else abs(x + 0.5 - GXC)
@@ -3232,13 +3237,13 @@ for (xw, dirx) in ((GX0 + 3, 1), (GX1 - 4, -1)):
 for x in range(GXC - 14, GXC + 14):
     for z in range(PCZ - 14, PCZ + 14):
         r_ = g_rad(x, z)
-        if r_ < 10.5:
+        if r_ < POND_R:
             G[x, ROOF_Y - 1, z] = MARBLE_B2
-        elif r_ < 13:
+        elif r_ < POND_R + 2:
             box(x, x + 1, ROOF_Y, ROOF_Y + 5, z, z + 1, BASE_STONE if (x + z) % 3 else BASE_STONE2)
-        if 10.5 <= r_ < 13.6:
+        if POND_R <= r_ < POND_R + 2.6:
             G[x, ROOF_Y + 5, z] = MARBLE_W
-POOLS.append((ROOF_Y + 4.5, 4.5, [(GXC + 10.2 * np.cos(np.radians(a)), PCZ + 10.2 * np.sin(np.radians(a))) for a in range(0, 360, 30)],
+POOLS.append((ROOF_Y + 4.5, 4.5, [(GXC + (POND_R - 0.3) * np.cos(np.radians(a)), PCZ + (POND_R - 0.3) * np.sin(np.radians(a))) for a in range(0, 360, 30)],
               dict(wave=0.01, ripple=0.3, motion=0.04, foam=0)))
 box(GXC - 1, GXC + 1, ROOF_Y, ROOF_Y + 9, PCZ - 1, PCZ + 1, MARBLE_W)              # column
 for x in range(GXC - 4, GXC + 4):
@@ -3259,8 +3264,8 @@ for x in range(GXC - 3, GXC + 3):                                               
             d2 = (x + 0.5 - GXC) ** 2 + (z + 0.5 - PCZ) ** 2 + ((y - ROOF_Y - 12) * 1.2) ** 2
             if d2 < 7.5 and G[x, y, z] == 0:
                 G[x, y, z] = GRNG.choice((LEAF2, LEAF, ROSE, DREAM_PINK, DREAM_CLOUD)) if y > ROOF_Y + 12 else LEAF3
-for i in range(8):                                                                 # lily pads (stem from the basin floor)
-    a_ = np.radians(i * 45 + GRNG.uniform(-15, 15)); rr_ = GRNG.uniform(5.0, 8.4)
+for i in range(6):                                                                 # lily pads (stem from the basin floor)
+    a_ = np.radians(i * 60 + GRNG.uniform(-15, 15)); rr_ = GRNG.uniform(3.8, POND_R - 1.6)
     lx_ = int(GXC + rr_ * np.cos(a_)); lz_ = int(PCZ + rr_ * np.sin(a_))
     box(lx_, lx_ + 1, ROOF_Y, ROOF_Y + 4, lz_, lz_ + 1, LEAF3)
     for dx in range(-1, 2):
@@ -3270,7 +3275,7 @@ for i in range(8):                                                              
     if i % 3 == 0:
         G[lx_, ROOF_Y + 5, lz_] = DREAM_PINK; G[lx_, ROOF_Y + 6, lz_] = DREAM_CLOUD
 for a_ in (60, 240):
-    lx_ = int(round(GXC + 10 * np.cos(np.radians(a_)))); lz_ = int(round(PCZ + 10 * np.sin(np.radians(a_))))
+    lx_ = int(round(GXC + (POND_R - 0.8) * np.cos(np.radians(a_)))); lz_ = int(round(PCZ + (POND_R - 0.8) * np.sin(np.radians(a_))))
     G[lx_, ROOF_Y, lz_] = POOL_LAMP
     light(lx_ + 0.5 - np.cos(np.radians(a_)) * 1.5, ROOF_Y + 1.5, lz_ + 0.5 - np.sin(np.radians(a_)) * 1.5, (0.65, 0.85, 1.0), 0.9, 0.1)
 # ---- benches facing the pond, and on the north terrace
@@ -3290,8 +3295,6 @@ def g_bench(x0_, z0_, along_z, face):
         bzk = z0_ if face > 0 else z0_ + 3
         box(x0_, x0_ + 12, ROOF_Y + 5, ROOF_Y + 10, bzk, bzk + 1, WOOD_MED)
         box(x0_ + 1, x0_ + 11, ROOF_Y + 6, ROOF_Y + 7, bzk, bzk + 1, WOOD_DARK)
-g_bench(GXC - 19, PCZ - 6, True, 1)
-g_bench(GXC + 15, PCZ - 6, True, -1)
 g_bench(GXC - 22, GZ1 - 10, False, -1)
 g_bench(GXC + 10, GZ1 - 10, False, -1)
 # north terrace: three-tier marble planter with trailing flowers
@@ -3312,7 +3315,7 @@ for x in range(GXC - 3, GXC + 3):
             if d2 < 7 and G[x, y, z] == 0:
                 G[x, y, z] = GRNG.choice((LEAF2, DREAM_LILAC, DREAM_CLOUD, LEAF)) if y > ROOF_Y + 11 else LEAF3
 # entrance foyer: two terracotta urns with clipped bay balls
-for ux_ in (GXC - 13, GXC + 12):
+for ux_ in (GXC - 17, GXC + 16):
     uz_ = GZ0 + 9
     for x in range(ux_ - 4, ux_ + 5):
         for z in range(uz_ - 4, uz_ + 5):
@@ -3427,6 +3430,8 @@ def helicopter_model():
     for c in range(48, 114):
         hs = 4 - (c - 48) / 66 * 2.2; yc = 20 + (c - 48) / 66 * 6
         sel = (np.abs(A[:, :, c] - ac) <= hs) & (np.abs(B[:, :, c] - yc) <= hs)
+        if c < 110:                                                       # hollow boom: a light tail
+            sel &= ~((np.abs(A[:, :, c] - ac) <= hs - 1) & (np.abs(B[:, :, c] - yc) <= hs - 1))
         m[:, :, c][sel] = BLANKET_C
         m[:, :, c][sel & (B[:, :, c] >= yc + hs - 1)] = SHEET
     for c in range(102, 119):
@@ -3441,10 +3446,12 @@ def helicopter_model():
     m[10:14, 32:38, 25:29] = DARK_METAL
     m[10:14, 29:34, 109:116] = DARK_METAL                                                     # tail rotor gearbox on the fin
     # skids + struts
+    m[7:17, 7:9, 6:20] = ELEV_RAIL                                     # ballast under the cockpit floor (heavy metal)
     for sa in (2, 20):
-        m[sa:sa + 2, 0:2, 4:54] = DARK_METAL
+        m[sa:sa + 2, 0:2, 4:66] = DARK_METAL                                    # skids reach well behind the mast
+        m[sa:sa + 2, 2:3, 64:67] = DARK_METAL
         m[sa:sa + 2, 2:3, 2:5] = DARK_METAL
-        for sc in (14, 40):
+        for sc in (14, 46):
             m[sa:sa + 2, 2:10, sc:sc + 2] = DARK_METAL
             m[min(sa, 6):max(sa + 2, 18), 8:10, sc:sc + 2] = DARK_METAL
     # nav lights, landing light
@@ -3604,6 +3611,30 @@ def export():
         L["pos"] = ((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)
         L["arr"] = arr; L["gmin"] = tuple(int(v) for v in mn)
     LAMPS[:] = lamps
+    # ---- light fittings with no light of their own (decor wall sconces, the unlit half of the ceiling
+    #      lamps) on a hotel floor become small shapes on that floor's circuit, so a blackout darkens them too
+    from scipy import ndimage as _ndi
+    GLOW_IDX = np.array([CEIL_LAMP, COVE_LAMP, LAMPSHADE], np.uint8)
+    gx0_, gx1_, gy0_, gy1_, gz0_, gz1_ = bx0, bx1, G0 - SLAB_T, ROOF_Y, bz0, bz1
+    glab_, gn_ = _ndi.label(np.isin(G[gx0_:gx1_, gy0_:gy1_, gz0_:gz1_], GLOW_IDX))
+    GLOWS.clear()
+    for i_, sl_ in enumerate(_ndi.find_objects(glab_)):
+        V = np.argwhere(glab_[sl_] == i_ + 1) + [sl_[0].start + gx0_, sl_[1].start + gy0_, sl_[2].start + gz0_]
+        c_ = V.mean(0)
+        k_ = power_floor(int(c_[0]), int(c_[1]), int(c_[2]))
+        if k_ is None or len(V) < 2:                  # (single dots: the elevator floor dials, own supply)
+            continue
+        mn = V.min(0); mx = V.max(0) + 1
+        arr = np.zeros(tuple(mx - mn), np.uint8)
+        arr[V[:, 0] - mn[0], V[:, 1] - mn[1], V[:, 2] - mn[2]] = G[V[:, 0], V[:, 1], V[:, 2]]
+        G[V[:, 0], V[:, 1], V[:, 2]] = 0
+        key = (arr.shape, arr.tobytes())
+        if key not in lamp_files:
+            lamp_files[key] = f"lamp_{len(lamp_files)}"
+            write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr)
+        sx, sy, sz = arr.shape
+        GLOWS.append(dict(file=lamp_files[key], floor=k_, arr=arr, gmin=tuple(int(v) for v in mn),
+                          pos=((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)))
     # Few, large shapes (<= 256 per axis), split only along party-wall planes and never
     # horizontally: Teardown judges support per shape, so seams through structure make
     # whole slabs of wall drop off when something near a seam is shot.
@@ -3779,6 +3810,8 @@ def export():
             rel = (gx * 0.1 - CX - px_, gy * 0.1 - py_, gz * 0.1 - CZ - pz_)
             xml.append(light_xml(rel, rgb, scale, size, ltags=ltags))
         xml.append('\t\t</vox>\n')
+    for i, L in enumerate(GLOWS):
+        xml.append(f'\t\t<vox name="glow{i}" tags="glow pw={L["floor"]}" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
     xml.append('\t</group>\n')
     for pool_ in POOLS:
         sy_, dep, pts = pool_[:3]
@@ -3940,7 +3973,7 @@ def export():
                 "tags = Map\n")
     stats = dict(grid=[W, H, D], chunks=len(voxes), voxels=int(total), lights=len(LIGHTS), props=len(PROPS),
                  doors=len(DOORS), door_files=len(door_files), curtains=len(CURTAINS), switches=len(ROOM_SWITCHES), keycards=len(KEYCARDS),
-                 mannequins=len(MANNEQUINS), decor_dreamers=len(DECOR_MQ), lamp_shapes=len(lamps), lamp_files=len(lamp_files), lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
+                 mannequins=len(MANNEQUINS), decor_dreamers=len(DECOR_MQ), lamp_shapes=len(lamps), glow_shapes=len(GLOWS), lamp_files=len(lamp_files), lights_free=len(loose), elevators=len(ELEVATORS), calls=len(CALLS),
                  rooms=len(room_log), lit=sum(1 for r in room_log if r[3].startswith("lit")),
                  tv=sum(1 for r in room_log if r[3] == "tv"))
     print(json.dumps(stats))
@@ -3956,7 +3989,7 @@ if __name__ == "__main__":
             reg = Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz]
             reg[arr > 0] = arr[arr > 0]
         stamps = [(c_["arr"], c_["gmin"]) for c_ in CURTAINS] + [(w_[0], w_[1]) for w_ in ROOM_SWITCHES] + [(g_["arr"], g_["gmin"]) for g_ in SWITCHGEAR] + [(k_["arr"], k_["gmin"]) for k_ in KEYCARDS] + \
-                 [(m_["arr"], m_["gmin"]) for m_ in MANNEQUINS + DECOR_MQ] + [(BELL["arr"], BELL["gmin"])] + [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
+                 [(m_["arr"], m_["gmin"]) for m_ in MANNEQUINS + DECOR_MQ] + [(BELL["arr"], BELL["gmin"])] + [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(L_["arr"], L_["gmin"]) for L_ in GLOWS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
             + [(c_[0], c_[1]) for c_ in CALLS]
         for arr, (gx, gy, gz) in stamps:
             sx, sy, sz = arr.shape

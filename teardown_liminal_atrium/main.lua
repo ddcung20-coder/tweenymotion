@@ -434,7 +434,7 @@ function floorPowered(k)
 end
 
 local function powerOf(k)
-	if not power[k] then power[k] = { on = true, dead = false, gears = {}, lights = {} } end
+	if not power[k] then power[k] = { on = true, dead = false, gears = {}, lights = {}, glows = {} } end
 	return power[k]
 end
 
@@ -447,6 +447,12 @@ local function powerInit()
 			local p = powerOf(k)
 			p.lights[#p.lights + 1] = ls[i]
 		end
+	end
+	-- unlit fittings (decor sconces, the unlit ceiling lamps): their glow follows the floor's power
+	local gl = FindShapes("glow", true)
+	for i = 1, #gl do
+		local p = powerOf(tagNum(gl[i], "pw", 0))
+		p.glows[#p.glows + 1] = gl[i]
 	end
 	local gs = FindShapes("switchgear", true)
 	for i = 1, #gs do
@@ -711,6 +717,12 @@ local function applyFloor(k)
 	for i = 1, #p.lights do
 		local l = p.lights[i]
 		if not inRoom[l] then setLamp(l, live) end      -- corridors, lobby, electrical rooms
+	end
+	for i = 1, #p.glows do
+		local sh = p.glows[i]
+		if IsHandleValid(sh) and SetShapeEmissiveScale then
+			SetShapeEmissiveScale(sh, (live and not (IsShapeBroken and IsShapeBroken(sh))) and 1 or 0)
+		end
 	end
 	for i = 1, #p.gears do
 		local g = p.gears[i]
@@ -1398,7 +1410,16 @@ local function heliUpdate(dt)
 	if heli.tail ~= 0 and IsHandleValid(heli.tail) then
 		SetBodyAngularVelocity(heli.tail, VecAdd(av, VecScale(right, 40 * heli.rpm)))
 	end
-	if heli.broken or heli.rotorLost or heli.rpm < 0.2 then return end
+	if heli.broken or heli.rotorLost or heli.rpm < 0.2 then
+		-- parked or spinning down on its skids: keep it level (a gyro with a torque limit, so a crash or
+		-- an explosion can still flip it; once it is past 40 degrees it is left alone)
+		if not heli.broken and up[2] > 0.77 then
+			local _, yawP = GetQuatEuler(t.rot)
+			local m = GetBodyMass(b)
+			ConstrainOrientation(b, 0, t.rot, QuatEuler(0, yawP, 0), 1.0, m * 9.81 * 1.2 * dt)
+		end
+		return
+	end
 	local fwd, turn, lift = 0, 0, 0
 	if heliDriven() then
 		if InputDown("up") then fwd = fwd + 1 end
