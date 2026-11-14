@@ -35,7 +35,7 @@ def P(i, rgb, fin="diffuse", **kw):
 GLASS      = P(1, (150, 172, 192), "glass")
 GLASS_EXT  = P(2, (95, 115, 135), "glass")
 GLASS_DOOR = P(3, (170, 190, 200), "glass")
-CEIL_LAMP  = P(4, (255, 238, 205), "emit", flux=2, weight=0.8)
+CEIL_LAMP  = P(4, (255, 238, 205), "emit", flux=2, weight=0.55)   # (v3.48: softer, less glare)
 COVE_LAMP  = P(5, (220, 196, 255), "emit", flux=2, weight=0.7)
 STREET_LMP = P(6, (255, 210, 150), "emit", flux=3, weight=1.0)
 EXIT_SIGN  = P(7, (60, 220, 90), "emit", flux=2, weight=0.7)
@@ -546,13 +546,13 @@ box(IX0, QX, YB2 - 1, YB2, IZ0, IZ1, STAIR_CONC)
 box(QX, IX1, YB2 - 1, YB2, IZ0, IZ1, FLOOR_STN)
 box(QX - 2, QX + 2, YB2, YC2, IZ0, IZ1, SLAB)
 R3_X0, R3_X1 = PX1 - 50, PX1 - 2      # ramp B1 -> B2: along the x divider, in the B1 car park's east bay strip
-R3_TOP, R3_BOT = 362, 182            # B1 level at z >= R3_TOP (the turn), B2 level at z <= R3_BOT (heading south)
-def ramp3_y(z):
-    if z >= R3_TOP:
+R3_TOP, R3_BOT = 180, 360            # B1 level at z <= R3_TOP (the wide south end: room to turn), B2 level at
+def ramp3_y(z):                      # z >= R3_BOT (cars come out heading north into the open north end of B2)
+    if z <= R3_TOP:
         return YB
-    if z <= R3_BOT:
+    if z >= R3_BOT:
         return YB2
-    return YB2 + int(round((z - R3_BOT) * (YB - YB2) / (R3_TOP - R3_BOT)))
+    return YB - int(round((z - R3_TOP) * (YB - YB2) / (R3_BOT - R3_TOP)))
 
 # ---- ramp from the street (south-west) down along the west side, then a tunnel into the car park
 RX0, RX1 = 6, 54
@@ -1327,6 +1327,8 @@ def build_corridors():
                 fr.box(u + 3, u + 5, y + 10, y + 22, COR_W + 2, COR_W + 3, FRAME)
                 fr.box(u - 1, u + 9, y + 9, y + 10, COR_W - 1, COR_W + T_EXT + 1, LINTEL)
                 fr.box(u - 1, u + 9, y + 22, y + 24, COR_W + 1, COR_W + T_EXT + 1, LINTEL)
+                for yy in range(y + 11, y + 22, 2):                                # half-open blind: no bright slab of glass
+                    fr.box(u, u + 8, yy, yy + 1, COR_W + 1, COR_W + 2, SHEET)
                 mark(u - 2, u + 10)
             # fire extinguisher cabinet near each end
             for u in (24, L - 30):
@@ -2510,7 +2512,7 @@ ftext(Frame(192 - 1, PZ1, -1, 0, 0, 1), "MALL", 8, YC - 1, -1, CEIL_LAMP)
 AISLE0, AISLE1 = IX0 + 50, PX1 - 2 - 50
 BAY_W = 25
 WEST_BAYS = [166 + i * BAY_W for i in range(3)] + [322 + i * BAY_W for i in range(3)]     # bay start z
-EAST_BAYS = [IZ0 + i * BAY_W for i in range(3)]          # (north of these: the ramp down to B2)
+EAST_BAYS = [365]                                         # (the south end is the turn into the ramp down to B2)
 STAIR_RECTS = []
 for key_ in ("SW", "NE"):
     xa_, xb_, za_, zb_ = corner[key_]._rect(-T_PART, CB, -T_PART, CB)
@@ -2533,7 +2535,8 @@ for z in range(IZ0, PZ1):
     if not in_stair(AISLE0, z, 0):
         box(AISLE0, AISLE0 + 1, YB - 1, YB, z, z + 1, YELLOW_PAINT)
 box(AISLE1 - 1, AISLE1, YB - 1, YB, IZ0, PZ1, YELLOW_PAINT)
-COLS = [(AISLE0 + 3, 191), (AISLE0 + 3, 347), (AISLE1 - 3, 138), (AISLE1 - 3, 213), (AISLE1 - 3, 308), (AISLE1 - 3, 358)]
+COLS = []                            # (v3.48: no columns on the aisle edges -- cars need the room)
+BEAM_Z = [138, 191, 213, 308, 347, 358]
 for (cxc, czc) in COLS:
     box(cxc - 3, cxc + 3, YB, YC, czc - 3, czc + 3, SLAB)
     for yy in range(YB, YB + 8, 2):
@@ -2559,7 +2562,7 @@ for z in (130, 210, 350):
             tube(tx, z)
 box(IX0 + 10, IX0 + 12, YC - 2, YC, IZ0, PZ1, STEEL); box(PX1 - 12, PX1 - 10, YC - 2, YC, IZ0, PZ1, STEEL)
 ftext(Frame(IX0 - 1, TZ1 - 1, 0, -1, -1, 0), "EXIT", -12, YC - 2, -1, EXIT_SIGN)       # on the wall beside the tunnel mouth
-for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "E", IZ0), ("stationwagon", "car_c", "W", 216),
+for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "W", 166), ("stationwagon", "car_c", "W", 216),
                                 ("suv1", "car_b", "W", 372)):
     cxp_ = IX0 + 28 if side_ == "W" else PX1 - 2 - 28          # rear 0.2 m off the wall (5.2 m car)
     czp_ = z0_ + BAY_W / 2
@@ -2584,7 +2587,7 @@ for (xa, xb, za, zb) in ((IX0 - 1, IX0, IZ0, PZ1), (IX0, PX1 - 2, IZ0 - 1, IZ0),
     paint(xa, xb, YB, YB + 10, za, zb, WALL_GREY, [SLAB])
     paint(xa, xb, YB + 10, YB + 11, za, zb, YELLOW_PAINT, [SLAB])
 # downstand beams across the ceiling (in line with the columns), sprinkler main, cable tray, supply duct
-for bz in sorted(set(c_[1] for c_ in COLS)):      # (all clear of the EXIT sign over the tunnel mouth)
+for bz in BEAM_Z:      # (all clear of the EXIT sign over the tunnel mouth)
     xs_ = [x for x in range(IX0, PX1 - 2) if garage_ok(x, x + 1, bz - 2, bz + 2, 1)]
     for x in xs_:
         box(x, x + 1, YC - 2, YC, bz - 2, bz + 2, SLAB)
@@ -2673,7 +2676,7 @@ def inside(poly, x, z):
     return all(v >= 0 for v in sg) or all(v <= 0 for v in sg)
 PUDDLES = []
 for (pcx, pcz, rx, rz) in ((161, 198, 11, 8), (167, 338, 9, 8), (108, 296, 11, 7), (100, 243, 8, 7),
-                          (205, 125, 9, 7), (150, 380, 10, 7), (100, 346, 6, 6), (172, 128, 13, 9)):
+                          (205, 118, 9, 7), (150, 380, 10, 7), (100, 346, 6, 6), (172, 128, 13, 9)):
     pts = []
     for a_ in range(0, 360, 30):
         f_ = BRNG.uniform(0.7, 1.0)
@@ -3176,28 +3179,28 @@ ftext(fs_sign, "PARKING", -((B2_DOOR[0] + B2_DOOR[1]) // 2), Y2 + 31, -1, CEIL_L
 
 # ---- B2 car park (under the B1 car park): ramp from B1, bays, aisle, columns, lights, signage, cars
 CP_AISLE = (AISLE0, AISLE1)                                  # the same aisle line as B1 above (x 138..184)
-# the ramp: B1's east bay strip slopes down along the divider from the turn at the north end (B1 level)
-# to B2 at the south (cars come out heading south, turn into the aisle); solid under its deck
-for z in range(R3_BOT, R3_TOP):
+# the ramp: B1's east bay strip slopes down along the divider from the wide south end of the B1 car park
+# (room to turn in) to the open north end of B2 (cars come out heading north); solid under its deck
+for z in range(R3_TOP, R3_BOT):
     ry = ramp3_y(z)
     box(R3_X0, R3_X1, ry, YC - 2, z, z + 1, 0)                 # (B1's ceiling fittings stay)
     box(R3_X0 - 2, R3_X1, Y2 - 1, ry - 1, z, z + 1, SLAB)
     box(R3_X0, R3_X1, ry - 1, ry, z, z + 1, ASPHALT2 if (z // 3) % 2 == 0 else STAIR_CONC)
     box(R3_X0 - 2, R3_X0, ry - 1, ry + 2, z, z + 1, CURB)
-box(R3_X0 + 23, R3_X0 + 25, YB - 1, YB, R3_TOP, PZ1 - 4, PAINT_LINE)
-# B1 side: a 1.1 m parapet with a steel rail along the aisle and across the south end of the drop
-box(R3_X0 - 2, R3_X0, YB, YB + 10, R3_BOT - 2, R3_TOP, SLAB)
-box(R3_X0 - 2, R3_X1, YB, YB + 10, R3_BOT - 2, R3_BOT, SLAB)
-box(R3_X0 - 2, R3_X0, YB + 10, YB + 11, R3_BOT - 2, R3_TOP, STEEL)
-box(R3_X0 - 2, R3_X1, YB + 10, YB + 11, R3_BOT - 2, R3_BOT, STEEL)
-for z in range(R3_BOT, R3_TOP, 6):
+box(R3_X0 + 23, R3_X0 + 25, YB - 1, YB, R3_TOP - 30, R3_TOP, PAINT_LINE)
+# B1 side: a 1.1 m parapet with a steel rail along the aisle and across the north end of the drop
+box(R3_X0 - 2, R3_X0, YB, YB + 10, R3_TOP, R3_BOT + 2, SLAB)
+box(R3_X0 - 2, R3_X1, YB, YB + 10, R3_BOT, R3_BOT + 2, SLAB)
+box(R3_X0 - 2, R3_X0, YB + 10, YB + 11, R3_TOP, R3_BOT + 2, STEEL)
+box(R3_X0 - 2, R3_X1, YB + 10, YB + 11, R3_BOT, R3_BOT + 2, STEEL)
+for z in range(R3_TOP, R3_BOT, 6):
     paint(R3_X0 - 2, R3_X0, YB, YB + 10, z, z + 3, YELLOW_PAINT, [SLAB])
-# signs over the top of the ramp (B1, read by a car coming up the aisle) and on the wall at the bottom (B2)
-box(PX1 - 3, PX1 - 2, YB + 20, YB + 29, R3_TOP + 4, R3_TOP + 32, TIRE)      # on the divider at the top of the ramp
-ftext(Frame(PX1 - 3, 0, 0, 1, 1, 0), "TO B2", R3_TOP + 18, YB + 27, -1, POOL_LAMP)
+# "TO B2" on the divider at the top of the ramp (read from the B1 turn), "B1" painted big at the bottom wall
+box(PX1 - 3, PX1 - 2, YB + 20, YB + 29, R3_TOP - 34, R3_TOP - 6, TIRE)
+ftext(Frame(PX1 - 3, 0, 0, 1, 1, 0), "TO B2", R3_TOP - 20, YB + 27, -1, POOL_LAMP)
 # B2 floor: bays, aisle, walkway from the food-street door to the NW lift lobby
 W2_BAYS = [166 + i * 25 for i in range(10)]                  # against the west wall (x 88..138), between the cores
-E2_BAYS = [366 + i * 25 for i in range(4)]                   # against the divider, north of the ramp (x 186..234)
+E2_BAYS = [IZ0 + 4 + i * 25 for i in range(3)]              # against the divider, south of the ramp (x 186..234)
 for (bays_, xa_, xb_) in ((W2_BAYS, CP_X0, CP_AISLE[0]), (E2_BAYS, CP_AISLE[1] + 2, CP_X1)):
     for z0_ in bays_:
         for zl_ in (z0_, z0_ + 24):
@@ -3209,18 +3212,21 @@ box(CP_AISLE[1] - 1, CP_AISLE[1], Y2 - 1, Y2, E2_BAYS[0], E2_BAYS[-1] + 25, YELL
 for x in range(NWr[1], QX - 2):                              # green walkway (zebra) to the lift lobby
     for z in range(B2_DOOR[0], B2_DOOR[1]):
         G[x, Y2 - 1, z] = DUMPSTER if (x // 3) % 2 else PAINT_LINE
-for (xa_, xb_, za_, zb_) in ((CP_AISLE[0], R3_X1, IZ0, R3_BOT - 2), (CP_X0, 105, IZ0, 166)):   # turn below the ramp, stair walk
-    for x in range(xa_, xb_):
-        for z in range(za_, zb_):
-            if G[x, Y2 - 1, z] == STAIR_CONC and G[x, Y2, z] == 0 and (x + z) % 7 == 0:
-                G[x, Y2 - 1, z] = YELLOW_PAINT
-for (ax_, az_, dz_) in ((sum(CP_AISLE) // 2 - 1, 250, 1), (sum(CP_AISLE) // 2 - 1, 380, 1), (R3_X0 + 22, 140, -1)):
+for x in range(CP_X0, 105):                                   # (walk to the stair door: no parking)
+    for z in range(IZ0, 166):
+        if G[x, Y2 - 1, z] == STAIR_CONC and G[x, Y2, z] == 0 and (x + z) % 7 == 0:
+            G[x, Y2 - 1, z] = YELLOW_PAINT
+for (xa_, xb_, za_, zb_) in ((CP_AISLE[0] + 4, R3_X1 - 4, R3_BOT + 8, B2_DOOR[0] - 6),):   # turning box at the ramp's foot
+    box(xa_, xb_, Y2 - 1, Y2, za_, za_ + 1, YELLOW_PAINT); box(xa_, xb_, Y2 - 1, Y2, zb_ - 1, zb_, YELLOW_PAINT)
+    box(xa_, xa_ + 1, Y2 - 1, Y2, za_, zb_, YELLOW_PAINT); box(xb_ - 1, xb_, Y2 - 1, Y2, za_, zb_, YELLOW_PAINT)
+for (ax_, az_, dz_) in ((sum(CP_AISLE) // 2 - 1, 300, -1), (sum(CP_AISLE) // 2 - 1, 200, -1), (R3_X0 + 22, R3_BOT + 14, 1)):
     for k_ in range(9):
         box(ax_, ax_ + 2, Y2 - 1, Y2, az_ + dz_ * k_, az_ + dz_ * k_ + 1, PAINT_LINE)
     for k_ in range(4):
         hz = az_ + dz_ * (9 + k_)
         box(ax_ - 3 + k_, ax_ + 5 - k_, Y2 - 1, Y2, hz, hz + 1, PAINT_LINE)
-COLS2 = [(CP_AISLE[0] + 3, 241), (CP_AISLE[0] + 3, 316), (CP_AISLE[0] + 3, 391), (CP_AISLE[1] - 3, 391)]
+COLS2 = []                                                    # (no columns: room to drive)
+big_text(Frame(0, IZ1, -1, 0, 0, 1), "B2", -((CP_AISLE[0] + R3_X1) // 2), Y2 + 30, -1, YELLOW_PAINT, k=4)
 for (cxc, czc) in COLS2:
     box(cxc - 3, cxc + 3, Y2, YC2, czc - 3, czc + 3, SLAB)
     for yy in range(Y2, Y2 + 8, 2):
@@ -4970,7 +4976,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.47\n"
+        f.write("name = Liminal Atrium v3.48\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

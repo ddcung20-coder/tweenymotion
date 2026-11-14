@@ -200,8 +200,10 @@ checks["B2 car park (aisle)"] = (161, YB2, 300)
 checks["B2 car park: lift lobby (NW)"] = (96, YB2, 455)
 checks["B2 car park: stair lobby (SW)"] = (96, YB2, 140)
 checks["B2 car park: through the automatic door"] = (200, YB2, 478)
-checks["B2 ramp: bottom (B2)"] = (210, YB2, 170)
-checks["B2 ramp: top (B1)"] = (210, YB, 380)
+checks["B2 car park: south bays (D)"] = (210, YB2, 130)
+checks["B2 ramp: foot (B2 north end)"] = (210, YB2, 400)
+checks["B2 ramp: top (B1 south end)"] = (210, YB, 150)
+checks["B1 car park: north end beside the drop"] = (210, YB, 380)
 checks["B1 car park"] = (162, YB, 200)
 checks["B1 arcade promenade"] = (310, YB, 250)
 checks["B1 arcade corridor (through automatic door 2)"] = (184, YB, 412)
@@ -522,13 +524,14 @@ for zq in range(ns["RZ_TOP"] - 4, ns["RZ_BOT"]):
 van_bad = [n_ for (n_, r_) in van_path if (r_ > 0).any()] + (["ramp"] if ramp_bad else [])
 # ... and on down the inner ramp from the B1 car park to B2: B1 aisle -> turn -> ramp -> B2 turn -> B2 aisle
 B2v = ns["B2"]; YB2v = ns["YB2"]; R3 = B2v["ramp"]
-for zq in range(R3[3], R3[2] + 1):
+for zq in range(R3[2], R3[3] + 1):
     ry_ = ns["ramp3_y"](zq)
     if (FULL[R3[0] + 2:R3[1] - 2, ry_:ry_ + 31, zq] > 0).any():
         van_bad.append(f"ramp3 z{zq}"); break
-for (n_, r_) in (("B1 turn into the ramp", FULL[A0q + 7:R3[1] - 2, YBq:YBq + 31, R3[2]:ns["PZ1"] - 4]),
-                 ("B2 turn below the ramp", FULL[ns["AISLE1"] - 20:R3[1] - 2, YB2v:YB2v + 31, ns["IZ0"] + 2:R3[3]]),
-                 ("B2 aisle", FULL[B2v["aisle"][0] + 7:B2v["aisle"][1] - 7, YB2v:YB2v + 31, 160:420])):
+for (n_, r_) in (("B1 turn into the ramp (south end)", FULL[160:R3[1] - 6, YBq:YBq + 31, ns["IZ0"] + 6:R3[2]]),
+                 ("B2 turn at the ramp's foot (north end)", FULL[B2v["aisle"][0] + 2:R3[1] - 2, YB2v:YB2v + 31, R3[3]:B2v["door"][0] - 2]),
+                 ("B2 aisle", FULL[B2v["aisle"][0] + 7:B2v["aisle"][1] - 7, YB2v:YB2v + 31, 160:420]),
+                 ("B1 aisle full width (no columns)", FULL[ns["AISLE0"]:ns["AISLE1"], YBq:YBq + 31, 162:ns["PZ1"] - 2])):
     if (r_ > 0).any():
         van_bad.append(n_)
 RO_ = ns["ROAD"]

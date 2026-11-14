@@ -4230,13 +4230,13 @@
 	<location tags="carspawn kind=stationwagon fallback=car_b" pos="-7.70 7.65 -35.80" rot="0 0 0"/>
 	<location tags="carspawn kind=suv1 fallback=car_c" pos="10.70 7.65 -35.80" rot="0 0 0"/>
 	<location tags="carspawn kind=castanet-500l-gt fallback=car_b" pos="16.70 7.65 -35.80" rot="0 0 0"/>
-	<location tags="carspawn kind=salooncar fallback=car_a" pos="-3.00 4.05 -28.45" rot="0 90 0"/>
+	<location tags="carspawn kind=salooncar fallback=car_a" pos="-12.00 4.05 -20.65" rot="0 -90 0"/>
 	<location tags="carspawn kind=stationwagon fallback=car_c" pos="-12.00 4.05 -15.65" rot="0 -90 0"/>
 	<location tags="carspawn kind=suv1 fallback=car_b" pos="-12.00 4.05 -0.05" rot="0 -90 0"/>
 	<location tags="carspawn kind=salooncar fallback=car_a" pos="-12.00 0.45 -18.15" rot="0 -90 0"/>
 	<location tags="carspawn kind=suv1 fallback=car_b" pos="-12.00 0.45 -3.15" rot="0 -90 0"/>
 	<location tags="carspawn kind=castanet-500l-gt fallback=car_b" pos="-12.00 0.45 -10.65" rot="0 -90 0"/>
-	<location tags="carspawn kind=stationwagon fallback=car_c" pos="-3.00 0.45 4.35" rot="0 90 0"/>
+	<location tags="carspawn kind=stationwagon fallback=car_c" pos="-3.00 0.45 -23.05" rot="0 90 0"/>
 	<location tags="soundzone kind=hall x0=-9.60 x1=9.60 y0=7.60 y1=15.80 z0=15.90 z1=35.10" pos="0 7.6 25.5"/>
 	<location tags="soundzone kind=connector x0=-1.40 x1=1.40 y0=7.40 y1=12.60 z0=9.50 z1=15.90" pos="0 7.4 12.7"/>
 	<location tags="pazone x0=-15.20 x1=15.20 y0=0.20 y1=25.80 z0=-30.10 z1=11.50" pos="0 7.6 -9.3"/>
