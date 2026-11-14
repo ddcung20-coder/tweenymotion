@@ -13,7 +13,7 @@ import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ap = argparse.ArgumentParser()
-ap.add_argument("shot", choices=["exterior", "atrium", "helipad"])
+ap.add_argument("shot", choices=["exterior", "atrium", "helipad", "glasshouse", "garden", "garage"])
 ap.add_argument("--w", type=int, default=1280); ap.add_argument("--h", type=int, default=720)
 ap.add_argument("--spp", type=int, default=128); ap.add_argument("--out", default=None)
 ap.add_argument("--debug", default="")          # nolights / noemit / nosky (diagnostics)
@@ -64,7 +64,12 @@ PS = ns["PROP_SHAPES"]
 for (pname, gx, gy, gz, roty) in ns["PROPS"]:
     stamp(PS[pname], (gx, gy, gz))
 for (kind, fb, gx, gy, gz, ry) in ns["CAR_SPOTS"]:
-    stamp(PS[fb], (gx, gy, gz))                           # (in game: base-game vehicles; here our own car model)
+    a_ = PS[fb]                                            # (in game: base-game vehicles; here our own car model)
+    if abs(ry) == 90:                                      # turned across a car-park bay
+        a_ = np.rot90(a_, k=1 if ry > 0 else -1, axes=(0, 2))
+        stamp(a_, (int(gx + 10 - a_.shape[0] // 2), gy, int(gz + 22 - a_.shape[2] // 2)))
+    else:
+        stamp(a_, (gx, gy, gz))
 
 # lamps of dark rooms / switched-off TVs are not glowing at the start
 dark_lamp = np.zeros(Gc.shape, bool)
@@ -106,6 +111,20 @@ def outdoor(gx, gy, gz):
     return gx < bx0 - 1 or gx > bx1 + 1 or gz < bz0 - 1 or gz > bz1 + 1 or gy >= ROOF_Y - 2
 def in_atrium(gx, gy, gz):
     return ax0 - 2 <= gx <= ax1 + 2 and az0 - 2 <= gz <= az1 + 2
+GH = ns["GLASSHOUSE"]; GXC_, PCZ_ = GH["plaza"]; YB_ = ns["YB"]
+# the rooftop glasshouse from the roof outside (south-west), and inside from the foyer down the path
+SHOTS["glasshouse"] = dict(cam=(GH["x0"] - 50, ROOF_Y + 62, GH["z0"] - 70 + RD), look=(GXC_ + 6, ROOF_Y + 22, PCZ_ - 10 + RD), fov=52,
+                           crop=(0, W, ROOF_Y - 30, HN, 0, D + RD), sky=(0.035, 0.028, 0.07), moon=0.5, fog=(0.10, 0.08, 0.16, 300.0),
+                           lights=lambda gx, gy, gz: gy >= ROOF_Y - 2)
+SHOTS["garden"] = dict(cam=(GXC_ - 3, ROOF_Y + 15, GH["z0"] + 5 + RD), look=(GXC_ + 1, ROOF_Y + 17, PCZ_ + RD), fov=72,
+                       crop=(GH["x0"] - 30, GH["x1"] + 30, ROOF_Y - 4, HN, GH["z0"] - 40 + RD, GH["z1"] + 30 + RD),
+                       sky=(0.035, 0.028, 0.07), moon=0.4, fog=(0.10, 0.08, 0.16, 500.0),
+                       lights=lambda gx, gy, gz: GH["x0"] <= gx <= GH["x1"] and GH["z0"] - 10 <= gz <= GH["z1"] and gy >= ROOF_Y - 2)
+# the B1 car park from the ramp tunnel end, down the aisle
+SHOTS["garage"] = dict(cam=(ns["AISLE0"] + 14, YB_ + 17, ns["PZ1"] - 8 + RD), look=(ns["AISLE0"] + 22, YB_ + 6, ns["IZ0"] + 120 + RD), fov=70,
+                       crop=(ns["IX0"] - 4, ns["PX1"] + 4, YB_ - 3, YB_ + 40, ns["IZ0"] - 4 + RD, ns["PZ1"] + 4 + RD),
+                       sky=(0.0, 0.0, 0.0), moon=0.0, fog=(0.05, 0.05, 0.06, 400.0),
+                       lights=lambda gx, gy, gz: ns["IX0"] <= gx <= ns["PX1"] and ns["IZ0"] <= gz <= ns["PZ1"] and gy < ns["G0"] - 2)
 SHOTS["exterior"]["lights"] = lambda gx, gy, gz: outdoor(gx, gy, gz) and gz < bz1
 SHOTS["atrium"]["lights"] = in_atrium
 SHOTS["helipad"]["lights"] = lambda gx, gy, gz: gy >= ROOF_Y - 2
@@ -274,7 +293,7 @@ def blur(a, s_):
     return np.stack([gaussian_filter(a[..., k], s_) for k in range(3)], -1)
 bright = np.clip(rgb - 0.9, 0, None)
 bloom = 0.35 * blur(bright, args.w / 160) + 0.25 * blur(bright, args.w / 40)
-expo = {"exterior": 1.6, "atrium": 1.5, "helipad": 1.5}[args.shot]
+expo = {"exterior": 1.6, "atrium": 1.5, "helipad": 1.5, "glasshouse": 1.5, "garden": 1.4, "garage": 1.4}[args.shot]
 def aces(x):
     a_, b_, c_, d_, e_ = 2.51, 0.03, 2.43, 0.59, 0.14
     return np.clip((x * (a_ * x + b_)) / (x * (c_ * x + d_) + e_), 0, 1)

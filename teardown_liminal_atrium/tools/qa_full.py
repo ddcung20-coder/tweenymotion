@@ -148,7 +148,11 @@ for k in range(FLOORS):
     for key in ("NW", "SE"):
         x, z = ns["corner"][key].pt(30, 22)
         checks[f"utility room {key} floor {k + 1}"] = (x, fy(k), z)
-checks["roof (via stair penthouse)"] = (bx0 + 20, ns["ROOF_Y"], (bz0 + bz1) // 2)
+checks["roof (via stair penthouse)"] = (bx0 + 20, ns["ROOF_Y"], 172)
+GH_ = ns["GLASSHOUSE"]
+checks["rooftop glasshouse: entrance foyer"] = ((GH_["x0"] + GH_["x1"]) // 2, ns["ROOF_Y"], GH_["z0"] + 8)
+checks["rooftop glasshouse: pond plaza"] = (GH_["plaza"][0], ns["ROOF_Y"], GH_["plaza"][1] - 16)
+checks["rooftop glasshouse: north terrace"] = ((GH_["x0"] + GH_["x1"]) // 2 - 16, ns["ROOF_Y"], GH_["z1"] - 13)
 YB = ns["YB"]
 checks["B1 car-park ramp (top, street level)"] = (30, G0, 66)
 checks["B1 car-park ramp (bottom)"] = (30, YB, 280)
@@ -412,11 +416,41 @@ report(f"all {len(set(t for _, _, t in ns['SIGN_CELLS']))} wall signs readable (
 car_bad = []
 for (kind_, fb_, gx_, gy_, gz_, ry_) in ns["CAR_SPOTS"]:
     # room for the biggest pick (2.4 x 2.2 x 5.2 m) around the bay centre, solid ground below it
-    cx_, cz_ = gx_ + 10, gz_ + 22
-    reg = FULL[cx_ - 12:cx_ + 12, gy_ + 1:gy_ + 22, cz_ - 26:cz_ + 26]
-    ground = FULL[cx_ - 8:cx_ + 8, gy_ - 1, cz_ - 18:cz_ + 18]
+    cx_, cz_ = int(gx_ + 10), int(gz_ + 22)
+    hx_, hz_ = (26, 12) if abs(ry_) == 90 else (12, 26)       # turned 90 degrees: long axis along x
+    reg = FULL[cx_ - hx_:cx_ + hx_, gy_ + 1:gy_ + 22, cz_ - hz_:cz_ + hz_]
+    ground = FULL[cx_ - hx_ + 4:cx_ + hx_ - 4, gy_ - 1, cz_ - hz_ + 4:cz_ + hz_ - 4]
     if (reg > 0).any() or not (ground > 0).all() or cx_ - 12 < 0 or cz_ - 26 < 0:
         car_bad.append(kind_)
+# car park: every bay clear of columns / walls, parked cars sit inside one bay
+YB_ = ns["YB"]; bay_bad = []
+for (bays_, xa_, xb_, wa_, wb_) in ((ns["WEST_BAYS"], ns["IX0"], ns["AISLE0"], 3, 0), (ns["EAST_BAYS"], ns["AISLE1"], ns["PX1"] - 2, 0, 3)):
+    for z0_ in bays_:          # (wall signs / fire cabinet within 0.3 m of the end wall are fine)
+        if (FULL[xa_ + wa_:xb_ - wb_, YB_ + 2:YB_ + 18, z0_ + 1:z0_ + ns["BAY_W"] - 1] > 0).any() or (~np.isin(FULL[xa_:xb_, YB_ - 1, z0_], [ns["PAINT_LINE"], ns["PUDDLE"], ns["ROOF"], ns["ROOF2"]])).sum() > 2:
+            bay_bad.append(z0_)
+    for (cx0, cz0) in ns["COLS"]:
+        if xa_ - 3 < cx0 < xb_ + 3 and any(z0_ - 3 < cz0 < z0_ + ns["BAY_W"] + 3 for z0_ in bays_) and xa_ + 3 <= cx0 < xb_ - 3:
+            bay_bad.append(("col", cx0, cz0))
+for (kind_, fb_, gx_, gy_, gz_, ry_) in ns["CAR_SPOTS"]:
+    if gy_ == YB_:
+        czc = gz_ + 22
+        if not any(z0_ + 6 <= czc <= z0_ + ns["BAY_W"] - 6 for z0_ in ns["WEST_BAYS"] + ns["EAST_BAYS"]) or abs(ry_) != 90:
+            bay_bad.append(kind_)
+report(f"car park: {len(ns['WEST_BAYS']) + len(ns['EAST_BAYS'])} bays painted, free of columns/walls; parked cars inside a bay", not bay_bad, str(bay_bad))
+# rooftop glasshouse: path clear to walk, vault on its eave beams, plants grown, pond water inside its basin
+GH_ = ns["GLASSHOUSE"]; RY_ = ns["ROOF_Y"]; gx_c, gz_c = GH_["plaza"]
+path_block = 0
+for z in range(GH_["z0"] + 16, GH_["z1"] - 16):        # (foyer / terrace have urns, a planter, benches)
+    if abs(z - gz_c) > 21:
+        path_block += int((G[ns["PW0"] + 1:ns["PW1"] - 1, RY_:RY_ + 17, z] > 0).sum())
+LEAFS = [ns[k] for k in ("LEAF", "LEAF2", "LEAF3", "LAWN")]
+FLOWERS = [ns[k] for k in ("ROSE", "DREAM_PINK", "DREAM_LILAC", "DREAM_CLOUD", "WALL_BLUE", "WALL_MAUVE")]
+sub_ = FULL[GH_["x0"]:GH_["x1"], RY_:GH_["eave"], GH_["z0"]:GH_["z1"]]
+n_leaf, n_flower = int(np.isin(sub_, LEAFS).sum()), int(np.isin(sub_, FLOWERS).sum())
+pond = [p_ for p_ in ns["POOLS"] if abs(p_[0] - (RY_ + 4.5)) < 0.01]
+pond_ok = len(pond) == 1 and all(np.hypot(px_ - gx_c, pz_ - gz_c) < 10.5 for (px_, pz_) in pond[0][2])
+report(f"rooftop glasshouse: path clear, {n_leaf} leaf + {n_flower} flower voxels, pond water inside its rim",
+       path_block == 0 and n_leaf > 4000 and n_flower > 800 and pond_ok, f"path_block={path_block} pond_ok={pond_ok}")
 report(f"{len(ns['CAR_SPOTS'])} car spots: free space + ground for a base-game vehicle", not car_bad and len(ns["CAR_SPOTS"]) >= 7, str(car_bad))
 RO = ns["ROAD"]; RD_ = ns["RD"]
 r_isl = 0

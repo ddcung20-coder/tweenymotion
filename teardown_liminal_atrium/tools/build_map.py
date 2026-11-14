@@ -67,6 +67,7 @@ MARBLE_VEIN = P(52, (176, 172, 172), "metal", rough=0.12, metal=0.05)    # (text
 MARBLE_B2   = P(53, (58, 54, 62), "metal", rough=0.12, metal=0.05)
 MARBLE_BG2  = P(54, (184, 168, 146), "metal", rough=0.12, metal=0.05)
 PUDDLE      = P(55, (52, 58, 66), "metal", rough=0.02, metal=0.2)              # standing water: dark mirror
+ROSE        = P(56, (212, 70, 112))                                          # glasshouse roses
 # per-floor corridor themes (dirt range: soft like carpet / plaster)
 CARP_G  = P(26, (52, 86, 62));  CARP_G2  = P(27, (45, 77, 55))
 CARP_BL = P(28, (40, 58, 100)); CARP_BL2 = P(29, (35, 51, 89))
@@ -2288,30 +2289,42 @@ ftext(Frame(PX1 - 2, 240, 0, 1, 1, 0), "MALL", 8, YC - 1, -1, CEIL_LAMP)
 ftext(Frame(192 - 1, PZ1, -1, 0, 0, 1), "MALL", 8, YC - 1, -1, CEIL_LAMP)
 
 # ---- car park: bays, aisle line, columns, tube lights, pipes, signs, parked cars
-AISLE0, AISLE1 = IX0 + 46, PX1 - 46
-for z in range(IZ0, PZ1, 26):
-    if not (TZ0 - 4 <= z <= TZ1 + 4):
-        box(IX0, AISLE0, YB - 1, YB, z, z + 1, PAINT_LINE)
-    box(AISLE1, PX1, YB - 1, YB, z, z + 1, PAINT_LINE)
-for z in range(IZ0, PZ1, 12):
-    box((AISLE0 + AISLE1) // 2 - 1, (AISLE0 + AISLE1) // 2 + 1, YB - 1, YB, z, z + 6, YELLOW_PAINT)
-box(AISLE0, AISLE0 + 1, YB - 1, YB, IZ0, PZ1, YELLOW_PAINT); box(AISLE1 - 1, AISLE1, YB - 1, YB, IZ0, PZ1, YELLOW_PAINT)
+# 90-degree bays 2.5 m wide x 5 m deep along both long walls; columns stand in a strip on the aisle side of the
+# bay ends (never inside a bay or on a bay line); no bays by the stair core, the ramp tunnel or the mall door.
+AISLE0, AISLE1 = IX0 + 50, PX1 - 2 - 50
+BAY_W = 25
+WEST_BAYS = [166 + i * BAY_W for i in range(3)] + [322 + i * BAY_W for i in range(3)]     # bay start z
+EAST_BAYS = [IZ0 + i * BAY_W for i in range(6)] + [258 + i * BAY_W for i in range(5)]
 STAIR_RECTS = []
 for key_ in ("SW", "NE"):
     xa_, xb_, za_, zb_ = corner[key_]._rect(-T_PART, CB, -T_PART, CB)
     STAIR_RECTS.append((xa_ - 1, xb_ + 1, za_ - 1, zb_ + 1))
 def in_stair(x, z, m=4):
     return any(a - m <= x < b + m and c - m <= z < d + m for (a, b, c, d) in STAIR_RECTS)
-for cxc in (AISLE0 - 3, AISLE1 + 3):
-    for czc in (150, 220, 340):
-        if in_stair(cxc, czc):
-            continue
-        box(cxc - 3, cxc + 3, YB, YC, czc - 3, czc + 3, SLAB)
-        for yy in range(YB, YB + 8, 2):
-            paint(cxc - 3, cxc + 3, yy, yy + 1, czc - 3, czc + 3, YELLOW_PAINT)
-            paint(cxc - 3, cxc + 3, yy + 1, yy + 2, czc - 3, czc + 3, TIRE)
-        face = Frame(cxc + 2, czc + 2, 0, -1, -1, 0) if cxc < (AISLE0 + AISLE1) // 2 else Frame(cxc - 3, czc - 3, 0, 1, 1, 0)
-        ftext(face, "B1", 2, YB + 20, -1, YELLOW_PAINT)
+for (bays_, xa_, xb_) in ((WEST_BAYS, IX0, AISLE0), (EAST_BAYS, AISLE1, PX1 - 2)):
+    for z0_ in bays_:
+        for zl_ in (z0_, z0_ + BAY_W - 1):
+            box(xa_, xb_, YB - 1, YB, zl_, zl_ + 1, PAINT_LINE)
+# no-parking hatching: walkway to the stair door, the mall door, the dumpster corner
+for (xa_, xb_, za_, zb_) in ((IX0, 105, IZ0, 166), (AISLE1, PX1 - 2, 238, 258), (AISLE1, PX1 - 2, 383, PZ1)):
+    for x in range(xa_, xb_):
+        for z in range(za_, zb_):
+            if G[x, YB - 1, z] == STAIR_CONC and not (G[x, YB, z]) and (x + z) % 7 == 0:
+                G[x, YB - 1, z] = YELLOW_PAINT
+for z in range(IZ0, PZ1, 12):
+    box((AISLE0 + AISLE1) // 2 - 1, (AISLE0 + AISLE1) // 2 + 1, YB - 1, YB, z, z + 6, YELLOW_PAINT)
+for z in range(IZ0, PZ1):
+    if not in_stair(AISLE0, z, 0):
+        box(AISLE0, AISLE0 + 1, YB - 1, YB, z, z + 1, YELLOW_PAINT)
+box(AISLE1 - 1, AISLE1, YB - 1, YB, IZ0, PZ1, YELLOW_PAINT)
+COLS = [(AISLE0 + 3, 191), (AISLE0 + 3, 347), (AISLE1 - 3, 138), (AISLE1 - 3, 213), (AISLE1 - 3, 308), (AISLE1 - 3, 358)]
+for (cxc, czc) in COLS:
+    box(cxc - 3, cxc + 3, YB, YC, czc - 3, czc + 3, SLAB)
+    for yy in range(YB, YB + 8, 2):
+        paint(cxc - 3, cxc + 3, yy, yy + 1, czc - 3, czc + 3, YELLOW_PAINT)
+        paint(cxc - 3, cxc + 3, yy + 1, yy + 2, czc - 3, czc + 3, TIRE)
+    face = Frame(cxc + 2, czc + 2, 0, -1, -1, 0) if cxc < (AISLE0 + AISLE1) // 2 else Frame(cxc - 3, czc - 3, 0, 1, 1, 0)
+    ftext(face, "B1", 2, YB + 20, -1, YELLOW_PAINT)
 TUBE_N = [0]
 def tube(x, z):
     """twin fluorescent batten; every 4th one flickers (buzz), one is dead."""
@@ -2331,9 +2344,11 @@ for z in (130, 210, 350):
             tube(tx, z)
 box(IX0 + 10, IX0 + 12, YC - 2, YC, IZ0, PZ1, STEEL); box(PX1 - 12, PX1 - 10, YC - 2, YC, IZ0, PZ1, STEEL)
 ftext(Frame(IX0 - 1, TZ1 - 1, 0, -1, -1, 0), "EXIT", (TZ1 - TZ0) // 2, YC - 1, -1, EXIT_SIGN)
-for (kind_, pn, px_, pz_) in (("salooncar", "car_a", AISLE1 + 14, 100), ("stationwagon", "car_c", IX0 + 8, 180),
-                              ("suv1", "car_b", AISLE1 + 14, 300)):
-    CAR_SPOTS.append((kind_, pn, px_, YB, pz_, 0))
+for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "E", 258), ("stationwagon", "car_c", "W", 216),
+                                ("suv1", "car_b", "W", 372), ("castanet-500l-gt", "car_b", "E", 163)):
+    cxp_ = IX0 + 28 if side_ == "W" else PX1 - 2 - 28          # rear 0.2 m off the wall (5.2 m car)
+    czp_ = z0_ + BAY_W / 2
+    CAR_SPOTS.append((kind_, pn, cxp_ - 10, YB, czp_ - 22, -90 if side_ == "W" else 90))
 # ---- car park detail pass: standing water, ceiling services, paint, signage, clutter
 for ch_, rows_ in {"0": ["###", "#.#", "#.#", "#.#", "###"], "2": ["##.", "..#", ".#.", "#..", "###"],
                    "3": ["##.", "..#", ".#.", "..#", "##."], "4": ["#.#", "#.#", "###", "..#", "..#"],
@@ -2354,10 +2369,10 @@ for (xa, xb, za, zb) in ((IX0 - 1, IX0, IZ0, PZ1), (IX0, PX1 - 2, IZ0 - 1, IZ0),
     paint(xa, xb, YB, YB + 10, za, zb, WALL_GREY, [SLAB])
     paint(xa, xb, YB + 10, YB + 11, za, zb, YELLOW_PAINT, [SLAB])
 # downstand beams across the ceiling (in line with the columns), sprinkler main, cable tray, supply duct
-for bz in (120, 150, 218, 300, 340, 388):        # (z 300: clear of the EXIT sign over the tunnel mouth)
-    xs_ = [x for x in range(IX0, PX1 - 2) if garage_ok(x, x + 1, bz, bz + 4, 1)]
+for bz in sorted(set(c_[1] for c_ in COLS)):      # (all clear of the EXIT sign over the tunnel mouth)
+    xs_ = [x for x in range(IX0, PX1 - 2) if garage_ok(x, x + 1, bz - 2, bz + 2, 1)]
     for x in xs_:
-        box(x, x + 1, YC - 4, YC, bz, bz + 4, SLAB)
+        box(x, x + 1, YC - 4, YC, bz - 2, bz + 2, SLAB)
 box(146, 147, YC - 1, YC, IZ0, PZ1, RED)
 for z in range(IZ0 + 6, PZ1, 20):
     if garage_ok(145, 148, z, z + 1, 0):
@@ -2373,27 +2388,29 @@ for z in range(IZ0 + 14, DZ1 - 6, 30):
     for gz in range(z, z + 6, 2):
         box(177, 180, YC - 5, YC - 4, gz, gz + 1, HVAC)
 # bay numbers on the walls, wheel stops, oil stains
-for i, z in enumerate(range(IZ0, PZ1 - 20, 26)):
-    zc = z + 13
-    if garage_ok(IX0, IX0 + 10, z, z + 26, 0) and not (TZ0 - 4 <= zc <= TZ1 + 4):
-        ftext(Frame(IX0 - 1, zc + 6, 0, -1, -1, 0), "A" + str(i + 1), 6, YB + 22, -1, YELLOW_PAINT)
-        box(IX0 + 3, IX0 + 5, YB, YB + 1, zc - 5, zc + 5, CURB)
-    if garage_ok(PX1 - 12, PX1 - 2, z, z + 26, 0) and not (226 <= zc <= 270):     # (no label over automatic door 1)
-        ftext(Frame(PX1 - 2, zc - 6, 0, 1, 1, 0), "B" + str(i + 1), 6, YB + 22, -1, YELLOW_PAINT)
-        box(PX1 - 8, PX1 - 6, YB, YB + 1, zc - 5, zc + 5, CURB)
-    for (sx_, ok_) in ((IX0 + 22, garage_ok(IX0, AISLE0, z, z + 26, 0)), (PX1 - 24, garage_ok(AISLE1, PX1 - 2, z, z + 26, 0))):
-        if ok_ and BRNG.random() < 0.7:
+for (lbl_, bays_, west_) in (("A", WEST_BAYS, True), ("B", EAST_BAYS, False)):
+    for i, z in enumerate(bays_):
+        zc = z + BAY_W // 2
+        if west_:
+            ftext(Frame(IX0 - 1, zc + 6, 0, -1, -1, 0), lbl_ + str(i + 1), 6, YB + 22, -1, YELLOW_PAINT)
+            box(IX0 + 7, IX0 + 9, YB, YB + 1, zc - 5, zc + 5, CURB)
+            sx_ = IX0 + 24
+        else:
+            ftext(Frame(PX1 - 2, zc - 6, 0, 1, 1, 0), lbl_ + str(i + 1), 6, YB + 22, -1, YELLOW_PAINT)
+            box(PX1 - 11, PX1 - 9, YB, YB + 1, zc - 5, zc + 5, CURB)
+            sx_ = PX1 - 26
+        if BRNG.random() < 0.7:
             for dx in range(-5, 6):
                 for dz in range(-4, 5):
                     if (dx / 5.5) ** 2 + (dz / 4.5) ** 2 < 1 and BRNG.random() < 0.85:
-                        if G[sx_ + dx, YB - 1, zc + dz] in (STAIR_CONC, PAINT_LINE):
+                        if G[sx_ + dx, YB - 1, zc + dz] == STAIR_CONC:
                             G[sx_ + dx, YB - 1, zc + dz] = ASPHALT
 # tyre marks along the aisle, direction arrows, zebra crossing to the arcade door, speed bump at the tunnel
 for lane in (150, 174):
     for z in range(IZ0 + 4, PZ1 - 4):
         if BRNG.random() < 0.55 and G[lane, YB - 1, z] == STAIR_CONC:
             G[lane, YB - 1, z] = ASPHALT2
-for (ax_, az_, dz_) in ((142, 220, -1), (142, 330, -1), (180, 200, 1), (180, 330, 1)):
+for (ax_, az_, dz_) in ((AISLE0 + 9, 228, -1), (AISLE0 + 9, 330, -1), (AISLE1 - 11, 186, 1), (AISLE1 - 11, 326, 1)):
     for k_ in range(9):
         box(ax_, ax_ + 2, YB - 1, YB, az_ + dz_ * k_, az_ + dz_ * k_ + 1, PAINT_LINE)       # shaft
     for k_ in range(4):
@@ -2952,6 +2969,426 @@ for (fx_, fz_) in ((ax0 + 4, az0 + 4), (ax1 - 10, az1 - 10)):
     fl_[0:6, 15:17, 0:6] = CEIL_LAMP                              # lamp head over the pad side
     ROOF_SHAPES.append((f"floodlight{len(ROOF_SHAPES)}", fl_, (fx_, RT, fz_), [(fx_ + 4, RT + 13, fz_ + 4, (1.0, 0.95, 0.85), 3.5, 0.3)]))
 
+# ============================================================================
+# 10d. Rooftop glasshouse "FLORA" on the west roof (in front of the SW stair penthouse door):
+#      a Victorian conservatory -- stone plinth, white-framed glass walls with arched heads, a glass
+#      barrel vault with a lantern cupola (its own shape above the walls, the world stops at 256),
+#      encaustic-tiled path, round plaza with a lily pond, palms, flower beds, a wisteria curtain,
+#      hanging baskets, lamp posts and benches.
+# ============================================================================
+GRNG = random.Random(123)
+GX0, GX1, GZ0, GZ1 = bx0 + 8, ax0 - 8, 196, 396        # 5.6 x 20 m footprint
+GXC = (GX0 + GX1) // 2
+GEAVE = ROOF_Y + 32                                       # glass walls up to here, the vault shape above
+PCZ = (GZ0 + GZ1) // 2                                    # round plaza / pond centre
+PW0, PW1 = GXC - 6, GXC + 6                               # central path
+SEAMS_Z = (az0 + 2 * LONG_BAY_W, az0 + 6 * LONG_BAY_W)    # world shape seams: keep plants clear of them
+box(GX0 - 2, GX1 + 2, ROOF_Y, GEAVE, GZ0 - 2, GZ1 + 2, 0)    # (a roof vent stood here)
+def g_rad(x, z):
+    return float(np.hypot(x + 0.5 - GXC, z + 0.5 - PCZ))
+def g_band(x, z):
+    return x < GX0 + 3 or x >= GX1 - 3 or z < GZ0 + 3 or z >= GZ1 - 3
+FOYER1, TERR0 = GZ0 + 16, GZ1 - 16                        # tiled entrance foyer / north terrace
+def g_paved(x, z):
+    return PW0 <= x < PW1 or g_rad(x, z) < 20 or z < FOYER1 or z >= TERR0
+# ---- floor: encaustic tiles on the path, foyer and terrace, a rosette on the plaza
+for x in range(GX0 + 3, GX1 - 3):
+    for z in range(GZ0 + 3, GZ1 - 3):
+        if not g_paved(x, z):
+            continue
+        r_ = g_rad(x, z)
+        if r_ < 20:
+            ang = (np.degrees(np.arctan2(z + 0.5 - PCZ, x + 0.5 - GXC)) + 360) % 45
+            c = MARBLE_B if r_ >= 18.5 else (CARP_OR if (ang < 4 or ang > 41) and r_ > 13 else
+                                            (MARBLE_W if int(r_) % 3 == 0 else MARBLE_BG))
+        else:
+            dz_ = abs(((z - GZ0) % 12) - 6); dx_ = abs(((x - GXC) % 12) - 6) if not (PW0 <= x < PW1) else abs(x + 0.5 - GXC)
+            d_ = dx_ + dz_
+            edge = (PW0 <= x < PW1) and (x in (PW0, PW1 - 1)) and FOYER1 <= z < TERR0
+            c = MARBLE_B if edge else (CARP_OR if d_ <= 2.5 else (MARBLE_B2 if d_ <= 3.5 else MARBLE_BG))
+        G[x, ROOF_Y - 1, z] = c
+# ---- planting beds: stone kerb, dark soil
+BEDS = np.zeros((W, D), bool)
+for x in range(GX0 + 3, GX1 - 3):
+    for z in range(GZ0 + 3, GZ1 - 3):
+        BEDS[x, z] = not g_paved(x, z)
+for x in range(GX0 + 3, GX1 - 3):
+    for z in range(GZ0 + 3, GZ1 - 3):
+        if BEDS[x, z]:
+            edge = not (BEDS[x - 1, z] and BEDS[x + 1, z] and BEDS[x, z - 1] and BEDS[x, z + 1])
+            if edge:
+                box(x, x + 1, ROOF_Y, ROOF_Y + 3, z, z + 1, BASE_STONE if (x // 3 + z // 3) % 2 else BASE_STONE2)
+            else:
+                box(x, x + 1, ROOF_Y, ROOF_Y + 2, z, z + 1, SOIL)
+SOIL_Y = ROOF_Y + 2                                       # plants grow from here
+# ---- plinth, glass walls, mullions, transom, arched heads, eave beam
+for x in range(GX0, GX1):
+    for z in range(GZ0, GZ1):
+        if not g_band(x, z):
+            continue
+        for y in range(ROOF_Y, ROOF_Y + 6):
+            G[x, y, z] = BASE_STONE if ((x + z) // 4 + (y - ROOF_Y) // 2) % 2 else BASE_STONE2
+        G[x, ROOF_Y + 6, z] = EXT_TRIM
+for (x0_, x1_, z0_, z1_, along_x) in ((GX0, GX1, GZ0 + 1, GZ0 + 2, True), (GX0, GX1, GZ1 - 2, GZ1 - 1, True),
+                                      (GX0 + 1, GX0 + 2, GZ0, GZ1, False), (GX1 - 2, GX1 - 1, GZ0, GZ1, False)):
+    box(x0_, x1_, ROOF_Y + 7, GEAVE - 3, z0_, z1_, GLASS)
+for (x0_, x1_, z0_, z1_, along_x, lo_, hi_) in ((GX0, GX1, GZ0, GZ0 + 3, True, GX0, GX1), (GX0, GX1, GZ1 - 3, GZ1, True, GX0, GX1),
+                                                (GX0, GX0 + 3, GZ0, GZ1, False, GZ0, GZ1), (GX1 - 3, GX1, GZ0, GZ1, False, GZ0, GZ1)):
+    for p in range(lo_, hi_):
+        o_ = p - lo_
+        if o_ % 8 == 0 or p == hi_ - 1:                                   # mullions
+            if along_x:
+                box(p, p + 1, ROOF_Y + 7, GEAVE, z0_, z1_, SWITCH)
+            else:
+                box(x0_, x1_, ROOF_Y + 7, GEAVE, p, p + 1, SWITCH)
+        else:                                                            # round arched head in each upper pane
+            yy = ROOF_Y + 25 + int(round(3 * np.sqrt(max(0.0, 1 - ((o_ % 8 - 4) / 3.6) ** 2))))
+            if along_x:
+                G[p, yy, (z0_ + z1_) // 2] = SWITCH
+            else:
+                G[(x0_ + x1_) // 2, yy, p] = SWITCH
+    if along_x:
+        box(x0_, x1_, ROOF_Y + 18, ROOF_Y + 19, z0_, z1_, SWITCH); box(x0_, x1_, GEAVE - 3, GEAVE, z0_, z1_, SWITCH)
+    else:
+        box(x0_, x1_, ROOF_Y + 18, ROOF_Y + 19, z0_, z1_, SWITCH); box(x0_, x1_, GEAVE - 3, GEAVE, z0_, z1_, SWITCH)
+# ---- arched entrance (south, facing the stair penthouse door) with a white frame and a brass "FLORA"
+for x in range(GXC - 9, GXC + 9):
+    for y in range(ROOF_Y, ROOF_Y + 26):
+        dx_ = x + 0.5 - GXC
+        if abs(dx_) < 7 and (y < ROOF_Y + 18 or (y - ROOF_Y - 18) ** 2 + dx_ * dx_ < 49):
+            box(x, x + 1, y, y + 1, GZ0, GZ0 + 3, 0)
+        elif abs(dx_) < 8.2 and (y < ROOF_Y + 18 or (y - ROOF_Y - 18) ** 2 + dx_ * dx_ < 67):
+            box(x, x + 1, y, y + 1, GZ0, GZ0 + 3, SWITCH)
+box(GXC - 7, GXC + 7, ROOF_Y - 1, ROOF_Y, GZ0, GZ0 + 3, MARBLE_W)                 # threshold
+box(GXC - 12, GXC + 12, GEAVE - 9, GEAVE - 3, GZ0, GZ0 + 1, SWITCH)               # name board
+ftext(Frame(GXC, GZ0, -1, 0, 0, 1), "FLORA", 0, GEAVE - 3, -1, BRASS)
+light(GXC + 0.5, GEAVE + 1, GZ0 - 7, (1.0, 0.85, 0.62), 1.2, 0.2)
+# ---- plants
+def g_free(x, z, r):
+    return all(abs(z - s_) > r + 2 for s_ in SEAMS_Z)
+def plant_blob(cx_, cy_, cz_, r, seed, cols, squash=1.3, keep=0.3, flowers=None, fp=0.45):
+    """leaf ball rooted in the soil below it; writes only into air; flowers on its sunny side."""
+    xs = np.arange(cx_ - r - 1, cx_ + r + 2); ys = np.arange(SOIL_Y - 1, cy_ + r + 2); zs = np.arange(cz_ - r - 1, cz_ + r + 2)
+    X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
+    m = (((X - cx_) ** 2 + ((Y - cy_) * squash) ** 2 + (Z - cz_) ** 2) <= r * r) & (hash3(X, Y, Z, seed) > keep)
+    m |= (X == cx_) & (Z == cz_) & (Y < cy_)                                   # stem down to the soil
+    m &= (G[X, Y, Z] == 0) | ((X == cx_) & (Z == cz_) & (Y == SOIL_Y - 1))
+    m &= BEDS[X, Z]                                                            # never over the path
+    m = keep_connected(m, [(cx_ - xs[0], 0, cz_ - zs[0])])
+    t = hash3(X, Y, Z, seed + 1)
+    col = np.where(t < 0.4, cols[0], np.where(t < 0.75, cols[1], cols[2]))
+    if flowers:
+        above_free = np.ones_like(m); above_free[:, :-1, :] = ~m[:, 1:, :]
+        fl = m & above_free & (hash3(X, Y, Z, seed + 2) < fp) & (Y >= SOIL_Y + 1)
+        fc = np.array(flowers)[(hash3(X, Y, Z, seed + 3) * len(flowers)).astype(int).clip(0, len(flowers) - 1)]
+        col = np.where(fl, fc, col)
+    G[X[m], Y[m], Z[m]] = col[m]
+def line3(p, q):
+    """6-connected voxel path from p to q."""
+    out = [tuple(p)]; c = list(p)
+    for k in range(3):
+        while c[k] != q[k]:
+            c[k] += 1 if q[k] > c[k] else -1
+            out.append(tuple(c))
+    return out
+def palm(px, pz, h, seed):
+    rr = random.Random(seed)
+    lean = rr.choice((-1, 1))
+    tx, tz = px, pz
+    cells = {}
+    for y in range(SOIL_Y - 1, SOIL_Y + h):
+        if (y - SOIL_Y) % 9 == 8:
+            tx += lean
+        for (dx, dz) in ((0, 0), (1, 0), (0, 1), (1, 1)):
+            cells[(tx + dx, y, tz + dz)] = TRUNK if (y // 2) % 2 else WOOD_DARK
+    top = SOIL_Y + h
+    for (dx, dz) in ((0, 0), (1, 0), (0, 1), (1, 1)):
+        for y in (top, top + 1):
+            cells[(tx + dx, y, tz + dz)] = LEAF3
+    for f_ in range(9):
+        a_ = np.radians(f_ * 40 + rr.uniform(-12, 12))
+        L_ = rr.randint(11, 15)
+        prev = (tx, top + 1, tz)
+        for t_ in range(1, L_ + 1):
+            sx_ = int(round(tx + 0.5 + np.cos(a_) * t_)); sz_ = int(round(tz + 0.5 + np.sin(a_) * t_))
+            sy_ = int(round(top + 1 + 0.55 * t_ - 0.075 * t_ * t_))
+            cur = (sx_, sy_, sz_)
+            for c_ in line3(prev, cur):
+                cells[c_] = LEAF2
+            prev = cur
+            w_ = int(round(2.6 * np.sin(np.pi * t_ / (L_ + 1))))
+            for side in (-1, 1):
+                for k_ in range(1, w_ + 1):
+                    lx_ = int(round(sx_ - np.sin(a_) * side * k_)); lz_ = int(round(sz_ + np.cos(a_) * side * k_))
+                    for c_ in line3(cur, (lx_, sy_ - (k_ + 1) // 2, lz_)):
+                        cells.setdefault(c_, LEAF if (t_ + k_) % 3 else LEAF3)
+    keys = list(cells)
+    mn = np.min(keys, 0); mx = np.max(keys, 0) + 1
+    m = np.zeros(tuple(mx - mn), bool); cm = np.zeros(tuple(mx - mn), np.uint8)
+    for c_, v_ in cells.items():
+        x, y, z = c_
+        if GX0 + 4 <= x < GX1 - 4 and GZ0 + 4 <= z < GZ1 - 4 and y < GEAVE - 4 and (G[x, y, z] == 0 or y < SOIL_Y) \
+                and all((z < s_) == (pz < s_) for s_ in SEAMS_Z) and (BEDS[x, z] or y >= ROOF_Y + 22):
+            m[x - mn[0], y - mn[1], z - mn[2]] = True; cm[x - mn[0], y - mn[1], z - mn[2]] = v_
+    m = keep_connected(m, [(px - mn[0], SOIL_Y - 1 - mn[1], pz - mn[2])])
+    X, Y, Z = np.nonzero(m)
+    G[X + mn[0], Y + mn[1], Z + mn[2]] = cm[X, Y, Z]
+PALMS = [(GXC - 20, PCZ - 18), (GXC + 19, PCZ - 18), (GXC - 20, PCZ + 17), (GXC + 19, PCZ + 17)]
+for i, (px_, pz_) in enumerate(PALMS):
+    palm(px_, pz_, GRNG.randint(17, 20), 300 + i)
+    for (ux_, uz_) in ((px_ + 3, pz_ + 1),):                                        # lilac uplight at its foot
+        if BEDS[ux_, uz_]:
+            G[ux_, SOIL_Y, uz_] = COVE_LAMP
+            light(ux_ + 0.5, SOIL_Y + 2, uz_ + 0.5, (0.78, 0.6, 1.0), 1.3, 0.15)
+HYDRANGEA = [(WALL_BLUE, DREAM_LILAC), (DREAM_PINK, WALL_MAUVE), (DREAM_LILAC, DREAM_CLOUD)]
+ROSES = [(ROSE, DREAM_PINK), (DREAM_CLOUD, DREAM_PINK), (ROSE, ROSE)]
+placed = [(px_, pz_, 7) for (px_, pz_) in PALMS] + [(px_ + 3, pz_ + 1, 3) for (px_, pz_) in PALMS]
+def g_try(x, z, r):
+    if not (BEDS[x - r:x + r + 1, z - r:z + r + 1].all() and g_free(x, z, r)):
+        return False
+    return all((x - a) ** 2 + (z - b) ** 2 > (r + c) ** 2 for (a, b, c) in placed)
+for n_ in range(1400):
+    x = GRNG.randint(GX0 + 4, GX1 - 5); z = GRNG.randint(GZ0 + 4, GZ1 - 5)
+    near_wall = x < GX0 + 12 or x >= GX1 - 12
+    if near_wall:
+        r = GRNG.randint(3, 4)
+        if g_try(x, z, r - 1):
+            cols = GRNG.choice(HYDRANGEA)
+            plant_blob(x, SOIL_Y + r + GRNG.randint(1, 3), z, r, 400 + n_, (LEAF, LEAF3, LEAF2), squash=1.1, keep=0.22, flowers=list(cols), fp=0.55)
+            placed.append((x, z, r))
+    else:
+        r = GRNG.randint(2, 3)
+        if g_try(x, z, r - 1):
+            kind = GRNG.random()
+            if kind < 0.45:
+                plant_blob(x, SOIL_Y + r, z, r, 400 + n_, (LEAF2, LEAF, LEAF3), squash=1.2, keep=0.25, flowers=list(GRNG.choice(ROSES)), fp=0.4)
+            elif kind < 0.75:                                                      # fern: low and wide
+                plant_blob(x, SOIL_Y + 1, z, r + 1, 400 + n_, (LEAF, LEAF2, LAWN), squash=2.2, keep=0.3)
+            else:                                                                  # lavender tuft
+                for dx in range(-r + 1, r):
+                    for dz in range(-r + 1, r):
+                        if dx * dx + dz * dz <= (r - 1) ** 2 + 1 and G[x + dx, SOIL_Y, z + dz] == 0:
+                            hgt = 3 + int(hash3(np.array([x + dx]), np.array([0]), np.array([z + dz]), 7)[0] * 4)
+                            box(x + dx, x + dx + 1, SOIL_Y - 1, SOIL_Y + hgt - 2, z + dz, z + dz + 1, LEAF3)
+                            box(x + dx, x + dx + 1, SOIL_Y + hgt - 2, SOIL_Y + hgt, z + dz, z + dz + 1, DREAM_LILAC)
+            placed.append((x, z, r))
+# ---- wisteria curtain hanging from the eave beams of the long walls, vines on some mullions
+for (xw, dirx) in ((GX0 + 3, 1), (GX1 - 4, -1)):
+    for z in range(GZ0 + 4, GZ1 - 4):
+        if any(abs(z - s_) < 3 for s_ in SEAMS_Z) or GRNG.random() < 0.25:
+            continue
+        L_ = GRNG.randint(4, 13)
+        for k in range(L_):
+            y = GEAVE - 3 - k
+            c = LEAF2 if k < 2 else (DREAM_LILAC if k < L_ - 2 else (WALL_MAUVE if k == L_ - 2 else DREAM_CLOUD))
+            if G[xw, y, z] == 0:
+                G[xw, y, z] = c
+            else:
+                break
+            if k >= 2 and k < L_ - 3 and GRNG.random() < 0.45 and G[xw + dirx, y, z] == 0:
+                G[xw + dirx, y, z] = DREAM_LILAC if GRNG.random() < 0.7 else DREAM_PINK
+    for z in range(GZ0 + 8, GZ1 - 8, 24):                                          # ivy up a mullion
+        if any(abs(z - s_) < 3 for s_ in SEAMS_Z):
+            continue
+        for y in range(ROOF_Y + 7, GEAVE - 6):
+            if GRNG.random() < 0.8 and G[xw, y, z] == 0:
+                G[xw, y, z] = LEAF if y % 3 else LEAF3
+# ---- hanging baskets on white brackets from the eave
+for (xw, dirx) in ((GX0 + 3, 1), (GX1 - 4, -1)):
+    for z in range(GZ0 + 20, GZ1 - 16, 26):
+        if abs(z - PCZ) < 40 or any(abs(z - s_) < 6 for s_ in SEAMS_Z):
+            continue
+        bx_ = xw + dirx * 5
+        for x in range(min(xw, bx_), max(xw, bx_) + 1):
+            G[x, GEAVE - 3, z] = SWITCH
+        box(bx_, bx_ + 1, GEAVE - 9, GEAVE - 3, z, z + 1, DARK_METAL)               # chain
+        yb = GEAVE - 11
+        for dx in range(-2, 3):
+            for dz in range(-2, 3):
+                d2 = dx * dx + dz * dz
+                if d2 <= 5:
+                    G[bx_ + dx, yb, z + dz] = PLANTER
+                    if d2 >= 3:
+                        G[bx_ + dx, yb + 1, z + dz] = PLANTER
+                    else:
+                        G[bx_ + dx, yb + 1, z + dz] = LEAF2
+                    if d2 <= 2:
+                        G[bx_ + dx, yb + 2, z + dz] = LEAF if d2 else ROSE
+                if d2 in (4, 5) and GRNG.random() < 0.6:                           # trailing strands
+                    for k in range(1, GRNG.randint(2, 5)):
+                        G[bx_ + dx, yb - k, z + dz] = LEAF3 if k % 2 else GRNG.choice((DREAM_PINK, DREAM_LILAC, LEAF))
+# ---- lily pond on the plaza: stone rim, marble cap, dark basin, lilies, a flower urn on a column, underwater lights
+for x in range(GXC - 14, GXC + 14):
+    for z in range(PCZ - 14, PCZ + 14):
+        r_ = g_rad(x, z)
+        if r_ < 10.5:
+            G[x, ROOF_Y - 1, z] = MARBLE_B2
+        elif r_ < 13:
+            box(x, x + 1, ROOF_Y, ROOF_Y + 5, z, z + 1, BASE_STONE if (x + z) % 3 else BASE_STONE2)
+        if 10.5 <= r_ < 13.6:
+            G[x, ROOF_Y + 5, z] = MARBLE_W
+POOLS.append((ROOF_Y + 4.5, 4.5, [(GXC + 10.2 * np.cos(np.radians(a)), PCZ + 10.2 * np.sin(np.radians(a))) for a in range(0, 360, 30)],
+              dict(wave=0.01, ripple=0.3, motion=0.04, foam=0)))
+box(GXC - 1, GXC + 1, ROOF_Y, ROOF_Y + 9, PCZ - 1, PCZ + 1, MARBLE_W)              # column
+for x in range(GXC - 4, GXC + 4):
+    for z in range(PCZ - 4, PCZ + 4):
+        d_ = g_rad(x, z)
+        if d_ < 2.2:
+            box(x, x + 1, ROOF_Y + 9, ROOF_Y + 10, z, z + 1, MARBLE_W)
+        if d_ < 3.6:
+            box(x, x + 1, ROOF_Y + 10, ROOF_Y + 11, z, z + 1, MARBLE_W)
+            G[x, ROOF_Y + 11, z] = MARBLE_W if d_ >= 2.6 else SOIL
+            if d_ >= 2.6 and GRNG.random() < 0.6:
+                for k in range(1, GRNG.randint(2, 6)):
+                    if G[x, ROOF_Y + 11 - k, z] == 0:
+                        G[x, ROOF_Y + 11 - k, z] = LEAF if k % 2 else DREAM_PINK
+for x in range(GXC - 3, GXC + 3):                                                  # (rooted in the urn's soil)
+    for z in range(PCZ - 3, PCZ + 3):
+        for y in range(ROOF_Y + 12, ROOF_Y + 16):
+            d2 = (x + 0.5 - GXC) ** 2 + (z + 0.5 - PCZ) ** 2 + ((y - ROOF_Y - 12) * 1.2) ** 2
+            if d2 < 7.5 and G[x, y, z] == 0:
+                G[x, y, z] = GRNG.choice((LEAF2, LEAF, ROSE, DREAM_PINK, DREAM_CLOUD)) if y > ROOF_Y + 12 else LEAF3
+for i in range(8):                                                                 # lily pads (stem from the basin floor)
+    a_ = np.radians(i * 45 + GRNG.uniform(-15, 15)); rr_ = GRNG.uniform(5.0, 8.4)
+    lx_ = int(GXC + rr_ * np.cos(a_)); lz_ = int(PCZ + rr_ * np.sin(a_))
+    box(lx_, lx_ + 1, ROOF_Y, ROOF_Y + 4, lz_, lz_ + 1, LEAF3)
+    for dx in range(-1, 2):
+        for dz in range(-1, 2):
+            if abs(dx) + abs(dz) < 2 or GRNG.random() < 0.6:
+                G[lx_ + dx, ROOF_Y + 4, lz_ + dz] = LEAF2
+    if i % 3 == 0:
+        G[lx_, ROOF_Y + 5, lz_] = DREAM_PINK; G[lx_, ROOF_Y + 6, lz_] = DREAM_CLOUD
+for a_ in (60, 240):
+    lx_ = int(round(GXC + 10 * np.cos(np.radians(a_)))); lz_ = int(round(PCZ + 10 * np.sin(np.radians(a_))))
+    G[lx_, ROOF_Y, lz_] = POOL_LAMP
+    light(lx_ + 0.5 - np.cos(np.radians(a_)) * 1.5, ROOF_Y + 1.5, lz_ + 0.5 - np.sin(np.radians(a_)) * 1.5, (0.65, 0.85, 1.0), 0.9, 0.1)
+# ---- benches facing the pond, and on the north terrace
+def g_bench(x0_, z0_, along_z, face):
+    """1.2 m garden bench: wooden slats on black iron ends; face = direction the sitter looks (+1/-1)."""
+    if along_z:
+        for z in (z0_, z0_ + 11):
+            box(x0_, x0_ + 4, ROOF_Y, ROOF_Y + 4, z, z + 1, DARK_METAL)
+        box(x0_, x0_ + 4, ROOF_Y + 4, ROOF_Y + 5, z0_, z0_ + 12, WOOD_MED)
+        bxk = x0_ if face > 0 else x0_ + 3                                         # back away from the view
+        box(bxk, bxk + 1, ROOF_Y + 5, ROOF_Y + 10, z0_, z0_ + 12, WOOD_MED)
+        box(bxk, bxk + 1, ROOF_Y + 6, ROOF_Y + 7, z0_ + 1, z0_ + 11, WOOD_DARK)
+    else:
+        for x in (x0_, x0_ + 11):
+            box(x, x + 1, ROOF_Y, ROOF_Y + 4, z0_, z0_ + 4, DARK_METAL)
+        box(x0_, x0_ + 12, ROOF_Y + 4, ROOF_Y + 5, z0_, z0_ + 4, WOOD_MED)
+        bzk = z0_ if face > 0 else z0_ + 3
+        box(x0_, x0_ + 12, ROOF_Y + 5, ROOF_Y + 10, bzk, bzk + 1, WOOD_MED)
+        box(x0_ + 1, x0_ + 11, ROOF_Y + 6, ROOF_Y + 7, bzk, bzk + 1, WOOD_DARK)
+g_bench(GXC - 19, PCZ - 6, True, 1)
+g_bench(GXC + 15, PCZ - 6, True, -1)
+g_bench(GXC - 22, GZ1 - 10, False, -1)
+g_bench(GXC + 10, GZ1 - 10, False, -1)
+# north terrace: three-tier marble planter with trailing flowers
+for (r0_, y0_, y1_) in ((5.5, 0, 3), (4.2, 3, 7), (2.6, 7, 11)):
+    for x in range(GXC - 6, GXC + 6):
+        for z in range(GZ1 - 16, GZ1 - 4):
+            d_ = np.hypot(x + 0.5 - GXC, z + 0.5 - (GZ1 - 10))
+            if d_ < r0_:
+                box(x, x + 1, ROOF_Y + y0_, ROOF_Y + y1_, z, z + 1, MARBLE_W if d_ >= r0_ - 1.2 else SOIL)
+                if d_ >= r0_ - 1.2 and y1_ - y0_ > 0:
+                    G[x, ROOF_Y + y1_ - 1, z] = MARBLE_BG
+                    if GRNG.random() < 0.35 and G[x, ROOF_Y + y1_, z] == 0:
+                        G[x, ROOF_Y + y1_, z] = GRNG.choice((LEAF, ROSE, DREAM_LILAC, DREAM_PINK))
+for x in range(GXC - 3, GXC + 3):
+    for z in range(GZ1 - 13, GZ1 - 7):
+        for y in range(ROOF_Y + 11, ROOF_Y + 15):
+            d2 = (x + 0.5 - GXC) ** 2 + (z + 0.5 - (GZ1 - 10)) ** 2 + ((y - ROOF_Y - 11) * 1.3) ** 2
+            if d2 < 7 and G[x, y, z] == 0:
+                G[x, y, z] = GRNG.choice((LEAF2, DREAM_LILAC, DREAM_CLOUD, LEAF)) if y > ROOF_Y + 11 else LEAF3
+# entrance foyer: two terracotta urns with clipped bay balls
+for ux_ in (GXC - 13, GXC + 12):
+    uz_ = GZ0 + 9
+    for x in range(ux_ - 4, ux_ + 5):
+        for z in range(uz_ - 4, uz_ + 5):
+            d_ = np.hypot(x - ux_, z - uz_)
+            for y in range(ROOF_Y, ROOF_Y + 8):
+                rr_ = 2.2 + (y - ROOF_Y) * 0.22 + (0.6 if y == ROOF_Y + 7 else 0)
+                if d_ <= rr_:
+                    G[x, y, z] = (CARP_OR2 if y in (ROOF_Y + 2, ROOF_Y + 7) else CARP_OR) if d_ > rr_ - 1.1 or y < ROOF_Y + 2 else SOIL
+    box(ux_, ux_ + 1, ROOF_Y + 8, ROOF_Y + 12, uz_, uz_ + 1, TRUNK)
+    for x in range(ux_ - 4, ux_ + 5):
+        for z in range(uz_ - 4, uz_ + 5):
+            for y in range(ROOF_Y + 11, ROOF_Y + 20):
+                if (x - ux_) ** 2 + (z - uz_) ** 2 + (y - ROOF_Y - 15) ** 2 <= 14 and G[x, y, z] == 0:
+                    G[x, y, z] = LEAF if hash3(np.array([x]), np.array([y]), np.array([z]), 21)[0] < 0.6 else LEAF3
+# ---- Victorian lamp posts along the path (crook arm, lantern hanging over the path)
+for pz_ in (GZ0 + 32, GZ0 + 60, GZ1 - 58, GZ1 - 28):             # (clear of the shape seam at z 224)
+    for (px_, d_) in ((PW0 - 1, 1), (PW1, -1)):
+        box(px_ - 1, px_ + 2, ROOF_Y, ROOF_Y + 4, pz_ - 1, pz_ + 2, DARK_METAL)
+        box(px_, px_ + 1, ROOF_Y + 4, ROOF_Y + 23, pz_, pz_ + 1, DARK_METAL)
+        for k in range(0, 4):
+            G[px_ + d_ * k, ROOF_Y + 23, pz_] = DARK_METAL
+        G[px_ + d_ * 3, ROOF_Y + 22, pz_] = DARK_METAL
+        lx_ = px_ + d_ * 3
+        box(lx_ - 1, lx_ + 2, ROOF_Y + 21, ROOF_Y + 22, pz_ - 1, pz_ + 2, DARK_METAL)          # lantern hood
+        G[lx_, ROOF_Y + 22, pz_] = DARK_METAL
+        box(lx_, lx_ + 1, ROOF_Y + 18, ROOF_Y + 21, pz_, pz_ + 1, LAMPSHADE)                 # glowing core
+        for (ex_, ez_) in ((lx_ - 1, pz_ - 1), (lx_ + 1, pz_ - 1), (lx_ - 1, pz_ + 1), (lx_ + 1, pz_ + 1)):
+            box(ex_, ex_ + 1, ROOF_Y + 19, ROOF_Y + 21, ez_, ez_ + 1, DARK_METAL)              # corner bars
+        for (ex_, ez_) in ((lx_ - 1, pz_), (lx_ + 1, pz_), (lx_, pz_ - 1), (lx_, pz_ + 1)):
+            box(ex_, ex_ + 1, ROOF_Y + 19, ROOF_Y + 21, ez_, ez_ + 1, GLASS)                   # glass panes
+        light(lx_ + 0.5, ROOF_Y + 17.2, pz_ + 0.5, (1.0, 0.8, 0.55), 1.8, 0.15)
+# ---- the glass vault (own static shape on the eave beams): white ribs every 8, purlins, cresting,
+#      fairy lights under the ribs, glass gables with a sunburst, an octagonal lantern cupola
+NXV, NZV = GX1 - GX0, GZ1 - GZ0
+VA = np.zeros((NXV, 29, NZV), np.uint8)
+a_v, b_v = NXV / 2, 19.0
+hv = [b_v * np.sqrt(max(0.0, 1 - ((i + 0.5 - a_v) / a_v) ** 2)) for i in range(NXV)]
+tv = [int(h) for h in hv]
+lov = [0 if i in (0, NXV - 1) else min(tv[i - 1], tv[i], tv[i + 1]) for i in range(NXV)]
+for i in range(NXV):
+    VA[i, lov[i]:tv[i] + 1, :] = GLASS
+    if i % 7 == 0 and 0 < i < NXV - 1:
+        VA[i, tv[i], :] = SWITCH                                                   # purlins
+for zr in list(range(0, NZV, 8)) + [NZV - 1]:
+    for i in range(NXV):
+        VA[i, max(lov[i] - 1, 0):tv[i] + 1, zr] = SWITCH
+        if 0 < zr < NZV - 1 and i % 3 == 1 and lov[i] - 2 >= 3:
+            VA[i, lov[i] - 2, zr] = LAMPSHADE                                      # fairy lights
+for zg in (0, NZV - 1):                                                            # gables + sunburst
+    for i in range(NXV):
+        VA[i, 0:tv[i] + 1, zg] = np.where(VA[i, 0:tv[i] + 1, zg] == SWITCH, SWITCH, GLASS)
+    for ang in range(20, 180, 20):
+        for rr_ in np.arange(0, 22, 0.5):
+            i = int(a_v + np.cos(np.radians(ang)) * rr_); yy = int(np.sin(np.radians(ang)) * rr_)
+            if 0 <= i < NXV and yy <= tv[i]:
+                VA[i, yy, zg] = SWITCH
+    for ang in np.arange(0, 180, 3):
+        i = int(a_v + np.cos(np.radians(ang)) * 7); yy = int(np.sin(np.radians(ang)) * 7)
+        VA[i, yy, zg] = SWITCH
+    VA[:, 0, zg] = SWITCH
+ic = NXV // 2
+for z in range(NZV):                                                               # ridge cresting + finials
+    VA[ic - 1:ic + 1, tv[ic] + 1, z] = SWITCH
+    if z % 16 == 8 and abs(z - NZV // 2) > 10:
+        VA[ic - 1:ic + 1, tv[ic] + 2, z] = SWITCH; VA[ic - 1:ic + 1, tv[ic] + 3, z] = BRASS
+cz_c = NZV // 2; yc0 = tv[ic] + 1                                                  # octagonal lantern cupola
+for i in range(NXV):
+    for z in range(NZV):
+        ddx, ddz = i + 0.5 - ic, z + 0.5 - cz_c
+        dx_, dz_ = abs(ddx), abs(ddz)
+        ang = np.degrees(np.arctan2(ddz, ddx)) % 45
+        rib = ang < 7 or ang > 38
+        if dx_ <= 6.5 and dz_ <= 6.5 and dx_ + dz_ <= 9.5:
+            VA[i, yc0, z] = SWITCH
+            VA[i, yc0 + 5, z] = SWITCH
+            if not (dx_ <= 5.5 and dz_ <= 5.5 and dx_ + dz_ <= 8.5):
+                VA[i, yc0 + 1:yc0 + 5, z] = SWITCH if rib else GLASS
+        r2 = ddx * ddx + ddz * ddz
+        if r2 <= 25:
+            VA[i, yc0 + 6, z] = SWITCH if rib else GLASS
+        if r2 <= 10:
+            VA[i, yc0 + 7, z] = SWITCH if rib else GLASS
+VA[ic - 1:ic + 1, yc0 + 8, cz_c - 1:cz_c + 1] = BRASS
+ROOF_SHAPES.append(("glasshouse_vault", VA, (GX0, GEAVE, GZ0),
+                    [(GXC, GEAVE + 13, z, (1.0, 0.84, 0.62), 1.3, 0.2) for z in (GZ0 + 40, PCZ, GZ1 - 40)]))
+GLASSHOUSE = dict(x0=GX0, x1=GX1, z0=GZ0, z1=GZ1, eave=GEAVE, plaza=(GXC, PCZ), palms=PALMS)
+
 # ---- the helicopter (my own design): body, main rotor, tail rotor (shapes of one vehicle body)
 def helicopter_model():
     X_, Y_, Z_ = 24, 40, 120
@@ -3483,7 +3920,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.33\n"
+        f.write("name = Liminal Atrium v3.34\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
