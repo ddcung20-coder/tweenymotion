@@ -434,6 +434,7 @@ def tree(x, z, h=None, draw=True):
         r = rng.randint(5, 8)
         canopy |= ((X - x - ox) ** 2 + (Y - cy - oy) ** 2 * 1.3 + (Z - z - oz) ** 2) <= r * r
     canopy &= hash3(X, Y, Z, 5) > 0.18
+    canopy &= ~((X >= bx0 - 5) & (X < bx1 + 5) & (Z >= bz0 - 5) & (Z < bz1 + 5))   # (no leaves in or on the hotel's walls)
     # the trunk top is the anchor: only foliage connected to it survives (no floating leaves)
     canopy[R - 1:R + 1, :R + 1, R - 1:R + 1] = True
     if not draw:
@@ -1368,7 +1369,7 @@ def build_corridors():
             fr.box(0, L, y - 1, y, 0, COR_W, th["c"])
             fr.box(0, L, y - 1, y, 2, 3, th["p"])
             fr.box(0, L, y - 1, y, COR_W - 3, COR_W - 2, th["p"])
-            for u in range(6, L, 12):
+            for u in range(6, L - 12, 12):                  # (whole motifs only: none past the corridor's end)
                 if th["motif"] == "medallion":
                     for d in range(4):
                         fr.box(u + d, u + d + 1, y - 1, y, 9 - d, 9 + d, th["p"])
@@ -3733,6 +3734,7 @@ for xw in (LKX0, LKX1 - 2):
         box(xw, xw + 2, G0, G0 + 28, z, z + 1, FRAME)
 box(LKX0, LKX1, G0 + 28, G0 + 31, bz1, HZ0, SLAB)
 box(LKX0 - 1, LKX1 + 1, G0 + 30, G0 + 31, bz1, HZ0, EXT_TRIM)
+box(bx1, LKX1, G0 - 1, G0 + 31, bz1 - T_EXT, bz1 + 1, BRICK)                     # (the link is wider than the hotel: close it)
 LD = ((LKX0 + LKX1) // 2 - 6, (LKX0 + LKX1) // 2 + 6)                             # door gaps (hotel side, hall side)
 box(LD[0], LD[1], G0, G0 + 22, bz1 - T_EXT - 1, bz1 + 3, 0)
 box(LD[0] - 1, LD[1] + 1, G0 + 22, G0 + 24, bz1 - T_EXT - 1, bz1, LINTEL)
@@ -3744,6 +3746,7 @@ BANQUET_SWITCHES = []
 for (nm_, rm_, sx_) in (("banquet_switch", "banquet", LD[1] + 2), ("stage_switch", "stage", LD[1] + 6)):
     a_ = np.full((2, 3, 1), SWITCH, np.uint8); a_[:, 1, 0] = DARK_METAL if rm_ == "banquet" else RED
     BANQUET_SWITCHES.append((nm_, a_, (sx_, G0 + 11, hz0), f"roomswitch room={rm_} on=1 tv=0"))
+BANQUET_GLOWS = []
 BANQUET = dict(x=(hx0, hx1), z=(hz0, hz1), stage=STG_Z, tables=BQ_TABLES, link=(LKX0, LKX1), door=LD)
 
 # music for the arcade (the player's song, looped from the nearest speaker)
@@ -5103,6 +5106,24 @@ def export():
     #      lamps) on a hotel floor become small shapes on that floor's circuit, so a blackout darkens them too
     from scipy import ndimage as _ndi
     GLOW_IDX = np.array([CEIL_LAMP, COVE_LAMP, LAMPSHADE], np.uint8)
+    global BANQUET_GLOWS
+    # the banquet hall's unlit fittings (the chandeliers' crystals) follow the hall's light switch
+    bq_ = BANQUET
+    blab_, bn_ = _ndi.label(np.isin(G[bq_["x"][0]:bq_["x"][1], G0:G0 + 47, bq_["z"][0]:bq_["z"][1]], GLOW_IDX))
+    BANQUET_GLOWS = []
+    for i_, sl_ in enumerate(_ndi.find_objects(blab_)):
+        V = np.argwhere(blab_[sl_] == i_ + 1) + [sl_[0].start + bq_["x"][0], sl_[1].start + G0, sl_[2].start + bq_["z"][0]]
+        mn = V.min(0); mx = V.max(0) + 1
+        arr = np.zeros(tuple(mx - mn), np.uint8)
+        arr[V[:, 0] - mn[0], V[:, 1] - mn[1], V[:, 2] - mn[2]] = G[V[:, 0], V[:, 1], V[:, 2]]
+        G[V[:, 0], V[:, 1], V[:, 2]] = 0
+        key = (arr.shape, arr.tobytes())
+        if key not in lamp_files:
+            lamp_files[key] = f"lamp_{len(lamp_files)}"
+            write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr)
+        sx, sy, sz = arr.shape
+        BANQUET_GLOWS.append(dict(file=lamp_files[key], arr=arr, gmin=tuple(int(v) for v in mn),
+                                  pos=((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)))
     gx0_, gx1_, gy0_, gy1_, gz0_, gz1_ = bx0, bx1, G0 - SLAB_T, min(H, 256), bz0, bz1
     glab_, gn_ = _ndi.label(np.isin(G[gx0_:gx1_, gy0_:gy1_, gz0_:gz1_], GLOW_IDX))
     GLOWS.clear()
@@ -5310,6 +5331,8 @@ def export():
         xml.append('\t\t</vox>\n')
     for i, L in enumerate(GLOWS):
         xml.append(f'\t\t<vox name="glow{i}" tags="glow pw={L["floor"]}{' room=' + L['room'] if L.get('room') else ''}" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
+    for i, L in enumerate(BANQUET_GLOWS):
+        xml.append(f'\t\t<vox name="bqglow{i}" tags="glow room=banquet" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
     xml.append('\t</group>\n')
     for pool_ in POOLS:
         sy_, dep, pts = pool_[:3]
@@ -5474,7 +5497,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.50\n"
+        f.write("name = Liminal Atrium v3.51\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

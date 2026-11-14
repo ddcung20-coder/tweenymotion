@@ -3645,78 +3645,78 @@
 		<vox name="lamp1025" pos="-13.9 27.9 2.1" file="MOD/vox/lamp_7.vox" object="shape">
 			<light tags="pw=6" pos="0.05 -0.15 -0.05" type="sphere" color="1 0.95 0.85" scale="1.2" size="0.2"/>
 		</vox>
-		<vox name="glow0" tags="glow pw=0" pos="-14.7 9.2 -28.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow1" tags="glow pw=0" pos="-14.7 9.2 -25" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow2" tags="glow pw=0" pos="-14.7 9.2 -21.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow3" tags="glow pw=0" pos="-14.7 9.2 -18.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow4" tags="glow pw=0" pos="-14.7 9.2 -14.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow5" tags="glow pw=0" pos="-14.7 9.2 -11.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow6" tags="glow pw=0" pos="-14.7 9.2 -8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow7" tags="glow pw=0" pos="-14.7 9.2 -4.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow8" tags="glow pw=0" pos="-14.7 9.2 -1.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow9" tags="glow pw=0" pos="-14.7 9.2 2.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow10" tags="glow pw=0" pos="-14.7 9.2 5.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow11" tags="glow pw=0" pos="-14.7 9.2 9" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow12" tags="glow pw=1" pos="-14.7 12.2 -28.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow13" tags="glow pw=1" pos="-14.7 12.2 -25" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow14" tags="glow pw=1" pos="-14.7 12.2 -21.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow15" tags="glow pw=1" pos="-14.7 12.2 -18.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow16" tags="glow pw=1" pos="-14.7 12.2 -14.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow17" tags="glow pw=1" pos="-14.7 12.2 -11.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow18" tags="glow pw=1" pos="-14.7 12.2 -8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow19" tags="glow pw=1" pos="-14.7 12.2 -4.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow20" tags="glow pw=1" pos="-14.7 12.2 -1.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow21" tags="glow pw=1" pos="-14.7 12.2 2.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow22" tags="glow pw=1" pos="-14.7 12.2 5.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow23" tags="glow pw=1" pos="-14.7 12.2 9" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow24" tags="glow pw=2" pos="-14.7 15.2 -28.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow25" tags="glow pw=2" pos="-14.7 15.2 -25" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow26" tags="glow pw=2" pos="-14.7 15.2 -21.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow27" tags="glow pw=2" pos="-14.7 15.2 -18.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow28" tags="glow pw=2" pos="-14.7 15.2 -14.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow29" tags="glow pw=2" pos="-14.7 15.2 -11.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow30" tags="glow pw=2" pos="-14.7 15.2 -8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow31" tags="glow pw=2" pos="-14.7 15.2 -4.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow32" tags="glow pw=2" pos="-14.7 15.2 -1.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow33" tags="glow pw=2" pos="-14.7 15.2 2.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow34" tags="glow pw=2" pos="-14.7 15.2 5.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow35" tags="glow pw=2" pos="-14.7 15.2 9" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow36" tags="glow pw=3" pos="-14.7 18.2 -28.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow37" tags="glow pw=3" pos="-14.7 18.2 -25" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow38" tags="glow pw=3" pos="-14.7 18.2 -21.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow39" tags="glow pw=3" pos="-14.7 18.2 -18.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow40" tags="glow pw=3" pos="-14.7 18.2 -14.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow41" tags="glow pw=3" pos="-14.7 18.2 -11.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow42" tags="glow pw=3" pos="-14.7 18.2 -8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow43" tags="glow pw=3" pos="-14.7 18.2 -4.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow44" tags="glow pw=3" pos="-14.7 18.2 -1.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow45" tags="glow pw=3" pos="-14.7 18.2 2.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow46" tags="glow pw=3" pos="-14.7 18.2 5.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow47" tags="glow pw=3" pos="-14.7 18.2 9" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow48" tags="glow pw=4" pos="-14.7 21.2 -28.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow49" tags="glow pw=4" pos="-14.7 21.2 -25" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow50" tags="glow pw=4" pos="-14.7 21.2 -21.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow51" tags="glow pw=4" pos="-14.7 21.2 -18.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow52" tags="glow pw=4" pos="-14.7 21.2 -14.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow53" tags="glow pw=4" pos="-14.7 21.2 -11.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow54" tags="glow pw=4" pos="-14.7 21.2 -8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow55" tags="glow pw=4" pos="-14.7 21.2 -4.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow56" tags="glow pw=4" pos="-14.7 21.2 -1.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow57" tags="glow pw=4" pos="-14.7 21.2 2.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow58" tags="glow pw=4" pos="-14.7 21.2 5.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow59" tags="glow pw=4" pos="-14.7 21.2 9" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow60" tags="glow pw=5" pos="-14.7 24.2 -28.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow61" tags="glow pw=5" pos="-14.7 24.2 -25" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow62" tags="glow pw=5" pos="-14.7 24.2 -21.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow63" tags="glow pw=5" pos="-14.7 24.2 -18.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow64" tags="glow pw=5" pos="-14.7 24.2 -14.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow65" tags="glow pw=5" pos="-14.7 24.2 -11.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow66" tags="glow pw=5" pos="-14.7 24.2 -8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow67" tags="glow pw=5" pos="-14.7 24.2 -4.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow68" tags="glow pw=5" pos="-14.7 24.2 -1.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow69" tags="glow pw=5" pos="-14.7 24.2 2.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow70" tags="glow pw=5" pos="-14.7 24.2 5.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow71" tags="glow pw=5" pos="-14.7 24.2 9" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="glow0" tags="glow pw=0" pos="-14.7 9.2 -28.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow1" tags="glow pw=0" pos="-14.7 9.2 -25" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow2" tags="glow pw=0" pos="-14.7 9.2 -21.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow3" tags="glow pw=0" pos="-14.7 9.2 -18.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow4" tags="glow pw=0" pos="-14.7 9.2 -14.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow5" tags="glow pw=0" pos="-14.7 9.2 -11.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow6" tags="glow pw=0" pos="-14.7 9.2 -8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow7" tags="glow pw=0" pos="-14.7 9.2 -4.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow8" tags="glow pw=0" pos="-14.7 9.2 -1.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow9" tags="glow pw=0" pos="-14.7 9.2 2.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow10" tags="glow pw=0" pos="-14.7 9.2 5.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow11" tags="glow pw=0" pos="-14.7 9.2 9" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow12" tags="glow pw=1" pos="-14.7 12.2 -28.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow13" tags="glow pw=1" pos="-14.7 12.2 -25" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow14" tags="glow pw=1" pos="-14.7 12.2 -21.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow15" tags="glow pw=1" pos="-14.7 12.2 -18.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow16" tags="glow pw=1" pos="-14.7 12.2 -14.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow17" tags="glow pw=1" pos="-14.7 12.2 -11.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow18" tags="glow pw=1" pos="-14.7 12.2 -8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow19" tags="glow pw=1" pos="-14.7 12.2 -4.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow20" tags="glow pw=1" pos="-14.7 12.2 -1.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow21" tags="glow pw=1" pos="-14.7 12.2 2.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow22" tags="glow pw=1" pos="-14.7 12.2 5.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow23" tags="glow pw=1" pos="-14.7 12.2 9" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow24" tags="glow pw=2" pos="-14.7 15.2 -28.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow25" tags="glow pw=2" pos="-14.7 15.2 -25" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow26" tags="glow pw=2" pos="-14.7 15.2 -21.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow27" tags="glow pw=2" pos="-14.7 15.2 -18.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow28" tags="glow pw=2" pos="-14.7 15.2 -14.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow29" tags="glow pw=2" pos="-14.7 15.2 -11.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow30" tags="glow pw=2" pos="-14.7 15.2 -8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow31" tags="glow pw=2" pos="-14.7 15.2 -4.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow32" tags="glow pw=2" pos="-14.7 15.2 -1.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow33" tags="glow pw=2" pos="-14.7 15.2 2.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow34" tags="glow pw=2" pos="-14.7 15.2 5.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow35" tags="glow pw=2" pos="-14.7 15.2 9" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow36" tags="glow pw=3" pos="-14.7 18.2 -28.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow37" tags="glow pw=3" pos="-14.7 18.2 -25" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow38" tags="glow pw=3" pos="-14.7 18.2 -21.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow39" tags="glow pw=3" pos="-14.7 18.2 -18.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow40" tags="glow pw=3" pos="-14.7 18.2 -14.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow41" tags="glow pw=3" pos="-14.7 18.2 -11.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow42" tags="glow pw=3" pos="-14.7 18.2 -8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow43" tags="glow pw=3" pos="-14.7 18.2 -4.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow44" tags="glow pw=3" pos="-14.7 18.2 -1.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow45" tags="glow pw=3" pos="-14.7 18.2 2.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow46" tags="glow pw=3" pos="-14.7 18.2 5.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow47" tags="glow pw=3" pos="-14.7 18.2 9" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow48" tags="glow pw=4" pos="-14.7 21.2 -28.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow49" tags="glow pw=4" pos="-14.7 21.2 -25" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow50" tags="glow pw=4" pos="-14.7 21.2 -21.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow51" tags="glow pw=4" pos="-14.7 21.2 -18.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow52" tags="glow pw=4" pos="-14.7 21.2 -14.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow53" tags="glow pw=4" pos="-14.7 21.2 -11.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow54" tags="glow pw=4" pos="-14.7 21.2 -8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow55" tags="glow pw=4" pos="-14.7 21.2 -4.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow56" tags="glow pw=4" pos="-14.7 21.2 -1.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow57" tags="glow pw=4" pos="-14.7 21.2 2.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow58" tags="glow pw=4" pos="-14.7 21.2 5.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow59" tags="glow pw=4" pos="-14.7 21.2 9" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow60" tags="glow pw=5" pos="-14.7 24.2 -28.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow61" tags="glow pw=5" pos="-14.7 24.2 -25" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow62" tags="glow pw=5" pos="-14.7 24.2 -21.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow63" tags="glow pw=5" pos="-14.7 24.2 -18.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow64" tags="glow pw=5" pos="-14.7 24.2 -14.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow65" tags="glow pw=5" pos="-14.7 24.2 -11.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow66" tags="glow pw=5" pos="-14.7 24.2 -8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow67" tags="glow pw=5" pos="-14.7 24.2 -4.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow68" tags="glow pw=5" pos="-14.7 24.2 -1.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow69" tags="glow pw=5" pos="-14.7 24.2 2.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow70" tags="glow pw=5" pos="-14.7 24.2 5.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow71" tags="glow pw=5" pos="-14.7 24.2 9" file="MOD/vox/lamp_47.vox" object="shape"/>
 		<vox name="glow72" tags="glow pw=0" pos="-14.1 9.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow73" tags="glow pw=1" pos="-14.1 12.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow74" tags="glow pw=2" pos="-14.1 15.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
@@ -3724,137 +3724,137 @@
 		<vox name="glow76" tags="glow pw=4" pos="-14.1 21.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow77" tags="glow pw=5" pos="-14.1 24.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow78" tags="glow pw=0" pos="-13.9 9.9 -28.1" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow79" tags="glow pw=0" pos="-13.9 9.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow79" tags="glow pw=0" pos="-13.9 9.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow80" tags="glow pw=0" pos="-13.9 9.9 -21.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow81" tags="glow pw=0" pos="-13.9 9.9 -14.4" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow82" tags="glow pw=0" pos="-13.9 9.9 -7.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow83" tags="glow pw=0" pos="-13.9 9.9 -0.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow84" tags="glow pw=0" pos="-13.9 9.9 6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow85" tags="glow pw=0" pos="-13.9 9.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow85" tags="glow pw=0" pos="-13.9 9.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow86" tags="glow pw=1" pos="-13.9 12.9 -28.1" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow87" tags="glow pw=1" pos="-13.9 12.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow87" tags="glow pw=1" pos="-13.9 12.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow88" tags="glow pw=1" pos="-13.9 12.9 -21.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow89" tags="glow pw=1" pos="-13.9 12.9 -14.4" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow90" tags="glow pw=1" pos="-13.9 12.9 -7.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow91" tags="glow pw=1" pos="-13.9 12.9 -0.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow92" tags="glow pw=1" pos="-13.9 12.9 6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow93" tags="glow pw=1" pos="-13.9 12.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow93" tags="glow pw=1" pos="-13.9 12.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow94" tags="glow pw=2" pos="-13.9 15.9 -28.1" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow95" tags="glow pw=2" pos="-13.9 15.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow95" tags="glow pw=2" pos="-13.9 15.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow96" tags="glow pw=2" pos="-13.9 15.9 -21.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow97" tags="glow pw=2" pos="-13.9 15.9 -14.4" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow98" tags="glow pw=2" pos="-13.9 15.9 -7.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow99" tags="glow pw=2" pos="-13.9 15.9 -0.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow100" tags="glow pw=2" pos="-13.9 15.9 6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow101" tags="glow pw=2" pos="-13.9 15.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow101" tags="glow pw=2" pos="-13.9 15.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow102" tags="glow pw=3" pos="-13.9 18.9 -28.1" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow103" tags="glow pw=3" pos="-13.9 18.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow103" tags="glow pw=3" pos="-13.9 18.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow104" tags="glow pw=3" pos="-13.9 18.9 -21.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow105" tags="glow pw=3" pos="-13.9 18.9 -14.4" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow106" tags="glow pw=3" pos="-13.9 18.9 -7.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow107" tags="glow pw=3" pos="-13.9 18.9 -0.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow108" tags="glow pw=3" pos="-13.9 18.9 6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow109" tags="glow pw=3" pos="-13.9 18.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow109" tags="glow pw=3" pos="-13.9 18.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow110" tags="glow pw=4" pos="-13.9 21.9 -28.1" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow111" tags="glow pw=4" pos="-13.9 21.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow111" tags="glow pw=4" pos="-13.9 21.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow112" tags="glow pw=4" pos="-13.9 21.9 -21.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow113" tags="glow pw=4" pos="-13.9 21.9 -14.4" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow114" tags="glow pw=4" pos="-13.9 21.9 -7.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow115" tags="glow pw=4" pos="-13.9 21.9 -0.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow116" tags="glow pw=4" pos="-13.9 21.9 6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow117" tags="glow pw=4" pos="-13.9 21.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow117" tags="glow pw=4" pos="-13.9 21.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow118" tags="glow pw=5" pos="-13.9 24.9 -28.1" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow119" tags="glow pw=5" pos="-13.9 24.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow119" tags="glow pw=5" pos="-13.9 24.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow120" tags="glow pw=5" pos="-13.9 24.9 -21.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow121" tags="glow pw=5" pos="-13.9 24.9 -14.4" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow122" tags="glow pw=5" pos="-13.9 24.9 -7.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow123" tags="glow pw=5" pos="-13.9 24.9 -0.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow124" tags="glow pw=5" pos="-13.9 24.9 6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow125" tags="glow pw=5" pos="-13.9 24.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
-		<vox name="glow126" tags="glow pw=0" pos="-13.7 9.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow127" tags="glow pw=1" pos="-13.7 12.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow128" tags="glow pw=2" pos="-13.7 15.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow129" tags="glow pw=3" pos="-13.7 18.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow130" tags="glow pw=4" pos="-13.7 21.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow131" tags="glow pw=5" pos="-13.7 24.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow132" tags="glow pw=0" pos="-13.5 9.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow133" tags="glow pw=1" pos="-13.5 12.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow134" tags="glow pw=2" pos="-13.5 15.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow135" tags="glow pw=3" pos="-13.5 18.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow136" tags="glow pw=4" pos="-13.5 21.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow137" tags="glow pw=5" pos="-13.5 24.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
+		<vox name="glow125" tags="glow pw=5" pos="-13.9 24.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
+		<vox name="glow126" tags="glow pw=0" pos="-13.7 9.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow127" tags="glow pw=1" pos="-13.7 12.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow128" tags="glow pw=2" pos="-13.7 15.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow129" tags="glow pw=3" pos="-13.7 18.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow130" tags="glow pw=4" pos="-13.7 21.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow131" tags="glow pw=5" pos="-13.7 24.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow132" tags="glow pw=0" pos="-13.5 9.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow133" tags="glow pw=1" pos="-13.5 12.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow134" tags="glow pw=2" pos="-13.5 15.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow135" tags="glow pw=3" pos="-13.5 18.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow136" tags="glow pw=4" pos="-13.5 21.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow137" tags="glow pw=5" pos="-13.5 24.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
 		<vox name="glow138" tags="glow pw=0" pos="-13.1 9.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow139" tags="glow pw=1" pos="-13.1 12.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow140" tags="glow pw=2" pos="-13.1 15.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow141" tags="glow pw=3" pos="-13.1 18.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow142" tags="glow pw=4" pos="-13.1 21.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow143" tags="glow pw=5" pos="-13.1 24.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow144" tags="glow pw=0" pos="-10.3 9.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow145" tags="glow pw=1" pos="-10.3 12.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow146" tags="glow pw=2" pos="-10.3 15.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow147" tags="glow pw=3" pos="-10.3 18.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow148" tags="glow pw=4" pos="-10.3 21.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow149" tags="glow pw=5" pos="-10.3 24.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow150" tags="glow pw=0" pos="-10.1 9.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow151" tags="glow pw=1" pos="-10.1 12.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow152" tags="glow pw=2" pos="-10.1 15.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow153" tags="glow pw=3" pos="-10.1 18.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow154" tags="glow pw=4" pos="-10.1 21.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow155" tags="glow pw=5" pos="-10.1 24.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
+		<vox name="glow144" tags="glow pw=0" pos="-10.3 9.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow145" tags="glow pw=1" pos="-10.3 12.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow146" tags="glow pw=2" pos="-10.3 15.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow147" tags="glow pw=3" pos="-10.3 18.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow148" tags="glow pw=4" pos="-10.3 21.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow149" tags="glow pw=5" pos="-10.3 24.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow150" tags="glow pw=0" pos="-10.1 9.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow151" tags="glow pw=1" pos="-10.1 12.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow152" tags="glow pw=2" pos="-10.1 15.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow153" tags="glow pw=3" pos="-10.1 18.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow154" tags="glow pw=4" pos="-10.1 21.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow155" tags="glow pw=5" pos="-10.1 24.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
 		<vox name="glow156" tags="glow pw=0" pos="-7.3 9.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow157" tags="glow pw=1" pos="-7.3 12.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow158" tags="glow pw=2" pos="-7.3 15.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow159" tags="glow pw=3" pos="-7.3 18.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow160" tags="glow pw=4" pos="-7.3 21.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow161" tags="glow pw=5" pos="-7.3 24.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow162" tags="glow pw=0" pos="-6.9 9.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow163" tags="glow pw=1" pos="-6.9 12.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow164" tags="glow pw=2" pos="-6.9 15.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow165" tags="glow pw=3" pos="-6.9 18.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow166" tags="glow pw=4" pos="-6.9 21.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow167" tags="glow pw=5" pos="-6.9 24.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow168" tags="glow pw=0" pos="-6.7 9.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow169" tags="glow pw=1" pos="-6.7 12.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow170" tags="glow pw=2" pos="-6.7 15.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow171" tags="glow pw=3" pos="-6.7 18.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow172" tags="glow pw=4" pos="-6.7 21.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow173" tags="glow pw=5" pos="-6.7 24.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
+		<vox name="glow162" tags="glow pw=0" pos="-6.9 9.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow163" tags="glow pw=1" pos="-6.9 12.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow164" tags="glow pw=2" pos="-6.9 15.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow165" tags="glow pw=3" pos="-6.9 18.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow166" tags="glow pw=4" pos="-6.9 21.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow167" tags="glow pw=5" pos="-6.9 24.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow168" tags="glow pw=0" pos="-6.7 9.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow169" tags="glow pw=1" pos="-6.7 12.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow170" tags="glow pw=2" pos="-6.7 15.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow171" tags="glow pw=3" pos="-6.7 18.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow172" tags="glow pw=4" pos="-6.7 21.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow173" tags="glow pw=5" pos="-6.7 24.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
 		<vox name="glow174" tags="glow pw=0" pos="-6.3 9.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow175" tags="glow pw=1" pos="-6.3 12.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow176" tags="glow pw=2" pos="-6.3 15.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow177" tags="glow pw=3" pos="-6.3 18.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow178" tags="glow pw=4" pos="-6.3 21.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow179" tags="glow pw=5" pos="-6.3 24.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow180" tags="glow pw=0" pos="-3.9 9.6 5.4" file="MOD/vox/lamp_49.vox" object="shape"/>
-		<vox name="glow181" tags="glow pw=0" pos="-3.5 9.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow182" tags="glow pw=1" pos="-3.5 12.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow183" tags="glow pw=2" pos="-3.5 15.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow184" tags="glow pw=3" pos="-3.5 18.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow185" tags="glow pw=4" pos="-3.5 21.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow186" tags="glow pw=5" pos="-3.5 24.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow187" tags="glow pw=0" pos="-3.3 9.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow188" tags="glow pw=1" pos="-3.3 12.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow189" tags="glow pw=2" pos="-3.3 15.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow190" tags="glow pw=3" pos="-3.3 18.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow191" tags="glow pw=4" pos="-3.3 21.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow192" tags="glow pw=5" pos="-3.3 24.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow193" tags="glow pw=0" pos="-0.8 9.4 6.3" file="MOD/vox/lamp_50.vox" object="shape"/>
+		<vox name="glow180" tags="glow pw=0" pos="-3.9 9.6 5.4" file="MOD/vox/lamp_50.vox" object="shape"/>
+		<vox name="glow181" tags="glow pw=0" pos="-3.5 9.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow182" tags="glow pw=1" pos="-3.5 12.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow183" tags="glow pw=2" pos="-3.5 15.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow184" tags="glow pw=3" pos="-3.5 18.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow185" tags="glow pw=4" pos="-3.5 21.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow186" tags="glow pw=5" pos="-3.5 24.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow187" tags="glow pw=0" pos="-3.3 9.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow188" tags="glow pw=1" pos="-3.3 12.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow189" tags="glow pw=2" pos="-3.3 15.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow190" tags="glow pw=3" pos="-3.3 18.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow191" tags="glow pw=4" pos="-3.3 21.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow192" tags="glow pw=5" pos="-3.3 24.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow193" tags="glow pw=0" pos="-0.8 9.4 6.3" file="MOD/vox/lamp_51.vox" object="shape"/>
 		<vox name="glow194" tags="glow pw=0" pos="-0.5 9.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow195" tags="glow pw=1" pos="-0.5 12.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow196" tags="glow pw=2" pos="-0.5 15.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow197" tags="glow pw=3" pos="-0.5 18.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow198" tags="glow pw=4" pos="-0.5 21.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow199" tags="glow pw=5" pos="-0.5 24.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow200" tags="glow pw=1" pos="-0.1 12.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow201" tags="glow pw=2" pos="-0.1 15.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow202" tags="glow pw=3" pos="-0.1 18.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow203" tags="glow pw=4" pos="-0.1 21.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow204" tags="glow pw=5" pos="-0.1 24.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow205" tags="glow pw=1" pos="0.1 12.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow206" tags="glow pw=2" pos="0.1 15.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow207" tags="glow pw=3" pos="0.1 18.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow208" tags="glow pw=4" pos="0.1 21.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow209" tags="glow pw=5" pos="0.1 24.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
+		<vox name="glow200" tags="glow pw=1" pos="-0.1 12.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow201" tags="glow pw=2" pos="-0.1 15.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow202" tags="glow pw=3" pos="-0.1 18.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow203" tags="glow pw=4" pos="-0.1 21.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow204" tags="glow pw=5" pos="-0.1 24.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow205" tags="glow pw=1" pos="0.1 12.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow206" tags="glow pw=2" pos="0.1 15.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow207" tags="glow pw=3" pos="0.1 18.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow208" tags="glow pw=4" pos="0.1 21.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow209" tags="glow pw=5" pos="0.1 24.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
 		<vox name="glow210" tags="glow pw=0" pos="0.5 9.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow211" tags="glow pw=1" pos="0.5 12.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow212" tags="glow pw=2" pos="0.5 15.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
@@ -3868,119 +3868,119 @@
 		<vox name="glow220" tags="glow pw=0" pos="1.6 9.8 -25.6" file="MOD/vox/lamp_16.vox" object="shape"/>
 		<vox name="glow221" tags="glow pw=0" pos="1.6 9.8 -24.8" file="MOD/vox/lamp_16.vox" object="shape"/>
 		<vox name="glow222" tags="glow pw=0" pos="1.8 9.8 -25.2" file="MOD/vox/lamp_16.vox" object="shape"/>
-		<vox name="glow223" tags="glow pw=0" pos="3.3 9.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow224" tags="glow pw=1" pos="3.3 12.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow225" tags="glow pw=2" pos="3.3 15.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow226" tags="glow pw=3" pos="3.3 18.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow227" tags="glow pw=4" pos="3.3 21.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow228" tags="glow pw=5" pos="3.3 24.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow229" tags="glow pw=0" pos="3.5 9.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow230" tags="glow pw=1" pos="3.5 12.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow231" tags="glow pw=2" pos="3.5 15.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow232" tags="glow pw=3" pos="3.5 18.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow233" tags="glow pw=4" pos="3.5 21.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow234" tags="glow pw=5" pos="3.5 24.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
+		<vox name="glow223" tags="glow pw=0" pos="3.3 9.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow224" tags="glow pw=1" pos="3.3 12.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow225" tags="glow pw=2" pos="3.3 15.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow226" tags="glow pw=3" pos="3.3 18.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow227" tags="glow pw=4" pos="3.3 21.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow228" tags="glow pw=5" pos="3.3 24.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow229" tags="glow pw=0" pos="3.5 9.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow230" tags="glow pw=1" pos="3.5 12.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow231" tags="glow pw=2" pos="3.5 15.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow232" tags="glow pw=3" pos="3.5 18.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow233" tags="glow pw=4" pos="3.5 21.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow234" tags="glow pw=5" pos="3.5 24.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
 		<vox name="glow235" tags="glow pw=0" pos="6.3 9.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow236" tags="glow pw=1" pos="6.3 12.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow237" tags="glow pw=2" pos="6.3 15.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow238" tags="glow pw=3" pos="6.3 18.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow239" tags="glow pw=4" pos="6.3 21.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow240" tags="glow pw=5" pos="6.3 24.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow241" tags="glow pw=0" pos="6.7 9.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow242" tags="glow pw=1" pos="6.7 12.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow243" tags="glow pw=2" pos="6.7 15.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow244" tags="glow pw=3" pos="6.7 18.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow245" tags="glow pw=4" pos="6.7 21.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow246" tags="glow pw=5" pos="6.7 24.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow247" tags="glow pw=0" pos="6.9 9.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow248" tags="glow pw=1" pos="6.9 12.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow249" tags="glow pw=2" pos="6.9 15.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow250" tags="glow pw=3" pos="6.9 18.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow251" tags="glow pw=4" pos="6.9 21.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow252" tags="glow pw=5" pos="6.9 24.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
+		<vox name="glow241" tags="glow pw=0" pos="6.7 9.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow242" tags="glow pw=1" pos="6.7 12.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow243" tags="glow pw=2" pos="6.7 15.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow244" tags="glow pw=3" pos="6.7 18.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow245" tags="glow pw=4" pos="6.7 21.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow246" tags="glow pw=5" pos="6.7 24.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow247" tags="glow pw=0" pos="6.9 9.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow248" tags="glow pw=1" pos="6.9 12.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow249" tags="glow pw=2" pos="6.9 15.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow250" tags="glow pw=3" pos="6.9 18.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow251" tags="glow pw=4" pos="6.9 21.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow252" tags="glow pw=5" pos="6.9 24.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
 		<vox name="glow253" tags="glow pw=0" pos="7.3 9.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow254" tags="glow pw=1" pos="7.3 12.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow255" tags="glow pw=2" pos="7.3 15.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow256" tags="glow pw=3" pos="7.3 18.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow257" tags="glow pw=4" pos="7.3 21.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow258" tags="glow pw=5" pos="7.3 24.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow259" tags="glow pw=0" pos="10.1 9.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow260" tags="glow pw=1" pos="10.1 12.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow261" tags="glow pw=2" pos="10.1 15.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow262" tags="glow pw=3" pos="10.1 18.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow263" tags="glow pw=4" pos="10.1 21.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow264" tags="glow pw=5" pos="10.1 24.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow265" tags="glow pw=0" pos="10.3 9.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow266" tags="glow pw=1" pos="10.3 12.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow267" tags="glow pw=2" pos="10.3 15.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow268" tags="glow pw=3" pos="10.3 18.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow269" tags="glow pw=4" pos="10.3 21.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow270" tags="glow pw=5" pos="10.3 24.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
+		<vox name="glow259" tags="glow pw=0" pos="10.1 9.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow260" tags="glow pw=1" pos="10.1 12.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow261" tags="glow pw=2" pos="10.1 15.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow262" tags="glow pw=3" pos="10.1 18.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow263" tags="glow pw=4" pos="10.1 21.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow264" tags="glow pw=5" pos="10.1 24.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow265" tags="glow pw=0" pos="10.3 9.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow266" tags="glow pw=1" pos="10.3 12.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow267" tags="glow pw=2" pos="10.3 15.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow268" tags="glow pw=3" pos="10.3 18.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow269" tags="glow pw=4" pos="10.3 21.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow270" tags="glow pw=5" pos="10.3 24.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
 		<vox name="glow271" tags="glow pw=0" pos="13.1 9.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow272" tags="glow pw=1" pos="13.1 12.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow273" tags="glow pw=2" pos="13.1 15.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow274" tags="glow pw=3" pos="13.1 18.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow275" tags="glow pw=4" pos="13.1 21.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow276" tags="glow pw=5" pos="13.1 24.9 -28.8" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow277" tags="glow pw=0" pos="13.5 9.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow278" tags="glow pw=1" pos="13.5 12.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow279" tags="glow pw=2" pos="13.5 15.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow280" tags="glow pw=3" pos="13.5 18.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow281" tags="glow pw=4" pos="13.5 21.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow282" tags="glow pw=5" pos="13.5 24.2 -29.5" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow283" tags="glow pw=0" pos="13.7 9.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow284" tags="glow pw=1" pos="13.7 12.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow285" tags="glow pw=2" pos="13.7 15.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow286" tags="glow pw=3" pos="13.7 18.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow287" tags="glow pw=4" pos="13.7 21.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow288" tags="glow pw=5" pos="13.7 24.2 11" file="MOD/vox/lamp_48.vox" object="shape"/>
-		<vox name="glow289" tags="glow pw=0" pos="13.9 9.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow277" tags="glow pw=0" pos="13.5 9.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow278" tags="glow pw=1" pos="13.5 12.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow279" tags="glow pw=2" pos="13.5 15.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow280" tags="glow pw=3" pos="13.5 18.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow281" tags="glow pw=4" pos="13.5 21.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow282" tags="glow pw=5" pos="13.5 24.2 -29.5" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow283" tags="glow pw=0" pos="13.7 9.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow284" tags="glow pw=1" pos="13.7 12.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow285" tags="glow pw=2" pos="13.7 15.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow286" tags="glow pw=3" pos="13.7 18.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow287" tags="glow pw=4" pos="13.7 21.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow288" tags="glow pw=5" pos="13.7 24.2 11" file="MOD/vox/lamp_49.vox" object="shape"/>
+		<vox name="glow289" tags="glow pw=0" pos="13.9 9.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow290" tags="glow pw=0" pos="13.9 9.9 -24.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow291" tags="glow pw=0" pos="13.9 9.9 -17.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow292" tags="glow pw=0" pos="13.9 9.9 -11" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow293" tags="glow pw=0" pos="13.9 9.9 -4.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow294" tags="glow pw=0" pos="13.9 9.9 2.6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow295" tags="glow pw=0" pos="13.9 9.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow295" tags="glow pw=0" pos="13.9 9.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow296" tags="glow pw=0" pos="13.9 9.9 9.5" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow297" tags="glow pw=1" pos="13.9 12.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow297" tags="glow pw=1" pos="13.9 12.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow298" tags="glow pw=1" pos="13.9 12.9 -24.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow299" tags="glow pw=1" pos="13.9 12.9 -17.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow300" tags="glow pw=1" pos="13.9 12.9 -11" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow301" tags="glow pw=1" pos="13.9 12.9 -4.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow302" tags="glow pw=1" pos="13.9 12.9 2.6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow303" tags="glow pw=1" pos="13.9 12.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow303" tags="glow pw=1" pos="13.9 12.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow304" tags="glow pw=1" pos="13.9 12.9 9.5" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow305" tags="glow pw=2" pos="13.9 15.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow305" tags="glow pw=2" pos="13.9 15.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow306" tags="glow pw=2" pos="13.9 15.9 -24.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow307" tags="glow pw=2" pos="13.9 15.9 -17.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow308" tags="glow pw=2" pos="13.9 15.9 -11" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow309" tags="glow pw=2" pos="13.9 15.9 -4.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow310" tags="glow pw=2" pos="13.9 15.9 2.6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow311" tags="glow pw=2" pos="13.9 15.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow311" tags="glow pw=2" pos="13.9 15.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow312" tags="glow pw=2" pos="13.9 15.9 9.5" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow313" tags="glow pw=3" pos="13.9 18.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow313" tags="glow pw=3" pos="13.9 18.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow314" tags="glow pw=3" pos="13.9 18.9 -24.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow315" tags="glow pw=3" pos="13.9 18.9 -17.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow316" tags="glow pw=3" pos="13.9 18.9 -11" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow317" tags="glow pw=3" pos="13.9 18.9 -4.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow318" tags="glow pw=3" pos="13.9 18.9 2.6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow319" tags="glow pw=3" pos="13.9 18.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow319" tags="glow pw=3" pos="13.9 18.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow320" tags="glow pw=3" pos="13.9 18.9 9.5" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow321" tags="glow pw=4" pos="13.9 21.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow321" tags="glow pw=4" pos="13.9 21.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow322" tags="glow pw=4" pos="13.9 21.9 -24.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow323" tags="glow pw=4" pos="13.9 21.9 -17.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow324" tags="glow pw=4" pos="13.9 21.9 -11" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow325" tags="glow pw=4" pos="13.9 21.9 -4.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow326" tags="glow pw=4" pos="13.9 21.9 2.6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow327" tags="glow pw=4" pos="13.9 21.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow327" tags="glow pw=4" pos="13.9 21.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow328" tags="glow pw=4" pos="13.9 21.9 9.5" file="MOD/vox/lamp_13.vox" object="shape"/>
-		<vox name="glow329" tags="glow pw=5" pos="13.9 24.9 -27.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow329" tags="glow pw=5" pos="13.9 24.9 -27.8" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow330" tags="glow pw=5" pos="13.9 24.9 -24.6" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow331" tags="glow pw=5" pos="13.9 24.9 -17.8" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow332" tags="glow pw=5" pos="13.9 24.9 -11" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow333" tags="glow pw=5" pos="13.9 24.9 -4.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow334" tags="glow pw=5" pos="13.9 24.9 2.6" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow335" tags="glow pw=5" pos="13.9 24.9 9.3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow335" tags="glow pw=5" pos="13.9 24.9 9.3" file="MOD/vox/lamp_48.vox" object="shape"/>
 		<vox name="glow336" tags="glow pw=5" pos="13.9 24.9 9.5" file="MOD/vox/lamp_13.vox" object="shape"/>
 		<vox name="glow337" tags="glow pw=0" pos="14.1 9.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow338" tags="glow pw=1" pos="14.1 12.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
@@ -3988,78 +3988,102 @@
 		<vox name="glow340" tags="glow pw=3" pos="14.1 18.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow341" tags="glow pw=4" pos="14.1 21.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
 		<vox name="glow342" tags="glow pw=5" pos="14.1 24.9 10.2" file="MOD/vox/lamp_8.vox" object="shape"/>
-		<vox name="glow343" tags="glow pw=0" pos="14.6 9.2 -27.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow344" tags="glow pw=0" pos="14.6 9.2 -24.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow345" tags="glow pw=0" pos="14.6 9.2 -20.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow346" tags="glow pw=0" pos="14.6 9.2 -17.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow347" tags="glow pw=0" pos="14.6 9.2 -14" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow348" tags="glow pw=0" pos="14.6 9.2 -10.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow349" tags="glow pw=0" pos="14.6 9.2 -7.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow350" tags="glow pw=0" pos="14.6 9.2 -3.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow351" tags="glow pw=0" pos="14.6 9.2 -0.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow352" tags="glow pw=0" pos="14.6 9.2 3" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow353" tags="glow pw=0" pos="14.6 9.2 6.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow354" tags="glow pw=0" pos="14.6 9.2 9.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow355" tags="glow pw=1" pos="14.6 12.2 -27.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow356" tags="glow pw=1" pos="14.6 12.2 -24.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow357" tags="glow pw=1" pos="14.6 12.2 -20.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow358" tags="glow pw=1" pos="14.6 12.2 -17.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow359" tags="glow pw=1" pos="14.6 12.2 -14" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow360" tags="glow pw=1" pos="14.6 12.2 -10.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow361" tags="glow pw=1" pos="14.6 12.2 -7.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow362" tags="glow pw=1" pos="14.6 12.2 -3.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow363" tags="glow pw=1" pos="14.6 12.2 -0.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow364" tags="glow pw=1" pos="14.6 12.2 3" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow365" tags="glow pw=1" pos="14.6 12.2 6.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow366" tags="glow pw=1" pos="14.6 12.2 9.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow367" tags="glow pw=2" pos="14.6 15.2 -27.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow368" tags="glow pw=2" pos="14.6 15.2 -24.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow369" tags="glow pw=2" pos="14.6 15.2 -20.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow370" tags="glow pw=2" pos="14.6 15.2 -17.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow371" tags="glow pw=2" pos="14.6 15.2 -14" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow372" tags="glow pw=2" pos="14.6 15.2 -10.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow373" tags="glow pw=2" pos="14.6 15.2 -7.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow374" tags="glow pw=2" pos="14.6 15.2 -3.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow375" tags="glow pw=2" pos="14.6 15.2 -0.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow376" tags="glow pw=2" pos="14.6 15.2 3" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow377" tags="glow pw=2" pos="14.6 15.2 6.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow378" tags="glow pw=2" pos="14.6 15.2 9.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow379" tags="glow pw=3" pos="14.6 18.2 -27.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow380" tags="glow pw=3" pos="14.6 18.2 -24.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow381" tags="glow pw=3" pos="14.6 18.2 -20.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow382" tags="glow pw=3" pos="14.6 18.2 -17.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow383" tags="glow pw=3" pos="14.6 18.2 -14" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow384" tags="glow pw=3" pos="14.6 18.2 -10.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow385" tags="glow pw=3" pos="14.6 18.2 -7.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow386" tags="glow pw=3" pos="14.6 18.2 -3.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow387" tags="glow pw=3" pos="14.6 18.2 -0.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow388" tags="glow pw=3" pos="14.6 18.2 3" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow389" tags="glow pw=3" pos="14.6 18.2 6.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow390" tags="glow pw=3" pos="14.6 18.2 9.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow391" tags="glow pw=4" pos="14.6 21.2 -27.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow392" tags="glow pw=4" pos="14.6 21.2 -24.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow393" tags="glow pw=4" pos="14.6 21.2 -20.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow394" tags="glow pw=4" pos="14.6 21.2 -17.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow395" tags="glow pw=4" pos="14.6 21.2 -14" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow396" tags="glow pw=4" pos="14.6 21.2 -10.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow397" tags="glow pw=4" pos="14.6 21.2 -7.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow398" tags="glow pw=4" pos="14.6 21.2 -3.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow399" tags="glow pw=4" pos="14.6 21.2 -0.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow400" tags="glow pw=4" pos="14.6 21.2 3" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow401" tags="glow pw=4" pos="14.6 21.2 6.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow402" tags="glow pw=4" pos="14.6 21.2 9.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow403" tags="glow pw=5" pos="14.6 24.2 -27.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow404" tags="glow pw=5" pos="14.6 24.2 -24.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow405" tags="glow pw=5" pos="14.6 24.2 -20.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow406" tags="glow pw=5" pos="14.6 24.2 -17.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow407" tags="glow pw=5" pos="14.6 24.2 -14" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow408" tags="glow pw=5" pos="14.6 24.2 -10.6" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow409" tags="glow pw=5" pos="14.6 24.2 -7.2" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow410" tags="glow pw=5" pos="14.6 24.2 -3.8" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow411" tags="glow pw=5" pos="14.6 24.2 -0.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow412" tags="glow pw=5" pos="14.6 24.2 3" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow413" tags="glow pw=5" pos="14.6 24.2 6.4" file="MOD/vox/lamp_46.vox" object="shape"/>
-		<vox name="glow414" tags="glow pw=5" pos="14.6 24.2 9.8" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="glow343" tags="glow pw=0" pos="14.6 9.2 -27.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow344" tags="glow pw=0" pos="14.6 9.2 -24.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow345" tags="glow pw=0" pos="14.6 9.2 -20.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow346" tags="glow pw=0" pos="14.6 9.2 -17.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow347" tags="glow pw=0" pos="14.6 9.2 -14" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow348" tags="glow pw=0" pos="14.6 9.2 -10.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow349" tags="glow pw=0" pos="14.6 9.2 -7.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow350" tags="glow pw=0" pos="14.6 9.2 -3.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow351" tags="glow pw=0" pos="14.6 9.2 -0.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow352" tags="glow pw=0" pos="14.6 9.2 3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow353" tags="glow pw=0" pos="14.6 9.2 6.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow354" tags="glow pw=0" pos="14.6 9.2 9.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow355" tags="glow pw=1" pos="14.6 12.2 -27.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow356" tags="glow pw=1" pos="14.6 12.2 -24.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow357" tags="glow pw=1" pos="14.6 12.2 -20.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow358" tags="glow pw=1" pos="14.6 12.2 -17.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow359" tags="glow pw=1" pos="14.6 12.2 -14" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow360" tags="glow pw=1" pos="14.6 12.2 -10.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow361" tags="glow pw=1" pos="14.6 12.2 -7.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow362" tags="glow pw=1" pos="14.6 12.2 -3.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow363" tags="glow pw=1" pos="14.6 12.2 -0.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow364" tags="glow pw=1" pos="14.6 12.2 3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow365" tags="glow pw=1" pos="14.6 12.2 6.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow366" tags="glow pw=1" pos="14.6 12.2 9.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow367" tags="glow pw=2" pos="14.6 15.2 -27.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow368" tags="glow pw=2" pos="14.6 15.2 -24.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow369" tags="glow pw=2" pos="14.6 15.2 -20.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow370" tags="glow pw=2" pos="14.6 15.2 -17.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow371" tags="glow pw=2" pos="14.6 15.2 -14" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow372" tags="glow pw=2" pos="14.6 15.2 -10.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow373" tags="glow pw=2" pos="14.6 15.2 -7.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow374" tags="glow pw=2" pos="14.6 15.2 -3.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow375" tags="glow pw=2" pos="14.6 15.2 -0.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow376" tags="glow pw=2" pos="14.6 15.2 3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow377" tags="glow pw=2" pos="14.6 15.2 6.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow378" tags="glow pw=2" pos="14.6 15.2 9.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow379" tags="glow pw=3" pos="14.6 18.2 -27.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow380" tags="glow pw=3" pos="14.6 18.2 -24.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow381" tags="glow pw=3" pos="14.6 18.2 -20.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow382" tags="glow pw=3" pos="14.6 18.2 -17.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow383" tags="glow pw=3" pos="14.6 18.2 -14" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow384" tags="glow pw=3" pos="14.6 18.2 -10.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow385" tags="glow pw=3" pos="14.6 18.2 -7.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow386" tags="glow pw=3" pos="14.6 18.2 -3.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow387" tags="glow pw=3" pos="14.6 18.2 -0.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow388" tags="glow pw=3" pos="14.6 18.2 3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow389" tags="glow pw=3" pos="14.6 18.2 6.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow390" tags="glow pw=3" pos="14.6 18.2 9.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow391" tags="glow pw=4" pos="14.6 21.2 -27.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow392" tags="glow pw=4" pos="14.6 21.2 -24.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow393" tags="glow pw=4" pos="14.6 21.2 -20.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow394" tags="glow pw=4" pos="14.6 21.2 -17.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow395" tags="glow pw=4" pos="14.6 21.2 -14" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow396" tags="glow pw=4" pos="14.6 21.2 -10.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow397" tags="glow pw=4" pos="14.6 21.2 -7.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow398" tags="glow pw=4" pos="14.6 21.2 -3.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow399" tags="glow pw=4" pos="14.6 21.2 -0.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow400" tags="glow pw=4" pos="14.6 21.2 3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow401" tags="glow pw=4" pos="14.6 21.2 6.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow402" tags="glow pw=4" pos="14.6 21.2 9.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow403" tags="glow pw=5" pos="14.6 24.2 -27.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow404" tags="glow pw=5" pos="14.6 24.2 -24.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow405" tags="glow pw=5" pos="14.6 24.2 -20.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow406" tags="glow pw=5" pos="14.6 24.2 -17.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow407" tags="glow pw=5" pos="14.6 24.2 -14" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow408" tags="glow pw=5" pos="14.6 24.2 -10.6" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow409" tags="glow pw=5" pos="14.6 24.2 -7.2" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow410" tags="glow pw=5" pos="14.6 24.2 -3.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow411" tags="glow pw=5" pos="14.6 24.2 -0.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow412" tags="glow pw=5" pos="14.6 24.2 3" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow413" tags="glow pw=5" pos="14.6 24.2 6.4" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="glow414" tags="glow pw=5" pos="14.6 24.2 9.8" file="MOD/vox/lamp_47.vox" object="shape"/>
+		<vox name="bqglow0" tags="glow room=banquet" pos="16 11 21.8" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow1" tags="glow room=banquet" pos="16 11 22.4" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow2" tags="glow room=banquet" pos="16 11 23" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow3" tags="glow room=banquet" pos="16 11 25.9" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow4" tags="glow room=banquet" pos="16 11 26.5" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow5" tags="glow room=banquet" pos="16 11 27.1" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow6" tags="glow room=banquet" pos="16 11 32" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow7" tags="glow room=banquet" pos="16 11 32.6" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow8" tags="glow room=banquet" pos="16 11 33.2" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow9" tags="glow room=banquet" pos="16.6 11 21.8" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow10" tags="glow room=banquet" pos="16.6 11 23" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow11" tags="glow room=banquet" pos="16.6 11 25.9" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow12" tags="glow room=banquet" pos="16.6 11 27.1" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow13" tags="glow room=banquet" pos="16.6 11 32" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow14" tags="glow room=banquet" pos="16.6 11 33.2" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow15" tags="glow room=banquet" pos="17.2 11 21.8" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow16" tags="glow room=banquet" pos="17.2 11 22.4" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow17" tags="glow room=banquet" pos="17.2 11 23" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow18" tags="glow room=banquet" pos="17.2 11 25.9" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow19" tags="glow room=banquet" pos="17.2 11 26.5" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow20" tags="glow room=banquet" pos="17.2 11 27.1" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow21" tags="glow room=banquet" pos="17.2 11 32" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow22" tags="glow room=banquet" pos="17.2 11 32.6" file="MOD/vox/lamp_46.vox" object="shape"/>
+		<vox name="bqglow23" tags="glow room=banquet" pos="17.2 11 33.2" file="MOD/vox/lamp_46.vox" object="shape"/>
 	</group>
 	<water type="polygon" pos="0.000 9.40 25.000" size="12.00 7.00" depth="1.40" wave="0.02" ripple="0.25" motion="0.05" foam="0">
 		<vertex pos="-6.000 -3.500"/>

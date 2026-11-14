@@ -730,8 +730,20 @@ report("6F suites: 6 two-room + 2 three-room, every bay of a suite reachable fro
        sz_c[2] == 6 and sz_c[3] == 2 and all(r_ == "bedroom" for v in suites_.values() for (r_, _) in v[:1]), f"{dict(sz_c)}")
 bsw_ = [t_ for t_ in ns["TAGGED_SHAPES"] if "room=banquet" in t_[3] or "room=stage" in t_[3]]
 bq_l = [l for l in ns["LIGHTS"] if "room=banquet" in l[6] or "room=stage" in l[6]]
+bq_glow_left = int(np.isin(G[BQq["x"][0]:BQq["x"][1], G0:G0 + 47, BQq["z"][0]:BQq["z"][1]], [ns["CEIL_LAMP"], ns["COVE_LAMP"], ns["LAMPSHADE"]]).sum())
+report("banquet hall: every glowing fitting is a lamp or a glow on the hall switch (none left in the world)",
+       bq_glow_left == 0 and len(re.findall(r'tags="glow room=banquet"', open("main.xml").read())) >= 3, f"{bq_glow_left} left")
+gap_link = int((FULL[ns["bx1"]:BQq["link"][1], G0:G0 + 28, ns["bz1"] - 4:ns["bz1"] + 1] == 0).sum())
+report("glass link: sealed against the hotel (no slot to the outside at its east side)", gap_link == 0, str(gap_link))
 report("banquet hall: 12 tables, stage + dance floor, chandeliers and stage spots on two switches",
        len(BQq["tables"]) >= 12 and len(bsw_) == 2 and len(bq_l) == 6 and all(body_hits(t_[1], t_[2]) == 0 for t_ in bsw_), f"{len(BQq['tables'])} tables, {len(bq_l)} lights")
+# v3.50: nothing of the interior pokes out of the outer walls, no tree leaves on the facade ledges
+okf = [ns[k] for k in ("BRICK", "BRICK2", "BRICK3", "EXT_TRIM", "EXT_TRIM2", "LINTEL", "BASE_STONE", "BASE_STONE2", "GLASS_EXT", "FRAME", "EXT_WALL", "CEIL", "DARK_METAL", "ROOF", "ROOF2", "SLAB") if k in ns]
+sh_ = np.zeros(FULL.shape, bool)
+sh_[bx0 - 4:bx1 + 4, G0 + 16:ns["ROOF_Y"] + 12, bz0 - 4:bz1 + 4] = True     # (above the entrance shrubs)
+sh_[bx0:bx1, :, bz0:bz1] = False
+poke = int((sh_ & (FULL > 0) & ~np.isin(FULL, okf)).sum())
+report("outer walls: no carpet pattern or leaves sticking out of the facade", poke == 0, f"{poke} voxels")
 # v3.47: HOTEL letters each their own lamp, penthouse TV, public-address announcement
 let_ = [r_ for r_ in ns["ROOF_SHAPES"] if r_[0].startswith("hotel_letter")]
 sign_left = int((FULL[bx0:bx1, RY + 10:RY + 30, bz0:bz0 + 8] == ns["STREET_LMP"]).sum())
