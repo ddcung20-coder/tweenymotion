@@ -340,19 +340,19 @@ plan(s, YB2)
 common(s)
 s.label((B2b["food"][0] + B2b["food"][1]) / 2, 120, "FOOD STREET", sz=30)
 for (nm_, (sx_, sz_)) in B2b["stalls"]:
-    s.text(sx_ + (-14 if sx_ < 161 else 14), sz_, nm_, 15, YEL, rot=90)
-s.text(161, 300, "LONG TABLES", 18, SOFT, rot=90)
+    s.text(sx_ + (-14 if sx_ < g("TC") else 14), sz_, nm_, 15, YEL, rot=90)
+s.text(g("TC"), 300, "LONG TABLES", 18, SOFT, rot=90)
 s.label((B2b["park"][0] + B2b["park"][1]) / 2, 110, "CAR PARK", sz=30)
 for (lbl_, bays_, west_) in (("C", B2b["w_bays"], True), ("D", B2b["e_bays"], False)):
     for i, z in enumerate(bays_):
         x = B2b["park"][0] + 12 if west_ else B2b["park"][1] - 14
         s.text(x, z + 12.5, f"{lbl_}{i + 1}", 14, YEL)
 R2b = B2b["ramp"]
-s.text((R2b[0] + R2b[1]) / 2, (R2b[2] + R2b[3]) / 2, "RAMP TO B2  (UP TO STREET)", 18, YEL, rot=90)
+s.text((R2b[0] + R2b[1]) / 2, (R2b[2] + R2b[3]) / 2, "RAMP UP TO B1", 18, YEL, rot=90)
 s.text(g("QX") + 12, sum(B2b["door"]) / 2, "AUTO DOOR", 14, YEL, rot=90)
 cores(s, elec=False)
 s.frame_and_title(["Food street: 12 stalls (6 a side) with neon signs and awnings, long tables, neon gates, cafe courts.",
-                   f"Parking: {len(B2b['w_bays']) + len(B2b['e_bays'])} bays (C, D). Own ramp from the street (east)."])
+                   f"Parking: {len(B2b['w_bays']) + len(B2b['e_bays'])} bays (C, D), right under the B1 car park: ramp from B1."])
 pages.append(("A-099_B2", s))
 
 # ---------------------------------------------------------------- B1
@@ -372,10 +372,10 @@ for (nm_, kind_, sx_, sz_) in ns["SHOPS"]:
     px, pz = s.P(sx_, sz_); s.text((px, pz + 26), None, kind_.upper(), 14, SOFT, f=FONT)
 s.label((g("FX0") + g("FX1")) / 2, g("FZ1") + 8, "FOUNTAIN", sz=18)
 s.text((g("PRM0") + g("PRM1")) / 2, 360, "PROMENADE", 22, SOFT, rot=90)
-s.text(g("PX1") + 14, 248, "AUTO DOOR", 14, YEL, rot=90)
+s.text((g("R3_X0") + g("R3_X1")) / 2, (g("R3_TOP") + g("R3_BOT")) / 2, "RAMP DOWN TO B2", 16, YEL, rot=90)
 s.text(184, g("PZ1") + 8, "AUTO DOOR", 14, YEL)
 cores(s, elec=False)
-s.frame_and_title(["Parking: 17 bays 2.5 x 5.0 m (A1-A6, B1-B11), 90-degree, reverse in.",
+s.frame_and_title(["Parking: 9 bays 2.5 x 5.0 m (A1-A6, B1-B3), 90-degree, reverse in. Ramp down to B2 along the arcade wall.",
                    "Columns 0.6 x 0.6 m on the aisle edge. Hatched: no parking."])
 pages.append(("A-100_B1", s))
 

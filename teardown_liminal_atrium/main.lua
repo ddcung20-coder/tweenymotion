@@ -112,6 +112,39 @@ local function loadSounds()
 	snd.pad       = LoadLoop("MOD/snd/dream_pad.ogg")
 	snd.boiler    = LoadLoop("MOD/snd/boiler.ogg")
 	snd.laundry   = LoadLoop("MOD/snd/laundry.ogg")
+	snd.announce  = LoadSound("MOD/snd/announcement.ogg")
+end
+
+----------------------------------------------------------------------------------------------------
+-- public address: now and then (every 3-6 minutes) the hotel announcement plays softly, wherever you
+-- are inside the building (B2 up to the top floor). "pazone" location: x0 x1 y0 y1 z0 z1
+----------------------------------------------------------------------------------------------------
+pa = { zones = {}, timer = 75 + math.random() * 60, played = 0 }
+function paInit()
+	local ls = FindLocations("pazone", true)
+	for i = 1, #ls do
+		local z = {}
+		for _, k in ipairs({ "x0", "x1", "y0", "y1", "z0", "z1" }) do z[k] = tonumber(GetTagValue(ls[i], k)) or 0 end
+		pa.zones[#pa.zones + 1] = z
+	end
+end
+function paInside(p)
+	for i = 1, #pa.zones do
+		local z = pa.zones[i]
+		if p[1] >= z.x0 and p[1] <= z.x1 and p[2] >= z.y0 and p[2] <= z.y1 and p[3] >= z.z0 and p[3] <= z.z1 then return true end
+	end
+	return false
+end
+function paTick(dt, cam)
+	pa.timer = pa.timer - dt
+	if pa.timer > 0 then return end
+	if paInside(cam) then
+		PlaySound(snd.announce, VecAdd(cam, Vec(0, 2.5, 0)), 0.32)        -- from the ceiling speakers, softly
+		pa.played = pa.played + 1
+		pa.timer = 180 + math.random() * 180
+	else
+		pa.timer = 30                                                      -- outside: try again a little later
+	end
 end
 
 local function dist(a, b)
@@ -1896,6 +1929,7 @@ function init()
 	settingsInit()
 	respawnInit()
 	missionInit()
+	paInit()
 	say("Front desk: ring the bell when you are ready to dream.", 7)
 end
 
@@ -1939,6 +1973,7 @@ function tick(dt)
 	flickerTick(dt, cam)
 	spotsTick(cam)
 	radioTick(cam)
+	paTick(dt, cam)
 end
 
 function update(dt)

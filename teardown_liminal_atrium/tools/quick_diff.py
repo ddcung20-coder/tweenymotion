@@ -112,6 +112,8 @@ def clusters(diff, maxn):
     X, Y, Z = np.nonzero(diff)
     small[X // f, Y // f, Z // f] = True
     small = ndimage.binary_dilation(small, iterations=3)
+    # one storey (~3.6 m) per layer: changes on different floors stay separate pictures
+    small[:, 9::9, :] = False
     lab, n = ndimage.label(small)
     out = []
     for i, sl in enumerate(ndimage.find_objects(lab)):

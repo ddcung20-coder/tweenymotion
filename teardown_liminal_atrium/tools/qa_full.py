@@ -181,22 +181,29 @@ for (bn_, bx0_, bx1_, bz0_, bz1_) in ns["BOH"]:
 checks["back of house: kitchen floor by the island"] = (ns["BOH"][0][1] + 20, G0, ns["BOH"][0][3] - 18)
 checks["B1 car-park ramp (bottom)"] = (30, YB, 280)
 B2q = ns["B2"]; YB2 = ns["YB2"]
-checks["B2 food street: south court"] = (196, YB2, 100)
-checks["B2 food street: west walkway"] = (130, YB2, 290)
-checks["B2 food street: east walkway"] = (192, YB2, 290)
-checks["B2 food street: long tables"] = (150, YB2, 250)
-checks["B2 food street: north court"] = (210, YB2, 460)
-checks["B2 food street: lift lobby (NW)"] = (96, YB2, 455)
-checks["B2 food street: stair lobby (SW)"] = (96, YB2, 140)
+ATq = ns["ATRIUM"]
+checks["atrium lounge (from the lobby doors)"] = (200, G0, 200)
+checks["atrium lounge: in front of the bar"] = (ATq["bar"][0] + 30, G0, ATq["bar"][2] - 8)
+checks["atrium lounge: behind the bar"] = (ATq["bar"][0] + 30, G0, ATq["zp"] - 9)
+checks["atrium lawn on the podium (up the stair)"] = (236, ATq["pody"], 350)
+checks["atrium store room under the lawn (through its door)"] = (236, G0, ATq["zp"] + 20)
+checks["B2 food street: south court"] = (288, YB2, 100)
+checks["B2 food street: west walkway"] = (280, YB2, 290)
+checks["B2 food street: east walkway"] = (342, YB2, 290)
+checks["B2 food street: long tables"] = (300, YB2, 250)
+checks["B2 food street: north court"] = (300, YB2, 440)
+checks["B2 food street: lift lobby (SE)"] = (375, YB2, 130)
+checks["B2 food street: stair lobby (NE)"] = (375, YB2, 455)
 for i_, (nm_, (sx_, sz_)) in enumerate(B2q["stalls"]):
     checks[f"B2 stall {nm_} counter"] = (int(sx_), YB2, int(sz_))
-checks["B2 car park (through the automatic door)"] = (300, YB2, 250)
-checks["B2 car park: lift lobby (SE)"] = (375, YB2, 130)
-checks["B2 car park: stair lobby (NE)"] = (375, YB2, 455)
-checks["B2 ramp: bottom"] = (440, YB2, 410)
-checks["B2 ramp: top (street level)"] = (440, G0, 40)
+checks["B2 car park (aisle)"] = (161, YB2, 300)
+checks["B2 car park: lift lobby (NW)"] = (96, YB2, 455)
+checks["B2 car park: stair lobby (SW)"] = (96, YB2, 140)
+checks["B2 car park: through the automatic door"] = (200, YB2, 478)
+checks["B2 ramp: bottom (B2)"] = (210, YB2, 170)
+checks["B2 ramp: top (B1)"] = (210, YB, 380)
 checks["B1 car park"] = (162, YB, 200)
-checks["B1 arcade promenade (through automatic door 1)"] = (310, YB, 250)
+checks["B1 arcade promenade"] = (310, YB, 250)
 checks["B1 arcade corridor (through automatic door 2)"] = (184, YB, 412)
 checks["B1 SE elevator hall"] = (374, YB, 130)
 checks["B1 NW elevator lobby"] = (96, YB, 452)
@@ -426,7 +433,7 @@ for i, d in enumerate(ns["DOORS"]):
         if body_hits(d["arr"], d["gmin"], int(round(dx_ * f_)), int(round(dz_ * f_))):
             ad_bad.append((i, f_))
 n_ad = sum(1 for d in ns["DOORS"] if d["tag"].startswith("autodoor"))
-report(f"automatic doors: {n_ad} glass leaves slide fully open without hitting anything", n_ad == 6 and not ad_bad, str(ad_bad))
+report(f"automatic doors: {n_ad} glass leaves slide fully open without hitting anything", n_ad == 4 and not ad_bad, str(ad_bad))
 calls_b1 = sorted(c[2] for c in ns["CALLS"] if c[3] == -1)
 report("all 4 elevators stop at B1 (landing door + call button)", len(calls_b1) == 4 and
        sum(1 for d in ns["DOORS"] if "elevdoor" in d["tag"] and "floor=-1" in d["tag"]) == 4, str(calls_b1))
@@ -513,21 +520,20 @@ for zq in range(ns["RZ_TOP"] - 4, ns["RZ_BOT"]):
     ry_ = ns["ramp_y"](zq)
     ramp_bad += int((FULL[ns["RX0"] + 2:ns["RX1"] - 2, ry_:ry_ + 31, zq] > 0).sum())
 van_bad = [n_ for (n_, r_) in van_path if (r_ > 0).any()] + (["ramp"] if ramp_bad else [])
-# ... and down ramp 2 to B2: street -> east ramp -> tunnel -> B2 car-park aisle
-B2v = ns["B2"]; YB2v = ns["YB2"]; R2 = B2v["ramp"]; T2 = B2v["tunnel"]
-for zq in range(R2[2] - 4, R2[3]):
-    ry_ = ns["ramp2_y"](zq)
-    if (FULL[R2[0] + 2:R2[1] - 2, ry_:ry_ + 31, zq] > 0).any():
-        van_bad.append(f"ramp2 z{zq}"); break
-for (n_, r_) in (("ramp2 bottom", FULL[R2[0] + 2:R2[1] - 2, YB2v:YB2v + 31, R2[3]:R2[4]]),
-                 ("tunnel2", FULL[ns["IX1"]:R2[0], YB2v:YB2v + 31, T2[0] + 4:T2[1] - 4]),
-                 ("B2 aisle", FULL[B2v["aisle"][0] + 7:B2v["aisle"][1] - 7, YB2v:YB2v + 31, ns["IZ0"] + 20:T2[1] - 4]),
-                 ("B2 turn into the tunnel", FULL[B2v["aisle"][0] + 7:ns["IX1"], YB2v:YB2v + 31, T2[0] + 4:T2[1] - 4])):
+# ... and on down the inner ramp from the B1 car park to B2: B1 aisle -> turn -> ramp -> B2 turn -> B2 aisle
+B2v = ns["B2"]; YB2v = ns["YB2"]; R3 = B2v["ramp"]
+for zq in range(R3[3], R3[2] + 1):
+    ry_ = ns["ramp3_y"](zq)
+    if (FULL[R3[0] + 2:R3[1] - 2, ry_:ry_ + 31, zq] > 0).any():
+        van_bad.append(f"ramp3 z{zq}"); break
+for (n_, r_) in (("B1 turn into the ramp", FULL[A0q + 7:R3[1] - 2, YBq:YBq + 31, R3[2]:ns["PZ1"] - 4]),
+                 ("B2 turn below the ramp", FULL[ns["AISLE1"] - 20:R3[1] - 2, YB2v:YB2v + 31, ns["IZ0"] + 2:R3[3]]),
+                 ("B2 aisle", FULL[B2v["aisle"][0] + 7:B2v["aisle"][1] - 7, YB2v:YB2v + 31, 160:420])):
     if (r_ > 0).any():
         van_bad.append(n_)
 RO_ = ns["ROAD"]
 drive_ok = not (RO_[ns["RX0"]:ns["RX1"], G0q:G0q + 2, ns["NC0"]:] > 0).any()
-report("van clearance 3.0 m: street driveway, ramps (B1 + B2), tunnels, car-park aisles", not van_bad and drive_ok, f"{van_bad} driveway_ok={drive_ok}")
+report("van clearance 3.0 m: street driveway, ramp, tunnel, B1 aisle, ramp down to B2, B2 aisle", not van_bad and drive_ok, f"{van_bad} driveway_ok={drive_ok}")
 # elevator landing doors: open, the leaf sits in an empty pocket with a wall skin in front of it (hidden)
 pk_bad = []
 for d_ in ns["DOORS"]:
@@ -596,6 +602,11 @@ for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"]:
     RSG[gm_[0]:gm_[0] + arr_.shape[0], gm_[1]:gm_[1] + arr_.shape[1], gm_[2]:gm_[2] + arr_.shape[2]][arr_ > 0] = 1
 def rs_supported(nm, arr_, gm_):
     below = (FULL | RSG)[gm_[0]:gm_[0] + arr_.shape[0], gm_[1] - 1, gm_[2]:gm_[2] + arr_.shape[2]][arr_[:, 0, :] > 0] > 0
+    if nm.startswith("hotel_letter") or nm.startswith("sconce"):       # hangs on the wall / panel beside it
+        m_ = np.pad(arr_ > 0, 1)
+        nb_ = (np.roll(m_, 1, 0) | np.roll(m_, -1, 0) | np.roll(m_, 1, 1) | np.roll(m_, -1, 1) | np.roll(m_, 1, 2) | np.roll(m_, -1, 2)) & ~m_
+        X_, Y_, Z_ = np.nonzero(nb_)
+        return bool((FULL[X_ + gm_[0] - 1, Y_ + gm_[1] - 1, Z_ + gm_[2] - 1] > 0).any())
     return below.any() if nm.startswith("floodlight") else below.all()     # (a lamp head sits on its pole)
 rs_bad = [nm for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"] if hits(arr_, gm_) or not rs_supported(nm, arr_, gm_)]
 fl_heads = [(nm, gm_) for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"] if nm.startswith("floodlight")]
@@ -665,6 +676,17 @@ gap_ = gap_ if len(span_) >= 50 else ["no sign panel"]
 report("roof: no dead-end sliver between the HOTEL sign and the parapet", not gap_, str(gap_[:4]))
 sl_ = ns["G"][bx0 + 4:ns["GLASSHOUSE"]["x0"], RY:RY + 4, ns["GLASSHOUSE"]["z0"]:ns["GLASSHOUSE"]["z1"]]
 report("roof: the 40 cm gap west of the glasshouse is a hedge planter, not a passage", bool((sl_ > 0).all()))
+# v3.47: HOTEL letters each their own lamp, penthouse TV, public-address announcement
+let_ = [r_ for r_ in ns["ROOF_SHAPES"] if r_[0].startswith("hotel_letter")]
+sign_left = int((FULL[bx0:bx1, RY + 10:RY + 30, bz0:bz0 + 8] == ns["STREET_LMP"]).sum())
+report("HOTEL sign: 5 letters, each its own shape with its own light (one shot letter goes dark alone)",
+       len(let_) == 5 and all(len(r_[3]) == 1 for r_ in let_) and sign_left == 0, f"{len(let_)} letters, {sign_left} bulbs left in the world")
+ph_tv = [l for l in ns["LIGHTS"] if "room=ph" in l[6] and "rl=tv" in l[6]]
+ph_tv_lamp = [L_ for L_ in ns["LAMPS"] if any("rl=tv" in lt[6] and "room=ph" in lt[6] for lt in L_["lights"])]
+report("penthouse TV: a TV light on the suite's switch, the screen is its lamp shape (E toggles it)",
+       len(ph_tv) == 1 and len(ph_tv_lamp) == 1 and (ph_tv_lamp[0]["arr"] == ns["TV_SCREEN"]).any())
+pa_ok = os.path.exists("snd/announcement.ogg") and 'tags="pazone' in open("main.xml").read() and "paTick(dt, cam)" in open("main.lua").read()
+report("public-address announcement: sound file, pazone over the hotel, played now and then from main.lua", pa_ok)
 # v3.40: penthouse jacuzzi water inside its rim, staff rooms
 PHq = ns["PENTHOUSE"]
 jac = [p_ for p_ in ns["POOLS"] if abs(p_[0] - (ns["ROOF_Y"] + 5.0)) < 0.01]
