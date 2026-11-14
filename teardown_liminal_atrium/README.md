@@ -1,4 +1,4 @@
-# Liminal Atrium v3.30 — Teardown 샌드박스 맵
+# Liminal Atrium v3.31 — Teardown 샌드박스 맵
 
 사진 속 보라빛 호텔 아트리움(리미널 스페이스)을 바탕으로 만든 Teardown 커스텀 맵입니다.
 
@@ -146,6 +146,10 @@
 | 창틀·문·난간 | 약한 금속 |
 | 엘리베이터 레일 | 단단한 금속(heavy metal) |
 | 맨 아래 지면 | 암반(rock), 파괴 불가 |
+
+## 미리보기 이미지 (v3.31)
+- `preview.jpg`(모드 관리자·스팀 대표 이미지)와 `previews/steam_*.jpg`(스팀 스크린샷용)는 **패스 트레이싱**으로 렌더링한 사진 같은 이미지
+- 다시 만들기: `pip install mitsuba oidn` 후 `python3 tools/render_preview.py exterior|atrium|helipad --w 1600 --h 900 --spp 448`
 
 ## 수정하기
 `tools/build_map.py` 가 맵 전체를 생성합니다 (Python 3 + numpy).
