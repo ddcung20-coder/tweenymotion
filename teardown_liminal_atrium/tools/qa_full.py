@@ -401,9 +401,9 @@ report("every room: ceiling, EVERY bedside lamp, bathroom light + TV, each its o
        f"{lamp_rooms}/{need} room lamps, {sum(1 for v in NS.values() if v > 1)} rooms with 2 bedside lamps, mixed {mixed[:4]}")
 pd_bad = []
 for i, (poly, cells) in enumerate(ns["PUDDLES"]):
-    if not all(FULL[x, YB - 1, z] == 0 and FULL[x, YB - 2, z] > 0 for (x, z) in cells):
+    if not all(FULL[x, YB - 1, z] == ns["PUDDLE"] and FULL[x, YB, z] == 0 for (x, z) in cells):
         pd_bad.append(i)
-report(f"{len(ns['PUDDLES'])} car-park puddles: real water in a 10 cm dip in the floor", len(ns["PUDDLES"]) >= 6 and not pd_bad, str(pd_bad))
+report(f"{len(ns['PUDDLES'])} car-park puddles: glossy standing-water surface flush with the floor", len(ns["PUDDLES"]) >= 6 and not pd_bad, str(pd_bad))
 hidden = collections.Counter()
 for (c_, f_, txt) in ns["SIGN_CELLS"]:
     if FULL[c_] == 0 or FULL[f_] != 0:
@@ -489,11 +489,22 @@ report("pool water / spa / radio are heard only in the pool hall (+ quieter in i
        all(in_zone(x, y, z) == ["hall"] for (_, x, y, z) in pool_src) and in_zone(rgx, rgy, rgz) == ["hall"] and not any(in_zone(*p_) for p_ in outside),
        str([in_zone(x, y, z) for (_, x, y, z) in pool_src]))
 report("respawn point exists (lobby spawn)", any(l.get("tags") == "respawn" for l in root.iter("location")))
+sg_bad = [i for i, g in enumerate(ns["SWITCHGEAR"]) if body_hits(g["arr"], g["gmin"])]
+fl_ = collections.Counter(g["floor"] for g in ns["SWITCHGEAR"])
+report("electrical rooms: 2 switchgears per floor, clear of walls", not sg_bad and all(fl_[k] == 2 for k in range(FLOORS)), str(sg_bad))
+pw_ = collections.Counter()
+for l in ns["LIGHTS"]:
+    for kv in l[6].split():
+        if kv.startswith("pw="):
+            pw_[int(kv[3:])] += 1
+room_pw = all(("pw=" in l[6]) for l in ns["LIGHTS"] if "room=" in l[6])
+report("every floor's lights are on its power circuit (rooms, corridors, electrical rooms)",
+       all(pw_[k] > 40 for k in range(FLOORS)) and room_pw, str(dict(pw_)))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
-LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "buzz.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "fountain.ogg", "heli_rotor.ogg"}
+LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "heli_rotor.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)
     peak = float(np.abs(x).max())

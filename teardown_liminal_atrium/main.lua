@@ -96,7 +96,6 @@ local function loadSounds()
 	snd.hum       = LoadLoop("MOD/snd/elev_hum.ogg")
 	snd.muzak     = LoadLoop("MOD/snd/muzak.ogg")
 	snd.ambience  = LoadLoop("MOD/snd/ambience.ogg")
-	snd.buzz      = LoadLoop("MOD/snd/buzz.ogg")
 	snd.pool      = LoadLoop("MOD/snd/pool_ambience.ogg")
 	snd.spa       = LoadLoop("MOD/snd/spa_bubbles.ogg")
 	snd.song      = LoadLoop("MOD/snd/radio_song.ogg")
@@ -104,11 +103,11 @@ local function loadSounds()
 	snd.autodoor  = LoadSound("MOD/snd/autodoor.ogg")
 	snd.mall      = LoadLoop("MOD/snd/mall_song.ogg")
 	snd.garage    = LoadLoop("MOD/snd/garage_drips.ogg")
-	snd.fountain  = LoadLoop("MOD/snd/fountain.ogg")
+	snd.breaker   = LoadSound("MOD/snd/breaker.ogg")
 	snd.heli      = LoadLoop("MOD/snd/heli_rotor.ogg")
 	snd.deskbell  = LoadSound("MOD/snd/deskbell.ogg")
 	snd.musicbox  = LoadSound("MOD/snd/musicbox.ogg")
-	snd.hum       = LoadSound("MOD/snd/dream_hum.ogg")
+	snd.dreamhum  = LoadSound("MOD/snd/dream_hum.ogg")
 	snd.checkout  = LoadSound("MOD/snd/checkout.ogg")
 	snd.pad       = LoadLoop("MOD/snd/dream_pad.ogg")
 end
@@ -421,6 +420,41 @@ local function lightBroken(l)
 end
 
 ----------------------------------------------------------------------------------------------------
+-- floor power: each hotel floor's lights hang on its electrical rooms (switchgear by the NW and SE
+-- elevators). E on a switchgear switches the floor off / on; wreck one and the floor stays dark.
+--  lights tagged pw=<floor>, "switchgear" shapes (floor corner)
+----------------------------------------------------------------------------------------------------
+lightFloor = {}
+local power = {}          -- floor -> { on, dead, gears = {...}, lights = {...} }
+local powerMsg, powerMsgT = nil, 0
+
+function floorPowered(k)
+	local p = k and power[k]
+	return p == nil or (p.on and not p.dead)
+end
+
+local function powerOf(k)
+	if not power[k] then power[k] = { on = true, dead = false, gears = {}, lights = {} } end
+	return power[k]
+end
+
+local function powerInit()
+	local ls = FindLights("pw", true)
+	for i = 1, #ls do
+		local k = tagNum(ls[i], "pw", nil)
+		if k then
+			lightFloor[ls[i]] = k
+			local p = powerOf(k)
+			p.lights[#p.lights + 1] = ls[i]
+		end
+	end
+	local gs = FindShapes("switchgear", true)
+	for i = 1, #gs do
+		local p = powerOf(tagNum(gs[i], "floor", 0))
+		p.gears[#p.gears + 1] = { shape = gs[i], vox0 = GetShapeVoxelCount(gs[i]) }
+	end
+end
+----------------------------------------------------------------------------------------------------
 -- flickering corridor lights
 ----------------------------------------------------------------------------------------------------
 local flick = {}
@@ -447,14 +481,11 @@ local function flickerTick(dt, cam)
 				f.on = true
 				f.timer = (math.random() < 0.35) and (0.05 + math.random() * 0.1) or (1.5 + math.random() * 5)
 			end
-			if not dead then SetLightEnabled(f.light, f.on) end
+			if not dead and floorPowered(lightFloor[f.light]) then SetLightEnabled(f.light, f.on) end
 		end
 		local p = GetLightTransform(f.light).pos
 		local d = dist(p, cam)
 		if d < nd then nearest, nd = f, d end
-	end
-	if nearest then
-		PlayLoop(snd.buzz, GetLightTransform(nearest.light).pos, nearest.on and 0.12 or 0.04)
 	end
 end
 
@@ -543,8 +574,6 @@ local function spotsTick(cam)
 		elseif sp.kind == "spa" then
 			local v = 0.5 * poolZone(cam) * fade(d, 3, 12)
 			if v > 0.01 then PlayLoop(snd.spa, sp.pos, v) end
-		elseif sp.kind == "fountain" and d < 22 then
-			PlayLoop(snd.fountain, sp.pos, 0.55)
 		end
 	end
 end
@@ -567,6 +596,7 @@ local function roomOf(id)
 end
 
 local function setLamp(l, on)
+	on = on and floorPowered(lightFloor[l])
 	if on and lightBroken(l) then return end          -- a shot lamp stays dead
 	SetLightEnabled(l, on)
 	local sh = GetLightShape and GetLightShape(l) or 0
@@ -578,7 +608,9 @@ local function roomApply(r)
 	for i = 1, #r.tv do setLamp(r.tv[i], r.tvOn) end
 	for i = 1, #r.curtains do
 		local sh = r.curtains[i]
-		if IsHandleValid(sh) and SetShapeEmissiveScale then SetShapeEmissiveScale(sh, r.on and 1 or 0) end
+		local fl = r.lights[1] and lightFloor[r.lights[1]]
+		local glow = r.on and floorPowered(fl)
+		if IsHandleValid(sh) and SetShapeEmissiveScale then SetShapeEmissiveScale(sh, glow and 1 or 0) end
 	end
 	if r.switch and IsHandleValid(r.switch) then
 		SetTag(r.switch, "interact", r.on and "Lights off" or "Lights on")
@@ -642,6 +674,123 @@ local function roomsInteract(s)
 		return true
 	end
 	return false
+end
+
+----------------------------------------------------------------------------------------------------
+-- floor power: switching and damage (needs the room code above)
+----------------------------------------------------------------------------------------------------
+local roomsOfFloor = nil
+
+local function gearLabel(k)
+	local p = power[k]
+	if p.dead then return "Floor " .. (k + 1) .. " power: DESTROYED" end
+	return "Floor " .. (k + 1) .. " power: " .. (p.on and "turn OFF" or "turn ON")
+end
+
+local function applyFloor(k)
+	local p = power[k]
+	if not p then return end
+	local live = p.on and not p.dead
+	if not roomsOfFloor then
+		roomsOfFloor = {}
+		for _, rm in pairs(rooms) do
+			local l = rm.lights[1] or rm.tv[1]
+			local fk = l and lightFloor[l]
+			if fk then
+				roomsOfFloor[fk] = roomsOfFloor[fk] or {}
+				table.insert(roomsOfFloor[fk], rm)
+			end
+		end
+	end
+	local inRoom = {}
+	for _, rm in ipairs(roomsOfFloor[k] or {}) do
+		roomApply(rm)                                   -- room lights / TV / curtains follow their switch AND the power
+		for i = 1, #rm.lights do inRoom[rm.lights[i]] = true end
+		for i = 1, #rm.tv do inRoom[rm.tv[i]] = true end
+	end
+	for i = 1, #p.lights do
+		local l = p.lights[i]
+		if not inRoom[l] then setLamp(l, live) end      -- corridors, lobby, electrical rooms
+	end
+	for i = 1, #p.gears do
+		local g = p.gears[i]
+		if IsHandleValid(g.shape) then
+			if SetShapeEmissiveScale then SetShapeEmissiveScale(g.shape, live and 1 or 0) end
+			SetTag(g.shape, "interact", gearLabel(k))
+		end
+	end
+end
+
+local function powerApplyAll()
+	for k, _ in pairs(power) do applyFloor(k) end
+end
+
+local function sparks(pos)
+	if not SpawnParticle then return end
+	if ParticleReset then ParticleReset() end
+	if ParticleColor then ParticleColor(1, 0.8, 0.35, 1, 0.4, 0.1) end
+	if ParticleEmissive then ParticleEmissive(6, 0) end
+	if ParticleRadius then ParticleRadius(0.02) end
+	if ParticleGravity then ParticleGravity(-8) end
+	for i = 1, 40 do
+		SpawnParticle(pos, Vec((math.random() - 0.5) * 6, math.random() * 4, (math.random() - 0.5) * 6), 0.4 + math.random() * 0.5)
+	end
+end
+
+-- returns true when the pressed shape was a switchgear
+local function powerInteract(s)
+	for k, p in pairs(power) do
+		for i = 1, #p.gears do
+			if p.gears[i].shape == s then
+				local pos = GetShapeWorldTransform(s).pos
+				if p.dead then
+					powerMsg, powerMsgT = "Floor " .. (k + 1) .. ": switchgear destroyed - no power", 3
+				else
+					p.on = not p.on
+					applyFloor(k)
+					PlaySound(snd.breaker, pos, 1.0)
+					powerMsg, powerMsgT = "Floor " .. (k + 1) .. " power " .. (p.on and "ON" or "OFF"), 2
+				end
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local powerTimer = 0
+local function powerTick(dt)
+	if powerMsgT > 0 then powerMsgT = powerMsgT - dt end
+	powerTimer = powerTimer - dt
+	if powerTimer > 0 then return end
+	powerTimer = 0.25
+	for k, p in pairs(power) do
+		if not p.dead then
+			for i = 1, #p.gears do
+				local g = p.gears[i]
+				if not IsHandleValid(g.shape) or GetShapeVoxelCount(g.shape) < g.vox0 * 0.9 then
+					p.dead = true                           -- wrecked switchgear: the whole floor goes dark for good
+					local pos = IsHandleValid(g.shape) and GetShapeWorldTransform(g.shape).pos or GetCameraTransform().pos
+					sparks(VecAdd(pos, Vec(0, 1.2, 0)))
+					PlaySound(snd.breaker, pos, 1.0)
+					applyFloor(k)
+					powerMsg, powerMsgT = "Floor " .. (k + 1) .. ": power failure", 3
+					break
+				end
+			end
+		end
+	end
+end
+
+local function powerDraw()
+	if not powerMsg or powerMsgT <= 0 then return end
+	UiPush()
+		UiAlign("center middle")
+		UiTranslate(UiCenter(), UiHeight() * 0.62)
+		UiFont("bold.ttf", 26)
+		UiColor(1, 0.85, 0.3, math.min(1, powerMsgT))
+		UiText(powerMsg)
+	UiPop()
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -982,7 +1131,7 @@ local function missionStop()
 	M.found = {}
 	cardsHide()
 	dreamersHide()
-	PlaySound(snd.hum, GetCameraTransform().pos, 0.5)
+	PlaySound(snd.dreamhum, GetCameraTransform().pos, 0.5)
 	say("You woke up early.\nRing the bell to dream again.", 5)
 end
 
@@ -1062,7 +1211,7 @@ local function dreamersTick(dt)
 			SetBodyTransform(m.body, Transform(m.pos, QuatEuler(0, m.rotY, 0)))
 			if near and not m.spoke then
 				m.spoke = true
-				PlaySound(snd.hum, m.pos, 0.6)
+				PlaySound(snd.dreamhum, m.pos, 0.6)
 				say("\"" .. m.line .. "\"", 4)
 			end
 		end
@@ -1413,6 +1562,7 @@ end
 function draw()
 	drawMission()
 	heliDraw()
+	powerDraw()
 	respawnDraw()
 	if ammoDebug then drawAmmoDebug() end
 	if not menuOpen then return end
@@ -1461,7 +1611,9 @@ function init()
 	flickerInit()
 	spotsInit()
 	curtainsInit()
+	powerInit()
 	roomsInit()
+	powerApplyAll()
 	autoInit()
 	heliInit()
 	respawnInit()
@@ -1490,10 +1642,11 @@ function tick(dt)
 	if InputPressed("interact") then
 		local s = GetPlayerInteractShape()
 		if s ~= 0 then
-			interactHandled = curtainsInteract(s) or roomsInteract(s) or missionInteract(s)
+			interactHandled = curtainsInteract(s) or powerInteract(s) or roomsInteract(s) or missionInteract(s)
 		end
 	end
 	carsTick()
+	powerTick(dt)
 	respawnTick(dt)
 	heliTick(dt)
 	curtainsTick(dt)

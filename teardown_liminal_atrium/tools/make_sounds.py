@@ -118,13 +118,6 @@ swell = 1 + 0.25 * np.sin(2 * np.pi * tt / L) + 0.1 * np.sin(2 * np.pi * 3 * tt 
 amb = air * 0.5 * swell + mains
 save("ambience.ogg", amb, 0.6)
 
-# --- fluorescent buzz for flickering lights (seamless 2 s loop) --------------------
-L = 2.0
-tt = t(L)
-buzz = sum(np.sin(2 * np.pi * 120 * h * tt) / h ** 1.2 for h in range(1, 14))
-buzz = np.tanh(2.5 * buzz) + 0.2 * bandpass(loop_noise(L, 0.5), 3000, 8000)
-save("buzz.ogg", buzz, 0.6)
-
 # --- elevator music: soft electric-piano loop (original chord progression) ---------
 BPM = 76
 beat = 60 / BPM
@@ -277,16 +270,6 @@ for delay, g in ((0.09, 0.55), (0.21, 0.4), (0.38, 0.3), (0.62, 0.2), (0.95, 0.1
 save("garage_drips.ogg", hum_ * 0.7 + lowpass(echo_, 5000) * 0.6, 0.55)
 print("garage sound written")
 
-# --- fountain: water falling into the basin (seamless 6 s loop) ------------------------------------
-L = 6.0; n = int(L * SR); tt = t(L)
-fall = bandpass(loop_noise(L, 0.6), 400, 6000) * (0.8 + 0.2 * np.sin(2 * np.pi * 3 * tt / L))
-spl = np.zeros(n)
-for k in range(220):
-    s0 = int(rng.uniform(0, L) * SR); f = rng.uniform(500, 2500); m = int(0.04 * SR)
-    b = np.sin(2 * np.pi * f * (1 + 1.5 * t(0.04)) * t(0.04)) * env(m, 0.001, 0.01)
-    spl[(np.arange(m) + s0) % n] += b * rng.uniform(0.1, 0.5)
-save("fountain.ogg", 0.6 * fall + 0.5 * spl, 0.55)
-print("fountain sound written")
 
 # --- helicopter: blade slap (~4.5 Hz, whole cycles in 4 s) + turbine whine + rotor wash (seamless 4 s loop) ---
 L = 4.0; n = int(L * SR); tt = t(L)
@@ -298,3 +281,11 @@ whine = 0.08 * np.sin(2 * np.pi * (round(2400 * L) / L) * tt) + 0.05 * np.sin(2 
 wash = 0.35 * bandpass(loop_noise(L, 0.8), 200, 3000)
 save("heli_rotor.ogg", slap + 0.7 * thump + whine + wash, 0.7)
 print("heli sound written")
+
+# --- breaker: heavy switchgear clunk + a short electrical crackle (v3.33) -----------------------------
+sec = 0.9; n = int(sec * SR); tt = t(sec)
+clunk = np.sin(2 * np.pi * (90 + 60 * np.exp(-tt / 0.02)) * tt) * env(n, 0.001, 0.07) * 1.8
+clunk += bandpass(rng.standard_normal(n), 800, 5000) * env(n, 0.0005, 0.015)
+crack = bandpass(rng.standard_normal(n), 2000, 9000) * (rng.random(n) < 0.02) * env(n, 0.01, 0.12) * 3
+save("breaker.ogg", clunk + crack, 0.8)
+print("breaker sound written")

@@ -66,6 +66,7 @@ YELLOW_PAINT = P(51, (226, 186, 40))
 MARBLE_VEIN = P(52, (176, 172, 172), "metal", rough=0.12, metal=0.05)    # (texture pass only)
 MARBLE_B2   = P(53, (58, 54, 62), "metal", rough=0.12, metal=0.05)
 MARBLE_BG2  = P(54, (184, 168, 146), "metal", rough=0.12, metal=0.05)
+PUDDLE      = P(55, (52, 58, 66), "metal", rough=0.02, metal=0.2)              # standing water: dark mirror
 # per-floor corridor themes (dirt range: soft like carpet / plaster)
 CARP_G  = P(26, (52, 86, 62));  CARP_G2  = P(27, (45, 77, 55))
 CARP_BL = P(28, (40, 58, 100)); CARP_BL2 = P(29, (35, 51, 89))
@@ -278,6 +279,8 @@ def frame_shape(fr, u0, u1, y0, y1, v0, v1, style):
     return arr, (x0, y0, z0)
 
 ELEVATORS = []     # dynamic cars driven by MOD/elevator.lua
+SWITCHGEAR = []    # per-floor electrical switchgear shapes (two per floor: NW + SE corner)
+ELEC_ROOMS = []    # (corner frame, floor y): signs are drawn once the sign font exists
 CURTAINS = []      # curtain panels (static bodies slid open / shut by main.lua)
 KEYCARDS = []      # mission key cards (one per floor)
 MANNEQUINS = []    # mission mannequins (static bodies moved by main.lua along a corridor)
@@ -1534,21 +1537,40 @@ def elevators(fr, key):
     fr.box(-T_PART, 22, ROOF_Y + 10, ROOF_Y + 14, -T_PART, CB - T_FAC, SLAB)
     for k in range(FLOORS):
         y = fy(k)
-        # utility / ice machine room
+        # electrical room of this floor: switchgear (separate shape: E switches the floor's power,
+        # destroying it blacks the floor out for good), transformer, cable tray, safety markings
         fr.box(26, 35, y, y + 21, -T_PART, 0, 0)
-        fr.box(28, 44, y, y + 18, 34, 42, RADIATOR)
-        fr.box(29, 33, y + 12, y + 15, 33, 34, TV_SCREEN)
-        fr.box(35, 41, y + 2, y + 9, 33, 34, DARK_METAL)
-        fr.box(36, 43, y, y + 22, 2, 8, STEEL)
-        for sy in range(y + 5, y + 22, 6):
-            fr.box(36, 43, sy, sy + 1, 2, 8, WOOD_LIGHT)
-            fr.box(37, 42, sy + 1, sy + 3, 3, 7, TOWEL)
-        fr.box(24, 32, y, y + 12, 4, 14, STEEL)                                 # housekeeping cart
-        fr.box(25, 31, y + 2, y + 11, 5, 13, 0)
-        fr.box(25, 31, y + 4, y + 5, 5, 13, STEEL); fr.box(25, 31, y + 8, y + 9, 5, 13, STEEL)
-        fr.box(26, 30, y + 5, y + 7, 6, 12, TOWEL)
-        fr.box(24, 32, y + 12, y + 13, 4, 14, STEEL)
+        fr.paint(22, 44, y - 1, y, 0, 44, STAIR_CONC)
+        fr.box(24, 44, y - 1, y, 33, 34, YELLOW_PAINT)                          # keep-clear line
+        def gear_style(a_, b_, c_, A, B, C):
+            if c_ > 0:
+                return UPHOL if (b_ in (0, B - 1) or a_ in (0, A - 1)) else SHEET
+            if b_ in (0, B - 1) or a_ % 6 == 0 or a_ == A - 1:
+                return UPHOL                                                    # cabinet frames
+            if b_ == B - 2:
+                return WALL_ORANGE                                              # warning band
+            if b_ == 17 and a_ % 6 in (2, 4):
+                return EXIT_SIGN                                                # status lights
+            if 18 <= b_ <= 19 and A // 2 - 1 <= a_ <= A // 2 + 1:
+                return TV_SCREEN                                                # meter
+            if 5 <= b_ <= 13 and b_ % 2 == 1 and a_ % 6 in (2, 3, 4):
+                return CURT_DARK                                                # breaker rows
+            if 8 <= b_ <= 12 and A // 2 - 4 <= a_ <= A // 2 - 3:
+                return BLANKET_B                                                # main breaker lever
+            return SHEET
+        garr, gmin = frame_shape(fr, 24, 43, y, y + 22, 37, 43, gear_style)
+        SWITCHGEAR.append(dict(arr=garr, gmin=gmin, floor=k, corner=key))
+        fr.box(23, 28, y, y + 14, 8, 24, HVAC)                                  # transformer
+        for vv in range(9, 24, 3):
+            fr.box(28, 29, y + 2, y + 13, vv, vv + 1, DARK_METAL)               # cooling fins
+        fr.box(24, 25, y + 14, y + 27, 14, 16, DARK_METAL)                      # its cable up to the tray
+        fr.box(24, 43, y + 25, y + 26, 30, 36, STEEL)                           # cable tray (hangs from the ceiling)
+        fr.box(25, 42, y + 24, y + 25, 31, 35, TIRE)
+        for uu in (24, 42):
+            fr.box(uu, uu + 1, y + 25, y + 27, 30, 36, STEEL)
+        fr.box(24, 25, y + 22, y + 25, 35, 37, TIRE)                            # cables down from the tray to the switchgear
         fr.box(30, 34, y + 26, y + 27, 18, 22, CEIL_LAMP)
+        ELEC_ROOMS.append((fr, y))
         fr.light(32, y + 24, 20, (0.85, 0.95, 1.0), 1.2, 0.2)
     y = ROOF_Y
     fr.box(-T_PART, 24, y, y + 14, -T_PART, CB - T_FAC + 2, BRICK)              # machine room
@@ -2211,7 +2233,6 @@ POOLS.append((YB + 4.5, 4.5, [(FX0 + 2, FZ0 + 2), (FX1 - 2, FZ0 + 2), (FX1 - 2, 
               dict(wave=0.06, ripple=0.9, motion=0.5, foam=0.6)))
 for (sx_, sz_) in ((fcx - 3, fcz - 3), (fcx + 2, fcz - 3), (fcx - 3, fcz + 2), (fcx + 2, fcz + 2), (fcx - 3, fcz), (fcx + 2, fcz - 1)):
     box(sx_, sx_ + 1, YB, YB + 11, sz_, sz_ + 1, GLASS)                         # water falling from the bowl
-SOUND_SPOTS.append(("fountain", fcx, YB + 6, fcz))
 pfr_w = Frame(PRM0, IZ0, 0, 1, 1, 0)       # u along +z, v into the promenade from its west edge
 pfr_e = Frame(PRM1 - 1, IZ0, 0, 1, -1, 0)  # from its east edge
 for z in (140, 380, 476):
@@ -2432,7 +2453,7 @@ for (pcx, pcz, rx, rz) in ((161, 198, 11, 8), (167, 338, 9, 8), (108, 296, 11, 7
     if not all(garage_ok(x, x + 1, z, z + 1, 1) and G[x, YB - 1, z] != 0 and not (G[x, YB:YB + 2, z] > 0).any() for (x, z) in cells):
         continue
     for (x, z) in cells:
-        G[x, YB - 1, z] = 0                                                # 10 cm dip
+        G[x, YB - 1, z] = PUDDLE                                           # glossy standing water, flush with the floor
     for x in range(pcx - rx - 4, pcx + rx + 5):                            # wet, darker concrete around it
         for z in range(pcz - rz - 4, pcz + rz + 5):
             d_ = min(((x + 0.5 - c[0]) ** 2 + (z + 0.5 - c[1]) ** 2) for c in cells) ** 0.5
@@ -2440,11 +2461,21 @@ for (pcx, pcz, rx, rz) in ((161, 198, 11, 8), (167, 338, 9, 8), (108, 296, 11, 7
                 G[x, YB - 1, z] = ROOF
             if d_ < 2.5 and G[x, YC, z] == SLAB and BRNG.random() < 0.8:
                 G[x, YC, z] = ROOF2                                        # damp patch on the ceiling
-    POOLS.append((YB - 0.4, 1, poly))
     PUDDLES.append((poly, cells))
 # a slow leak above the puddle by the west wall: rusty drip line on the pipe
 box(IX0 + 10, IX0 + 12, YC - 3, YC - 2, 344, 348, DUMPSTER)
 SOUND_SPOTS.extend([("garage", 162, YB + 15, 150), ("garage", 162, YB + 15, 300), ("garage", 110, YB + 15, 296)])
+
+BOLT = ["..###", ".###.", "#####", "..##.", ".##..", "##..."]
+for (fr_, y_) in ELEC_ROOMS:
+    fr_.box(36, 43, y_ + 12, y_ + 20, -T_PART - 1, -T_PART, YELLOW_PAINT)        # yellow plate on the corridor side
+    for r_, row in enumerate(BOLT):
+        for c_, cc in enumerate(row):
+            if cc == "#":
+                fr_.box(37 + c_, 38 + c_, y_ + 18 - r_, y_ + 19 - r_, -T_PART - 2, -T_PART - 1, TV_BODY)
+    ftext(fr_, "ELEC", 33, y_ + 27, CB - T_FAC - 1, YELLOW_PAINT)                 # inside, above the switchgear
+    for uu in range(26, 35, 2):                                                    # hazard stripes on the threshold
+        fr_.box(uu, uu + 1, y_ - 1, y_, -T_PART, 0, YELLOW_PAINT)
 
 # ---- both stairwells continue down to B1 (SW -> car park, NE -> arcade)
 B_GLYPH = ["##.", "#.#", "##.", "#.#", "##."]
@@ -3002,6 +3033,19 @@ HELI = dict(gmin=(hx0, RT, hz0),
             tail_gmin=(hx0 + 10, RT + 31 - 10, hz0 + 112 - 10),       # shaft in the gearbox, blades right of the fin
             seat=(7, 12, 16), light=(12, 4, 7))
 
+def power_floor(gx, gy, gz):
+    if not (bx0 <= gx < bx1 and bz0 <= gz < bz1) or (ax0 <= gx < ax1 and az0 <= gz < az1):
+        return None                                   # outside the hotel ring, or in the atrium (own supply)
+    for k in range(FLOORS):
+        if fy(k) - SLAB_T <= gy < fy(k) + FH - SLAB_T:
+            return k
+    return None
+_lt = []
+for (gx, gy, gz, rgb, scale, size, tags) in LIGHTS:
+    k = power_floor(gx, gy, gz)
+    _lt.append((gx, gy, gz, rgb, scale, size, (tags + f" pw={k}").strip() if k is not None else tags))
+LIGHTS[:] = _lt
+
 # ============================================================================
 # 11. Export: chunks -> .vox, main.xml
 # ============================================================================
@@ -3247,6 +3291,11 @@ def export():
              + (f" room={c['rid']}" if c["lit"] else "")
         xml.append(f'\t\t<body name="curtain{i}" tags="{tg}" pos="{f3(o)}"><vox pos="0 0 0" file="MOD/vox/{shape_file("curtain", c["arr"])}.vox" object="shape"/></body>\n')
     xml.append('\t</group>\n')
+    xml.append('\t<group name="electrical" pos="0 0 0">\n')
+    for g in SWITCHGEAR:
+        xml.append(f'\t\t<vox tags="switchgear floor={g["floor"]} corner={g["corner"]}" pos="{f3(body_origin(g["arr"], g["gmin"]))}" '
+                   f'file="MOD/vox/{shape_file("switchgear", g["arr"])}.vox" object="shape"/>\n')
+    xml.append('\t</group>\n')
     xml.append('\t<group name="roomswitches" pos="0 0 0">\n')
     for (sarr, smin, rid, on, tv) in ROOM_SWITCHES:
         xml.append(f'\t\t<vox tags="roomswitch room={rid} on={int(on)} tv={int(tv)}" pos="{f3(body_origin(sarr, smin))}" '
@@ -3434,7 +3483,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.32\n"
+        f.write("name = Liminal Atrium v3.33\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
@@ -3458,7 +3507,7 @@ if __name__ == "__main__":
             arr = PROP_SHAPES[pname]; sx, sy, sz = arr.shape
             reg = Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz]
             reg[arr > 0] = arr[arr > 0]
-        stamps = [(c_["arr"], c_["gmin"]) for c_ in CURTAINS] + [(w_[0], w_[1]) for w_ in ROOM_SWITCHES] + [(k_["arr"], k_["gmin"]) for k_ in KEYCARDS] + \
+        stamps = [(c_["arr"], c_["gmin"]) for c_ in CURTAINS] + [(w_[0], w_[1]) for w_ in ROOM_SWITCHES] + [(g_["arr"], g_["gmin"]) for g_ in SWITCHGEAR] + [(k_["arr"], k_["gmin"]) for k_ in KEYCARDS] + \
                  [(m_["arr"], m_["gmin"]) for m_ in MANNEQUINS + DECOR_MQ] + [(BELL["arr"], BELL["gmin"])] + [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
             + [(c_[0], c_[1]) for c_ in CALLS]
         for arr, (gx, gy, gz) in stamps:
