@@ -3723,19 +3723,25 @@ box(ix0p + 18, ix0p + 20, PCEIL - 2, PCEIL, iz0p + 6, iz0p + 8, CHROME)         
 for x in range(PH_X0, PH_X1):
     for z in range(PT_Z0, PH_Z0):
         G[x, PY - 1, z] = WOOD_MED if (x // 2) % 2 else WOOD_MED2
-for (xa_, xb_, za_, zb_) in ((PH_X0, PH_X0 + 1, PT_Z0, PH_Z0), (PH_X1 - 1, PH_X1, PT_Z0, PH_Z0), (PH_X0, PH_X1, PT_Z0, PT_Z0 + 1)):
+for (xa_, xb_, za_, zb_) in ((PH_X0, PH_X0 + 1, PT_Z0, PH_Z0), (PH_X1 - 1, PH_X1, PT_Z0, PH_Z0)):
     box(xa_, xb_, PY, PY + 1, za_, zb_, PICFRAME)
     box(xa_, xb_, PY + 1, PY + 10, za_, zb_, GLASS)
     box(xa_, xb_, PY + 10, PY + 11, za_, zb_, PICFRAME)
 for z in range(PT_Z0, PH_Z0, 10):
     for xp_ in (PH_X0, PH_X1 - 1):
         box(xp_, xp_ + 1, PY, PY + 11, z, z + 1, PICFRAME)
-for x in range(PH_X0, PH_X1, 10):
-    box(x, x + 1, PY, PY + 11, PT_Z0, PT_Z0 + 1, PICFRAME)
-GATE_X = (PH_X1 - 22, PH_X1 - 10)                                                  # gate to the SE lift (roof stop)
-box(GATE_X[0], GATE_X[1], PY, PY + 11, PT_Z0, PT_Z0 + 1, 0)
-for xg in (GATE_X[0] - 1, GATE_X[1]):
-    box(xg, xg + 1, PY, PY + 12, PT_Z0, PT_Z0 + 1, PICFRAME)
+# south side (facing the roof lift landing): a 2.4 m slatted privacy screen with a wooden door
+box(PH_X0, PH_X1, PY, PY + 24, PT_Z0, PT_Z0 + 1, WOOD_MED)
+for x in range(PH_X0, PH_X1, 3):
+    box(x, x + 1, PY, PY + 24, PT_Z0, PT_Z0 + 1, WOOD_MED2)
+box(PH_X0, PH_X1, PY + 24, PY + 25, PT_Z0, PT_Z0 + 1, WOOD_DARK)
+for x in range(PH_X0, PH_X1, 12):
+    box(x, x + 1, PY, PY + 25, PT_Z0, PT_Z0 + 1, WOOD_DARK)
+GATE_X = (PH_X1 - 21, PH_X1 - 11)                                                  # door to the SE lift (roof stop)
+box(GATE_X[0] - 1, GATE_X[1] + 1, PY, PY + 23, PT_Z0, PT_Z0 + 1, WOOD_DARK)
+box(GATE_X[0], GATE_X[1], PY, PY + 22, PT_Z0, PT_Z0 + 1, 0)
+add_door(Frame(GATE_X[0], PT_Z0, 1, 0, 0, 1), 0, 10, PY, PY + 22, 0, 1, lambda a, b, c, A, B, C: wood_door(A - 1 - a, b, c, A, B, C),
+         hinge=(10, 0), open_dir=(0, -1), tag="hoteldoor penthouse", stop=WOOD_DARK)
 JX, JZ, JR = PH_X0 + 36, PT_Z0 + 24, 11.5                                          # jacuzzi
 for x in range(int(JX - JR - 2), int(JX + JR + 3)):
     for z in range(int(JZ - JR - 2), int(JZ + JR + 3)):
@@ -4402,7 +4408,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.41\n"
+        f.write("name = Liminal Atrium v3.42\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

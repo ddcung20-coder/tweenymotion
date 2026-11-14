@@ -5721,5 +5721,10 @@
 			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
 			<joint pos="0.5 2 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
+		<body name="door346" tags="hoteldoor" pos="12.8 22.05 -21.6" rot="0 0 0" dynamic="true">
+			<vox pos="0 0 0" file="MOD/vox/door_22.vox" object="shape"/>
+			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.9 -0.1" type="ball" size="0.1" collide="true"/>
+		</body>
 	</group>
 </scene>
