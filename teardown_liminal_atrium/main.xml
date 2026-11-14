@@ -5691,20 +5691,20 @@
 		<body name="door339" tags="autodoor grp=2 slide sx=0.80 sz=0.00" pos="-4.8 0.4 1.5">
 			<vox pos="0 0 0" file="MOD/vox/door_19.vox" object="shape"/>
 		</body>
-		<body name="door340" tags="hoteldoor" pos="-2.2 4.05 9.2" rot="0 0 0" dynamic="true">
+		<body name="door340" tags="hoteldoor" pos="-6.6 4.05 9.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_20.vox" object="shape"/>
 			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
-			<joint pos="0.5 1.6 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.9 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door341" tags="hoteldoor" pos="1.8 4.05 9.2" rot="0 0 0" dynamic="true">
+		<body name="door341" tags="hoteldoor" pos="0.8 4.05 9.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_20.vox" object="shape"/>
 			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
-			<joint pos="0.5 1.6 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.9 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door342" tags="hoteldoor" pos="5.8 4.05 9.2" rot="0 0 0" dynamic="true">
+		<body name="door342" tags="hoteldoor" pos="4.8 4.05 9.2" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_20.vox" object="shape"/>
 			<joint pos="0.5 0.2 -0.1" type="ball" size="0.1" collide="true"/>
-			<joint pos="0.5 1.6 -0.1" type="ball" size="0.1" collide="true"/>
+			<joint pos="0.5 1.9 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
 		<body name="door343" tags="hoteldoor" pos="-12.9 0.45 -24.6" rot="0 0 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/door_12.vox" object="shape"/>

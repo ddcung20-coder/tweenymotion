@@ -2640,24 +2640,25 @@ box(BX0_ + 16, BX0_ + 22, y + FH - SLAB_T - 2, y + FH - SLAB_T, bz_a + 16, bz_a 
 box(BX0_ + 18, BX0_ + 20, y + FH - SLAB_T - 4, y + FH - SLAB_T - 2, bz_a + 16, bz_a + 18, STREET_LMP)
 light(BX0_ + 19, y + FH - SLAB_T - 5.5, bz_a + 17, (1.0, 0.72, 0.45), 1.8, 0.2)
 # ---- corridor doors (steel, opening into the room), name boards above them
-NAMEFR = Frame(0, bz_c + T_PART - 1, 1, 0, 0, -1)                          # u = world x, layer -1 = corridor face
-for (nm_, dx0) in (("KITCHEN", bxs[1] + 14), ("LAUNDRY", LX0 + 12), ("BOILER", BX0_ + 12)):
+for (nm_, dx0) in (("KITCHEN", KX0 + 8), ("LAUNDRY", LX0 + 2), ("BOILER", BX0_ + 2)):   # name board right of each door
     fr_ = Frame(dx0, bz_a, 1, 0, 0, 1)                                     # u along +x from the door's left edge
-    fr_.box(0, 9, y, y + 19, ROOM_D, ROOM_D + T_PART, 0)                          # 1.9 m service door
-    fr_.box(-1, 10, y + 19, y + 20, ROOM_D, ROOM_D + T_PART, STEEL)
-    fr_.box(-1, 0, y, y + 18, ROOM_D + T_PART, ROOM_D + T_PART + 1, STEEL)        # jamb trims (below the name)
-    fr_.box(9, 10, y, y + 18, ROOM_D + T_PART, ROOM_D + T_PART + 1, STEEL)
+    fr_.box(0, 9, y, y + 22, ROOM_D, ROOM_D + T_PART, 0)                          # 2.2 m, like the guest doors
+    fr_.box(-1, 10, y + 22, y + 23, ROOM_D, ROOM_D + T_PART + 1, STEEL)
+    fr_.box(-1, 0, y, y + 22, ROOM_D + T_PART, ROOM_D + T_PART + 1, STEEL)
+    fr_.box(9, 10, y, y + 22, ROOM_D + T_PART, ROOM_D + T_PART + 1, STEEL)
     def staff_door(a, b, c, A, B, C):
-        if b in (9, 10) and a == 1:
+        if b in (10, 11) and a == 1:
             return STEEL                                                     # handle (latch side)
-        if 13 <= b <= 14:
+        if 15 <= b <= 16:
             return YELLOW_PAINT if a % 2 else TIRE                           # hazard band
-        if b in (16, 17) and 2 <= a <= 6:
+        if b in (18, 19) and 2 <= a <= 6:
             return RED                                                       # STAFF ONLY plate
         return DARK_METAL if a in (0, A - 1) or b in (0, B - 1) else HVAC
-    add_door(fr_, 0, 9, y, y + 19, ROOM_D, ROOM_D + 1, staff_door, hinge=(9, ROOM_D), open_dir=(0, -1),
+    add_door(fr_, 0, 9, y, y + 22, ROOM_D, ROOM_D + 1, staff_door, hinge=(9, ROOM_D), open_dir=(0, -1),
              tag="hoteldoor staff", stop=STEEL)
-    ftext(NAMEFR, nm_, dx0 + 4, y + 24, -1, SWITCH)                          # (under the corridor cornice)
+    w_ = 4 * len(nm_) - 1
+    box(dx0 + 11, dx0 + 13 + w_, y + 10, y + 18, bz_c + T_PART, bz_c + T_PART + 1, DARK_METAL)   # plate
+    ftext(Frame(0, bz_c + T_PART, 1, 0, 0, -1), nm_, dx0 + 12 + w_ // 2, y + 17, -1, SWITCH)   # eye level, beside the door
 BOH += [("kitchen", KX0, KX1, bz_a, bz_c), ("laundry", LX0, LX1, bz_a, bz_c), ("boiler", BX0_, BX1_, bz_a, bz_c)]
 SOUND_SPOTS.extend([("laundry", (LX0 + LX1) / 2, y + 8, bz_a + 10), ("boiler", (BX0_ + BX1_) / 2, y + 10, bz_a + 13)])
 
@@ -4401,7 +4402,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.40\n"
+        f.write("name = Liminal Atrium v3.41\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
