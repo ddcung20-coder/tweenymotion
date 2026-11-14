@@ -469,6 +469,20 @@ van_bad = [n_ for (n_, r_) in van_path if (r_ > 0).any()] + (["ramp"] if ramp_ba
 RO_ = ns["ROAD"]; G0q = ns["G0"]
 drive_ok = not (RO_[ns["RX0"]:ns["RX1"], G0q:G0q + 2, ns["NC0"]:] > 0).any()
 report("van clearance 3.0 m: street driveway, ramp, tunnel, car-park aisle", not van_bad and drive_ok, f"{van_bad} driveway_ok={drive_ok}")
+# elevator landing doors: open, the leaf sits in an empty pocket with a wall skin in front of it (hidden)
+pk_bad = []
+for d_ in ns["DOORS"]:
+    if "elevdoor" not in d_["tag"]:
+        continue
+    t_ = dict(kv.split("=", 1) for kv in d_["tag"].split() if "=" in kv)
+    sx_, sz_ = (int(v) for v in t_["sdir"].split(","))
+    gx_, gy_, gz_ = d_["gmin"]; ax_, ay_, az_ = d_["arr"].shape
+    ox_, oz_ = int(round(d_["slide"][0])), int(round(d_["slide"][1]))
+    pocket = FULL[gx_ + ox_:gx_ + ox_ + ax_, gy_:gy_ + ay_, gz_ + oz_:gz_ + oz_ + az_]
+    skin = FULL[gx_ + ox_ - sx_:gx_ + ox_ - sx_ + ax_, gy_:gy_ + ay_, gz_ + oz_ - sz_:gz_ + oz_ - sz_ + az_]
+    if (pocket > 0).any() or not (skin > 0).all():
+        pk_bad.append(t_["shaft"] + "/" + t_["floor"])
+report("elevator landing doors open into a hidden wall pocket (28 doors)", not pk_bad, str(pk_bad[:8]))
 report(f"{len(ns['CAR_SPOTS'])} car spots: free space + ground for a base-game vehicle", not car_bad and len(ns["CAR_SPOTS"]) >= 7, str(car_bad))
 RO = ns["ROAD"]; RD_ = ns["RD"]
 r_isl = 0

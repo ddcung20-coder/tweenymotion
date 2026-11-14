@@ -1521,8 +1521,13 @@ def elevators(fr, key):
                 wx_, wz_ = cont(fr, -T_PART - 0.6, Q + 0.5)
                 sup.append(f"{wx_ * 0.1 - W * 0.05:.3f},{(Y + 0.5) * 0.1:.3f},{wz_ * 0.1 - D * 0.05:.3f}")
             sdx, sdz = fr.ux, fr.uz
-            add_door(fr, -T_PART, -T_PART + 1, y, y + 22, q0 + 4, q0 + 14,
-                     lambda a, b, c, A, B, C: elev_door(c, b, a, C, B, A), slide=(0, 10),
+            # the leaf runs one layer in from the corridor face and opens into a pocket behind the face skin
+            # (both pockets between the two shafts), so an open door is hidden in the wall, never on it
+            sgn = 1 if qi == 0 else -1
+            pv0, pv1 = (q0 + 14, q0 + 24) if sgn > 0 else (q0 - 6, q0 + 4)
+            fr.box(-T_PART + 1, 0, y, y + 22, pv0, pv1, 0)
+            add_door(fr, -T_PART + 1, -T_PART + 2, y, y + 22, q0 + 4, q0 + 14,
+                     lambda a, b, c, A, B, C: elev_door(c, b, a, C, B, A), slide=(0, 10 * sgn),
                      tag=f"elevdoor shaft={shaft} floor={k} s1={sup[0]} s2={sup[1]} s3={sup[2]} sdir={sdx},{sdz}")
             # brass portal, lantern and call button panel
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 3, q0 + 4, BRASS)
@@ -1531,8 +1536,9 @@ def elevators(fr, key):
             fr.box(-T_PART - 1, -T_PART, y + 23, y + 26, q0 + 5, q0 + 12, DARK_METAL)
             for f in LEVELS:                                                     # floor dial dots (B1..6)
                 fr.box(-T_PART - 2, -T_PART - 1, y + 24, y + 25, q0 + 6 + f, q0 + 7 + f, CEIL_LAMP if f == k else BRASS)
-            fr.box(-T_PART - 1, -T_PART, y + 9, y + 15, q0 + 15, q0 + 17, BRASS)
-            barr, bmin = frame_shape(fr, -T_PART - 2, -T_PART - 1, y + 11, y + 13, q0 + 15, q0 + 16,
+            cp0 = q0 + 16 if qi == 0 else q0 - 1                                  # call panel: clear of the jamb
+            fr.box(-T_PART - 1, -T_PART, y + 9, y + 15, cp0, cp0 + 3, BRASS)
+            barr, bmin = frame_shape(fr, -T_PART - 2, -T_PART - 1, y + 11, y + 13, cp0 + 1, cp0 + 2,
                                      lambda *a_: CEIL_LAMP)
             CALLS.append((barr, bmin, shaft, k))
     fr.box(-T_PART, 22, ROOF_Y + 10, ROOF_Y + 14, -T_PART, CB - T_FAC, SLAB)
