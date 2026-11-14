@@ -1542,7 +1542,7 @@ end
 ----------------------------------------------------------------------------------------------------
 local function drawAmmoDebug()
 	local id = currentTool() or "?"
-	local lines = { "LIMINAL AMMO DEBUG (K)", "tool: " .. tostring(id),
+	local lines = { "LIMINAL DEBUG (K): ammo + spawn", "tool: " .. tostring(id),
 		"SetToolAmmo: " .. tostring(SetToolAmmo ~= nil) .. "   GetToolAmmo: " .. tostring(GetToolAmmo ~= nil) ..
 		"   GetPlayerTool: " .. tostring(GetPlayerTool ~= nil) }
 	if GetToolAmmo then
@@ -1555,10 +1555,26 @@ local function drawAmmoDebug()
 	lines[#lines + 1] = key .. " = " .. (HasKey(key) and tostring(GetFloat(key)) or "(none)")
 	lines[#lines + 1] = "level.unlimitedammo = " .. tostring(GetBool("level.unlimitedammo"))
 	lines[#lines + 1] = "cars: base-game " .. carStats.builtin .. "  /  map fallback " .. carStats.fallback
+	-- spawn-menu diagnostics (what the game exposes in this level)
+	local function keysLike(root, pat, maxn)
+		local ok, ks = pcall(ListKeys, root)
+		if not ok or not ks then return "(none)" end
+		local out = {}
+		for i = 1, #ks do
+			if pat == nil or string.find(ks[i], pat, 1, true) then out[#out + 1] = ks[i] end
+			if #out >= (maxn or 8) then break end
+		end
+		return (#out > 0 and table.concat(out, ", ") or "(none)") .. "  [" .. #ks .. "]"
+	end
+	lines[#lines + 1] = "game " .. (GetVersion and GetVersion() or "?") .. "   level.sandbox=" .. tostring(GetBool("level.sandbox"))
+	lines[#lines + 1] = "level.*: " .. keysLike("level", nil, 10)
+	lines[#lines + 1] = "game.*spawn*: " .. keysLike("game", "spawn")
+	lines[#lines + 1] = "spawn.*: " .. keysLike("spawn", nil, 6)
+	lines[#lines + 1] = "mods.available: " .. keysLike("mods.available", "liminal", 3)
 	UiPush()
 		UiTranslate(20, 20)
 		UiColor(0, 0, 0, 0.6)
-		UiRect(560, 24 * #lines + 16)
+		UiRect(1100, 24 * #lines + 16)
 		UiTranslate(10, 26)
 		UiFont("regular.ttf", 20)
 		UiColor(1, 1, 0.6, 1)
