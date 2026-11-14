@@ -298,7 +298,7 @@ def rooms(sheet, k):
     n = 0
     for (name, b, fr, bw) in ns["room_frames"]():
         n += 1
-        if k == 0 and name == "S" and b in (1, 2):
+        if k == 0 and (name == "S" and b in (1, 2) or name == "N"):
             continue
         xa, xb, za, zb = fr._rect(T_PART, bw, 0, g("ROOM_D"))
         sheet.label((xa + xb) / 2, (za + zb) / 2 + 4, f"{(k + 1) * 100 + n}", sz=30)
@@ -366,6 +366,9 @@ corridors(s)
 s.label((ax0 + ax1) / 2, (az0 + az1) / 2, "ATRIUM", sz=40)
 px, pz = s.P((ax0 + ax1) / 2, (az0 + az1) / 2); s.text((px, pz + 40), None, "6 storeys, open to the roof lantern", 18, SOFT, f=FONT)
 s.label((g("lx0") + g("lx1")) / 2, (g("lz0") + g("lz1")) / 2, "LOBBY", sz=34)
+for (nm_, x0_, x1_, z0_, z1_) in ns["BOH"]:
+    s.label((x0_ + x1_) / 2, (z0_ + z1_) / 2 + 4, nm_.upper(), sz=26)
+    px, pz = s.P((x0_ + x1_) / 2, (z0_ + z1_) / 2 + 4); s.text((px, pz + 28), None, "STAFF ONLY", 15, SOFT, f=FONT)
 s.arrow(s.P((bx0 + bx1) / 2, bz0 - 50), s.P((bx0 + bx1) / 2, bz0 - 6))
 s.text((bx0 + bx1) / 2, bz0 - 58, "MAIN ENTRANCE", 20)
 s.label(g("cxN"), g("pz0") - 12, "POOL", sz=30)
@@ -410,7 +413,7 @@ for key in ("SW", "NE"):
     x, z = ns["corner"][key].pt(22, 22); s.label(x, z, "STAIR", sz=20)
     px, pz = s.P(x, z); s.text((px, pz + 24), None, "PENTHOUSE", 14, SOFT, f=FONT)
 for key in ("NW", "SE"):
-    x, z = ns["corner"][key].pt(10, 22); s.text(x, z, "LIFT MACHINE ROOM", 14, rot=90)
+    x, z = ns["corner"][key].pt(10, 22); s.text(x, z, "LIFTS (ROOF STOP)", 14, rot=90)
 for (hx, hz) in ns["HVAC_SPOTS"]:
     s.text(hx + 11, hz + 9, "HVAC", 14, SOFT)
 s.frame_and_title(["Glasshouse: glass barrel vault with lantern cupola (not shown), lily pond, palms, beds.",

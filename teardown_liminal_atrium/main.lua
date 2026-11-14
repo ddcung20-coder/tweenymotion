@@ -110,6 +110,12 @@ local function loadSounds()
 	snd.dreamhum  = LoadSound("MOD/snd/dream_hum.ogg")
 	snd.checkout  = LoadSound("MOD/snd/checkout.ogg")
 	snd.pad       = LoadLoop("MOD/snd/dream_pad.ogg")
+	snd.piano     = LoadLoop("MOD/snd/piano.ogg")
+	snd.pianoCrash = LoadSound("MOD/snd/piano_crash.ogg")
+	snd.rain      = LoadLoop("MOD/snd/rain.ogg")
+	snd.rainGlass = LoadLoop("MOD/snd/rain_glass.ogg")
+	snd.boiler    = LoadLoop("MOD/snd/boiler.ogg")
+	snd.laundry   = LoadLoop("MOD/snd/laundry.ogg")
 end
 
 local function dist(a, b)
@@ -278,11 +284,8 @@ local function elevInit()
 			c.doors[tagNum(b, "floor", 0)] = d
 		end
 	end
-	local btns = FindShapes("elevbtn", true)
-	for i = 1, #btns do
-		local f = tagNum(btns[i], "floor", 0)
-		SetTag(btns[i], "interact", f < 0 and "Floor B1 (arcade)" or ("Floor " .. (f + 1)))
-	end
+	local pads = FindShapes("elevpad", true)
+	for i = 1, #pads do SetTag(pads[i], "interact", "Floor keypad (type a floor)") end
 	local calls = FindShapes("elevcall", true)
 	for i = 1, #calls do
 		SetTag(calls[i], "interact", "Call elevator")
@@ -313,15 +316,105 @@ local function request(c, floor)
 	c.hold = HOLD_TIME
 end
 
+-- floor keypad in the cab: type the floor (1-6, B or 0 = B1, R or 7 = roof), Enter to go
+elevPad = nil
+function floorName(f)
+	if f < 0 then return "B1" elseif f >= 6 then return "R" end
+	return tostring(f + 1)
+end
+function parseFloor(sx)
+	sx = string.upper(sx or "")
+	if sx == "B" or sx == "B1" or sx == "0" or sx == "-1" then return -1 end
+	if sx == "R" or sx == "7" then return 6 end
+	local n = tonumber(sx)
+	if n and n >= 1 and n <= 6 and math.floor(n) == n then return n - 1 end
+	return nil
+end
+function padPress(k)
+	local p = elevPad
+	if not p then return end
+	if k == "close" then elevPad = nil; return end
+	if k == "back" then p.entry = string.sub(p.entry, 1, -2); return end
+	if k == "go" then
+		local f = parseFloor(p.entry)
+		if f ~= nil and p.car.doors[f] ~= nil and not p.car.broken then
+			PlaySound(snd.click, cabCenter(p.car), 0.8)
+			request(p.car, f)
+			elevPad = nil
+		else
+			p.msg, p.msgT, p.entry = "No such floor", 1.5, ""
+		end
+		return
+	end
+	if string.len(p.entry) < 2 then p.entry = p.entry .. k end
+	PlaySound(snd.click, cabCenter(p.car), 0.5)
+end
+local function padTick(dt)
+	local p = elevPad
+	if not p then return end
+	if p.msgT > 0 then p.msgT = p.msgT - dt end
+	if not IsHandleValid(p.car.body) or p.car.broken or dist(GetCameraTransform().pos, cabCenter(p.car)) > 3.5 then
+		elevPad = nil
+		return
+	end
+	for d = 0, 9 do
+		if InputPressed(tostring(d)) then padPress(tostring(d)) end
+	end
+	if InputPressed("b") then padPress("B") end
+	if InputPressed("r") then padPress("R") end
+	if InputPressed("backspace") then padPress("back") end
+	if InputPressed("return") then padPress("go") end
+	if InputPressed("esc") then padPress("close") end
+end
+function drawPad()
+	local p = elevPad
+	if not p then return end
+	UiMakeInteractive()
+	UiPush()
+		local w, kw, kh = 330, 92, 58
+		local h = 470
+		UiTranslate(UiCenter() - w / 2, UiMiddle() - h / 2)
+		UiColor(0.06, 0.05, 0.08, 0.92); UiRect(w, h)
+		UiAlign("center middle")
+		UiColor(0.15, 0.25, 0.5, 1); UiTranslate(w / 2, 52); UiRect(w - 40, 64)
+		UiFont("bold.ttf", 40); UiColor(0.75, 0.9, 1, 1)
+		UiText((p.msgT > 0 and p.msg) or (p.entry ~= "" and p.entry or "_"))
+		UiFont("regular.ttf", 17); UiColor(0.8, 0.8, 0.9, 1)
+		UiTranslate(0, 50); UiText("now at floor " .. floorName(p.car.floor) .. "    1-6,  B = B1,  R = roof")
+		UiFont("bold.ttf", 28)
+		local keys = { { "1", "2", "3" }, { "4", "5", "6" }, { "B", "R", "<" } }
+		UiTranslate(-kw - 8, 50)
+		for r = 1, 3 do
+			for c = 1, 3 do
+				UiPush()
+					UiTranslate((c - 1) * (kw + 8), (r - 1) * (kh + 8))
+					UiColor(0.9, 0.88, 0.8, 1)
+					local k = keys[r][c]
+					if UiTextButton(k == "B" and "B1" or k, kw, kh) then padPress(k == "<" and "back" or k) end
+				UiPop()
+			end
+		end
+		UiTranslate(kw + 8, 3 * (kh + 8) + 4)
+		UiColor(0.6, 1, 0.7, 1)
+		if UiTextButton("GO  (Enter)", 3 * kw + 16, kh) then padPress("go") end
+		UiTranslate(0, kh + 10)
+		UiColor(1, 0.6, 0.6, 1)
+		UiFont("regular.ttf", 20)
+		if UiTextButton("Close (Esc)", 3 * kw + 16, 36) then padPress("close") end
+	UiPop()
+end
+
 local function elevTick(dt)
+	padTick(dt)
 	if InputPressed("interact") then
 		local s = GetPlayerInteractShape()
 		if s ~= 0 and not interactHandled then
 			if IsShapeBroken(s) then
 				-- a smashed button does nothing
-			elseif HasTag(s, "elevbtn") then
+			elseif HasTag(s, "elevpad") then
 				PlaySound(snd.click, GetShapeWorldTransform(s).pos, 0.8)
-				request(carByBody[GetShapeBody(s)], tagNum(s, "floor", nil))
+				local c = carByBody[GetShapeBody(s)]
+				if c and not c.broken then elevPad = { car = c, entry = "", msg = nil, msgT = 0 } end
 			elseif HasTag(s, "elevcall") then
 				PlaySound(snd.click, GetShapeWorldTransform(s).pos, 0.8)
 				request(carByShaft[GetTagValue(s, "shaft")], tagNum(s, "floor", nil))
@@ -580,6 +673,9 @@ local function spotsTick(cam)
 		elseif sp.kind == "spa" then
 			local v = 0.5 * poolZone(cam) * fade(d, 3, 12)
 			if v > 0.01 then PlayLoop(snd.spa, sp.pos, v) end
+		elseif (sp.kind == "boiler" or sp.kind == "laundry") and math.abs(cam[2] - sp.pos[2]) < 2.5 then
+			local v = (sp.kind == "boiler" and 0.55 or 0.45) * fade(d, 2.5, 11)       -- staff rooms (ground floor)
+			if v > 0.01 then PlayLoop(sp.kind == "boiler" and snd.boiler or snd.laundry, sp.pos, v) end
 		end
 	end
 end
@@ -1239,9 +1335,10 @@ local function missionTick(dt)
 			if IsHandleValid(m.body) and not IsBodyDynamic(m.body) then SetBodyDynamic(m.body, true) end
 		end
 	end)
-	if M.state == "active" and (InputPressed("m") or (PauseMenuButton and PauseMenuButton("Stop Sweet Dreams"))) then
+	if M.state == "active" and (InputPressed("m") or stopMissionRequested) then
 		missionStop()
 	end
+	stopMissionRequested = false
 	local want = (M.state == "active") and 1 or 0
 	if M.dream ~= want then
 		M.dream = want > M.dream and math.min(1, M.dream + dt / 2.5) or math.max(0, M.dream - dt / 4)
@@ -1596,7 +1693,167 @@ local function drawAmmoDebug()
 	UiPop()
 end
 
+----------------------------------------------------------------------------------------------------
+-- grand piano in the atrium: plays by itself while someone is near; wrecked, it crashes and falls silent
+----------------------------------------------------------------------------------------------------
+local piano = nil
+
+local function pianoInit()
+	local sh = FindShape("piano", true)
+	if sh == 0 then return end
+	local t = GetShapeWorldTransform(sh)
+	local sx, sy, sz = 16, 24, 24
+	if GetShapeSize then sx, sy, sz = GetShapeSize(sh) end
+	piano = { shape = sh, vox0 = GetShapeVoxelCount(sh), broken = false, timer = 0,
+		pos = TransformToParentPoint(t, Vec(sx * 0.05, 1.0, -sz * 0.05)) }
+	SetTag(sh, "interact", "Grand piano (it plays by itself)")
+	LIMINAL_PIANO = piano                         -- (read by the offline tests)
+end
+
+local function pianoTick(dt, cam)
+	if not piano or piano.broken then return end
+	piano.timer = piano.timer - dt
+	if piano.timer <= 0 then
+		piano.timer = 0.3
+		local sh = piano.shape
+		if not IsHandleValid(sh) or IsShapeBroken(sh) or GetShapeVoxelCount(sh) < piano.vox0 * 0.85 then
+			piano.broken = true
+			PlaySound(snd.pianoCrash, piano.pos, 1.0)
+			if IsHandleValid(sh) then RemoveTag(sh, "interact") end
+			return
+		end
+	end
+	local v = 0.8 * fade(dist(cam, piano.pos), 3, 13)
+	if v > 0.01 then PlayLoop(snd.piano, piano.pos, v) end
+end
+
+----------------------------------------------------------------------------------------------------
+-- time of day + weather (ESC -> "Liminal Atrium" panel): night / day, rain / clear. Saved between sessions.
+----------------------------------------------------------------------------------------------------
+local ENV_NIGHT = {
+	skybox = "cloudy.dds", skyboxtint = { 0.35, 0.3, 0.5 }, skyboxbrightness = 0.12, constant = { 0.004, 0.003, 0.006 },
+	ambient = 0.25, fogColor = { 0.07, 0.06, 0.1 }, fogParams = { 30, 160, 0.9, 4 }, sunBrightness = 0,
+	sunColorTint = { 0.6, 0.6, 1 }, exposure = { 1, 6 }, nightlight = true,
+}
+local ENV_DAY = {
+	skybox = "cloudy.dds", skyboxtint = { 1, 1, 1 }, skyboxbrightness = 1.0, constant = { 0.003, 0.003, 0.003 },
+	ambient = 1.0, fogColor = { 0.78, 0.8, 0.86 }, fogParams = { 60, 320, 0.9, 4 }, sunBrightness = 3.5,
+	sunColorTint = { 1, 0.95, 0.85 }, sunDir = { -0.35, 0.8, 0.45 }, exposure = { 1, 3 }, nightlight = false,
+}
+settings = { day = false, rain = true }
+local panelOpen = false
+local rainVol, glassVol, rainTimer, rainExposed = 0, 0, 0, false
+
+local function envSet(name, v)
+	if not SetEnvironmentProperty then return end
+	if type(v) == "table" then
+		SetEnvironmentProperty(name, v[1], v[2], v[3], v[4])
+	else
+		SetEnvironmentProperty(name, v)
+	end
+end
+
+function applyEnvironment()
+	local e = settings.day and ENV_DAY or ENV_NIGHT
+	for k, v in pairs(e) do envSet(k, v) end
+	if settings.rain then
+		envSet("rain", 0.75); envSet("wetness", 0.65); envSet("puddleamount", 0.4); envSet("puddlesize", 0.5)
+		if settings.day then                                   -- overcast
+			envSet("sunBrightness", 0.8); envSet("skyboxbrightness", 0.45); envSet("fogParams", { 30, 200, 0.9, 4 })
+		end
+	else
+		envSet("rain", 0); envSet("wetness", 0); envSet("puddleamount", 0)
+	end
+	SetBool("savegame.mod.liminal.day", settings.day)
+	SetBool("savegame.mod.liminal.clear", not settings.rain)
+end
+
+local function settingsInit()
+	settings.day = GetBool("savegame.mod.liminal.day")
+	settings.rain = not GetBool("savegame.mod.liminal.clear")
+	applyEnvironment()
+end
+
+-- panel buttons (also called by the offline tests)
+function panelAction(a)
+	if a == "time" then settings.day = not settings.day; applyEnvironment()
+	elseif a == "weather" then settings.rain = not settings.rain; applyEnvironment()
+	elseif a == "stop" then stopMissionRequested = true; panelOpen = false
+	elseif a == "close" then panelOpen = false end
+end
+
+local function panelTick()
+	if PauseMenuButton and PauseMenuButton("Liminal Atrium") then panelOpen = true end
+	if panelOpen and InputPressed("esc") then panelOpen = false end
+end
+
+local function zoneOf(p, kind)
+	for i = 1, #zones do
+		local z = zones[i]
+		if z.kind == kind and p[1] >= z.x0 and p[1] <= z.x1 and p[2] >= z.y0 and p[2] <= z.y1 and p[3] >= z.z0 and p[3] <= z.z1 then
+			return true
+		end
+	end
+	return false
+end
+
+-- rain you hear: loud outdoors, drumming under the glass vault, a muffled hiss indoors, nothing down in B1
+local function rainTick(dt, cam)
+	local tr, tg = 0, 0
+	if settings.rain then
+		rainTimer = rainTimer - dt
+		if rainTimer <= 0 then
+			rainTimer = 0.25
+			local hit = QueryRaycast(cam, Vec(0, 1, 0), 60)
+			rainExposed = not hit
+		end
+		if zoneOf(cam, "glasshouse") then tr, tg = 0.2, 0.85
+		elseif zoneOf(cam, "basement") then tr = 0
+		elseif rainExposed then tr = 0.75
+		else tr = 0.14 end
+	end
+	local k = math.min(1, dt * 2.5)
+	rainVol = rainVol + (tr - rainVol) * k
+	glassVol = glassVol + (tg - glassVol) * k
+	if rainVol > 0.01 then PlayLoop(snd.rain, cam, rainVol) end
+	if glassVol > 0.01 then PlayLoop(snd.rainGlass, cam, glassVol) end
+end
+
+local function drawPanel()
+	if not panelOpen then return end
+	UiMakeInteractive()
+	UiPush()
+		local w, rowH = 420, 46
+		local rows = (M and M.state == "active") and 4 or 3
+		local h = 90 + rows * rowH + 20
+		UiTranslate(UiCenter() - w / 2, UiMiddle() - h / 2)
+		UiColor(0.05, 0.04, 0.08, 0.88)
+		UiRect(w, h)
+		UiColor(1, 1, 1, 1)
+		UiFont("bold.ttf", 28)
+		UiTranslate(w / 2, 42)
+		UiAlign("center middle")
+		UiText("LIMINAL ATRIUM")
+		UiFont("regular.ttf", 23)
+		UiTranslate(0, 50)
+		UiColor(0.85, 0.8, 1, 1)
+		if UiTextButton(settings.day and "Time: Day  (switch to night)" or "Time: Night  (switch to day)", w - 40, rowH - 8) then panelAction("time") end
+		UiTranslate(0, rowH)
+		if UiTextButton(settings.rain and "Weather: Rain  (stop the rain)" or "Weather: Clear  (make it rain)", w - 40, rowH - 8) then panelAction("weather") end
+		UiTranslate(0, rowH)
+		if M and M.state == "active" then
+			UiColor(1, 0.75, 0.85, 1)
+			if UiTextButton("Stop Sweet Dreams", w - 40, rowH - 8) then panelAction("stop") end
+			UiTranslate(0, rowH)
+		end
+		UiColor(1, 0.6, 0.6, 1)
+		if UiTextButton("Close", w - 40, rowH - 8) then panelAction("close") end
+	UiPop()
+end
+
 function draw()
+	drawPanel()
+	drawPad()
 	drawMission()
 	heliDraw()
 	powerDraw()
@@ -1631,6 +1888,8 @@ function init()
 	powerApplyAll()
 	autoInit()
 	heliInit()
+	pianoInit()
+	settingsInit()
 	respawnInit()
 	missionInit()
 	say("Front desk: ring the bell when you are ready to dream.", 7)
@@ -1663,6 +1922,7 @@ function tick(dt)
 	end
 	carsTick()
 	powerTick(dt)
+	panelTick()
 	respawnTick(dt)
 	heliTick(dt)
 	curtainsTick(dt)
@@ -1674,6 +1934,8 @@ function tick(dt)
 	elevTick(dt)
 	flickerTick(dt, cam)
 	spotsTick(cam)
+	pianoTick(dt, cam)
+	rainTick(dt, cam)
 	radioTick(cam)
 end
 

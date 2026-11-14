@@ -116,7 +116,7 @@ fy = ns["fy"]; FLOORS = ns["FLOORS"]
 bad_rooms = []
 for name, b, fr, bw in ns["room_frames"]():
     for k in range(FLOORS):
-        if k == 0 and name == "S" and b in (1, 2):
+        if k == 0 and (name == "S" and b in (1, 2) or name == "N"):      # lobby / back of house
             continue
         x, z = fr.pt(bw // 2, 22)
         if not reachable(x, fy(k), z):
@@ -126,7 +126,7 @@ report(f"all {len(ns['room_log'])} hotel rooms reachable on foot (doors open)", 
 bad_bath = []
 for name, b, fr, bw in ns["room_frames"]():
     for k in range(FLOORS):
-        if k == 0 and name == "S" and b in (1, 2):
+        if k == 0 and (name == "S" and b in (1, 2) or name == "N"):      # lobby / back of house
             continue
         for ff in (fr, fr.mirrored(ns["T_PART"], bw)):
             pass
@@ -155,6 +155,14 @@ checks["rooftop glasshouse: pond plaza"] = (GH_["plaza"][0], ns["ROOF_Y"], GH_["
 checks["rooftop glasshouse: north terrace"] = ((GH_["x0"] + GH_["x1"]) // 2 - 16, ns["ROOF_Y"], GH_["z1"] - 13)
 YB = ns["YB"]
 checks["B1 car-park ramp (top, street level)"] = (30, G0, 66)
+for (rn_, (rx_, rz_)) in ns["PENTHOUSE"]["rooms"].items():
+    checks[f"penthouse: {rn_}"] = (rx_, ns["ROOF_Y"], rz_)
+for key_ in ("NW", "SE"):
+    xr_, zr_ = ns["corner"][key_].pt(-6, 22)
+    checks[f"roof lift landing {key_}"] = (xr_, ns["ROOF_Y"], zr_)
+for (bn_, bx0_, bx1_, bz0_, bz1_) in ns["BOH"]:
+    checks[f"back of house: {bn_} (staff passage)"] = ((bx0_ + bx1_) // 2, G0, bz1_ - 6)
+checks["back of house: kitchen floor by the island"] = (ns["BOH"][0][1] + 20, G0, ns["BOH"][0][3] - 18)
 checks["B1 car-park ramp (bottom)"] = (30, YB, 280)
 checks["B1 car park"] = (162, YB, 200)
 checks["B1 arcade promenade (through automatic door 1)"] = (310, YB, 250)
@@ -258,7 +266,7 @@ T_PART, ROOM_D = ns["T_PART"], ns["ROOM_D"]
 open_rooms = []
 for name, b, fr, bw in ns["room_frames"]():
     for k in range(FLOORS):
-        if k == 0 and name == "S" and b in (1, 2):
+        if k == 0 and (name == "S" and b in (1, 2) or name == "N"):      # lobby / back of house
             continue
         y = fy(k)
         walls = {"party A": (0, T_PART, 0, ROOM_D), "party B": (bw, bw + T_PART, 0, ROOM_D),
@@ -276,7 +284,7 @@ unglazed = []
 WIN_W, WIN_H, SILL, T_FAC = ns["WIN_W"], ns["WIN_H"], ns["SILL"], ns["T_FAC"]
 for name, b, fr, bw in ns["room_frames"]():
     for k in range(FLOORS):
-        if k == 0 and name == "S" and b in (1, 2):
+        if k == 0 and (name == "S" and b in (1, 2) or name == "N"):      # lobby / back of house
             continue
         u0 = bw // 2 - WIN_W // 2 + 1
         x0, x1, z0, z1 = fr._rect(u0 + 1, u0 + WIN_W - 1, -T_FAC, 0)
@@ -301,9 +309,9 @@ report("every door handle is on the latch side (away from the hinge)", not wrong
 cab = 0
 for e in ns["ELEVATORS"]:
     arr = e["arr"]; gx, gy, gz = e["gmin"]; sx, sy, sz = arr.shape
-    lo = ns["YB"] - 2; hi = gy + (ns["FLOORS"] - 1 - e["floor"]) * ns["FH"] + sy     # B1 .. floor 6
+    lo = ns["YB"] - 2; hi = gy + (max(ns["LEVELS"]) - e["floor"]) * ns["FH"] + sy     # B1 .. roof
     cab += int((FULL[gx:gx + sx, lo:hi, gz:gz + sz] > 0).sum())
-report("elevator cabs travel B1 - floor 6 without touching anything", cab == 0, f"{cab} voxels in the way")
+report("elevator cabs travel B1 - roof without touching anything", cab == 0, f"{cab} voxels in the way")
 
 # 6b. mission + curtains (separate static bodies moved by main.lua)
 def body_hits(arr, gmin, dx=0, dz=0, world=FULL):
@@ -482,7 +490,7 @@ for d_ in ns["DOORS"]:
     skin = FULL[gx_ + ox_ - sx_:gx_ + ox_ - sx_ + ax_, gy_:gy_ + ay_, gz_ + oz_ - sz_:gz_ + oz_ - sz_ + az_]
     if (pocket > 0).any() or not (skin > 0).all():
         pk_bad.append(t_["shaft"] + "/" + t_["floor"])
-report("elevator landing doors open into a hidden wall pocket (28 doors)", not pk_bad, str(pk_bad[:8]))
+report(f"elevator landing doors open into a hidden wall pocket ({sum(1 for d_ in ns['DOORS'] if 'elevdoor' in d_['tag'])} doors)", not pk_bad, str(pk_bad[:8]))
 # blackout: no glowing fitting left in the world shapes of a hotel floor (lamps / glows are own shapes on the circuit)
 EMIT_W = [ns[k] for k in ("CEIL_LAMP", "COVE_LAMP", "LAMPSHADE")]
 left_glow = 0
@@ -558,6 +566,19 @@ centred = (np.allclose(bl_.mean(0), 50.0) and np.allclose(sh_.mean(0), 50.0) and
            and np.allclose(tb_.mean(0), 10.0))
 report("rotors centred on their spin axes (blades, shaft, joints and mast share one line)", centred,
        f"blades {bl_.mean(0)}, shaft {sh_.mean(0)}, axis {ax_r} vs mast {ax_m}, tail {tb_.mean(0)}")
+# v3.40: penthouse jacuzzi water inside its rim, piano resting on the floor clear of the world, staff rooms
+PHq = ns["PENTHOUSE"]
+jac = [p_ for p_ in ns["POOLS"] if abs(p_[0] - (ns["ROOF_Y"] + 5.0)) < 0.01]
+jac_ok = len(jac) == 1 and all(FULL[int(px_), ns["ROOF_Y"] + 2, int(pz_)] == 0 for (px_, pz_) in jac[0][2])
+report("penthouse: jacuzzi water polygon inside an empty tub", jac_ok)
+pa_, pg_ = ns["PIANO_ARR"], ns["PIANO_GMIN"]
+p_rest = (FULL[pg_[0]:pg_[0] + pa_.shape[0], pg_[1] - 1, pg_[2]:pg_[2] + pa_.shape[2]][pa_[:, 0, :] > 0] > 0).all()
+report("grand piano: own shape, legs on the atrium floor, overlapping nothing", hits(pa_, pg_) == 0 and p_rest and
+       'tags="piano"' in open("main.xml").read())
+hard_p = np.isin(pa_[pa_ > 0], list(range(137, 153)) + list(range(169, 177))).mean()
+report(f"grand piano breakable (heavy/hard metal {hard_p:.0%})", hard_p < 0.05)
+boh_ok = len(ns["BOH"]) == 3 and all(len([1 for r in ns["room_log"] if r[0] == "N" and r[2] == 0]) == 0 for _ in [0])
+report("back of house replaces the ground-floor north rooms (kitchen, laundry, boiler)", boh_ok)
 blade_hit = sum(1 for (a, b, c) in zip(*np.nonzero(RO_)) if b >= 8 and body_cell(H_["rotor_gmin"], a, b, c)) + \
             sum(1 for (a, b, c) in zip(*np.nonzero(TA_)) if a >= 4 and body_cell(H_["tail_gmin"], a, b, c))
 report("rotor blades clear the helicopter body (only the shafts sit inside)", blade_hit == 0, f"{blade_hit} cells")
@@ -576,7 +597,7 @@ pool_src = [sp for sp in ns["SOUND_SPOTS"] if sp[0] in ("pool", "spa")]
 rgx, rgy, rgz = ns["RADIO"]["gmin"]
 outside = [((ns["ax0"] + ns["ax1"]) // 2, G0 + 2, (az0 + ns["az1"]) // 2), ((ns["ax0"] + ns["ax1"]) // 2 + 20, G0 + 2, az0 - 30), (310, ns["YB"] + 2, 250)]
 report("pool water / spa / radio are heard only in the pool hall (+ quieter in its connector)",
-       all(in_zone(x, y, z) == ["hall"] for (_, x, y, z) in pool_src) and in_zone(rgx, rgy, rgz) == ["hall"] and not any(in_zone(*p_) for p_ in outside),
+       all(in_zone(x, y, z) == ["hall"] for (_, x, y, z) in pool_src) and in_zone(rgx, rgy, rgz) == ["hall"] and not any(k_ in ("hall", "connector") for p_ in outside for k_ in in_zone(*p_)),
        str([in_zone(x, y, z) for (_, x, y, z) in pool_src]))
 report("respawn point exists (lobby spawn)", any(l.get("tags") == "respawn" for l in root.iter("location")))
 sg_bad = [i for i, g in enumerate(ns["SWITCHGEAR"]) if body_hits(g["arr"], g["gmin"])]
@@ -594,7 +615,8 @@ report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in 
 
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
-LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "heli_rotor.ogg"}
+LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "heli_rotor.ogg",
+         "piano.ogg", "rain.ogg", "rain_glass.ogg", "boiler.ogg", "laundry.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)
     peak = float(np.abs(x).max())

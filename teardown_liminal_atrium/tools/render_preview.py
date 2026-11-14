@@ -13,7 +13,7 @@ import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ap = argparse.ArgumentParser()
-ap.add_argument("shot", choices=["exterior", "atrium", "helipad", "glasshouse", "garden", "garage", "pool", "arcade"])
+ap.add_argument("shot", choices=["exterior", "atrium", "helipad", "glasshouse", "garden", "garage", "pool", "arcade", "penthouse", "terrace", "kitchen"])
 ap.add_argument("--w", type=int, default=1280); ap.add_argument("--h", type=int, default=720)
 ap.add_argument("--spp", type=int, default=128); ap.add_argument("--out", default=None)
 ap.add_argument("--debug", default="")          # nolights / noemit / nosky (diagnostics)
@@ -54,6 +54,8 @@ for e in ns["ELEVATORS"]:
 for (arr, gm, *_r) in ns["ROOM_SWITCHES"]:
     stamp(arr, gm)
 stamp(ns["BELL"]["arr"], ns["BELL"]["gmin"]); stamp(ns["RADIO"]["arr"], ns["RADIO"]["gmin"])
+for (nm, arr, gm, *_t) in ns.get("TAGGED_SHAPES", []):
+    stamp(arr, gm)
 for (nm, arr, gm, l) in ns["ROOF_SHAPES"]:
     stamp(arr, gm)
 for (arr, gm, l) in ns["ROAD_LAMPS"]:
@@ -136,6 +138,20 @@ SHOTS["arcade"] = dict(cam=((PRM0_ + PRM1_) / 2 - 4, YB_ + 15, ns["IZ0"] + 8 + R
                        crop=(ns["PX1"] - 4, ns["IX1"] + 6, YB_ - 3, ns["G0"], ns["IZ0"] - 6 + RD, ns["IZ1"] + 6 + RD),
                        sky=(0.0, 0.0, 0.0), moon=0.0, fog=(0.05, 0.045, 0.06, 500.0),
                        lights=lambda gx, gy, gz: gx >= ns["PX1"] - 2 and gy < ns["G0"] - 2 and gz <= ns["IZ1"] + 2)
+PH = ns["PENTHOUSE"]
+_phc = (PH["x0"] - 4, PH["x1"] + 4, ns["ROOF_Y"] - 3, HN, PH["terrace_z0"] - 6 + RD, PH["z1"] + 30 + RD)
+_phl = lambda gx, gy, gz: PH["x0"] - 2 <= gx <= PH["x1"] + 2 and PH["terrace_z0"] - 4 <= gz <= PH["z1"] + 2 and gy >= ns["ROOF_Y"] - 2
+SHOTS["penthouse"] = dict(cam=(PH["x0"] + 8, ns["ROOF_Y"] + 17, PH["z1"] - 8 + RD), look=(PH["x1"] - 12, ns["ROOF_Y"] + 7, PH["z1"] - 70 + RD), fov=74,
+                          crop=_phc, sky=(0.035, 0.028, 0.07), moon=0.3, fog=(0.08, 0.07, 0.12, 600.0), lights=_phl)
+SHOTS["terrace"] = dict(cam=(PH["x1"] + 40, ns["ROOF_Y"] + 42, PH["terrace_z0"] - 34 + RD), look=(PH["x0"] + 30, ns["ROOF_Y"] + 4, PH["terrace_z0"] + 26 + RD), fov=55,
+                        crop=(0, W, ns["ROOF_Y"] - 30, HN, 0, D + RD), sky=(0.035, 0.028, 0.07), moon=0.5, fog=(0.10, 0.08, 0.16, 300.0),
+                        lights=lambda gx, gy, gz: gy >= ns["ROOF_Y"] - 2)
+_bh = {n_: (a_, b_, c_, d_) for (n_, a_, b_, c_, d_) in ns["BOH"]}
+_k = _bh["kitchen"]
+SHOTS["kitchen"] = dict(cam=(_k[0] + 4, ns["G0"] + 17, _k[3] - 6 + RD), look=(_k[1] - 20, ns["G0"] + 6, _k[2] + 4 + RD), fov=76,
+                        crop=(_k[0] - 4, _bh["boiler"][1] + 4, ns["G0"] - 3, ns["G0"] + 32, _k[2] - 6 + RD, _k[3] + 8 + RD),
+                        sky=(0.0, 0.0, 0.0), moon=0.0, fog=(0.05, 0.05, 0.06, 500.0),
+                        lights=lambda gx, gy, gz: _k[0] - 2 <= gx <= _bh["boiler"][1] + 2 and _k[2] - 2 <= gz <= _k[3] + 2 and ns["G0"] - 2 <= gy <= ns["G0"] + 30)
 SHOTS["exterior"]["lights"] = lambda gx, gy, gz: outdoor(gx, gy, gz) and gz < bz1
 SHOTS["atrium"]["lights"] = in_atrium
 SHOTS["helipad"]["lights"] = lambda gx, gy, gz: gy >= ROOF_Y - 2
@@ -304,7 +320,7 @@ def blur(a, s_):
     return np.stack([gaussian_filter(a[..., k], s_) for k in range(3)], -1)
 bright = np.clip(rgb - 0.9, 0, None)
 bloom = 0.35 * blur(bright, args.w / 160) + 0.25 * blur(bright, args.w / 40)
-expo = {"exterior": 1.6, "atrium": 1.5, "helipad": 1.5, "glasshouse": 1.5, "garden": 1.4, "garage": 1.4, "pool": 0.45, "arcade": 0.6}[args.shot]
+expo = {"exterior": 1.6, "atrium": 1.5, "helipad": 1.5, "glasshouse": 1.5, "garden": 1.4, "garage": 1.4, "pool": 0.45, "arcade": 0.6, "penthouse": 1.2, "terrace": 1.4, "kitchen": 0.8}[args.shot]
 def aces(x):
     a_, b_, c_, d_, e_ = 2.51, 0.03, 2.43, 0.59, 0.14
     return np.clip((x * (a_ * x + b_)) / (x * (c_ * x + d_) + e_), 0, 1)

@@ -218,7 +218,7 @@ def light(gx, gy, gz, rgb, scale=1.0, size=0.1, tags=""):
 def fy(k):
     return G0 + k * FH
 
-LEVELS = [-1] + list(range(FLOORS))     # elevator stops: B1 + floors 1-6
+LEVELS = [-1] + list(range(FLOORS + 1))  # elevator stops: B1, floors 1-6 and the roof (fy(FLOORS) = ROOF_Y)
 def lvl_y(k):
     return YB if k < 0 else fy(k)
 
@@ -972,7 +972,7 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False, rid=0):
     fr.light(cu, y + FH - SLAB_T - 2, 20, (1.0, 0.82, 0.55), 2.2, 0.3, f"room={rid} rl=ceil")
 
 KEYCARD_ROOMS = {}
-_cands = [(n_, b_, k_) for (n_, b_, f_, bw_) in room_frames() for k_ in range(FLOORS) if not (k_ == 0 and n_ == "S" and b_ in (1, 2))]
+_cands = [(n_, b_, k_) for (n_, b_, f_, bw_) in room_frames() for k_ in range(FLOORS) if not (k_ == 0 and (n_ == "S" and b_ in (1, 2) or n_ == "N"))]
 for k_ in range(FLOORS):
     opts = [c for c in _cands if c[2] == k_]
     KEYCARD_ROOMS[MRNG.choice(opts)] = True
@@ -989,8 +989,8 @@ def build_rooms():
     for name, b, fr, bw in room_frames():
         for k in range(FLOORS):
             y = fy(k)
-            if k == 0 and name == "S" and b in (1, 2):
-                continue
+            if k == 0 and (name == "S" and b in (1, 2) or name == "N"):
+                continue                                  # lobby / back of house (staff rooms, built later)
             u0 = window_in_facade(fr, bw, y)
             state = rng.choice(STATES)
             wall = rng.choice([ROOM_WALL, ROOM_WALL, ROOM_WALL_B, ROOM_WALL_C])
@@ -1482,31 +1482,33 @@ def elevators(fr, key):
         y = fy(k)
         fr.box(0, CB - T_FAC, y, y + FH - SLAB_T, 0, CB - T_FAC, 0)
         fr.box(0, CB - T_FAC, y - 1, y, 0, CB - T_FAC, TILE_DARK)
+    LIFT_TOP = ROOF_Y + 31                                                       # shafts reach the roof stop
     fr.box(0, 22, G0, ROOF_Y + 12, 0, CB - T_FAC, SLAB)
+    fr.box(-T_PART, 22, ROOF_Y, LIFT_TOP + 3, -T_PART, CB - T_FAC, SLAB)         # lift penthouse on the roof
     fr.box(-T_PART, 22, 1, G0, 0, CB - T_FAC, SLAB)                              # shaft core down to B1
     for qi, q0 in enumerate((2, 24)):
         shaft = f"{key}{qi}"
-        fr.box(0, 20, 1, ROOF_Y, q0, q0 + 18, 0)                                  # hollow shaft + pit
+        fr.box(0, 20, 1, LIFT_TOP, q0, q0 + 18, 0)                                # hollow shaft + pit
         # guide rails + brackets on the back wall (behind the car, not touching it)
         for qq in (q0 + 3, q0 + 14):
-            fr.box(19, 20, 1, ROOF_Y, qq, qq + 1, ELEV_RAIL)
-            for yy in range(G0, ROOF_Y, 15):
+            fr.box(19, 20, 1, LIFT_TOP, qq, qq + 1, ELEV_RAIL)
+            for yy in range(G0, LIFT_TOP, 15):
                 fr.box(19, 20, yy, yy + 1, qq - 1, qq + 2, ELEV_RAIL)
         for qq in (q0 + 2, q0 + 15):                                            # pit buffers (outside the car footprint)
             fr.box(19, 20, 1, 3, qq, qq + 1, RED)
         # counterweight hint + hoist sheave at the top
-        fr.box(6, 14, ROOF_Y - 3, ROOF_Y - 1, q0 + 7, q0 + 11, DARK_METAL)
-        fr.box(9, 11, ROOF_Y - 1, ROOF_Y, q0 + 8, q0 + 10, ELEV_RAIL)
+        fr.box(6, 14, LIFT_TOP - 3, LIFT_TOP - 1, q0 + 7, q0 + 11, DARK_METAL)
+        fr.box(9, 11, LIFT_TOP - 1, LIFT_TOP, q0 + 8, q0 + 10, ELEV_RAIL)
         start = rng.randrange(FLOORS)
         yb = fy(start) - 2
         arr, gmin = frame_shape(fr, CAR_P0, CAR_P1, yb, yb + CAR_H, q0 + 1, q0 + 17, car_style)
-        # car buttons: one per floor, stacked on the chrome panel (separate shapes)
-        buttons = []
-        for f in LEVELS:
-            by = yb + 2 + 8 + f * 2
-            barr, bmin = frame_shape(fr, CAR_P0 + 2, CAR_P0 + 3, by, by + 1, q0 + 1 + 14, q0 + 1 + 15,
-                                     lambda *a_: CEIL_LAMP)
-            buttons.append((barr, bmin, f))
+        # floor keypad (a separate shape): E opens the number entry
+        def pad_style(a_, b_, c_, A, B, C):
+            if b_ >= B - 2:
+                return TV_SCREEN                                                    # floor display
+            return SWITCH if (b_ % 2 == 0 and c_ % 2 == 0) else DARK_METAL          # keys on a dark plate
+        barr, bmin = frame_shape(fr, CAR_P0 + 2, CAR_P0 + 3, yb + 10, yb + 19, q0 + 1 + 13, q0 + 1 + 16, pad_style)
+        buttons = [(barr, bmin, None)]
         cxl, czl = cont(fr, (CAR_P0 + CAR_P1) / 2, q0 + 9)
         ELEVATORS.append(dict(arr=arr, gmin=gmin, shaft=shaft, floor=start, buttons=buttons,
                               light=(cxl, yb + CAR_H - 5, czl)))
@@ -1542,7 +1544,9 @@ def elevators(fr, key):
             barr, bmin = frame_shape(fr, -T_PART - 2, -T_PART - 1, y + 11, y + 13, cp0 + 1, cp0 + 2,
                                      lambda *a_: CEIL_LAMP)
             CALLS.append((barr, bmin, shaft, k))
-    fr.box(-T_PART, 22, ROOF_Y + 10, ROOF_Y + 14, -T_PART, CB - T_FAC, SLAB)
+    # lift penthouse on the roof (the shafts run up to the roof stop): brick outside, trimmed cap
+    fr.paint(-T_PART, 22, ROOF_Y, LIFT_TOP + 3, -T_PART, CB - T_FAC, BRICK, [SLAB])
+    fr.box(-T_PART - 1, 23, LIFT_TOP + 2, LIFT_TOP + 3, -T_PART - 1, CB - T_FAC + 1, EXT_TRIM)
     for k in range(FLOORS):
         y = fy(k)
         # electrical room of this floor: switchgear (separate shape: E switches the floor's power,
@@ -1582,10 +1586,7 @@ def elevators(fr, key):
         fr.box(30, 34, y + 26, y + 27, 18, 22, CEIL_LAMP)
         ELEC_ROOMS.append((fr, y))
         fr.light(32, y + 24, 20, (0.85, 0.95, 1.0), 1.2, 0.2)
-    y = ROOF_Y
-    fr.box(-T_PART, 24, y, y + 14, -T_PART, CB - T_FAC + 2, BRICK)              # machine room
-    fr.box(-T_PART - 1, 25, y + 14, y + 16, -T_PART - 1, CB - T_FAC + 3, EXT_TRIM)
-    fr.box(4, 14, y, y + 18, CB - T_FAC + 2, CB - T_FAC + 3, DARK_METAL)
+    # (the old machine room on the roof is now the lift penthouse with the roof landing, see above)
 
 stairwell(corner["SW"]); stairwell(corner["NE"])
 elevators(corner["NW"], "NW"); elevators(corner["SE"], "SE")
@@ -1598,7 +1599,10 @@ def roof_clear(x0, x1, z0, z1, m=4):
     return not any(x0 < b + m and x1 > a - m and z0 < d + m and z1 > c - m for (a, b, c, d) in CORNER_RECTS)
 HVAC_SPOTS = [(bx0 + 20 + i * 60, hz) for i in range(5) for hz in (bz0 + 14, bz1 - 34)]
 HVAC_SPOTS = [(hx, hz) for (hx, hz) in HVAC_SPOTS if roof_clear(hx - 1, hx + 23, hz - 1, hz + 19)]
-HVAC_SPOTS += [(bx1 - 46, 236), (bx1 - 46, 316)]                      # (the corner ones moved to the east roof)
+# the east roof carries the penthouse suite and its terrace (section 10e): keep roof plant off it
+PH_X0, PH_X1, PH_Z0, PH_Z1 = ax1 + T_FAC + 6, bx1 - T_EXT - 4, 228, 404      # suite (outer walls)
+PT_Z0 = 168                                                                    # terrace from here to PH_Z0
+CORNER_RECTS.append((PH_X0 - 2, PH_X1 + 2, PT_Z0 - 2, PH_Z1 + 2))
 for (hx, hz) in HVAC_SPOTS:
     box(hx, hx + 22, ROOF_Y, ROOF_Y + 12, hz, hz + 18, HVAC)
     box(hx - 1, hx + 23, ROOF_Y, ROOF_Y + 2, hz - 1, hz + 19, DARK_METAL)
@@ -1966,6 +1970,8 @@ BFONT = {
     "S": [".##", "#..", ".#.", "..#", "##."], "T": ["###", ".#.", ".#.", ".#.", ".#."],
     "U": ["#.#", "#.#", "#.#", "#.#", "###"], "V": ["#.#", "#.#", "#.#", "#.#", ".#."],
     "X": ["#.#", "#.#", ".#.", "#.#", "#.#"], "1": [".#.", "##.", ".#.", ".#.", "###"],
+    "K": ["#.#", "##.", "#..", "##.", "#.#"], "H": ["#.#", "#.#", "###", "#.#", "#.#"],
+    "D": ["##.", "#.#", "#.#", "#.#", "##."], "Y": ["#.#", "#.#", ".#.", ".#.", ".#."],
     " ": ["..", "..", "..", "..", ".."],
 }
 
@@ -2496,6 +2502,164 @@ for (pcx, pcz, rx, rz) in ((161, 198, 11, 8), (167, 338, 9, 8), (108, 296, 11, 7
 # a slow leak above the puddle by the west wall: rusty drip line on the pipe
 box(IX0 + 10, IX0 + 12, YC - 3, YC - 2, 344, 348, DUMPSTER)
 SOUND_SPOTS.extend([("garage", 162, YB + 15, 150), ("garage", 162, YB + 15, 300), ("garage", 110, YB + 15, 296)])
+
+# ============================================================================
+# 8d. Back of house (v3.40): the four north rooms of the ground floor are staff space -- a kitchen (two
+#     bays), a laundry and a boiler room, joined by a staff passage along their corridor side
+# ============================================================================
+BOH = []                                   # (name, x0, x1, z0, z1) interiors, for QA / blueprints
+y = G0
+bz_a, bz_c = az1 + T_FAC, az1 + T_FAC + ROOM_D            # interior z (atrium side .. corridor partition)
+bxs = [ax0 + b * SHORT_BAY_W for b in range(SHORT_BAYS + 1)]
+KX0, KX1 = bxs[0] + T_PART, bxs[2]                         # kitchen: bays 0 + 1
+LX0, LX1 = bxs[2] + T_PART, bxs[3]                         # laundry: bay 2
+BX0_, BX1_ = bxs[3] + T_PART, bxs[4]                       # boiler room: bay 3
+WALK0 = bz_c - 12                                          # staff passage strip (z WALK0 .. bz_c) kept clear
+box(bxs[1], bxs[1] + T_PART, y, y + FH - SLAB_T, bz_a, bz_c, 0)        # kitchen: one long room
+for xw in (bxs[2], bxs[3]):                                             # passage doorways in the party walls
+    box(xw, xw + T_PART, y, y + 22, bz_c - 11, bz_c - 2, 0)
+    box(xw - 1, xw + T_PART + 1, y + 22, y + 23, bz_c - 12, bz_c - 1, STEEL)
+    for zz in (bz_c - 12, bz_c - 2):
+        box(xw - 1, xw + T_PART + 1, y, y + 22, zz, zz + 1, STEEL)
+# floors, wall tiles
+for x in range(KX0, KX1):
+    for z in range(bz_a, bz_c):
+        G[x, y - 1, z] = WHITE_TILE if ((x // 3) + (z // 3)) % 2 else TILE_DARK            # kitchen quarry tiles
+paint(KX0, KX1, y, y + 12, bz_a, bz_a + 1, WHITE_TILE)
+paint(LX0, BX1_, y - 1, y, bz_a, bz_c, STAIR_CONC)
+paint(LX0, LX1, y, y + 12, bz_a, bz_a + 1, WHITE_TILE2)
+paint(KX0, BX1_, y - 1, y, WALK0, bz_c, PAINT_LINE, [STAIR_CONC])
+box(KX0, BX1_, y - 1, y, WALK0, WALK0 + 1, YELLOW_PAINT)                 # passage edge line
+def boh_lamp(x0_, x1_, zc_, rgb=(0.92, 0.97, 1.0), sc=2.0):
+    box(x0_, x1_, y + FH - SLAB_T - 1, y + FH - SLAB_T, zc_ - 1, zc_ + 1, STEEL)
+    box(x0_ + 1, x1_ - 1, y + FH - SLAB_T - 2, y + FH - SLAB_T - 1, zc_ - 1, zc_ + 1, CEIL_LAMP)
+    light((x0_ + x1_) / 2, y + FH - SLAB_T - 3.5, zc_, rgb, sc, 0.3)
+# ---- kitchen
+box(KX0 + 1, KX1 - 1, y, y + 8, bz_a, bz_a + 6, FRIDGE)                  # counter run under the atrium wall
+box(KX0 + 1, KX1 - 1, y + 8, y + 9, bz_a, bz_a + 7, STEEL)
+for x in range(KX0 + 4, KX1 - 4, 6):
+    box(x, x + 1, y + 1, y + 7, bz_a + 6, bz_a + 7, CHROME)               # cupboard handles
+rg0 = KX0 + 22
+box(rg0, rg0 + 20, y + 8, y + 9, bz_a, bz_a + 7, DARK_METAL)               # range top + burners
+for bx_ in (rg0 + 3, rg0 + 9, rg0 + 15):
+    for bz__ in (bz_a + 1, bz_a + 4):
+        box(bx_, bx_ + 3, y + 9, y + 10, bz__, bz__ + 2, TIRE)
+box(rg0 + 1, rg0 + 19, y + 1, y + 7, bz_a + 6, bz_a + 7, CHROME)           # oven doors
+box(rg0 - 1, rg0 + 21, y + 21, y + 25, bz_a, bz_a + 9, STEEL)              # extractor hood
+box(rg0 + 2, rg0 + 18, y + FH - SLAB_T - 2, y + FH - SLAB_T, bz_a + 2, bz_a + 6, STEEL)    # duct
+box(rg0 + 2, rg0 + 18, y + 20, y + 21, bz_a + 6, bz_a + 8, CEIL_LAMP)     # hood light
+light(rg0 + 10, y + 18, bz_a + 7, (1.0, 0.9, 0.75), 1.4, 0.2)
+box(rg0 + 4, rg0 + 7, y + 10, y + 13, bz_a + 2, bz_a + 5, DARK_METAL)     # stock pot
+box(rg0 + 12, rg0 + 17, y + 10, y + 11, bz_a + 1, bz_a + 5, DARK_METAL)   # pan
+box(rg0 + 17, rg0 + 21, y + 10, y + 11, bz_a + 2, bz_a + 3, WOOD_DARK)    # pan handle
+for fx in (KX1 - 24, KX1 - 13):                                           # two tall reach-in fridges
+    box(fx, fx + 10, y, y + 22, bz_a + 8, bz_a + 15, FRIDGE)
+    box(fx + 4, fx + 5, y + 2, y + 21, bz_a + 15, bz_a + 16, DARK_METAL)
+    box(fx + 1, fx + 9, y + 18, y + 20, bz_a + 15, bz_a + 16, TV_SCREEN if fx == KX1 - 24 else CEIL_LAMP)
+box(KX0 + 26, KX0 + 52, y, y + 8, bz_a + 16, bz_a + 25, CHROME)           # prep island (shelf frame)
+box(KX0 + 27, KX0 + 51, y + 1, y + 7, bz_a + 17, bz_a + 24, 0)
+box(KX0 + 27, KX0 + 51, y + 3, y + 4, bz_a + 17, bz_a + 24, STEEL)
+box(KX0 + 25, KX0 + 53, y + 8, y + 9, bz_a + 15, bz_a + 26, STEEL)
+box(KX0 + 30, KX0 + 36, y + 9, y + 10, bz_a + 18, bz_a + 23, WOOD_LIGHT)  # chopping board
+for (px_, pc_) in ((KX0 + 40, CERAMIC), (KX0 + 44, CERAMIC), (KX0 + 47, BRASS)):
+    box(px_, px_ + 3, y + 9, y + 11, bz_a + 19, bz_a + 22, pc_)
+rail_y = y + FH - SLAB_T - 6                                              # pot rail over the island
+for rx_ in (KX0 + 28, KX0 + 50):
+    box(rx_, rx_ + 1, rail_y, y + FH - SLAB_T, bz_a + 20, bz_a + 21, DARK_METAL)
+box(KX0 + 28, KX0 + 51, rail_y, rail_y + 1, bz_a + 20, bz_a + 21, DARK_METAL)
+for i, hx_ in enumerate(range(KX0 + 31, KX0 + 49, 4)):
+    box(hx_ + 1, hx_ + 2, rail_y - 2, rail_y, bz_a + 20, bz_a + 21, DARK_METAL)
+    box(hx_, hx_ + 3, rail_y - 4, rail_y - 2, bz_a + 19, bz_a + 22, BRASS if i % 2 else DARK_METAL)
+box(KX0, KX0 + 5, y, y + 22, bz_a + 9, bz_a + 28, CHROME)                 # dry-store shelving
+for sy in range(y + 4, y + 22, 5):
+    box(KX0, KX0 + 5, sy, sy + 1, bz_a + 9, bz_a + 28, STEEL)
+    for zz in range(bz_a + 10, bz_a + 27, 4):
+        box(KX0 + 1, KX0 + 4, sy + 1, sy + 3, zz, zz + 3, (CARP_OR, CERAMIC, WALL_ORANGE, SHEET)[(zz + sy) % 4])
+for lx_ in (KX0 + 10, KX0 + 38, KX0 + 62):
+    boh_lamp(lx_, lx_ + 10, bz_a + 30)
+# ---- laundry
+for i in range(4):                                                         # four front-loading washers
+    wx = LX0 + 1 + i * 9
+    box(wx, wx + 8, y, y + 9, bz_a, bz_a + 8, FRIDGE)
+    box(wx + 2, wx + 6, y + 2, y + 7, bz_a + 8, bz_a + 9, CHROME)
+    box(wx + 3, wx + 5, y + 3, y + 6, bz_a + 8, bz_a + 9, GLASS)
+    box(wx + 1, wx + 7, y + 8, y + 9, bz_a + 7, bz_a + 8, DARK_METAL)      # control strip
+    if i < 2:                                                               # two dryers stacked on top
+        box(wx, wx + 8, y + 9, y + 18, bz_a, bz_a + 8, FRIDGE)
+        box(wx + 2, wx + 6, y + 11, y + 16, bz_a + 8, bz_a + 9, CHROME)
+        box(wx + 3, wx + 5, y + 12, y + 15, bz_a + 8, bz_a + 9, TV_BODY)
+    else:
+        box(wx + 1, wx + 4, y + 9, y + 12, bz_a + 2, bz_a + 6, (WALL_BLUE, CARP_OR)[i % 2])     # detergent
+box(LX0 + 8, LX1 - 8, y, y + 8, bz_a + 16, bz_a + 24, WOOD_LIGHT)          # folding table
+box(LX0 + 9, LX1 - 9, y + 1, y + 7, bz_a + 17, bz_a + 23, 0)
+box(LX0 + 9, LX0 + 10, y, y + 8, bz_a + 17, bz_a + 18, WOOD_DARK); box(LX1 - 10, LX1 - 9, y, y + 8, bz_a + 17, bz_a + 18, WOOD_DARK)
+box(LX0 + 9, LX0 + 10, y, y + 8, bz_a + 22, bz_a + 23, WOOD_DARK); box(LX1 - 10, LX1 - 9, y, y + 8, bz_a + 22, bz_a + 23, WOOD_DARK)
+for j, tx in enumerate(range(LX0 + 10, LX1 - 12, 6)):                      # towel stacks
+    box(tx, tx + 5, y + 8, y + 10 + j % 3, bz_a + 18, bz_a + 22, (TOWEL, SHEET, DREAM_PINK)[j % 3])
+for (cx_, cz_) in ((LX1 - 10, bz_a + 12),):                                 # linen cart, piled
+    box(cx_ - 4, cx_ + 4, y + 1, y + 2, cz_ - 3, cz_ + 3, CHROME)
+    for (ex_, ez_) in ((cx_ - 4, cz_ - 3), (cx_ + 3, cz_ - 3), (cx_ - 4, cz_ + 2), (cx_ + 3, cz_ + 2)):
+        box(ex_, ex_ + 1, y, y + 9, ez_, ez_ + 1, CHROME)
+    box(cx_ - 3, cx_ + 3, y + 2, y + 9, cz_ - 2, cz_ + 2, SHEET)
+    box(cx_ - 2, cx_ + 2, y + 9, y + 10, cz_ - 1, cz_ + 1, PILLOW)
+box(LX0 + 2, LX0 + 4, y - 1, y, bz_a + 12, bz_a + 14, DARK_METAL)          # floor drain
+boh_lamp(LX0 + 14, LX0 + 24, bz_a + 14)
+# ---- boiler room
+box(BX0_, BX1_, y - 1, y, bz_a + 2, WALK0 - 2, STAIR_CONC)
+for (ocx, ocz) in ((BX0_ + 10, bz_a + 13), (BX0_ + 28, bz_a + 13)):        # two boilers
+    for x in range(ocx - 8, ocx + 9):
+        for z in range(ocz - 8, ocz + 9):
+            d_ = np.hypot(x + 0.5 - ocx, z + 0.5 - ocz)
+            if d_ < 6.5:
+                box(x, x + 1, y, y + 3, z, z + 1, DARK_METAL)                # plinth
+                box(x, x + 1, y + 3, y + 20, z, z + 1, RED)
+                for by_ in (y + 7, y + 14):
+                    box(x, x + 1, by_, by_ + 1, z, z + 1, STEEL)             # bands
+                if d_ < 4.5:
+                    box(x, x + 1, y + 20, y + 21, z, z + 1, RED)
+            elif 6.5 <= d_ < 8.0 and G[x, y - 1, z] in (STAIR_CONC, PAINT_LINE):
+                G[x, y - 1, z] = YELLOW_PAINT if ((x + z) // 2) % 2 else TIRE   # hazard ring
+    box(ocx - 1, ocx + 2, y + 21, y + FH - SLAB_T, ocz - 1, ocz + 2, DARK_METAL)       # flue to the ceiling
+    box(ocx - 2, ocx + 3, y + 8, y + 12, ocz + 6, ocz + 7, CEIL)                        # gauge panel
+    box(ocx - 1, ocx, y + 10, y + 11, ocz + 7, ocz + 8, RED)                            # needle
+    box(ocx - 3, ocx + 4, y + 4, y + 7, ocz + 6, ocz + 8, DARK_METAL)                   # burner box
+    box(ocx - 1, ocx + 2, y + 5, y + 6, ocz + 8, ocz + 9, EXIT_SIGN)                    # pilot light
+for (pz_, pc) in ((bz_a + 2, STEEL), (bz_a + 5, RED), (bz_a + 25, YELLOW_PAINT)):        # pipes under the ceiling
+    box(BX0_, BX1_, y + FH - SLAB_T - 3, y + FH - SLAB_T - 1, pz_, pz_ + 2, pc)
+    for hx_ in range(BX0_ + 4, BX1_, 10):
+        box(hx_, hx_ + 1, y + FH - SLAB_T - 1, y + FH - SLAB_T, pz_, pz_ + 2, DARK_METAL)   # hangers
+for (vx_, vz_) in ((BX0_ + 19, bz_a + 25),):                                # riser + valve wheel
+    box(vx_, vx_ + 2, y, y + FH - SLAB_T - 3, vz_, vz_ + 2, YELLOW_PAINT)
+    for wx_ in range(vx_ - 4, vx_ + 6):                                      # wheel rim (a solid ring)
+        for wy_ in range(y + 8, y + 17):
+            if 2.6 <= np.hypot(wx_ + 0.5 - (vx_ + 1), wy_ + 0.5 - (y + 12.5)) < 3.7:
+                box(wx_, wx_ + 1, wy_, wy_ + 1, vz_ - 1, vz_, RED)
+    box(vx_, vx_ + 2, y + 12, y + 13, vz_ - 1, vz_, RED)
+    box(vx_ - 2, vx_ + 4, y + 12, y + 13, vz_ - 1, vz_, RED)
+box(BX0_ + 16, BX0_ + 22, y + FH - SLAB_T - 2, y + FH - SLAB_T, bz_a + 16, bz_a + 18, DARK_METAL)   # caged bulb
+box(BX0_ + 18, BX0_ + 20, y + FH - SLAB_T - 4, y + FH - SLAB_T - 2, bz_a + 16, bz_a + 18, STREET_LMP)
+light(BX0_ + 19, y + FH - SLAB_T - 5.5, bz_a + 17, (1.0, 0.72, 0.45), 1.8, 0.2)
+# ---- corridor doors (steel, opening into the room), name boards above them
+NAMEFR = Frame(0, bz_c + T_PART - 1, 1, 0, 0, -1)                          # u = world x, layer -1 = corridor face
+for (nm_, dx0) in (("KITCHEN", bxs[1] + 14), ("LAUNDRY", LX0 + 12), ("BOILER", BX0_ + 12)):
+    fr_ = Frame(dx0, bz_a, 1, 0, 0, 1)                                     # u along +x from the door's left edge
+    fr_.box(0, 9, y, y + 19, ROOM_D, ROOM_D + T_PART, 0)                          # 1.9 m service door
+    fr_.box(-1, 10, y + 19, y + 20, ROOM_D, ROOM_D + T_PART, STEEL)
+    fr_.box(-1, 0, y, y + 18, ROOM_D + T_PART, ROOM_D + T_PART + 1, STEEL)        # jamb trims (below the name)
+    fr_.box(9, 10, y, y + 18, ROOM_D + T_PART, ROOM_D + T_PART + 1, STEEL)
+    def staff_door(a, b, c, A, B, C):
+        if b in (9, 10) and a == 1:
+            return STEEL                                                     # handle (latch side)
+        if 13 <= b <= 14:
+            return YELLOW_PAINT if a % 2 else TIRE                           # hazard band
+        if b in (16, 17) and 2 <= a <= 6:
+            return RED                                                       # STAFF ONLY plate
+        return DARK_METAL if a in (0, A - 1) or b in (0, B - 1) else HVAC
+    add_door(fr_, 0, 9, y, y + 19, ROOM_D, ROOM_D + 1, staff_door, hinge=(9, ROOM_D), open_dir=(0, -1),
+             tag="hoteldoor staff", stop=STEEL)
+    ftext(NAMEFR, nm_, dx0 + 4, y + 24, -1, SWITCH)                          # (under the corridor cornice)
+BOH += [("kitchen", KX0, KX1, bz_a, bz_c), ("laundry", LX0, LX1, bz_a, bz_c), ("boiler", BX0_, BX1_, bz_a, bz_c)]
+SOUND_SPOTS.extend([("laundry", (LX0 + LX1) / 2, y + 8, bz_a + 10), ("boiler", (BX0_ + BX1_) / 2, y + 10, bz_a + 13)])
 
 BOLT = ["..###", ".###.", "#####", "..##.", ".##..", "##..."]
 for (fr_, y_) in ELEC_ROOMS:
@@ -3403,6 +3567,269 @@ ROOF_SHAPES.append(("glasshouse_vault", VA, (GX0, GEAVE, GZ0),
                     [(GXC, GEAVE + 13, z, (1.0, 0.84, 0.62), 1.3, 0.2) for z in (GZ0 + 40, PCZ, GZ1 - 40)]))
 GLASSHOUSE = dict(x0=GX0, x1=GX1, z0=GZ0, z1=GZ1, eave=GEAVE, plaza=(GXC, PCZ), palms=PALMS)
 
+# ============================================================================
+# 10e. Penthouse suite (v3.40) on the east roof, in front of the NE stair penthouse door: foyer + bar,
+#      living room with a fireplace, dining, bedroom, bathroom; a deck terrace with a jacuzzi to the south.
+#      Glass east wall over the street. (World voxels: the suite stops below the 256 world height.)
+# ============================================================================
+PRNG = random.Random(4040)
+PY = ROOF_Y; PCEIL = PY + 28                                 # 2.8 m rooms, roof slab above
+box(PH_X0 - 1, PH_X1 + 1, PY, PY + 34, PT_Z0 - 1, PH_Z1 + 1, 0)
+ix0p, ix1p, iz0p, iz1p = PH_X0 + 2, PH_X1 - 2, PH_Z0 + 2, PH_Z1 - 2      # interior
+Z_BATH, Z_BED, Z_DIN, Z_LIV = iz0p + 34, iz0p + 72, iz0p + 102, iz0p + 150   # partitions (south -> north)
+# floors: oak parquet, marble in the bathroom
+for x in range(ix0p, ix1p):
+    for z in range(iz0p, iz1p):
+        if z < Z_BATH:
+            G[x, PY - 1, z] = MARBLE_W if ((x // 5) + (z // 5)) % 2 else MARBLE_W2
+        else:
+            G[x, PY - 1, z] = PARQUET if ((x // 2) + (z // 8)) % 2 else PARQUET2
+# shell: solid west wall (atrium side), glass east wall with bronze mullions, glass south wall to the terrace
+box(PH_X0, PH_X0 + 2, PY, PCEIL, PH_Z0, PH_Z1, LOBBY_WALL)
+box(PH_X0, PH_X1, PY, PCEIL, PH_Z1 - 2, PH_Z1, LOBBY_WALL)
+box(PH_X1 - 2, PH_X1, PY, PY + 1, PH_Z0, PH_Z1, PICFRAME)
+box(PH_X1 - 2, PH_X1, PCEIL - 1, PCEIL, PH_Z0, PH_Z1, PICFRAME)
+box(PH_X1 - 1, PH_X1, PY + 1, PCEIL - 1, PH_Z0, PH_Z1, GLASS_EXT)
+for z in range(PH_Z0, PH_Z1, 14):
+    box(PH_X1 - 2, PH_X1, PY, PCEIL, z, z + 1, PICFRAME)
+box(PH_X0, PH_X1, PY, PCEIL, PH_Z0, PH_Z0 + 2, PICFRAME)
+box(PH_X0 + 2, PH_X1 - 2, PY + 1, PCEIL - 1, PH_Z0 + 1, PH_Z0 + 2, GLASS_EXT)
+for x in range(PH_X0 + 12, PH_X1 - 2, 14):
+    box(x, x + 1, PY, PCEIL, PH_Z0, PH_Z0 + 2, PICFRAME)
+DOORS_SOUTH = (PH_X0 + 18, PH_X0 + 36)                       # open slider to the terrace
+box(DOORS_SOUTH[0], DOORS_SOUTH[1], PY, PY + 23, PH_Z0, PH_Z0 + 2, 0)
+box(DOORS_SOUTH[0] - 1, DOORS_SOUTH[1] + 1, PY + 23, PY + 24, PH_Z0, PH_Z0 + 2, PICFRAME)
+for xs_ in (DOORS_SOUTH[0] - 1, DOORS_SOUTH[1]):
+    box(xs_, xs_ + 1, PY, PY + 23, PH_Z0, PH_Z0 + 2, PICFRAME)
+# roof slab + cornice
+box(PH_X0 - 1, PH_X1 + 1, PCEIL, PCEIL + 3, PH_Z0 - 1, PH_Z1 + 1, SLAB)
+box(PH_X0 - 2, PH_X1 + 2, PCEIL + 2, PCEIL + 3, PH_Z0 - 2, PH_Z1 + 2, EXT_TRIM)
+paint(ix0p, ix1p, PCEIL, PCEIL + 1, iz0p, iz1p, CEIL)
+paint(PH_X0 + 1, PH_X0 + 2, PY, PCEIL, iz0p, iz1p, ROOM_WALL_C, [LOBBY_WALL])   # west wall, inside
+# entrance (north wall), with a brass "PH" plate
+ENT_X = PH_X0 + 14
+box(ENT_X, ENT_X + 10, PY, PY + 23, PH_Z1 - 2, PH_Z1, 0)
+box(ENT_X - 1, ENT_X + 11, PY + 23, PY + 24, PH_Z1 - 2, PH_Z1 + 1, BRASS)
+for xe_ in (ENT_X - 1, ENT_X + 10):
+    box(xe_, xe_ + 1, PY, PY + 23, PH_Z1, PH_Z1 + 1, BRASS)
+add_door(Frame(ENT_X, PH_Z1 - 2, 1, 0, 0, 1), 0, 10, PY, PY + 23, 1, 2, lambda a, b, c, A, B, C: wood_door(A - 1 - a, b, c, A, B, C),
+         hinge=(10, 1), open_dir=(0, -1), tag="hoteldoor penthouse", stop=BRASS)
+box(ENT_X - 14, ENT_X + 25, PY + 23, PY + 28, PH_Z1, PH_Z1 + 1, DARK_METAL)  # board behind the letters
+ftext(Frame(0, PH_Z1, 1, 0, 0, -1), "PENTHOUSE", ENT_X + 5, PY + 28, -1, BRASS)
+# partitions with open doorways
+for (zp, dx0p, dx1p) in ((Z_BATH, ix0p + 8, ix0p + 18), (Z_BED, ix0p + 8, ix0p + 18)):
+    box(ix0p, PH_X1 - 1, PY, PCEIL, zp, zp + 2, ROOM_WALL)
+    box(dx0p, dx1p, PY, PY + 23, zp, zp + 2, 0)
+# lights: warm recessed downlights
+def ph_light(x, z, rgb=(1.0, 0.82, 0.6), sc=1.6):
+    box(x - 1, x + 2, PCEIL - 1, PCEIL, z - 1, z + 2, CEIL_LAMP)
+    light(x + 0.5, PCEIL - 2.5, z + 0.5, rgb, sc, 0.25)
+for (lx_, lz_) in ((ix0p + 26, Z_LIV + 14), (ix0p + 12, Z_LIV - 14), (ix0p + 38, Z_LIV - 14), (ix0p + 25, Z_DIN - 15),
+                   (ix0p + 25, Z_BED - 16), (ix0p + 12, (Z_BATH + Z_BED) // 2 - 4), (ix0p + 30, iz0p + 16)):
+    ph_light(lx_, lz_)
+# ---- foyer + bar (north)
+bx_b = ix1p - 8
+box(bx_b, bx_b + 6, PY, PY + 10, Z_LIV + 6, iz1p - 6, WOOD_DARK)               # bar counter
+box(bx_b - 1, bx_b + 6, PY + 10, PY + 11, Z_LIV + 5, iz1p - 5, MARBLE_B)
+box(bx_b, bx_b + 1, PY + 1, PY + 9, Z_LIV + 6, iz1p - 6, BRASS)                # brass kick plate (bar front)
+for zs in range(Z_LIV + 9, iz1p - 8, 7):                                         # bar stools
+    box(bx_b - 6, bx_b - 5, PY, PY + 7, zs, zs + 1, BRASS)
+    box(bx_b - 8, bx_b - 3, PY + 7, PY + 8, zs - 2, zs + 3, UPHOL)
+for sy_ in (PY + 14, PY + 19):                                                   # back-bar shelves on the glass wall
+    box(ix1p - 2, ix1p + 1, sy_, sy_ + 1, Z_LIV + 8, iz1p - 8, PICFRAME)
+    for zb in range(Z_LIV + 9, iz1p - 9, 2):
+        box(ix1p - 2, ix1p - 1, sy_ + 1, sy_ + 3 + (zb % 3 == 0), zb, zb + 1, PRNG.choice((GLASS_DOOR, BRASS, CAR_C, DUMPSTER)))
+box(ix1p - 2, ix1p + 1, PY + 13, PY + 14, Z_LIV + 8, iz1p - 8, COVE_LAMP)        # back-bar glow strip
+light(ix1p - 4, PY + 13, (Z_LIV + iz1p) / 2, (0.85, 0.65, 1.0), 1.2, 0.2)
+# ---- living room: fireplace on the west wall, velvet L sofa, marble table, rug
+fz = (Z_DIN + Z_LIV) // 2 + 10
+box(ix0p, ix0p + 4, PY, PY + 22, fz - 9, fz + 9, MARBLE_BG)                      # chimney breast
+box(ix0p, ix0p + 4, PY + 2, PY + 9, fz - 5, fz + 5, 0)
+box(ix0p, ix0p + 1, PY + 2, PY + 9, fz - 5, fz + 5, TIRE)                        # firebox
+box(ix0p + 1, ix0p + 3, PY + 2, PY + 3, fz - 4, fz + 4, DARK_METAL)              # grate
+for k_ in range(6):
+    box(ix0p + 1, ix0p + 3, PY + 3 + k_ // 2, PY + 4 + k_ // 2, fz - 3 + k_ % 3, fz - 2 + k_ % 3 + 3 - k_ // 2, STREET_LMP)
+light(ix0p + 5, PY + 5, fz, (1.0, 0.55, 0.25), 1.6, 0.2)
+box(ix0p + 4, ix0p + 6, PY + 10, PY + 11, fz - 10, fz + 10, MARBLE_W)            # mantel
+box(ix0p + 4, ix0p + 5, PY + 13, PY + 21, fz - 7, fz + 7, TV_BODY)               # TV over the mantel
+box(ix0p + 5, ix0p + 6, PY + 14, PY + 20, fz - 6, fz + 6, TV_SCREEN)
+for x in range(ix0p + 10, ix0p + 40):                                            # rug
+    for z in range(fz - 14, fz + 14):
+        G[x, PY - 1, z] = RUG_BRD if x in (ix0p + 10, ix0p + 39) or z in (fz - 14, fz + 13) else (RUG if (x + z) % 4 else RUG2)
+SOFA = WALL_MAUVE
+box(ix0p + 30, ix0p + 38, PY, PY + 5, fz - 13, fz + 13, SOFA)                    # long side, facing the fire
+box(ix0p + 35, ix0p + 38, PY + 5, PY + 10, fz - 13, fz + 13, SOFA)
+box(ix0p + 14, ix0p + 38, PY, PY + 5, fz + 10, fz + 14, SOFA)                    # return
+box(ix0p + 14, ix0p + 38, PY + 5, PY + 10, fz + 12, fz + 14, SOFA)
+for (cx_, cz_) in ((ix0p + 33, fz - 8), (ix0p + 33, fz + 3), (ix0p + 20, fz + 11)):
+    box(cx_ - 1, cx_ + 2, PY + 5, PY + 7, cz_, cz_ + 3, PILLOW)
+box(ix0p + 16, ix0p + 26, PY, PY + 4, fz - 6, fz + 4, MARBLE_B)                 # coffee table
+box(ix0p + 18, ix0p + 21, PY + 4, PY + 5, fz - 3, fz, BRASS)                     # (a brass bowl)
+# ---- dining: table for six, pendant lamp
+dz = (Z_BED + Z_DIN) // 2 + 6
+box(ix0p + 14, ix0p + 36, PY + 7, PY + 8, dz - 5, dz + 5, WOOD_DARK)
+for (tx_, tz_) in ((ix0p + 15, dz - 4), (ix0p + 34, dz - 4), (ix0p + 15, dz + 3), (ix0p + 34, dz + 3)):
+    box(tx_, tx_ + 1, PY, PY + 7, tz_, tz_ + 1, WOOD_DARK)
+for cx_ in (ix0p + 17, ix0p + 24, ix0p + 31):
+    for (cz0, back) in ((dz - 9, dz - 9), (dz + 6, dz + 8)):
+        box(cx_, cx_ + 4, PY + 4, PY + 5, cz0, cz0 + 3, UPHOL2)
+        box(cx_, cx_ + 4, PY + 5, PY + 11, back, back + 1, WOOD_DARK)
+        for (lx_, lz_) in ((cx_, cz0), (cx_ + 3, cz0), (cx_, cz0 + 2), (cx_ + 3, cz0 + 2)):
+            box(lx_, lx_ + 1, PY, PY + 4, lz_, lz_ + 1, WOOD_DARK)
+box(ix0p + 25, ix0p + 26, PCEIL - 7, PCEIL, dz, dz + 1, BRASS)                    # pendant
+box(ix0p + 22, ix0p + 29, PCEIL - 9, PCEIL - 7, dz - 3, dz + 4, BRASS)
+box(ix0p + 23, ix0p + 28, PCEIL - 10, PCEIL - 9, dz - 2, dz + 3, LAMPSHADE)
+light(ix0p + 25.5, PCEIL - 11.5, dz + 0.5, (1.0, 0.8, 0.55), 1.4, 0.2)
+# ---- bedroom: king bed against the partition, nightstands with lamps, wardrobe on the west wall
+bz0_b = Z_BED - 2
+BX_ = ix0p + 20
+box(BX_, BX_ + 24, PY, PY + 4, bz0_b - 26, bz0_b, WOOD_DARK)                       # bed base
+box(BX_ + 1, BX_ + 23, PY + 4, PY + 7, bz0_b - 25, bz0_b - 1, SHEET)               # mattress
+box(BX_ + 1, BX_ + 23, PY + 7, PY + 8, bz0_b - 25, bz0_b - 10, BLANKET_C)          # duvet
+box(BX_ + 1, BX_ + 23, PY + 6, PY + 7, bz0_b - 26, bz0_b - 25, BLANKET_C)
+for px_ in (BX_ + 3, BX_ + 14):
+    box(px_, px_ + 8, PY + 7, PY + 9, bz0_b - 7, bz0_b - 2, PILLOW)
+box(BX_ - 1, BX_ + 25, PY, PY + 16, bz0_b - 1, bz0_b, UPHOL)                       # tall headboard
+for nx_ in (BX_ - 7, BX_ + 26):                                                   # nightstands + lamps
+    box(nx_, nx_ + 5, PY, PY + 6, bz0_b - 6, bz0_b - 1, WOOD_DARK)
+    box(nx_ + 2, nx_ + 3, PY + 6, PY + 9, bz0_b - 4, bz0_b - 3, BRASS)
+    box(nx_ + 1, nx_ + 4, PY + 9, PY + 12, bz0_b - 5, bz0_b - 2, LAMPSHADE)
+    light(nx_ + 2.5, PY + 13.5, bz0_b - 3.5, (1.0, 0.8, 0.55), 0.9, 0.15)
+box(ix0p, ix0p + 6, PY, PY + 24, Z_BATH + 4, Z_BATH + 24, WOOD_MED)              # wardrobe
+box(ix0p + 6, ix0p + 7, PY + 1, PY + 23, Z_BATH + 14, Z_BATH + 15, WOOD_DARK)
+box(ix0p + 6, ix0p + 7, PY + 11, PY + 13, Z_BATH + 12, Z_BATH + 13, BRASS)
+# ---- bathroom: freestanding tub by the glass, double vanity with a mirror, glass shower
+tcx, tcz = ix1p - 16, iz0p + 14
+for x in range(tcx - 10, tcx + 10):
+    for z in range(tcz - 6, tcz + 6):
+        e_ = ((x + 0.5 - tcx) / 9.5) ** 2 + ((z + 0.5 - tcz) / 5.5) ** 2
+        if e_ <= 1:
+            box(x, x + 1, PY, PY + 6, z, z + 1, CERAMIC)
+            if e_ <= 0.62:
+                box(x, x + 1, PY + 2, PY + 6, z, z + 1, 0)
+box(tcx - 1, tcx + 1, PY, PY + 9, tcz + 6, tcz + 7, CHROME)                        # floor-standing tap
+box(tcx - 1, tcx + 1, PY + 8, PY + 9, tcz + 3, tcz + 7, CHROME)
+box(ix0p, ix0p + 7, PY, PY + 8, iz0p + 4, iz0p + 26, MARBLE_W)                     # vanity on the west wall
+for sz_ in (iz0p + 8, iz0p + 18):
+    box(ix0p + 2, ix0p + 5, PY + 7, PY + 8, sz_, sz_ + 4, CERAMIC)
+    box(ix0p, ix0p + 1, PY + 9, PY + 11, sz_ + 1, sz_ + 3, CHROME)
+box(ix0p, ix0p + 1, PY + 11, PY + 22, iz0p + 4, iz0p + 26, MIRROR)
+box(ix0p, ix0p + 1, PY + 22, PY + 23, iz0p + 4, iz0p + 26, COVE_LAMP)
+box(ix0p + 22, ix0p + 23, PY, PY + 22, iz0p, iz0p + 14, GLASS)                     # shower screen
+box(ix0p + 12, ix0p + 22, PY, PY + 1, iz0p, iz0p + 14, MARBLE_B)
+box(ix0p + 18, ix0p + 20, PCEIL - 2, PCEIL, iz0p + 6, iz0p + 8, CHROME)            # rain head
+# ---- terrace: oak deck, glass balustrade, jacuzzi with underwater lights, loungers, string lights
+for x in range(PH_X0, PH_X1):
+    for z in range(PT_Z0, PH_Z0):
+        G[x, PY - 1, z] = WOOD_MED if (x // 2) % 2 else WOOD_MED2
+for (xa_, xb_, za_, zb_) in ((PH_X0, PH_X0 + 1, PT_Z0, PH_Z0), (PH_X1 - 1, PH_X1, PT_Z0, PH_Z0), (PH_X0, PH_X1, PT_Z0, PT_Z0 + 1)):
+    box(xa_, xb_, PY, PY + 1, za_, zb_, PICFRAME)
+    box(xa_, xb_, PY + 1, PY + 10, za_, zb_, GLASS)
+    box(xa_, xb_, PY + 10, PY + 11, za_, zb_, PICFRAME)
+for z in range(PT_Z0, PH_Z0, 10):
+    for xp_ in (PH_X0, PH_X1 - 1):
+        box(xp_, xp_ + 1, PY, PY + 11, z, z + 1, PICFRAME)
+for x in range(PH_X0, PH_X1, 10):
+    box(x, x + 1, PY, PY + 11, PT_Z0, PT_Z0 + 1, PICFRAME)
+GATE_X = (PH_X1 - 22, PH_X1 - 10)                                                  # gate to the SE lift (roof stop)
+box(GATE_X[0], GATE_X[1], PY, PY + 11, PT_Z0, PT_Z0 + 1, 0)
+for xg in (GATE_X[0] - 1, GATE_X[1]):
+    box(xg, xg + 1, PY, PY + 12, PT_Z0, PT_Z0 + 1, PICFRAME)
+JX, JZ, JR = PH_X0 + 36, PT_Z0 + 24, 11.5                                          # jacuzzi
+for x in range(int(JX - JR - 2), int(JX + JR + 3)):
+    for z in range(int(JZ - JR - 2), int(JZ + JR + 3)):
+        d_ = np.hypot(x + 0.5 - JX, z + 0.5 - JZ)
+        if d_ < JR - 2:
+            G[x, PY - 1, z] = POOL_TILE if (x + z) % 3 else POOL_TILE2
+            box(x, x + 1, PY, PY + 1, z, z + 1, POOL_TILE2 if d_ < JR - 4 else WHITE_TILE)   # seat ring
+        elif d_ < JR:
+            box(x, x + 1, PY, PY + 6, z, z + 1, MARBLE_W2)
+        if JR - 2 <= d_ < JR + 0.8:
+            G[x, PY + 6, z] = MARBLE_W
+for a_ in (30, 150, 270):
+    lx_ = int(round(JX + (JR - 3.4) * np.cos(np.radians(a_)))); lz_ = int(round(JZ + (JR - 3.4) * np.sin(np.radians(a_))))
+    G[lx_, PY + 1, lz_] = POOL_LAMP
+    light(lx_ + 0.5 - 1.2 * np.cos(np.radians(a_)), PY + 2.5, lz_ + 0.5 - 1.2 * np.sin(np.radians(a_)), (0.55, 0.85, 1.0), 0.9, 0.1)
+POOLS.append((PY + 5.0, 4.0, [(JX + (JR - 3.2) * np.cos(np.radians(a)), JZ + (JR - 3.2) * np.sin(np.radians(a))) for a in range(0, 360, 30)],
+              dict(wave=0.04, ripple=0.5, motion=0.3, foam=0.4)))
+for (lx_, lz_) in ((PH_X0 + 4, PT_Z0 + 8), (PH_X0 + 4, PT_Z0 + 32)):              # loungers (along x)
+    box(lx_, lx_ + 18, PY + 3, PY + 4, lz_, lz_ + 7, LOUNGER)
+    for i in range(6):
+        box(lx_ + i, lx_ + i + 2, PY + 4 + i, PY + 5 + i, lz_, lz_ + 7, LOUNGER)
+    for (fx_, fz_) in ((lx_ + 1, lz_), (lx_ + 1, lz_ + 6), (lx_ + 16, lz_), (lx_ + 16, lz_ + 6)):
+        box(fx_, fx_ + 1, PY, PY + 3, fz_, fz_ + 1, CHROME)
+    box(lx_ + 6, lx_ + 14, PY + 4, PY + 5, lz_ + 1, lz_ + 6, TOWEL)
+STR_Z = (PT_Z0 + 2, PH_Z0 - 4)                                                    # festoon lights between two posts
+for zz in STR_Z:
+    for xp_ in (PH_X0 + 2, PH_X1 - 3):
+        box(xp_, xp_ + 1, PY, PY + 24, zz, zz + 1, DARK_METAL)
+    box(PH_X0 + 2, PH_X1 - 2, PY + 24, PY + 25, zz, zz + 1, DARK_METAL)
+    for x in range(PH_X0 + 5, PH_X1 - 4, 4):
+        G[x, PY + 23, zz] = LAMPSHADE
+light((PH_X0 + PH_X1) / 2, PY + 20, (PT_Z0 + PH_Z0) / 2, (1.0, 0.8, 0.55), 2.2, 0.4)
+for (ppx, ppz) in ((PH_X1 - 8, PT_Z0 + 6), (PH_X1 - 8, PH_Z0 - 12)):              # potted olive trees
+    for x in range(ppx - 3, ppx + 4):
+        for z in range(ppz - 3, ppz + 4):
+            if (x - ppx) ** 2 + (z - ppz) ** 2 <= 10:
+                box(x, x + 1, PY, PY + 7, z, z + 1, CARP_OR if (x - ppx) ** 2 + (z - ppz) ** 2 > 4 else SOIL)
+    box(ppx, ppx + 1, PY + 7, PY + 17, ppz, ppz + 1, TRUNK)
+    Xo, Yo, Zo = np.meshgrid(np.arange(ppx - 4, ppx + 5), np.arange(PY + 13, PY + 20), np.arange(ppz - 4, ppz + 5), indexing="ij")
+    mo = (((Xo - ppx) ** 2 + ((Yo - PY - 16) * 1.3) ** 2 + (Zo - ppz) ** 2) <= 16) & (hash3(Xo, Yo, Zo, 44) > 0.3)
+    mo[4, :5, 4] = True                                                          # (the trunk top is the anchor)
+    mo = keep_connected(mo, [(4, 0, 4)]) & (G[Xo, Yo, Zo] == 0)
+    G[Xo[mo], Yo[mo], Zo[mo]] = np.where((Xo[mo] + Yo[mo] + Zo[mo]) % 3 > 0, LEAF2, LEAF3)
+PENTHOUSE = dict(x0=PH_X0, x1=PH_X1, z0=PH_Z0, z1=PH_Z1, terrace_z0=PT_Z0, entrance_x=ENT_X, ceil=PCEIL,
+                 rooms=dict(bar=(bx_b - 10, (Z_LIV + iz1p) // 2), living=(ix0p + 22, fz), dining=(ix0p + 25, dz - 14),
+                            bedroom=(ix0p + 26, bz0_b - 32), bath=(ix0p + 12, iz0p + 30), terrace=(PH_X0 + 12, PT_Z0 + 20)))
+
+# ============================================================================
+# 10f. Grand piano (v3.40) on the atrium floor beside the lobby doors: its own static shape (tag "piano");
+#      main.lua plays it when someone comes near and stops it, with a crash, once it is wrecked
+# ============================================================================
+def piano_model():
+    X_, Y_, Z_ = 16, 24, 24                     # keyboard at z = 0 (south), tail to +z
+    m = np.zeros((X_, Y_, Z_), np.uint8)
+    def left(z):                                # bent side: the case narrows toward the tail
+        return 0 if z < 9 else int(round(10 * ((z - 9) / 14) ** 1.4))
+    for z in range(3, Z_):
+        xl = left(z)
+        for x in range(xl, X_):
+            rim = x in (xl, X_ - 1) or z in (3, Z_ - 1) or (z > 9 and x <= left(z + 1))
+            if rim:
+                m[x, 6:11, z] = TV_BODY                                 # case rim
+            else:
+                m[x, 6, z] = TV_BODY                                    # bottom board
+                m[x, 8, z] = WOOD_LIGHT                                 # soundboard
+                if (x + z) % 3 == 0:
+                    m[x, 9, z] = BRASS                                  # plate / strings
+    for z in range(3, Z_):                                              # open lid, hinged on the straight side
+        xl = left(z)
+        for x in range(xl, X_):
+            yl = 11 + int(round((X_ - 1 - x) * 0.75))
+            if yl < Y_:
+                m[x, yl, z] = TV_BODY
+    m[1, 11:17, 13] = DARK_METAL                                        # lid prop
+    for (lx, lz) in ((1, 4), (X_ - 2, 4), (X_ - 3, Z_ - 3)):           # three legs with brass castors
+        m[lx - 1:lx + 1, 1:6, lz - 1:lz + 1] = TV_BODY
+        m[lx - 1:lx + 1, 0:1, lz - 1:lz + 1] = BRASS
+    m[0:X_, 6:8, 0:3] = TV_BODY                                         # key bed
+    for x in range(1, X_ - 1):
+        m[x, 8, 0:3] = CERAMIC                                           # white keys
+        if x % 7 not in (0, 3):
+            m[x, 9, 1:3] = TV_BODY                                       # black keys
+    m[0, 8:10, 0:4] = TV_BODY; m[X_ - 1, 8:10, 0:4] = TV_BODY            # key cheeks
+    m[2:X_ - 2, 9:13, 4] = TV_BODY                                      # music desk
+    m[5:11, 11:13, 3] = SHEET                                            # sheet music
+    return m
+PIANO_ARR = piano_model()
+PIANO_GMIN = (ax0 + 2 * SHORT_BAY_W + 18, G0, az0 + 40)
+pbx, pbz = PIANO_GMIN[0] + 3, PIANO_GMIN[2] - 6                         # bench
+box(pbx, pbx + 10, G0 + 4, G0 + 6, pbz, pbz + 4, TV_BODY)
+box(pbx, pbx + 10, G0 + 6, G0 + 7, pbz, pbz + 4, UPHOL2)
+for (lx_, lz_) in ((pbx, pbz), (pbx + 9, pbz), (pbx, pbz + 3), (pbx + 9, pbz + 3)):
+    box(lx_, lx_ + 1, G0, G0 + 4, lz_, lz_ + 1, TV_BODY)
+TAGGED_SHAPES = [("piano", PIANO_ARR, PIANO_GMIN, "piano")]             # (name, arr, gmin, tags): own static shapes
+
 # ---- the helicopter (my own design): body, main rotor, tail rotor (shapes of one vehicle body)
 def helicopter_model():
     X_, Y_, Z_ = 24, 40, 120
@@ -3867,6 +4294,9 @@ def export():
                f'\t\t\t<joint pos="{f3(joint_rel(HELI_TAIL, 0.5, 10, 10))}" type="ball" size="0.1"/>\n'
                f'\t\t\t<joint pos="{f3(joint_rel(HELI_TAIL, 3.5, 10, 10))}" type="ball" size="0.1"/>\n'
                f'\t\t</vox>\n\t</body>\n')
+    for (nm_, arr_, gm_, tg_) in TAGGED_SHAPES:
+        write_vox(os.path.join(VOXDIR, nm_ + ".vox"), arr_)
+        xml.append(f'\t<vox name="{nm_}" tags="{tg_}" pos="{f3(org(arr_, gm_))}" file="MOD/vox/{nm_}.vox" object="shape"/>\n')
     xml.append('\t<group name="rooftop" pos="0 0 0">\n')
     for (nm_, arr_, gm_, lts_) in ROOF_SHAPES:
         write_vox(os.path.join(VOXDIR, nm_ + ".vox"), arr_)
@@ -3899,6 +4329,8 @@ def export():
                    f'y1={gy1 * 0.1:.2f} z0={gz0 * 0.1 - CZ:.2f} z1={gz1 * 0.1 - CZ:.2f}" pos="{f3(((gx0 + gx1) * 0.05 - CX, gy0 * 0.1, (gz0 + gz1) * 0.05 - CZ))}"/>\n')
     zone("hall", ix0, ix1, DY - 20, DY + HALL_H + 2, iz0, iz1)
     zone("connector", cxN - CW, cxN + CW, G0 - 2, DY + 30, bz1 - 20, AZ0 + 4)
+    zone("glasshouse", GLASSHOUSE["x0"], GLASSHOUSE["x1"], ROOF_Y - 2, GLASSHOUSE["eave"] + 30, GLASSHOUSE["z0"], GLASSHOUSE["z1"])
+    zone("basement", 0, W, 0, G0 - SLAB_T, bz0 - 40, AZ0)            # B1 car park / arcade / ramp tunnel: no rain heard
     xml.append(f'\t<location tags="respawn" pos="{f3(spawn)}" rot="0 180 0"/>\n')
     for (kind, sx_, sy_, sz_) in SOUND_SPOTS:
         xml.append(f'\t<location tags="ambsound kind={kind}" pos="{f3((sx_ * 0.1 - CX, sy_ * 0.1, sz_ * 0.1 - CZ))}"/>\n')
@@ -3930,7 +4362,8 @@ def export():
         for (barr, bmin, f) in e["buttons"]:
             o = origin(barr, bmin)
             rel = (o[0] - bo[0], o[1] - bo[1], o[2] - bo[2])
-            xml.append(f'\t\t\t<vox tags="elevbtn floor={f}" pos="{f3(rel)}" file="MOD/vox/elev_btn.vox" object="shape"/>\n')
+            write_vox(os.path.join(VOXDIR, "elev_pad.vox"), barr)
+            xml.append(f'\t\t\t<vox tags="elevpad" pos="{f3(rel)}" file="MOD/vox/elev_pad.vox" object="shape"/>\n')
         xml.append('\t\t</body>\n')
     for (barr, bmin, shaft, k) in CALLS:
         xml.append(f'\t\t<vox tags="elevcall shaft={shaft} floor={k}" pos="{f3(origin(barr, bmin))}" '
@@ -3968,7 +4401,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.39\n"
+        f.write("name = Liminal Atrium v3.40\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
@@ -3994,7 +4427,7 @@ if __name__ == "__main__":
             reg[arr > 0] = arr[arr > 0]
         stamps = [(c_["arr"], c_["gmin"]) for c_ in CURTAINS] + [(w_[0], w_[1]) for w_ in ROOM_SWITCHES] + [(g_["arr"], g_["gmin"]) for g_ in SWITCHGEAR] + [(k_["arr"], k_["gmin"]) for k_ in KEYCARDS] + \
                  [(m_["arr"], m_["gmin"]) for m_ in MANNEQUINS + DECOR_MQ] + [(BELL["arr"], BELL["gmin"])] + [(RADIO["arr"], RADIO["gmin"])] + [(L_["arr"], L_["gmin"]) for L_ in LAMPS] + [(L_["arr"], L_["gmin"]) for L_ in GLOWS] + [(e["arr"], e["gmin"]) for e in ELEVATORS] + [(b_[0], b_[1]) for e in ELEVATORS for b_ in e["buttons"]] \
-            + [(c_[0], c_[1]) for c_ in CALLS]
+            + [(c_[0], c_[1]) for c_ in CALLS] + [(t_[1], t_[2]) for t_ in TAGGED_SHAPES]
         for arr, (gx, gy, gz) in stamps:
             sx, sy, sz = arr.shape
             Gp[gx:gx + sx, gy:gy + sy, gz:gz + sz][arr > 0] = arr[arr > 0]
