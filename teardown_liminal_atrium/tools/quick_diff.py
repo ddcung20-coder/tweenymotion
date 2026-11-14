@@ -46,10 +46,14 @@ def snapshot(root, out):
     glass = np.zeros(256, bool)
     for i, v in ns["PAL"].items():
         glass[i] = v[1] == "glass"
-    np.savez(out, G=G, pal=pal, glass=glass)
+    noise = np.zeros(256, bool)
+    noise[9:25] = True                                   # plants (their shapes are hashed on y)
+    for k in ("SOIL", "BEDROCK"):
+        noise[ns[k]] = True                              # earth
+    np.savez(out, G=G, pal=pal, glass=glass, G0=ns["G0"], noise=noise)
 
 
-def iso(reg, hot, pal, glass, cut_y, maxw=760):
+def iso(reg, hot, pal, glass, cut_y, maxw=760, tint=True):
     """isometric view from the south-west, above; voxels above cut_y removed; hot voxels tinted red."""
     from PIL import Image
     reg = reg.copy(); reg[:, cut_y:, :] = 0
@@ -69,9 +73,12 @@ def iso(reg, hot, pal, glass, cut_y, maxw=760):
     c *= shade[:, None]
     gl = glass[reg[X, Y, Z]]
     c[gl] = c[gl] * 0.5 + np.array([170, 210, 235]) * 0.5
-    h = hot[X, Y, Z]
+    h = hot[X, Y, Z] if tint else np.zeros(len(X), bool)
+    if not tint:
+        c *= 1.15                                         # (natural colours, a little brighter)
     g_ = c.mean(1, keepdims=True)                    # unchanged: greyed and dimmed, changed: vivid magenta
-    c[~h] = (c[~h] * 0.35 + g_[~h] * 0.65) * 0.75
+    if tint:
+        c[~h] = (c[~h] * 0.35 + g_[~h] * 0.65) * 0.75
     c[h] = c[h] * 0.3 + np.array([255, 30, 220]) * 0.7
     u = (Z - X + sx) * s
     v = (sy - Y) * s + ((sx - X) + (sz - Z)) * s // 2
@@ -135,12 +142,22 @@ def main():
             subprocess.run([sys.executable, me, "--snapshot", r, o], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         A = np.load(os.path.join(tmp, "a.npz")); B = np.load(os.path.join(tmp, "b.npz"))
         GA, GB = A["G"], B["G"]
+        dy = int(B["G0"]) - int(A["G0"]) if "G0" in A.files else 0
+        if dy > 0:                     # the map was raised (a storey added below): line the old grid up
+            GA = np.pad(GA, ((0, 0), (dy, 0), (0, 0)))
         pal = B["pal"].copy(); pal[A["pal"].any(1) & ~B["pal"].any(1)] = A["pal"][A["pal"].any(1) & ~B["pal"].any(1)]
         glass = A["glass"] | B["glass"]
         sh = tuple(min(p, q) for p, q in zip(GA.shape, GB.shape))
         GA, GB = GA[:sh[0], :sh[1], :sh[2]], GB[:sh[0], :sh[1], :sh[2]]
-        diff = GA != GB
-        cl, total = clusters(diff, a.max)
+        # after a shift the colour noise (hashed on y) moves too: compare solid / empty only
+        diff = (GA > 0) != (GB > 0) if dy else GA != GB
+        if dy and "noise" in B.files:                    # ...and leave out new earth and re-grown plants
+            nz_ = B["noise"] | A["noise"]
+            diff &= ~(nz_[GA] | nz_[GB])
+        cl, total = clusters(diff, a.max + 8)
+        if dy:                                           # (after a shift: drop specks of hashed-texture noise)
+            cl = [c for c in cl if c[0] >= 500]
+        cl = cl[:a.max]
         print(f"{int(diff.sum())} voxels changed in {total} regions; drawing {len(cl)}")
         from PIL import Image, ImageDraw, ImageFont
         try:
@@ -154,16 +171,18 @@ def main():
             x0, z0, y0 = max(0, x0 - m), max(0, z0 - m), max(0, y0 - 6)
             x1, z1, y1 = min(sh[0], x1 + m), min(sh[2], z1 + m), min(sh[1], y1 + 4)
             d = diff[x0:x1, y0:y1, z0:z1]
-            ys = np.nonzero(d.any((0, 2)))[0]
-            cut = int(ys.max()) + 2 if len(ys) else y1 - y0          # cut-away just above the highest change
+            cnt_y = d.sum((0, 2)).cumsum()
+            cut = int(np.searchsorted(cnt_y, cnt_y[-1] * 0.85)) + 3 if cnt_y[-1] else y1 - y0   # cut-away above most of the change
             ia = iso(GA[x0:x1, y0:y1, z0:z1], d & (GA[x0:x1, y0:y1, z0:z1] > 0), pal, glass, cut)
-            ib = iso(GB[x0:x1, y0:y1, z0:z1], d & (GB[x0:x1, y0:y1, z0:z1] > 0), pal, glass, cut)
+            added = d & (GB[x0:x1, y0:y1, z0:z1] > 0) & (GA[x0:x1, y0:y1, z0:z1] == 0)
+            new_area = added.sum() > 0.8 * d.sum()           # a whole new area: show it in its own colours
+            ib = iso(GB[x0:x1, y0:y1, z0:z1], d & (GB[x0:x1, y0:y1, z0:z1] > 0), pal, glass, cut, tint=not new_area)
             hh = max(ia.height, ib.height) + 26
             row = Image.new("RGB", (ia.width + ib.width + 30, hh), (14, 14, 20))
             row.paste(ia, (0, 26)); row.paste(ib, (ia.width + 30, 26))
             dr = ImageDraw.Draw(row)
             dr.text((4, 4), f"#{k + 1} BEFORE  ({a.base})", fill=(200, 200, 210), font=font)
-            dr.text((ia.width + 34, 4), f"AFTER   x {x0}-{x1}  z {z0}-{z1}  y {y0}-{y1}  ({cnt} voxels)", fill=(255, 110, 230), font=font)
+            dr.text((ia.width + 34, 4), ("NEW  " if new_area else "") + f"AFTER   x {x0}-{x1}  z {z0}-{z1}  y {y0}-{y1}  ({cnt} voxels)", fill=(255, 110, 230), font=font)
             rows.append(row)
         if not rows:
             print("no voxel changes"); return

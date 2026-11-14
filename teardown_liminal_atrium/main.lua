@@ -172,11 +172,12 @@ end
 --  "elevdoor" bodies (landing doors) tags: shaft floor sx sz
 ----------------------------------------------------------------------------------------------------
 local FLOOR_H   = 3.0
+GROUND_Y = 7.6                      -- world height of the street / ground floor (B2 + B1 below it)
 local CAB_SPEED = 1.2
 local DOOR_RATE = 0.8
 local HOLD_TIME = 6.0
 
-local B1_H      = 3.6               -- the basement storey is taller (floor index -1 = B1)
+local B1_H      = 3.6               -- the basement storeys are taller (floor index -1 = B1, -2 = B2)
 local cars = {}
 local carByShaft = {}
 local carByBody = {}
@@ -312,15 +313,16 @@ local function request(c, floor)
 	c.hold = HOLD_TIME
 end
 
--- floor keypad in the cab: type the floor (1-6, B or 0 = B1, R or 7 = roof), Enter to go
+-- floor keypad in the cab: type the floor (1-6, B or 0 = B1, B2 = B2, R or 7 = roof), Enter to go
 elevPad = nil
 function floorName(f)
-	if f < 0 then return "B1" elseif f >= 6 then return "R" end
+	if f <= -2 then return "B2" elseif f < 0 then return "B1" elseif f >= 6 then return "R" end
 	return tostring(f + 1)
 end
 function parseFloor(sx)
 	sx = string.upper(sx or "")
 	if sx == "B" or sx == "B1" or sx == "0" or sx == "-1" then return -1 end
+	if sx == "B2" or sx == "00" or sx == "-2" then return -2 end
 	if sx == "R" or sx == "7" then return 6 end
 	local n = tonumber(sx)
 	if n and n >= 1 and n <= 6 and math.floor(n) == n then return n - 1 end
@@ -376,7 +378,7 @@ function drawPad()
 		UiFont("bold.ttf", 40); UiColor(0.75, 0.9, 1, 1)
 		UiText((p.msgT > 0 and p.msg) or (p.entry ~= "" and p.entry or "_"))
 		UiFont("regular.ttf", 17); UiColor(0.8, 0.8, 0.9, 1)
-		UiTranslate(0, 50); UiText("now at floor " .. floorName(p.car.floor) .. "    1-6,  B = B1,  R = roof")
+		UiTranslate(0, 50); UiText("now at floor " .. floorName(p.car.floor) .. "    1-6,  B = B1,  B 2 = B2,  R = roof")
 		UiFont("bold.ttf", 28)
 		local keys = { { "1", "2", "3" }, { "4", "5", "6" }, { "B", "R", "<" } }
 		UiTranslate(-kw - 8, 50)
@@ -386,7 +388,7 @@ function drawPad()
 					UiTranslate((c - 1) * (kw + 8), (r - 1) * (kh + 8))
 					UiColor(0.9, 0.88, 0.8, 1)
 					local k = keys[r][c]
-					if UiTextButton(k == "B" and "B1" or k, kw, kh) then padPress(k == "<" and "back" or k) end
+					if UiTextButton(k, kw, kh) then padPress(k == "<" and "back" or k) end
 				UiPop()
 			end
 		end
@@ -642,11 +644,11 @@ local function radioTick(cam)
 end
 
 local function spotsTick(cam)
-	-- arcade music: the nearest speaker, only while the player is down in B1
+	-- arcade / food-street music: the nearest speaker on the player's own basement level (B1 or B2)
 	local near, nd = nil, 45
 	for i = 1, #spots do
 		local sp = spots[i]
-		if sp.kind == "mall" and cam[2] < sp.pos[2] + 2.2 then
+		if sp.kind == "mall" and cam[2] < sp.pos[2] + 2.2 and cam[2] > sp.pos[2] - 2.6 then
 			local d = dist(sp.pos, cam)
 			if d < nd then near, nd = sp, d end
 		end
@@ -656,7 +658,7 @@ local function spotsTick(cam)
 	near, nd = nil, 40
 	for i = 1, #spots do
 		local sp = spots[i]
-		if sp.kind == "garage" and cam[2] < sp.pos[2] + 2.2 then
+		if sp.kind == "garage" and cam[2] < sp.pos[2] + 2.2 and cam[2] > sp.pos[2] - 2.6 then
 			local d = dist(sp.pos, cam)
 			if d < nd then near, nd = sp, d end
 		end
@@ -1603,7 +1605,7 @@ local function heliUpdate(dt)
 	else
 		lift = -0.35                       -- pilot got out: settle down gently
 	end
-	if t.pos[2] > 90 and lift > 0 then lift = 0 end
+	if t.pos[2] > GROUND_Y + 86 and lift > 0 then lift = 0 end
 	heli.inF = heli.inF + (fwd - heli.inF) * math.min(1, dt * EASE_F)
 	heli.inT = heli.inT + (turn - heli.inT) * math.min(1, dt * EASE_T)
 	heli.inL = heli.inL + (lift - heli.inL) * math.min(1, dt * EASE_L)
@@ -1645,7 +1647,7 @@ local function heliDraw()
 		UiTranslate(14, -66)
 		UiFont("bold.ttf", 22)
 		UiColor(0.6, 1, 0.75, 1)
-		UiText(string.format("ALT %4.0f m    SPD %3.0f km/h    ROTOR %3.0f%%", t.pos[2] - 4, VecLength(v) * 3.6, heli.rpm * 100))
+		UiText(string.format("ALT %4.0f m    SPD %3.0f km/h    ROTOR %3.0f%%", t.pos[2] - GROUND_Y, VecLength(v) * 3.6, heli.rpm * 100))
 		UiTranslate(0, 30)
 		UiFont("regular.ttf", 17)
 		UiColor(1, 1, 1, 0.85)

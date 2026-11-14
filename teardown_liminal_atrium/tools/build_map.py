@@ -181,8 +181,12 @@ BX, BZ = AX + 2 * T, AZ + 2 * T
 W, D = BX + 2 * M, BZ + 2 * M
 FLOORS, FH, SLAB_T = 6, 30, 3
 BASE_H = 36                          # basement B1 floor-to-floor (3.6 m)
-G0 = 4 + BASE_H                      # ground floor surface y
+BASE2_H = 36                         # basement B2 floor-to-floor (3.6 m, v3.46)
+G0 = 4 + BASE2_H + BASE_H            # ground floor surface y
 YB = G0 - BASE_H                     # basement B1 floor surface y
+YB2 = YB - BASE2_H                   # basement B2 floor surface y
+BED_Y = YB - 4                       # bedrock under the site (B2 and its ramp are dug deeper, see section 1)
+SEAM = YB                            # world shapes are cut here: B2 + its ceiling below, everything else above (<= 256 tall)
 ROOF_Y = G0 + FLOORS * FH            # 184: roof surface of the room ring
 ATR_TOP = ROOF_Y + 22                # 206: atrium ceiling underside
 H = ATR_TOP + 3 + 4 + 2 + 30         # + rooftop sign (every shape is still <= 256 tall)
@@ -219,9 +223,9 @@ def light(gx, gy, gz, rgb, scale=1.0, size=0.1, tags=""):
 def fy(k):
     return G0 + k * FH
 
-LEVELS = [-1] + list(range(FLOORS + 1))  # elevator stops: B1, floors 1-6 and the roof (fy(FLOORS) = ROOF_Y)
+LEVELS = [-2, -1] + list(range(FLOORS + 1))  # elevator stops: B2, B1, floors 1-6 and the roof (fy(FLOORS) = ROOF_Y)
 def lvl_y(k):
-    return YB if k < 0 else fy(k)
+    return YB2 if k == -2 else YB if k == -1 else fy(k)
 
 # ----------------------------------------------------------------------------
 # Local frame helper: build things in (u, v, y) space.
@@ -392,8 +396,12 @@ def keep_connected(mask, seeds):
 # ============================================================================
 # 1. Site: ground, sidewalk, lawns, trees, parking
 # ============================================================================
-box(0, W, 0, 1, 0, D, BEDROCK)
-box(0, W, 1, G0 - 3, 0, D, SOIL)       # earth (the basement is dug into it)
+box(0, W, BED_Y, BED_Y + 1, 0, D, BEDROCK)
+box(0, W, BED_Y + 1, G0 - 3, 0, D, SOIL)       # earth (the basement is dug into it)
+# deeper earth for B2 and its ramp only (east margin): bedrock at the grid bottom there
+B2_EARTH = (bx0 - 16, W, 40, bz1 + 16)
+box(B2_EARTH[0], B2_EARTH[1], 0, 1, B2_EARTH[2], B2_EARTH[3], BEDROCK)
+box(B2_EARTH[0], B2_EARTH[1], 1, BED_Y + 1, B2_EARTH[2], B2_EARTH[3], SOIL)
 box(0, W, G0 - 3, G0, 0, D, ASPHALT)
 SW = 26   # sidewalk width
 # sidewalk ring (raised 1 voxel), curb, lawn strip with trees
@@ -528,6 +536,53 @@ paint(PX1 + 2, IX1, YB, YC, IZ1, IZ1 + 1, LOBBY_WALL)
 paint(PX1 + 2, IX1, YB, YC, IZ0 - 1, IZ0, LOBBY_WALL)
 paint(IX1, IX1 + 1, YB, YC, IZ0, IZ1, LOBBY_WALL)
 paint(IX0 - 1, IX0, YB, YC, PZ1 + 2, IZ1, LOBBY_WALL)
+
+# ---- B2 shell (v3.46) under B1: west half a food street, east half a car park with its own ramp from the street
+YC2 = YB - SLAB_T                    # B2 ceiling = underside of the B1 floor slab
+QX = PX1                             # B2 divider on the x = PX1 shape seam: food street | car park
+box(IX0, IX1, YB2, YC2, IZ0, IZ1, 0)
+box(IX0, QX, YB2 - 1, YB2, IZ0, IZ1, FLOOR_STN)
+box(QX, IX1, YB2 - 1, YB2, IZ0, IZ1, STAIR_CONC)
+box(QX - 2, QX + 2, YB2, YC2, IZ0, IZ1, SLAB)
+RX2_0, RX2_1 = W - 54, W - 6         # ramp 2: down the east margin, 7.2 m from the street to B2
+RZ2_TOP, RZ2_BOT, RZ2_END = 50, 380, 436
+TZ2 = (382, 430)                     # its tunnel into the B2 car park (east wall)
+def ramp2_y(z):
+    if z < RZ2_TOP:
+        return G0
+    if z >= RZ2_BOT:
+        return YB2
+    return G0 - int(round((z - RZ2_TOP) * (G0 - YB2) / (RZ2_BOT - RZ2_TOP)))
+box(RX2_0 - 2, RX2_0, YB2 - 1, G0 + 3, RZ2_TOP - 2, RZ2_END + 2, SLAB)
+box(RX2_1, RX2_1 + 2, YB2 - 1, G0 + 3, RZ2_TOP - 2, RZ2_END + 2, SLAB)
+box(RX2_0 - 2, RX2_1 + 2, YB2 - 1, G0 + 3, RZ2_END, RZ2_END + 2, SLAB)
+for z in range(RZ2_TOP - 6, RZ2_END):
+    ry = ramp2_y(z)
+    box(RX2_0, RX2_1, ry, G0 + 4, z, z + 1, 0)
+    box(RX2_0, RX2_1, ry - 1, ry, z, z + 1, STAIR_CONC)
+    if ry < G0 and (z // 3) % 2 == 0:
+        box(RX2_0 + 2, RX2_1 - 2, ry - 1, ry, z, z + 1, ASPHALT2)
+box(RX2_0 + 23, RX2_0 + 25, YB2 - 1, YB2, RZ2_BOT, RZ2_END, PAINT_LINE)
+for (wx0, wx1) in ((RX2_0 - 2, RX2_0), (RX2_1, RX2_1 + 2)):
+    for z in range(RZ2_TOP, RZ2_END + 2, 12):
+        box(wx0, wx1, G0 + 3, G0 + 10, z, z + 1, STEEL)
+    box(wx0, wx1, G0 + 10, G0 + 11, RZ2_TOP, RZ2_END + 2, STEEL)
+box(RX2_0 - 2, RX2_1 + 2, G0 + 10, G0 + 11, RZ2_END, RZ2_END + 1, STEEL)
+box(IX1, RX2_0, YB2 - 1, YB2 + 33, TZ2[0] - 2, TZ2[1] + 2, SLAB)
+box(IX1, RX2_0, YB2, YB2 + 32, TZ2[0], TZ2[1], 0)
+box(IX1, RX2_0, YB2 - 1, YB2, TZ2[0], TZ2[1], STAIR_CONC)
+for z in range(TZ2[0] - 2, TZ2[1] + 2, 10):                         # hazard stripes over the tunnel mouth
+    paint(RX2_0 - 1, RX2_0, YB2 + 32, YB2 + 35, z, z + 5, YELLOW_PAINT, [SLAB])
+    paint(RX2_0 - 1, RX2_0, YB2 + 32, YB2 + 35, z + 5, z + 10, TIRE, [SLAB])
+# "P" sign at the top of ramp 2, beside it (facing the street)
+box(RX2_0 - 2, RX2_0, G0 + 3, G0 + 30, 71, 73, STEEL)                         # post on the west retaining wall
+box(RX2_0 - 16, RX2_0, G0 + 18, G0 + 30, 70, 71, BLANKET_C)
+for r_, row in enumerate(["####.", "#...#", "####.", "#....", "#...."]):
+    for c_, cc in enumerate(row):
+        if cc == "#":
+            xx = RX2_0 - 4 - c_ * 2
+            yy = G0 + 27 - r_ * 2
+            box(xx - 1, xx + 1, yy - 1, yy + 1, 69, 70, CEIL_LAMP)
 
 # ---- ramp from the street (south-west) down along the west side, then a tunnel into the car park
 RX0, RX1 = 6, 54
@@ -1555,8 +1610,8 @@ def elevators(fr, key):
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 3, q0 + 4, BRASS)
             fr.box(-T_PART - 1, -T_PART, y, y + 23, q0 + 14, q0 + 15, BRASS)
             fr.box(-T_PART - 1, -T_PART, y + 22, y + 23, q0 + 3, q0 + 15, BRASS)
-            fr.box(-T_PART - 1, -T_PART, y + 23, y + 26, q0 + 5, q0 + 12, DARK_METAL)
-            for f in LEVELS:                                                     # floor dial dots (B1..6)
+            fr.box(-T_PART - 1, -T_PART, y + 23, y + 26, q0 + 4, q0 + 13, DARK_METAL)
+            for f in LEVELS:                                                     # floor dial dots (B2..R)
                 fr.box(-T_PART - 2, -T_PART - 1, y + 24, y + 25, q0 + 6 + f, q0 + 7 + f, CEIL_LAMP if f == k else BRASS)
             cp0 = q0 + 16 if qi == 0 else q0 - 1                                  # call panel: clear of the jamb
             fr.box(-T_PART - 1, -T_PART, y + 9, y + 15, cp0, cp0 + 3, BRASS)
@@ -1695,7 +1750,7 @@ def tile_face(x0, x1, y0, y1, z0, z1, base=WHITE_TILE, alt=WHITE_TILE2, grout=GR
 # --- site: clear a strip through the north lawn and build the connector -----------------------
 CW = 14                                        # half width of the connector (outer)
 box(cxN - CW - 2, cxN + CW + 2, G0, G0 + 60, bz1, AZ0 + T_EXT, 0)        # outside the hotel wall only
-box(cxN - CW, cxN + CW, 1, G0, bz1, AZ0, SLAB)
+box(cxN - CW, cxN + CW, BED_Y + 1, G0, bz1, AZ0, SLAB)
 # door through the hotel's north exterior wall (ground floor corridor)
 box(cxN - 12, cxN + 12, G0, G0 + 22, bz1 - T_EXT - 1, bz1 + 1, 0)
 box(cxN - 13, cxN + 13, G0 + 22, G0 + 24, bz1 - T_EXT - 1, bz1, LINTEL)
@@ -1726,7 +1781,7 @@ light(cxN, DY + 22, bz1 + 14, (0.9, 0.95, 1.0), 2.0, 0.3)
 light(cxN, DY + 22, bz1 + 32, (0.9, 0.95, 1.0), 2.0, 0.3)
 
 # --- hall shell ---------------------------------------------------------------------------------
-box(A_X0, A_X1, 1, DY, AZ0, AZ1, SLAB)                                  # podium / basin structure
+box(A_X0, A_X1, BED_Y + 1, DY, AZ0, AZ1, SLAB)                                  # podium / basin structure
 box(A_X0, A_X1, G0, DY + HALL_H + 4, AZ0, AZ1, EXT_WALL)                # walls + roof block
 box(A_X0 + T_EXT, A_X1 - T_EXT, DY, DY + HALL_H, AZ0 + T_EXT, AZ1 - T_EXT, 0)
 box(A_X0 - 1, A_X1 + 1, G0, DY, AZ0 - 1, AZ1 + 1, BASE_STONE)          # stone podium skin (outside only)
@@ -2283,7 +2338,8 @@ def autodoor_style(a, b, c, A, B, C):
         return FRAME
     return GLASS_DOOR
 AUTODOORS = []
-def auto_door(grp, along_x, wall0, a0, a1):
+def auto_door(grp, along_x, wall0, a0, a1, y=None):
+    YB = y if y is not None else globals()["YB"]
     """double sliding door in a 2-thick wall at wall0..wall0+2; leaves run in the arcade-side layer
     and slide into pockets of that layer (main.lua opens them when someone walks up)."""
     mid = (a0 + a1) // 2
@@ -2678,7 +2734,8 @@ for (fr_, y_) in ELEC_ROOMS:
 
 # ---- both stairwells continue down to B1 (SW -> car park, NE -> arcade)
 B_GLYPH = ["##.", "#.#", "##.", "#.#", "##."]
-def b1_stairs(fr):
+def basement_stairs(fr, YB, digit):
+    YC, G0 = YB + BASE_H - SLAB_T, YB + BASE_H          # (this storey's floor, ceiling, the floor above)
     W4 = CB - T_FAC
     fr.box(-T_PART, CB, 1, YC, -T_PART, CB, STAIR_WALL)                 # core walls under the ground slab
     fr.box(0, W4, YB, YC, 0, W4, 0)
@@ -2721,12 +2778,14 @@ def b1_stairs(fr):
              hinge=(0, 36), open_dir=(1, 0), stop=DARK_METAL)
     fr.light(4, YB + 30, 22, (1.0, 0.95, 0.85), 1.6, 0.2)
     fr.box(2, 6, YC - 1, YC, 20, 24, CEIL_LAMP)
-    for gi, glyph in enumerate((B_GLYPH, DIGITS["1"])):
+    for gi, glyph in enumerate((B_GLYPH, DIGITS[digit])):
         for r_, row in enumerate(glyph):
             for c_, ch in enumerate(row):
                 if ch == "#":
                     fr.box(W4, W4 + 1, YB + 20 - r_ * 2, YB + 22 - r_ * 2, 4 + gi * 8 + c_ * 2, 6 + gi * 8 + c_ * 2, RED)
-b1_stairs(corner["SW"]); b1_stairs(corner["NE"])
+basement_stairs(corner["SW"], YB, "1"); basement_stairs(corner["NE"], YB, "1")
+# (v3.46) and on down to B2: SW -> the food street, NE -> the B2 car park
+basement_stairs(corner["SW"], YB2, "2"); basement_stairs(corner["NE"], YB2, "2")
 def paint_shell(x0, x1, z0, z1, y0, y1, col, only):
     paint(x0, x1, y0, y1, z0, z0 + 1, col, only); paint(x0, x1, y0, y1, z1 - 1, z1, col, only)
     paint(x0, x0 + 1, y0, y1, z0, z1, col, only); paint(x1 - 1, x1, y0, y1, z0, z1, col, only)
@@ -2738,6 +2797,316 @@ for key_ in ("NW", "SE"):
 xa_, xb_, za_, zb_ = corner["NE"]._rect(-T_PART, CB, -T_PART, CB)
 paint_shell(xa_, xb_, za_, zb_, YB, YC, LOBBY_WALL, [STAIR_WALL, STAIR_WALL2])
 paint_shell(xa_, xb_, za_, zb_, YB, YB + 1, WOOD_DARK, [LOBBY_WALL])
+
+# ============================================================================
+# 8e. Basement B2 (v3.46): west half a food street (12 stalls, long tables, lanterns, neon gates),
+#     east half a car park with its own ramp from the street. Both lifts and both stairs come down.
+# ============================================================================
+B2RNG = random.Random(4646)                                   # own RNG: B2 never shifts the rest of the map
+BFONT.update({"G": [".##", "#..", "#.#", "#.#", ".##"], "J": ["..#", "..#", "..#", "#.#", ".#."],
+              "Q": [".#.", "#.#", "#.#", "##.", ".##"], "Z": ["###", "..#", ".#.", "#..", "###"],
+              "W": ["#...#", "#...#", "#.#.#", "##.##", "#...#"], "2": ["##.", "..#", ".#.", "#..", "###"]})
+def big_text(fr, s, u_mid, y_top, v, col, k=3):
+    """BFONT letters scaled k x k (u to the viewer's right, front = layer v - 1)."""
+    widths = [len(BFONT[ch][0]) for ch in s]
+    u = u_mid - ((sum(widths) + len(s) - 1) * k) // 2
+    for ch, w_ in zip(s, widths):
+        for r_, row in enumerate(BFONT[ch]):
+            for c_, cc in enumerate(row):
+                if cc == "#":
+                    fr.box(u + c_ * k, u + c_ * k + k, y_top - (r_ + 1) * k, y_top - r_ * k, v, v + 1, col)
+        u += (w_ + 1) * k
+FS_X0, FS_X1 = IX0, QX - 2                                    # food street (x 88..234)
+CP_X0, CP_X1 = QX + 2, IX1                                    # B2 car park (x 238..384)
+Y2 = YB2
+SWr = corner["SW"]._rect(-T_PART, CB, -T_PART, CB)           # cores standing in B2
+NWr = corner["NW"]._rect(-T_PART, 22, 0, CB - T_FAC)
+SEr = corner["SE"]._rect(-T_PART, 22, 0, CB - T_FAC)
+NEr = corner["NE"]._rect(-T_PART, CB, -T_PART, CB)
+ST_Z0, ST_N, ST_L = 172, 6, 40                                # stall rows: z 172..412, 6 stalls of 4 m a side
+ST_Z1 = ST_Z0 + ST_N * ST_L
+WALK_W, WALK_E = (120, 140), (182, 202)                       # walkways in front of the stalls
+TAB_X = (156, 166)                                            # long tables down the middle
+
+Xt_, Zt_ = np.meshgrid(np.arange(FS_X0, FS_X1), np.arange(IZ0, IZ1), indexing="ij")
+TERRAZZO = hash3(Xt_, np.full_like(Xt_, Y2), Zt_, 31)
+# ---- floors: stone tiles on the walkways, oak parquet under the tables, terrazzo courts with brass inlay
+for x in range(FS_X0, FS_X1):
+    for z in range(IZ0, IZ1):
+        if TAB_X[0] - 8 <= x < TAB_X[1] + 8 and ST_Z0 <= z < ST_Z1:
+            c_ = PARQUET if ((x // 2) + (z // 6)) % 2 else PARQUET2
+        elif ST_Z0 <= z < ST_Z1 and (x < WALK_W[0] or x >= WALK_E[1]):
+            c_ = WHITE_TILE if ((x // 3) + (z // 3)) % 2 else TILE_DARK          # stall kitchens
+        elif ST_Z0 <= z < ST_Z1:
+            c_ = BASE_STONE if ((x // 8) + (z // 8)) % 2 else BASE_STONE2
+        else:
+            c_ = FLOOR_MED if TERRAZZO[x - FS_X0, z - IZ0] > 0.12 else MARBLE_B
+        G[x, Y2 - 1, z] = c_
+for z in (ST_Z0 - 2, ST_Z1 + 1):
+    box(FS_X0, FS_X1, Y2 - 1, Y2, z, z + 1, BRASS)
+for x in (WALK_W[0], WALK_E[1] - 1):
+    box(x, x + 1, Y2 - 1, Y2, ST_Z0, ST_Z1, BRASS)
+# ceiling painted black, exposed brick on the outer walls of the courts
+paint(FS_X0, FS_X1, YC2, YC2 + 1, IZ0, IZ1, CABLE)
+for (xa, xb, za, zb) in ((FS_X0 - 1, FS_X0, IZ0, IZ1), (FS_X1, FS_X1 + 1, IZ0, IZ1), (FS_X0, FS_X1, IZ0 - 1, IZ0), (FS_X0, FS_X1, IZ1, IZ1 + 1)):
+    for y in range(Y2, YC2):
+        for x in range(xa, xb):
+            for z in range(za, zb):
+                if G[x, y, z] in (SLAB, STAIR_CONC, FLOOR_STN):
+                    G[x, y, z] = BRICK if ((y // 2) + ((x + z) // 4 + (y // 2) % 2) // 1) % 7 else BRICK2
+# exposed duct + cable tray along the hall, hung from the ceiling
+box(158, 164, YC2 - 4, YC2, ST_Z0 - 4, ST_Z1 + 4, STEEL)
+for z in range(ST_Z0, ST_Z1, 16):
+    box(157, 165, YC2 - 4, YC2 - 3, z, z + 1, DARK_METAL)                     # duct bands
+for z in range(ST_Z0 + 8, ST_Z1, 32):
+    box(159, 163, YC2 - 5, YC2 - 4, z, z + 3, DARK_METAL)                     # diffusers
+box(144, 148, YC2 - 1, YC2, ST_Z0 - 4, ST_Z1 + 4, DARK_METAL)
+box(174, 178, YC2 - 1, YC2, ST_Z0 - 4, ST_Z1 + 4, DARK_METAL)
+
+# ---- the stalls
+STALLS = []
+def stall(fr, name, col, neon, seed):
+    r_ = random.Random(seed)
+    Y = Y2
+    for (u0, u1) in ((0, 1), (39, 40)):                                     # tiled partitions, colour band below
+        fr.box(u0, u1, Y, Y + 26, 0, 32, WHITE_TILE)
+        fr.paint(u0, u1, Y, Y + 10, 0, 32, col)
+        fr.box(u0, u1, Y + 26, YC2, 0, 2, TIRE)                             # (up to the ceiling at the front)
+    fr.paint(1, 39, Y, Y + 22, 32, 33, WHITE_TILE)                          # tiled back wall
+    fr.paint(1, 39, Y + 22, YC2, 32, 33, col)
+    # counter: slatted front in the stall colour, marble top, glass display case with food, till
+    fr.box(3, 37, Y, Y + 10, 0, 6, col)
+    for u in range(4, 37, 3):
+        fr.box(u, u + 1, Y + 1, Y + 9, 0, 1, WOOD_DARK)
+    fr.box(3, 37, Y, Y + 1, -1, 6, TIRE)                                    # kick plinth
+    fr.box(2, 38, Y + 10, Y + 11, -1, 7, MARBLE_W)
+    fr.box(5, 19, Y + 11, Y + 15, 1, 2, GLASS)
+    fr.box(5, 19, Y + 15, Y + 16, 1, 5, GLASS)
+    for u in range(6, 18, 2):
+        fr.box(u, u + 2, Y + 11, Y + 12 + r_.randint(0, 1), 2, 4, r_.choice((ROSE, YELLOW_PAINT, WALL_ORANGE, LEAF, SHEET, CARP_OR, BLANKET_B)))
+    fr.box(27, 31, Y + 11, Y + 12, 2, 5, TV_BODY)
+    fr.box(28, 30, Y + 12, Y + 15, 4, 5, TV_BODY)
+    fr.box(28, 30, Y + 13, Y + 15, 3, 4, TV_SCREEN)                          # till screen
+    # kitchen: steel back counter, two burners with woks, stock pot, extractor hood, menu board
+    fr.box(3, 37, Y, Y + 9, 25, 31, HVAC)
+    fr.box(3, 37, Y + 9, Y + 10, 25, 31, STEEL)
+    for bu in (8, 15):
+        fr.box(bu, bu + 4, Y + 10, Y + 11, 26, 30, DARK_METAL)
+        fr.box(bu + 1, bu + 3, Y + 10, Y + 11, 27, 29, STREET_LMP)             # flame ring
+        fr.box(bu, bu + 4, Y + 11, Y + 12, 26, 30, TV_BODY)                    # wok
+    fr.box(22, 27, Y + 10, Y + 16, 26, 30, CHROME)
+    fr.box(23, 26, Y + 15, Y + 16, 27, 29, 0)                               # (open pot)
+    fr.box(29, 35, Y + 10, Y + 12, 26, 30, WOOD_LIGHT)                       # chopping board
+    fr.box(3, 37, Y + 22, Y + 23, 22, 32, STEEL)                            # hood
+    fr.box(3, 37, Y + 23, Y + 26, 26, 32, STEEL)
+    fr.box(4, 36, Y + 12, Y + 21, 31, 32, TV_BODY)                          # menu board
+    for ry in range(Y + 14, Y + 20, 2):
+        fr.box(6, 6 + r_.randint(8, 16), ry, ry + 1, 30, 31, SHEET)
+        fr.box(30, 34, ry, ry + 1, 30, 31, YELLOW_PAINT)
+    # sign board with the neon name, striped awning, lamp under it
+    fr.box(1, 39, Y + 22, Y + 31, 0, 2, TIRE)
+    ftext(fr, name, 20, Y + 30, -1, neon)
+    for u in (1, 2, 37, 38):
+        fr.box(u, u + 1, Y + 23, Y + 30, -1, 0, neon)                           # neon side bars
+    for dv in range(7):
+        yy = Y + 21 - dv // 3
+        for u in range(1, 39):
+            fr.box(u, u + 1, yy, yy + 2, -1 - dv, -dv, col if (u // 4) % 2 else SHEET)
+    for lu in (8, 20, 32):
+        fr.box(lu, lu + 1, Y + 19, Y + 20, -4, -3, CABLE)
+        fr.box(lu - 1, lu + 2, Y + 17, Y + 19, -5, -2, LAMPSHADE)
+    fr.light(20, Y + 15.5, -4, (1.0, 0.8, 0.55), 1.5, 0.3)
+    # stools at the counter
+    for su in (8, 16, 24, 32):
+        fr.box(su, su + 1, Y, Y + 6, -3, -2, CHROME)
+        fr.box(su - 1, su + 2, Y, Y + 1, -4, -1, CHROME)
+        fr.box(su - 1, su + 2, Y + 6, Y + 7, -4, -1, col)
+    STALLS.append((name, fr.pt(20, -3)))
+W_STALLS = [("RAMEN", RED, MEMORY), ("TACOS", YELLOW_PAINT, STREET_LMP), ("DIMSUM", DUMPSTER, EXIT_SIGN),
+            ("BBQ", CAR_C, STREET_LMP), ("PHO", POOL_TILE, POOL_LAMP), ("CURRY", WALL_ORANGE, LAMPSHADE)]
+E_STALLS = [("SUSHI", BLANKET_C, POOL_LAMP), ("WAFFLE", WALL_MAUVE, MEMORY), ("BOBA", ART1, COVE_LAMP),
+            ("PIZZA", RED, STREET_LMP), ("KEBAB", WALL_GREEN, EXIT_SIGN), ("TTEOK", ROSE, MEMORY)]
+for i, (nm, col, neon) in enumerate(W_STALLS):                 # west row: counter front at x 119, facing east
+    z0 = ST_Z0 + i * ST_L
+    stall(Frame(WALK_W[0] - 1, z0 + ST_L - 1, 0, -1, -1, 0), nm, col, neon, 100 + i)
+for i, (nm, col, neon) in enumerate(E_STALLS):                 # east row: counter front at x 202, facing west
+    z0 = ST_Z0 + i * ST_L
+    stall(Frame(WALK_E[1], z0, 0, 1, 1, 0), nm, col, neon, 200 + i)
+
+# ---- long tables with benches down the middle, planters between them, lanterns over both walkways
+TABLES = [(182, 222), (238, 278), (306, 346), (362, 402)]
+for (tz0, tz1) in TABLES:
+    box(TAB_X[0], TAB_X[1], Y2 + 7, Y2 + 8, tz0, tz1, WOOD_MED)
+    box(TAB_X[0], TAB_X[1], Y2 + 6, Y2 + 7, tz0 + 1, tz1 - 1, WOOD_DARK)
+    for lz in (tz0 + 2, (tz0 + tz1) // 2, tz1 - 3):
+        box(TAB_X[0] + 2, TAB_X[1] - 2, Y2, Y2 + 6, lz, lz + 1, DARK_METAL)        # trestle legs
+    for (bx_a, bx_b) in ((TAB_X[0] - 5, TAB_X[0] - 2), (TAB_X[1] + 2, TAB_X[1] + 5)):
+        box(bx_a, bx_b, Y2 + 4, Y2 + 5, tz0 + 1, tz1 - 1, WOOD_MED2)
+        for lz in (tz0 + 3, tz1 - 4):
+            box(bx_a + 1, bx_b - 1, Y2, Y2 + 4, lz, lz + 1, DARK_METAL)
+    for k_ in range(3):                                                         # bowls + cups on the table
+        bz_ = B2RNG.randint(tz0 + 3, tz1 - 4)
+        box(TAB_X[0] + 2 + 4 * (k_ % 2), TAB_X[0] + 4 + 4 * (k_ % 2), Y2 + 8, Y2 + 9, bz_, bz_ + 2, B2RNG.choice((CERAMIC, RED, WALL_ORANGE)))
+    for py_ in (Y2 + 20,):                                                      # pendant over each table
+        box(160, 162, py_ + 2, YC2 - 4, (tz0 + tz1) // 2, (tz0 + tz1) // 2 + 1, CABLE)
+        box(158, 164, py_, py_ + 2, (tz0 + tz1) // 2 - 2, (tz0 + tz1) // 2 + 3, BRASS)
+        box(159, 163, py_ - 1, py_, (tz0 + tz1) // 2 - 1, (tz0 + tz1) // 2 + 2, LAMPSHADE)
+        light(161, py_ - 2.5, (tz0 + tz1) / 2 + 0.5, (1.0, 0.78, 0.5), 1.6, 0.3)
+def planter(cx, cz, r=3, h=6):
+    box(cx - r, cx + r, Y2, Y2 + h, cz - r, cz + r, WOOD_DARK)
+    box(cx - r + 1, cx + r - 1, Y2 + h - 1, Y2 + h, cz - r + 1, cz + r - 1, SOIL)
+    box(cx, cx + 1, Y2 + h, Y2 + h + 8, cz, cz + 1, TRUNK)
+    Xo, Yo, Zo = np.meshgrid(np.arange(cx - 5, cx + 6), np.arange(Y2 + h + 4, Y2 + h + 14), np.arange(cz - 5, cz + 6), indexing="ij")
+    mo = (((Xo - cx) ** 2 + ((Yo - Y2 - h - 9) * 1.2) ** 2 + (Zo - cz) ** 2) <= 22) & (hash3(Xo, Yo, Zo, cx + cz) > 0.3)
+    mo[5, :5, 5] = True
+    mo = keep_connected(mo, [(5, 0, 5)]) & (G[Xo, Yo, Zo] == 0)
+    G[Xo[mo], Yo[mo], Zo[mo]] = np.where((Xo[mo] + Yo[mo] + Zo[mo]) % 3 > 0, LEAF2, LEAF3)
+for (tz0, tz1) in zip([t[1] for t in TABLES[:-1]], [t[0] for t in TABLES[1:]]):
+    planter(161, (tz0 + tz1) // 2)
+LANTERNS = []
+for lx in ((WALK_W[0] + WALK_W[1]) // 2, (WALK_E[0] + WALK_E[1]) // 2):
+    for i, lz in enumerate(range(ST_Z0 + 10, ST_Z1, 20)):
+        drop = 6 + (i % 2) * 2
+        box(lx, lx + 1, YC2 - drop, YC2, lz, lz + 1, CABLE)
+        box(lx - 1, lx + 2, YC2 - drop - 5, YC2 - drop, lz - 1, lz + 2, LAMPSHADE)
+        box(lx - 1, lx + 2, YC2 - drop - 1, YC2 - drop, lz - 1, lz + 2, RED)
+        box(lx - 1, lx + 2, YC2 - drop - 5, YC2 - drop - 4, lz - 1, lz + 2, RED)
+        box(lx, lx + 1, YC2 - drop - 6, YC2 - drop, lz, lz + 1, BRASS)          # spine + tassel (holds the caps when the lit
+                                                                                # paper is its own lamp shape)
+        LANTERNS.append((lx, lz))
+        if i % 2 == 0:
+            light(lx + 0.5, YC2 - drop - 7.5, lz + 0.5, (1.0, 0.62, 0.42), 1.3, 0.2)
+
+# ---- neon gates at both ends of the street: two posts, a beam, FOOD (pink) STREET (cyan)
+def gate(z_beam, south):
+    for (px0, px1) in ((WALK_W[0], WALK_W[0] + 3), (WALK_E[1] - 3, WALK_E[1])):
+        box(px0, px1, Y2, YC2, z_beam, z_beam + 3, TIRE)
+        box(px0, px1, Y2, Y2 + 2, z_beam - 1, z_beam + 4, BRASS)
+    box(WALK_W[0], WALK_E[1], Y2 + 25, Y2 + 32, z_beam, z_beam + 3, TIRE)
+    cx = (WALK_W[0] + WALK_E[1]) // 2
+    if south:                                     # read from the south: the viewer's right is -x
+        fr_ = Frame(0, z_beam - 1, -1, 0, 0, 1)
+        ftext(fr_, "FOOD", -(cx + 14), Y2 + 31, 0, MEMORY); ftext(fr_, "STREET", -(cx - 9), Y2 + 31, 0, POOL_LAMP)
+    else:
+        fr_ = Frame(0, z_beam + 3, 1, 0, 0, -1)
+        ftext(fr_, "FOOD", cx - 14, Y2 + 31, 0, MEMORY); ftext(fr_, "STREET", cx + 9, Y2 + 31, 0, POOL_LAMP)
+    box(WALK_W[0] + 3, WALK_E[1] - 3, Y2 + 24, Y2 + 25, z_beam + 1, z_beam + 2, COVE_LAMP)   # glow strip under the beam
+    light(cx + 0.5, Y2 + 22, z_beam + (-3 if south else 6), (0.95, 0.55, 0.9), 1.4, 0.3)
+gate(ST_Z0 - 8, True)
+gate(ST_Z1 + 4, False)
+
+# ---- courts: café tables at both ends, big neon EAT on the south wall, planters
+def cafe_table(cx, cz, col):
+    box(cx - 3, cx + 3, Y2 + 7, Y2 + 8, cz - 3, cz + 3, MARBLE_W)
+    box(cx - 2, cx + 3 - 1, Y2 + 7, Y2 + 8, cz - 4, cz - 3, MARBLE_W); box(cx - 2, cx + 2, Y2 + 7, Y2 + 8, cz + 3, cz + 4, MARBLE_W)
+    box(cx, cx + 1, Y2, Y2 + 7, cz, cz + 1, BRASS)
+    box(cx - 2, cx + 3, Y2, Y2 + 1, cz - 2, cz + 3, BRASS)
+    for (dx, dz) in ((-6, 0), (6, 0), (0, -6), (0, 6)):
+        x_, z_ = cx + dx, cz + dz
+        box(x_ - 1, x_ + 2, Y2 + 4, Y2 + 5, z_ - 1, z_ + 2, col)                  # seat
+        box(x_, x_ + 1, Y2, Y2 + 4, z_, z_ + 1, DARK_METAL)
+        bx_ = x_ + (2 if dx > 0 else -2 if dx < 0 else 0); bz_ = z_ + (2 if dz > 0 else -2 if dz < 0 else 0)
+        if dx:
+            box(bx_, bx_ + 1, Y2 + 5, Y2 + 10, z_ - 1, z_ + 2, DARK_METAL)
+            box(min(bx_, x_), max(bx_, x_) + 1, Y2 + 4, Y2 + 5, z_, z_ + 1, DARK_METAL)
+        else:
+            box(x_ - 1, x_ + 2, Y2 + 5, Y2 + 10, bz_, bz_ + 1, DARK_METAL)
+            box(x_, x_ + 1, Y2 + 4, Y2 + 5, min(bz_, z_), max(bz_, z_) + 1, DARK_METAL)
+S_COURT = (SWr[1] + 4, FS_X1, IZ0, ST_Z0 - 10)               # x 160..234, z 88..162
+N_COURT = (NWr[1] + 4, FS_X1, ST_Z1 + 10, IZ1)               # x 134..234, z 422..496
+for (cx_, cz_, c_) in ((176, 108, UPHOL2), (204, 108, BLANKET_B), (176, 138, BLANKET_B), (204, 138, UPHOL2),
+                       (160, 446, BLANKET_C), (188, 446, UPHOL2), (160, 476, UPHOL2), (188, 476, BLANKET_C)):
+    cafe_table(cx_, cz_, c_)
+for (px_, pz_) in ((S_COURT[0] + 3, IZ0 + 4), (FS_X1 - 5, ST_Z0 - 16), (FS_X1 - 5, ST_Z1 + 14), (N_COURT[0] + 2, IZ1 - 5)):
+    planter(px_, pz_, r=3, h=6)
+for (lx_, lz_) in ((190, 123), (174, 461)):
+    box(lx_ - 3, lx_ + 4, YC2 - 1, YC2, lz_ - 3, lz_ + 4, BRASS)
+    box(lx_ - 2, lx_ + 3, YC2 - 2, YC2 - 1, lz_ - 2, lz_ + 3, CEIL_LAMP)
+    light(lx_ + 0.5, YC2 - 4, lz_ + 0.5, (1.0, 0.85, 0.65), 2.4, 0.4)
+eat_fr = Frame(0, IZ0, 1, 0, 0, -1)                           # on the south wall, read from the north
+box(S_COURT[0] + 8, FS_X1 - 6, Y2 + 12, Y2 + 31, IZ0, IZ0 + 1, TIRE)
+big_text(eat_fr, "EAT", (S_COURT[0] + FS_X1) // 2 + 1, Y2 + 29, -1, MEMORY, k=3)
+light((S_COURT[0] + FS_X1) / 2, Y2 + 20, IZ0 + 6, (1.0, 0.5, 0.8), 1.2, 0.3)
+box(N_COURT[0] + 20, FS_X1 - 20, Y2 + 12, Y2 + 31, IZ1 - 1, IZ1, TIRE)  # north wall: B2 FOOD HALL
+nfr = Frame(0, IZ1 - 1, -1, 0, 0, 1)
+big_text(nfr, "B2", -((N_COURT[0] + FS_X1) // 2), Y2 + 29, -1, POOL_LAMP, k=3)
+# door to the car park (automatic sliding, like the arcade's) with signs on both sides
+B2_DOOR = (114, 130)
+auto_door(3, False, QX, B2_DOOR[0], B2_DOOR[1], y=Y2)
+box(QX - 2, QX, Y2, Y2 + 24, B2_DOOR[0], B2_DOOR[1], 0)            # through the food-street facing too
+
+# ---- B2 car park: bays, aisle, columns, lights, signage, cars
+CP_AISLE = (288, 334)
+W2_BAYS = [140 + i * 25 for i in range(13)]                  # against the divider (x 238..288)
+E2_BAYS = [160 + i * 25 for i in range(8)]                   # against the east wall (x 334..384)
+for (bays_, xa_, xb_) in ((W2_BAYS, CP_X0, CP_AISLE[0]), (E2_BAYS, CP_AISLE[1], CP_X1)):
+    for z0_ in bays_:
+        for zl_ in (z0_, z0_ + 24):
+            box(xa_, xb_, Y2 - 1, Y2, zl_, zl_ + 1, PAINT_LINE)
+for z in range(IZ0, IZ1, 12):
+    box((CP_AISLE[0] + CP_AISLE[1]) // 2 - 1, (CP_AISLE[0] + CP_AISLE[1]) // 2 + 1, Y2 - 1, Y2, z, z + 6, YELLOW_PAINT)
+box(CP_AISLE[0], CP_AISLE[0] + 1, Y2 - 1, Y2, IZ0, IZ1, YELLOW_PAINT)
+box(CP_AISLE[1] - 1, CP_AISLE[1], Y2 - 1, Y2, IZ0, IZ1, YELLOW_PAINT)
+# pedestrian walkway (green) from the food-street door across to the lift lobby
+for x in range(CP_X0, SEr[0]):
+    for z in range(B2_DOOR[0] - 2, B2_DOOR[1] + 2):
+        G[x, Y2 - 1, z] = DUMPSTER if (x // 3) % 2 else PAINT_LINE
+# no-parking hatching: by the tunnel mouth and the stair lobby
+for (xa_, xb_, za_, zb_) in ((CP_AISLE[1], CP_X1, E2_BAYS[-1] + 25, TZ2[0]), (CP_AISLE[1], CP_X1, TZ2[1], IZ1)):
+    for x in range(xa_, xb_):
+        for z in range(za_, zb_):
+            if G[x, Y2 - 1, z] == STAIR_CONC and G[x, Y2, z] == 0 and (x + z) % 7 == 0:
+                G[x, Y2 - 1, z] = YELLOW_PAINT
+COLS2 = [(CP_AISLE[0] + 3, 215), (CP_AISLE[0] + 3, 290), (CP_AISLE[0] + 3, 365), (CP_AISLE[0] + 3, 440),
+         (CP_AISLE[1] - 3, 185), (CP_AISLE[1] - 3, 260), (CP_AISLE[1] - 3, 335)]
+for (cxc, czc) in COLS2:
+    box(cxc - 3, cxc + 3, Y2, YC2, czc - 3, czc + 3, SLAB)
+    for yy in range(Y2, Y2 + 8, 2):
+        paint(cxc - 3, cxc + 3, yy, yy + 1, czc - 3, czc + 3, YELLOW_PAINT)
+        paint(cxc - 3, cxc + 3, yy + 1, yy + 2, czc - 3, czc + 3, TIRE)
+    face = Frame(cxc + 2, czc + 2, 0, -1, -1, 0) if cxc < sum(CP_AISLE) // 2 else Frame(cxc - 3, czc - 3, 0, 1, 1, 0)
+    ftext(face, "B2", 2, Y2 + 20, -1, YELLOW_PAINT)
+for (xa, xb, za, zb) in ((CP_X0 - 1, CP_X0, IZ0, IZ1), (CP_X0, CP_X1, IZ0 - 1, IZ0), (CP_X1, CP_X1 + 1, IZ0, IZ1), (CP_X0, CP_X1, IZ1, IZ1 + 1)):
+    paint(xa, xb, Y2, Y2 + 10, za, zb, WALL_GREY, [SLAB])
+    paint(xa, xb, Y2 + 10, Y2 + 11, za, zb, POOL_TILE, [SLAB])                 # B2 colour code: teal
+def tube2(x, z, flicker=False):
+    box(x - 1, x + 2, YC2 - 1, YC2, z, z + 10, STEEL)
+    box(x - 1, x, YC2 - 2, YC2 - 1, z, z + 10, CEIL_LAMP)
+    box(x + 1, x + 2, YC2 - 2, YC2 - 1, z, z + 10, CEIL_LAMP)
+    light(x + 0.5, YC2 - 4, z + 5, (0.86, 0.95, 1.0), 1.9, 0.3, "flicker" if flicker else "")
+for i, z in enumerate((100, 175, 250, 325, 400, 470)):
+    tube2(sum(CP_AISLE) // 2, z, flicker=(i == 3))
+for z in (200, 330):
+    tube2(CP_X0 + 25, z); tube2(CP_X1 - 25, z)
+box(CP_X0 + 30, CP_X0 + 33, YC2 - 2, YC2, IZ0, IZ1, STEEL)                     # sprinkler main + cable tray
+box(CP_X1 - 14, CP_X1 - 8, YC2 - 1, YC2, IZ0, IZ1, STEEL)
+box(CP_X1 - 13, CP_X1 - 9, YC2 - 2, YC2 - 1, IZ0, IZ1, CABLE)
+for (lbl_, bays_, west_) in (("C", W2_BAYS, True), ("D", E2_BAYS, False)):
+    for i, z in enumerate(bays_):
+        zc = z + 12
+        if west_:
+            ftext(Frame(CP_X0 - 1, zc + 6, 0, -1, -1, 0), lbl_ + str(i + 1), 6, Y2 + 22, -1, YELLOW_PAINT)
+            box(CP_X0 + 7, CP_X0 + 9, Y2, Y2 + 1, zc - 5, zc + 5, CURB)
+        else:
+            ftext(Frame(CP_X1, zc - 6, 0, 1, 1, 0), lbl_ + str(i + 1), 6, Y2 + 22, -1, YELLOW_PAINT)
+            box(CP_X1 - 9, CP_X1 - 7, Y2, Y2 + 1, zc - 5, zc + 5, CURB)
+box(CP_X1 - 1, CP_X1, YC2 - 9, YC2 - 2, TZ2[0] - 18, TZ2[0] - 4, TIRE)            # EXIT sign beside the tunnel mouth
+ftext(Frame(CP_X1 - 1, 0, 0, 1, 1, 0), "EXIT", TZ2[0] - 11, YC2 - 3, -1, EXIT_SIGN)
+for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "W", W2_BAYS[1]), ("suv1", "car_b", "W", W2_BAYS[10]),
+                                ("stationwagon", "car_c", "E", E2_BAYS[2])):
+    cxp_ = CP_X0 + 28 if side_ == "W" else CP_X1 - 28
+    CAR_SPOTS.append((kind_, pn, cxp_ - 10, Y2, z0_ + 12.5 - 22, -90 if side_ == "W" else 90))
+# signs: FOOD STREET over the door on the car-park side (neon), PARKING on the food-street side
+cp_sign = Frame(CP_X0, 0, 0, -1, -1, 0)                       # read from the car park (looking -x): right is -z
+box(CP_X0, CP_X0 + 1, Y2 + 25, Y2 + 33, B2_DOOR[0] - 16, B2_DOOR[1] + 16, TIRE)
+ftext(cp_sign, "FOOD", -((B2_DOOR[0] + B2_DOOR[1]) // 2 + 13), Y2 + 31, -1, MEMORY)
+ftext(cp_sign, "STREET", -((B2_DOOR[0] + B2_DOOR[1]) // 2 - 9), Y2 + 31, -1, POOL_LAMP)
+fs_sign = Frame(FS_X1 - 1, 0, 0, 1, 1, 0)                    # read from the food street (looking +x): right is +z
+ftext(fs_sign, "PARKING", (B2_DOOR[0] + B2_DOOR[1]) // 2, Y2 + 31, 0, CEIL_LAMP)
+SOUND_SPOTS.extend([("mall", 161, Y2 + 15, z_) for z_ in (200, 300, 400)] + [("mall", 195, Y2 + 15, 123), ("mall", 180, Y2 + 15, 460)])
+SOUND_SPOTS.extend([("garage", sum(CP_AISLE) // 2, Y2 + 15, z_) for z_ in (150, 300, 450)])
+B2 = dict(food=(FS_X0, FS_X1), park=(CP_X0, CP_X1), stalls=STALLS, tables=TABLES, door=B2_DOOR, cols=COLS2,
+          w_bays=W2_BAYS, e_bays=E2_BAYS, aisle=CP_AISLE, lanterns=LANTERNS, ramp=(RX2_0, RX2_1, RZ2_TOP, RZ2_BOT, RZ2_END), tunnel=TZ2)
 
 # music for the arcade (the player's song, looped from the nearest speaker)
 for (sx_, sz_) in ((310, 140), (310, 260), (310, 380), (310, 470), (185, 462), (180, 414), (372, 130)):
@@ -2980,7 +3349,7 @@ def rb(x0, x1, y0, y1, z0, z1, c):
     xa, xb = sorted((int(x0), int(x1))); ya, yb = sorted((int(y0), int(y1))); za, zb = sorted((int(z0), int(z1)))
     ROAD[max(xa, 0):min(xb, W), max(ya, 0):min(yb, RH), max(za, 0):min(zb, RD)] = c
 # ground: same layers as the site (bedrock, earth, asphalt on top -> surface at G0)
-rb(0, W, 0, 1, 0, RD, BEDROCK); rb(0, W, 1, G0 - 3, 0, RD, SOIL); rb(0, W, G0 - 3, G0, 0, RD, ASPHALT)
+rb(0, W, BED_Y, BED_Y + 1, 0, RD, BEDROCK); rb(0, W, BED_Y + 1, G0 - 3, 0, RD, SOIL); rb(0, W, G0 - 3, G0, 0, RD, ASPHALT)
 XR = np.arange(W)[:, None]; ZR = np.arange(RD)[None, :]
 tex = hash3(np.broadcast_to(XR, (W, RD)), np.zeros((W, RD), int), np.broadcast_to(ZR, (W, RD)), 77)
 ROAD[:, G0 - 1, :] = np.where(tex < 0.25, ASPHALT2, ASPHALT)
@@ -4102,7 +4471,7 @@ def export():
     XS_ANNEX = [0, A_X0 - 16, A_X1 + 16, W]          # the pool hall stays in one shape
     BANDS = [(0, az0 + 2 * LONG_BAY_W, XS_MAIN), (az0 + 2 * LONG_BAY_W, az0 + 6 * LONG_BAY_W, XS_MAIN),
              (az0 + 6 * LONG_BAY_W, AZ0 - 6, XS_MAIN), (AZ0 - 6, D, XS_ANNEX)]
-    YS = [0, H]
+    YS = [0, SEAM, H]                                  # B2 band | the rest
     for (z0b, z1b, XS) in BANDS:
         assert 0 < z1b - z0b <= 256, (z0b, z1b)
         assert all(0 < b_ - a_ <= 256 for a_, b_ in zip(XS, XS[1:])), XS
@@ -4437,7 +4806,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.45\n"
+        f.write("name = Liminal Atrium v3.46\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

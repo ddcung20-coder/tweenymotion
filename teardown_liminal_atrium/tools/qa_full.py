@@ -65,12 +65,17 @@ XS_ANNEX = [0, ns["A_X0"] - 16, ns["A_X1"] + 16, W]
 az0 = ns["az0"]
 BANDS = [(0, az0 + 68, XS_MAIN), (az0 + 68, az0 + 204, XS_MAIN), (az0 + 204, ns["AZ0"] - 6, XS_MAIN), (ns["AZ0"] - 6, D, XS_ANNEX)]
 isl = 0
+YS_ = [0, ns["SEAM"], H]                       # shapes are cut at the seam: each band is grounded on its own bottom
 for (z0, z1, XS) in BANDS:
     for x0, x1 in zip(XS, XS[1:]):
-        sub = G[x0:x1, :, z0:z1] > 0
-        lab, n = ndimage.label(sub)
-        grounded = set(np.unique(lab[:, 0:2, :])) - {0}
-        isl += n - len(grounded)
+        for y0_, y1_ in zip(YS_, YS_[1:]):
+            sub = G[x0:x1, y0_:y1_, z0:z1] > 0
+            if not sub.any():
+                continue
+            ys_ = np.nonzero(sub.any((0, 2)))[0]
+            lab, n = ndimage.label(sub)
+            grounded = set(np.unique(lab[:, ys_.min():ys_.min() + 2, :])) - {0}
+            isl += n - len(grounded)
 report("no floating pieces inside any world shape", isl == 0, f"{isl} islands")
 for L in ns["LAMPS"]:
     pass
@@ -175,6 +180,21 @@ for (bn_, bx0_, bx1_, bz0_, bz1_) in ns["BOH"]:
     checks[f"back of house: {bn_} (staff passage)"] = ((bx0_ + bx1_) // 2, G0, bz1_ - 6)
 checks["back of house: kitchen floor by the island"] = (ns["BOH"][0][1] + 20, G0, ns["BOH"][0][3] - 18)
 checks["B1 car-park ramp (bottom)"] = (30, YB, 280)
+B2q = ns["B2"]; YB2 = ns["YB2"]
+checks["B2 food street: south court"] = (196, YB2, 100)
+checks["B2 food street: west walkway"] = (130, YB2, 290)
+checks["B2 food street: east walkway"] = (192, YB2, 290)
+checks["B2 food street: long tables"] = (150, YB2, 250)
+checks["B2 food street: north court"] = (210, YB2, 460)
+checks["B2 food street: lift lobby (NW)"] = (96, YB2, 455)
+checks["B2 food street: stair lobby (SW)"] = (96, YB2, 140)
+for i_, (nm_, (sx_, sz_)) in enumerate(B2q["stalls"]):
+    checks[f"B2 stall {nm_} counter"] = (int(sx_), YB2, int(sz_))
+checks["B2 car park (through the automatic door)"] = (300, YB2, 250)
+checks["B2 car park: lift lobby (SE)"] = (375, YB2, 130)
+checks["B2 car park: stair lobby (NE)"] = (375, YB2, 455)
+checks["B2 ramp: bottom"] = (440, YB2, 410)
+checks["B2 ramp: top (street level)"] = (440, G0, 40)
 checks["B1 car park"] = (162, YB, 200)
 checks["B1 arcade promenade (through automatic door 1)"] = (310, YB, 250)
 checks["B1 arcade corridor (through automatic door 2)"] = (184, YB, 412)
@@ -199,6 +219,14 @@ for key in ("SW", "NE"):
         return set(np.unique(w[st & (w > 0)]).tolist())
     b1, g = comp(6, 30, YB), comp(6, 30, G0)
     report(f"{key} stairwell walks from B1 up to the ground floor", bool(b1 & g), f"B1 {b1} ground {g}")
+for key in ("SW", "NE"):                                  # ... and from B2 up to B1
+    fr = ns["corner"][key]
+    xa, xb, za, zb = fr._rect(-ns["T_PART"] - 1, ns["CB"], -ns["T_PART"] - 1, ns["CB"])
+    ya, yb_ = ns["YB2"] - 3, YB + 20
+    sub = lab[xa:xb, ya:yb_, za:zb] > 0
+    sl, _ = ndimage.label(sub, structure=np.ones((3, 3, 3), bool))
+    b2, b1 = comp(6, 30, ns["YB2"]), comp(6, 30, YB)
+    report(f"{key} stairwell walks from B2 up to B1", bool(b2 & b1), f"B2 {b2} B1 {b1}")
 
 # 5b. both sides of every swing door are reachable (rooms, bathrooms, stairwells, lobby, entrance)
 side_bad = []
@@ -398,7 +426,7 @@ for i, d in enumerate(ns["DOORS"]):
         if body_hits(d["arr"], d["gmin"], int(round(dx_ * f_)), int(round(dz_ * f_))):
             ad_bad.append((i, f_))
 n_ad = sum(1 for d in ns["DOORS"] if d["tag"].startswith("autodoor"))
-report(f"automatic doors: {n_ad} glass leaves slide fully open without hitting anything", n_ad == 4 and not ad_bad, str(ad_bad))
+report(f"automatic doors: {n_ad} glass leaves slide fully open without hitting anything", n_ad == 6 and not ad_bad, str(ad_bad))
 calls_b1 = sorted(c[2] for c in ns["CALLS"] if c[3] == -1)
 report("all 4 elevators stop at B1 (landing door + call button)", len(calls_b1) == 4 and
        sum(1 for d in ns["DOORS"] if "elevdoor" in d["tag"] and "floor=-1" in d["tag"]) == 4, str(calls_b1))
@@ -475,7 +503,7 @@ for (a_, b_, c_, d_) in ns["CORNER_RECTS"]:
     rbad += int(np.isin(FULL[a_ - 2:b_ + 2, RYq:RYq + 16, c_ - 2:d_ + 2], [ns["HVAC"]]).sum())
 report(f"roof: {len(ns['HVAC_SPOTS'])} HVAC units, ducts and vents clear of the stair penthouses / lift machine rooms", rbad == 0, f"{rbad} voxels")
 # a van (2.2 m wide, up to 3.0 m tall) drives street -> ramp -> tunnel -> car-park aisle without touching anything
-YBq, A0q, A1q = ns["YB"], ns["AISLE0"], ns["AISLE1"]
+YBq, A0q, A1q = ns["YB"], ns["AISLE0"], ns["AISLE1"]; G0q = ns["G0"]
 van_path = [("tunnel", FULL[ns["RX1"]:ns["IX0"], YBq:YBq + 31, ns["TZ0"] + 4:ns["TZ1"] - 4]),
             ("ramp bottom", FULL[ns["RX0"] + 2:ns["RX1"] - 2, YBq:YBq + 31, ns["RZ_BOT"]:ns["RZ_END"]]),
             ("aisle", FULL[A0q + 7:A1q - 7, YBq:YBq + 31, 162:ns["PZ1"] - 2]),
@@ -485,9 +513,21 @@ for zq in range(ns["RZ_TOP"] - 4, ns["RZ_BOT"]):
     ry_ = ns["ramp_y"](zq)
     ramp_bad += int((FULL[ns["RX0"] + 2:ns["RX1"] - 2, ry_:ry_ + 31, zq] > 0).sum())
 van_bad = [n_ for (n_, r_) in van_path if (r_ > 0).any()] + (["ramp"] if ramp_bad else [])
-RO_ = ns["ROAD"]; G0q = ns["G0"]
+# ... and down ramp 2 to B2: street -> east ramp -> tunnel -> B2 car-park aisle
+B2v = ns["B2"]; YB2v = ns["YB2"]; R2 = B2v["ramp"]; T2 = B2v["tunnel"]
+for zq in range(R2[2] - 4, R2[3]):
+    ry_ = ns["ramp2_y"](zq)
+    if (FULL[R2[0] + 2:R2[1] - 2, ry_:ry_ + 31, zq] > 0).any():
+        van_bad.append(f"ramp2 z{zq}"); break
+for (n_, r_) in (("ramp2 bottom", FULL[R2[0] + 2:R2[1] - 2, YB2v:YB2v + 31, R2[3]:R2[4]]),
+                 ("tunnel2", FULL[ns["IX1"]:R2[0], YB2v:YB2v + 31, T2[0] + 4:T2[1] - 4]),
+                 ("B2 aisle", FULL[B2v["aisle"][0] + 7:B2v["aisle"][1] - 7, YB2v:YB2v + 31, ns["IZ0"] + 20:T2[1] - 4]),
+                 ("B2 turn into the tunnel", FULL[B2v["aisle"][0] + 7:ns["IX1"], YB2v:YB2v + 31, T2[0] + 4:T2[1] - 4])):
+    if (r_ > 0).any():
+        van_bad.append(n_)
+RO_ = ns["ROAD"]
 drive_ok = not (RO_[ns["RX0"]:ns["RX1"], G0q:G0q + 2, ns["NC0"]:] > 0).any()
-report("van clearance 3.0 m: street driveway, ramp, tunnel, car-park aisle", not van_bad and drive_ok, f"{van_bad} driveway_ok={drive_ok}")
+report("van clearance 3.0 m: street driveway, ramps (B1 + B2), tunnels, car-park aisles", not van_bad and drive_ok, f"{van_bad} driveway_ok={drive_ok}")
 # elevator landing doors: open, the leaf sits in an empty pocket with a wall skin in front of it (hidden)
 pk_bad = []
 for d_ in ns["DOORS"]:
@@ -521,7 +561,7 @@ RO = ns["ROAD"]; RD_ = ns["RD"]
 r_isl = 0
 for x0_, x1_ in zip(XS_MAIN, XS_MAIN[1:]):
     lab_r, n_r = ndimage.label(RO[x0_:x1_] > 0)
-    r_isl += n_r - len(set(np.unique(lab_r[:, 0:2, :])) - {0})
+    r_isl += n_r - len(set(np.unique(lab_r[:, ns['BED_Y']:ns['BED_Y'] + 2, :])) - {0})
 report("street: no floating pieces in its shapes", r_isl == 0, f"{r_isl} islands")
 report("street surface meets the parking lot at the same height (no step)",
        bool((RO[:, G0 - 1, RD_ - 1] > 0).all() and (G[:, G0 - 1, 0] > 0).all() and not (G[:, G0, 0] > 0).all()))

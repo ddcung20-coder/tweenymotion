@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Blueprint floor plans of the map, one sheet per level (B1, 1F-6F, roof) plus a combined PDF.
+"""Blueprint floor plans of the map, one sheet per level (B2, B1, 1F-6F, roof) plus a combined PDF.
 
     python3 tools/blueprints.py            -> blueprints/A-1xx_*.png + blueprints/LiminalAtrium_blueprints.pdf
 
@@ -333,6 +333,28 @@ def corridors(sheet, text="CORRIDOR"):
 os.makedirs(OUT, exist_ok=True)
 pages = []
 M = 24
+# ---------------------------------------------------------------- B2 (v3.46)
+B2b = ns["B2"]; YB2 = g("YB2")
+s = Sheet(0, bx1 + M, bz0 - M - 30, bz1 + M, "LEVEL B2 - FOOD STREET & CAR PARK", "Floor -7.2 m. Cut at +1.2 m above floor.", "A-099")
+plan(s, YB2)
+common(s)
+s.label((B2b["food"][0] + B2b["food"][1]) / 2, 120, "FOOD STREET", sz=30)
+for (nm_, (sx_, sz_)) in B2b["stalls"]:
+    s.text(sx_ + (-14 if sx_ < 161 else 14), sz_, nm_, 15, YEL, rot=90)
+s.text(161, 300, "LONG TABLES", 18, SOFT, rot=90)
+s.label((B2b["park"][0] + B2b["park"][1]) / 2, 110, "CAR PARK", sz=30)
+for (lbl_, bays_, west_) in (("C", B2b["w_bays"], True), ("D", B2b["e_bays"], False)):
+    for i, z in enumerate(bays_):
+        x = B2b["park"][0] + 12 if west_ else B2b["park"][1] - 14
+        s.text(x, z + 12.5, f"{lbl_}{i + 1}", 14, YEL)
+R2b = B2b["ramp"]
+s.text((R2b[0] + R2b[1]) / 2, (R2b[2] + R2b[3]) / 2, "RAMP TO B2  (UP TO STREET)", 18, YEL, rot=90)
+s.text(g("QX") + 12, sum(B2b["door"]) / 2, "AUTO DOOR", 14, YEL, rot=90)
+cores(s, elec=False)
+s.frame_and_title(["Food street: 12 stalls (6 a side) with neon signs and awnings, long tables, neon gates, cafe courts.",
+                   f"Parking: {len(B2b['w_bays']) + len(B2b['e_bays'])} bays (C, D). Own ramp from the street (east)."])
+pages.append(("A-099_B2", s))
+
 # ---------------------------------------------------------------- B1
 s = Sheet(0, bx1 + M, bz0 - M - 30, bz1 + M, "LEVEL B1 - CAR PARK & LUXURY ARCADE", "Floor -3.6 m. Cut at +1.2 m above floor.", "A-100")
 plan(s, YB)
