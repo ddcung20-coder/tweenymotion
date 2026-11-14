@@ -1571,6 +1571,17 @@ local function drawAmmoDebug()
 	lines[#lines + 1] = "game.*spawn*: " .. keysLike("game", "spawn")
 	lines[#lines + 1] = "spawn.*: " .. keysLike("spawn", nil, 6)
 	lines[#lines + 1] = "mods.available: " .. keysLike("mods.available", "liminal", 3)
+	lines[#lines + 1] = "level.spawn: at load '" .. tostring(spawnFlagAtLoad) .. "'  now '" .. GetString("level.spawn") .. "'"
+	local okS, sk = pcall(ListKeys, "spawn.local-liminal-atrium")
+	if okS and sk and #sk > 0 then
+		local first = "spawn.local-liminal-atrium." .. sk[1]
+		local sub = {}
+		local okC, ck = pcall(ListKeys, first)
+		if okC and ck then
+			for i = 1, math.min(#ck, 5) do sub[#sub + 1] = ck[i] .. "=" .. GetString(first .. "." .. ck[i]) end
+		end
+		lines[#lines + 1] = "spawn.local-liminal-atrium: [" .. #sk .. "] " .. sk[1] .. " = '" .. GetString(first) .. "'  { " .. table.concat(sub, ", ") .. " }"
+	end
 	UiPush()
 		UiTranslate(20, 20)
 		UiColor(0, 0, 0, 0.6)
@@ -1601,8 +1612,12 @@ local ammoTimer = 0
 ammoDebug = false
 interactHandled = false
 
+spawnFlagAtLoad = nil
 function init()
-	SetBool("level.sandbox", true)          -- sandbox level (spawn menu etc.)
+	SetBool("level.sandbox", true)          -- sandbox level
+	-- the game's spawn menu (T / pause -> Spawn) is allowed by level.spawn; for this map the game leaves it off
+	spawnFlagAtLoad = HasKey("level.spawn") and GetString("level.spawn") or "(missing)"
+	SetBool("level.spawn", true)
 	SetBool("level.unlimitedammo", true)
 	loadSounds()
 	giveTools()
@@ -1625,6 +1640,7 @@ function tick(dt)
 	if toolTimer < 3 then
 		toolTimer = toolTimer + dt
 		giveTools()
+		if not GetBool("level.spawn") then SetBool("level.spawn", true) end   -- (in case the game resets it after init)
 	end
 	ammoTimer = (ammoTimer or 0) - dt
 	if ammoTimer <= 0 then
