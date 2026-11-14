@@ -187,6 +187,16 @@ checks["atrium lounge: in front of the bar"] = (ATq["bar"][0] + 30, G0, ATq["bar
 checks["atrium lounge: behind the bar"] = (ATq["bar"][0] + 30, G0, ATq["zp"] - 9)
 checks["atrium lawn on the podium (up the stair)"] = (236, ATq["pody"], 350)
 checks["atrium store room under the lawn (through its door)"] = (236, G0, ATq["zp"] + 20)
+for (wn_, wx0, wx1, wz0, wz1, wy) in ns["RESTROOMS"]:
+    checks[f"{wn_} restroom (men)"] = ((wx0 + (wx0 + wx1) // 2) // 2 + 3, wy, (wz0 + wz1) // 2 + 4)
+    checks[f"{wn_} restroom (women)"] = (((wx0 + wx1) // 2 + wx1) // 2 - 3, wy, (wz0 + wz1) // 2 + 4)
+for i_, (cx_, cz_) in enumerate(ns["CHANGING"]):
+    checks[f"pool changing room {i_ + 1}"] = (cx_ - 4, ns["DY"], cz_)
+BWq = ns["BOWL"]
+checks["bowling: approach of lane 1"] = (BWq["x"][0] + 6, G0, BWq["foul"] - 2)
+checks["bowling: lounge"] = (ns["ax0"] + 10, G0, BWq["room"][2] + 60)
+checks["bowling: snack bar"] = (ns["ax1"] - 40, G0, BWq["room"][2] + 50)
+checks["B1 tech store (NOVA)"] = (262, YB, 282)
 checks["B2 food street: south court"] = (288, YB2, 100)
 checks["B2 food street: west walkway"] = (280, YB2, 290)
 checks["B2 food street: east walkway"] = (342, YB2, 290)
@@ -679,6 +689,24 @@ gap_ = gap_ if len(span_) >= 50 else ["no sign panel"]
 report("roof: no dead-end sliver between the HOTEL sign and the parapet", not gap_, str(gap_[:4]))
 sl_ = ns["G"][bx0 + 4:ns["GLASSHOUSE"]["x0"], RY:RY + 4, ns["GLASSHOUSE"]["z0"]:ns["GLASSHOUSE"]["z1"]]
 report("roof: the 40 cm gap west of the glasshouse is a hedge planter, not a passage", bool((sl_ > 0).all()))
+# v3.49: bowling lanes clear, pins / balls have room, restrooms + changing rooms built
+lane_bad = []
+for (ln_, (hx_, hz_), spots_) in BWq["lanes"]:
+    lx_ = hx_ - 6
+    if (FULL[lx_:lx_ + 12, G0:G0 + 12, BWq["foul"]:BWq["pit"]] > 0).any() or not (FULL[lx_:lx_ + 12, G0 - 1, BWq["foul"]:BWq["pit"]] > 0).all():
+        lane_bad.append(f"lane {ln_}")
+    for (bx_, bz_) in spots_:
+        if (FULL[int(bx_) - 2:int(bx_) + 3, G0 + 6:G0 + 11, int(bz_) - 2:int(bz_) + 3] > 0).any():
+            lane_bad.append(f"ball spot {ln_}")
+report("bowling: 4 lanes clear from the foul line to the pit, pin decks flat, ball spots free",
+       len(BWq["lanes"]) == 4 and not lane_bad and len(re.findall(r'bowlinglane lane=', open("main.xml").read())) == 4, str(lane_bad))
+btn_ = [t_ for t_ in ns["TAGGED_SHAPES"] if t_[3].startswith("bowlreset")]
+report("bowling: a reset button per lane, prefabs for pins and balls (tagged)",
+       len(btn_) == 4 and all(body_hits(t_[1], t_[2]) == 0 for t_ in btn_)
+       and 'tags="bowlpin"' in open("prefab/bowling_pin.xml").read() and 'tags="bowlball"' in open("prefab/bowling_ball.xml").read())
+report("restrooms: men + women on B1 and B2; changing rooms behind both pool doors",
+       len(ns["RESTROOMS"]) == 2 and len(ns["CHANGING"]) == 2 and sum(1 for d in ns["DOORS"] if "changing" in d["tag"]) == 2
+       and sum(1 for d in ns["DOORS"] if "wc" in d["tag"]) == 4)
 # v3.47: HOTEL letters each their own lamp, penthouse TV, public-address announcement
 let_ = [r_ for r_ in ns["ROOF_SHAPES"] if r_[0].startswith("hotel_letter")]
 sign_left = int((FULL[bx0:bx1, RY + 10:RY + 30, bz0:bz0 + 8] == ns["STREET_LMP"]).sum())

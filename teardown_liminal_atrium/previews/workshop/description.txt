@@ -9,6 +9,7 @@ A deserted hotel at night. Six floors of fully furnished rooms around a purple-l
 [*]4 working elevators (B2 - roof) with call buttons, landing doors and a floor keypad
 [*]B1: underground car park (ramp from the street, drivable cars) + luxury shopping arcade with boutiques, restaurant, café, fountain and automatic doors
 [*]B2: food street with 12 neon-lit stalls, long tables, lanterns and neon gates + a second car park, down a ramp from B1
+[*]Bowling alley under the atrium lawn: 4 lanes, pins you can knock down, STRIKE counter, reset buttons
 [*]Poolroom annex: real water pool, spa, loungers, lifeguard chair
 [*]Rooftop glasshouse "FLORA": glass vault and cupola, lily pond, palms, flower beds, wisteria
 [*]Helipad with a drivable, breakable helicopter (W/S forward/back, A/D turn, Space/Ctrl up/down)
@@ -34,6 +35,7 @@ M - stop the mission
 [*]작동하는 엘리베이터 4대 (지하 2층 - 옥상), 호출 버튼·승강장 문·층 키패드
 [*]지하 1층: 도로에서 경사로로 들어가는 지하주차장(운전 가능한 차) + 부티크·레스토랑·카페·분수·자동문이 있는 명품 상가
 [*]지하 2층: 네온 노점 12곳·긴 테이블·홍등·네온 게이트의 푸드 스트리트 + B1에서 경사로로 내려가는 두 번째 주차장
+[*]아트리움 잔디 아래 볼링장: 레인 4개, 핀 쓰러뜨리기, STRIKE 표시, 리셋 버튼
 [*]수영장 별관: 진짜 물이 있는 수영장, 스파, 선베드, 안전요원 의자
 [*]옥상 유리 식물정원 "FLORA": 유리 지붕과 큐폴라, 연못, 야자수, 꽃밭, 등나무
 [*]헬리패드와 운전·파괴 가능한 헬기 (W/S 전진/후진, A/D 회전, Space/Ctrl 상승/하강)

@@ -163,6 +163,8 @@ RED        = P(169, (176, 30, 30), "metal", rough=0.4, metal=0.3)
 TIRE       = P(170, (24, 24, 24), "metal", rough=0.9, metal=0.0)
 DUMPSTER   = P(171, (40, 82, 52), "metal", rough=0.6, metal=0.4)
 POOL_LAMP  = P(172, (150, 232, 255), "emit", flux=2, weight=0.8)
+BALL_R     = P(138, (150, 24, 48), "metal", rough=0.08, metal=0.25)     # bowling balls (heavy)
+BALL_B     = P(139, (30, 52, 140), "metal", rough=0.08, metal=0.25)
 FROST      = P(173, (214, 222, 232), "metal", rough=0.35, metal=0.0)   # smart glass, frosted
 BASE_STONE = P(177, (122, 118, 112)); BASE_STONE2 = P(178, (110, 106, 100))
 PILLAR     = P(179, (196, 188, 172))
@@ -418,9 +420,10 @@ for (x0, x1, z0, z1) in [(bx0 - SW + 4, bx0 - 6, bz0 + 30, bz1 - 30), (bx1 + 6, 
     box(x0 - 1, x1 + 1, G0, G0 + 2, z0 - 1, z0, CURB); box(x0 - 1, x1 + 1, G0, G0 + 2, z1, z1 + 1, CURB)
     box(x0 - 1, x0, G0, G0 + 2, z0, z1, CURB); box(x1, x1 + 1, G0, G0 + 2, z0, z1, CURB)
 
-def tree(x, z, h=None):
+def tree(x, z, h=None, draw=True):
     h = h or rng.randint(42, 58)
-    box(x - 1, x + 1, G0 + 2, G0 + h, z - 1, z + 1, TRUNK)
+    if draw:
+        box(x - 1, x + 1, G0 + 2, G0 + h, z - 1, z + 1, TRUNK)
     cy = G0 + h
     R = 16
     xs = np.arange(x - R, x + R); ys = np.arange(cy - R, cy + R); zs = np.arange(z - R, z + R)
@@ -433,6 +436,8 @@ def tree(x, z, h=None):
     canopy &= hash3(X, Y, Z, 5) > 0.18
     # the trunk top is the anchor: only foliage connected to it survives (no floating leaves)
     canopy[R - 1:R + 1, :R + 1, R - 1:R + 1] = True
+    if not draw:
+        return                                    # (the random draws still happen: the rest of the map stays put)
     canopy = keep_connected(canopy, [(R, R - 1, R)])
     ok = (X >= 0) & (X < W) & (Y >= 0) & (Y < H) & (Z >= 0) & (Z < D) & canopy
     t = hash3(X[ok], Y[ok], Z[ok], 9)
@@ -441,7 +446,7 @@ def tree(x, z, h=None):
 for z in range(bz0 + 50, bz1 - 40, 70):
     tree(bx0 - SW // 2 - 2, z); tree(bx1 + SW // 2 + 2, z)
 for x in range(bx0 + 50, bx1 - 40, 70):
-    tree(x, bz1 + SW // 2 + 2)
+    tree(x, bz1 + SW // 2 + 2, draw=not (150 <= x <= 215))     # (the pool changing-room wing stands there)
 # parking lot (south): bays, wheel stops
 for i in range(13):
     x = bx0 - 30 + i * 30
@@ -731,7 +736,7 @@ PROPS.append(("luggage_cart", ax1 - 34, G0, az0 + 26, 15))
 # ---- the podium: slab on columns over a store room, lawn on top, glass balustrade on its edge
 ARNG = random.Random(4747)
 box(ax0, ax1, G0, PODY, ZP, az1, SLAB)
-box(ax0, ax1, G0, PODY - SLAB_T, ZP + 3, az1, 0)                         # the store room under the lawn
+box(ax0, ax1, G0, PODY - SLAB_T, ZP + 3, az1, 0)                         # the room under the lawn (bowling)
 box(ax0, ax1, G0 - 1, G0, ZP + 3, az1, STAIR_CONC)
 for cx_ in (ax0 + 40, ax0 + 80, ax0 + 120):
     for cz_ in (ZP + 50, ZP + 100):
@@ -759,22 +764,7 @@ box(DX0 - 1, DX0 + 11, G0 + 22, G0 + 23, ZP - 1, ZP, DARK_METAL)
 add_door(WORLD, DX0, DX0 + 10, G0, G0 + 22, ZP + 1, ZP + 2, wood_door, hinge=(DX0, ZP + 2), open_dir=(0, 1),
          tag="hoteldoor staff", stop=DARK_METAL)
 box(DX0 + 12, DX0 + 16, G0 + 12, G0 + 15, ZP - 1, ZP, BRASS)
-# store room: steel shelving with boxes, stacked chairs, two battens
-for sx_ in range(ax0 + 6, ax1 - 10, 30):
-    box(sx_, sx_ + 18, G0, G0 + 18, az1 - 8, az1 - 2, STEEL)
-    box(sx_ + 1, sx_ + 17, G0 + 1, G0 + 18, az1 - 7, az1 - 2, 0)
-    for sh_ in (G0 + 5, G0 + 11, G0 + 17):
-        box(sx_ + 1, sx_ + 17, sh_, sh_ + 1, az1 - 7, az1 - 2, STEEL)
-        for bx_ in range(sx_ + 2, sx_ + 16, 4):
-            if ARNG.random() < 0.75:
-                box(bx_, bx_ + 3, sh_ + 1, sh_ + 1 + ARNG.randint(2, 4), az1 - 6, az1 - 3, ARNG.choice((CARP_OR, WOOD_LIGHT, SHEET)))
-for (cx_, cz_) in ((ax0 + 60, ZP + 20), (ax0 + 100, ZP + 30)):
-    for k_ in range(5):
-        box(cx_, cx_ + 5, G0 + k_ * 2, G0 + k_ * 2 + 1, cz_, cz_ + 5, TV_BODY)
-        box(cx_, cx_ + 1, G0, G0 + 10, cz_, cz_ + 1, CHROME)
-for lz_ in (ZP + 30, ZP + 90):
-    box(ax0 + 75, ax0 + 85, PODY - SLAB_T - 1, PODY - SLAB_T, lz_, lz_ + 2, CEIL_LAMP)
-    light(ax0 + 80, PODY - SLAB_T - 2.5, lz_ + 1, (0.9, 0.95, 1.0), 1.4, 0.2)
+# (under the lawn: a bowling alley -- section 8f, after the fonts and helpers it uses)
 # ---- stair up to the lawn along the west wall, glass balustrade on its open side
 for k_ in range(15):
     z_ = ZP - 45 + 3 * k_
@@ -2058,12 +2048,45 @@ for dx in range(-5, 6):
         if r_ <= 5:
             box(ckx + dx, ckx + dx + 1, cky + dy, cky + dy + 1, iz1, iz1 + 1, TV_BODY if r_ > 4.2 else CERAMIC)
 box(ckx, ckx + 1, cky, cky + 4, iz1 - 1, iz1, TV_BODY); box(ckx, ckx + 3, cky, cky + 1, iz1 - 1, iz1, TV_BODY)
+# changing rooms (v3.49): a small wing outside the hall's south wall, between the hotel and the annex
+CH_X0, CH_X1, CH_Z0 = cxN - 76, cxN - 34, AZ0 - 36
+box(CH_X0, CH_X1, BED_Y + 1, DY, CH_Z0, AZ0, SLAB)
+box(CH_X0, CH_X1, DY, DY + 30, CH_Z0, AZ0, EXT_WALL)
+box(CH_X0 - 1, CH_X1 + 1, DY + 30, DY + 32, CH_Z0 - 1, AZ0, EXT_TRIM)
+CHANGING = []
 for i, dxs in enumerate((-70, -50)):
     dx_ = cxN + dxs
+    a, b = (CH_X0 + 2, cxN - 56) if i == 0 else (cxN - 54, CH_X1 - 2)
+    col = ART1 if i == 0 else BLANKET_B
+    box(a, b, DY, DY + 28, CH_Z0 + 2, AZ0, 0)
+    for x in range(a, b):
+        for z in range(CH_Z0 + 2, AZ0):
+            G[x, DY - 1, z] = POOL_TILE if ((x // 4) + (z // 4)) % 2 else WHITE_TILE
+    paint(a - 1, b + 1, DY, DY + 28, CH_Z0 + 1, AZ0, WHITE_TILE, [EXT_WALL])
+    paint(a - 1, b + 1, DY + 12, DY + 13, CH_Z0 + 1, AZ0, col, [WHITE_TILE])
+    for lz in range(CH_Z0 + 8, AZ0 - 4, 5):                                         # lockers along the outer wall
+        bx_ = a if i == 0 else b - 4
+        box(bx_, bx_ + 4, DY, DY + 22, lz, lz + 4, col)
+        box(bx_ + (3 if i == 0 else 0), bx_ + (4 if i == 0 else 1), DY + 18, DY + 20, lz + 1, lz + 3, DARK_METAL)
+        box(bx_ + (3 if i == 0 else 0), bx_ + (4 if i == 0 else 1), DY + 10, DY + 11, lz + 3, lz + 4, CHROME)
+    mx_ = (a + b) // 2                                                                # bench
+    box(mx_ - 2, mx_ + 2, DY + 4, DY + 5, CH_Z0 + 12, AZ0 - 8, WOOD_MED)
+    for bz_ in (CH_Z0 + 13, AZ0 - 10):
+        box(mx_ - 1, mx_ + 1, DY, DY + 4, bz_, bz_ + 1, CHROME)
+    sx_ = b - 7 if i == 0 else a                                                      # shower in the far corner
+    box(sx_, sx_ + 7, DY - 1, DY, CH_Z0 + 2, CH_Z0 + 9, TILE_DARK)
+    box(sx_ + 3, sx_ + 4, DY + 22, DY + 28, CH_Z0 + 2, CH_Z0 + 3, CHROME)
+    box(sx_ + 2, sx_ + 5, DY + 22, DY + 23, CH_Z0 + 2, CH_Z0 + 5, CHROME)
+    box(sx_, sx_ + 7, DY, DY + 22, CH_Z0 + 9, CH_Z0 + 10, GLASS)
+    box(mx_ - 1, mx_ + 2, DY + 27, DY + 28, (CH_Z0 + AZ0) // 2 - 1, (CH_Z0 + AZ0) // 2 + 2, CEIL_LAMP)
+    light(mx_ + 0.5, DY + 25.5, (CH_Z0 + AZ0) // 2 + 0.5, (0.95, 0.98, 1.0), 1.2, 0.2)
+    # the door from the hall (was painted on the wall)
     box(dx_ - 1, dx_ + 11, DY, DY + 23, iz0 - 1, iz0, FRAME)
-    box(dx_, dx_ + 10, DY, DY + 22, iz0 - 1, iz0, WOOD_DOOR)
-    box(dx_ + 8, dx_ + 9, DY + 10, DY + 12, iz0, iz0 + 1, BRASS)
-    box(dx_ + 3, dx_ + 7, DY + 25, DY + 29, iz0 - 1, iz0, ART1 if i == 0 else BLANKET_B)    # pictogram plate
+    box(dx_, dx_ + 10, DY, DY + 22, AZ0, iz0, 0)
+    add_door(WORLD, dx_, dx_ + 10, DY, DY + 22, iz0 - 1, iz0, wood_door, hinge=(dx_, iz0 - 1), open_dir=(0, -1),
+             tag="hoteldoor changing", stop=FRAME)
+    box(dx_ + 3, dx_ + 7, DY + 25, DY + 29, iz0 - 1, iz0, col)                        # pictogram plate
+    CHANGING.append(((a + b) // 2, (CH_Z0 + AZ0) // 2))
 box(ix0, ix0 + 4, DY, DY + 10, iz0 + 40, iz0 + 46, CHROME)                         # drinking fountain
 box(ix0, ix0 + 5, DY + 10, DY + 11, iz0 + 39, iz0 + 47, CHROME)
 for (sx_, sz_) in ((px0 - 6, pz0 - 12), (px1 - 4, pz0 - 12)):                      # NO DIVING signs (red/white)
@@ -2278,6 +2301,7 @@ SHOP_STYLE = {   # wall, floor, light colour
     "fashion": (ATR_WALL, PARQUET, (0.95, 0.9, 1.0)), "shoes": (ROOM_WALL_B, MARBLE_BG, (1.0, 0.9, 0.8)),
     "florist": (WALL_GREEN, TILE, (0.95, 1.0, 0.9)), "gallery": (CEIL, MARBLE_W, (1.0, 0.97, 0.92)),
     "cafe": (WOOD_MED, PARQUET, (1.0, 0.8, 0.55)), "restaurant": (ROOM_WALL_C, PARQUET, (1.0, 0.78, 0.5)),
+    "tech": (CEIL, FLOOR_MED, (0.97, 0.98, 1.0)),
 }
 SHOPS = []
 
@@ -2397,12 +2421,61 @@ def shop(x0, x1, z0, z1, side, kind, name, sign=STREET_LMP):
         for (tu, tv) in ((10, 12), (Wd // 2 + 6, 12), (Wd // 2 + 6, Dp // 2 + 2)):
             round_table(fr, tu, tv, MARBLE_W, r=3, h=8, cloth=False)
             chair(fr, tu - 9, tv - 2, (1, 0), BLANKET_B); chair(fr, tu + 5, tv - 2, (-1, 0), BLANKET_B)
+    elif kind == "tech":
+        # a minimal tech store: steel instead of brass on the front, white walls, light-oak tables with
+        # laptops / phones / tablets, a service bar, a video wall at the back, two trees, a light ceiling
+        fr.paint(0, Wd, YB, YC, -1, 1, STEEL, [BRASS]); fr.paint(0, Wd, YB, YC, -1, 1, CEIL, [MARBLE_W])
+        fr.paint(2, Wd - 2, YB - 1, YB, 0, Dp - 2, FLOOR_MED)
+        TRNG = random.Random(4950)
+        def device_table(u0, u1, v0):
+            fr.box(u0, u1, YB + 7, YB + 8, v0, v0 + 7, WOOD_LIGHT)
+            for lu in (u0 + 1, u1 - 2):
+                for lv in (v0 + 1, v0 + 5):
+                    fr.box(lu, lu + 1, YB, YB + 7, lv, lv + 1, CEIL)
+            for k_, u in enumerate(range(u0 + 2, u1 - 4, 6)):
+                if k_ % 3 == 0:                                                        # open laptop
+                    fr.box(u, u + 4, YB + 8, YB + 9, v0 + 2, v0 + 5, CHROME)
+                    fr.box(u, u + 4, YB + 9, YB + 12, v0 + 5, v0 + 6, CHROME)
+                    fr.box(u, u + 4, YB + 9, YB + 12, v0 + 4, v0 + 5, TV_SCREEN)
+                elif k_ % 3 == 1:                                                      # tablets
+                    fr.box(u, u + 3, YB + 8, YB + 9, v0 + 2, v0 + 4, CHROME)
+                    fr.box(u + 1, u + 2, YB + 8, YB + 9, v0 + 2, v0 + 4, TV_SCREEN)
+                else:                                                                  # phones on stands
+                    for pu in (u, u + 2):
+                        fr.box(pu, pu + 1, YB + 8, YB + 11, v0 + 3, v0 + 4, TV_BODY)
+                        fr.box(pu, pu + 1, YB + 9, YB + 11, v0 + 2, v0 + 3, TV_SCREEN)
+        d0, d1 = Wd // 2 - 9, Wd // 2 + 9
+        device_table(8, d0 - 4, 10); device_table(d1 + 4, Wd - 8, 10)
+        device_table(20, Wd // 2 - 4, 24); device_table(Wd // 2 + 4, Wd - 20, 24)
+        # service bar with stools, the video wall behind it (soft gradient light), accessory walls on the sides
+        fr.box(28, Wd - 28, YB, YB + 10, Dp - 13, Dp - 10, CEIL)
+        fr.box(27, Wd - 27, YB + 10, YB + 11, Dp - 14, Dp - 9, WOOD_LIGHT)
+        for su in range(30, Wd - 30, 6):
+            fr.box(su, su + 1, YB, YB + 8, Dp - 17, Dp - 16, CHROME)
+            fr.box(su - 1, su + 2, YB + 8, YB + 9, Dp - 18, Dp - 15, WOOD_LIGHT)
+        fr.box(24, Wd - 24, YB + 12, YB + 30, Dp - 3, Dp - 2, TV_BODY)
+        for yy in range(YB + 13, YB + 29):
+            col_ = (POOL_LAMP, TV_SCREEN, COVE_LAMP, MEMORY)[min(3, (yy - YB - 13) // 4)]
+            fr.box(25, Wd - 25, yy, yy + 1, Dp - 4, Dp - 3, col_)
+        for (au0, au1) in ((3, 20), (Wd - 20, Wd - 3)):
+            for sy in (YB + 10, YB + 16, YB + 22):
+                fr.box(au0, au1, sy, sy + 1, Dp - 5, Dp - 2, CEIL)
+                for u in range(au0 + 1, au1 - 2, 3):
+                    fr.box(u, u + 2, sy + 1, sy + 3, Dp - 4, Dp - 3, TRNG.choice((CEIL, TV_BODY, ART1, ROSE, WALL_GREEN, YELLOW_PAINT)))
+        for tu in (5, Wd - 6):                                                         # two trees in white planters
+            fr.box(tu - 3, tu + 4, YB, YB + 6, Dp - 14, Dp - 7, CEIL)
+            fr.box(tu - 2, tu + 3, YB + 5, YB + 6, Dp - 13, Dp - 8, SOIL)
+            tx_, tz_ = fr.pt(tu, Dp - 11)
+            box(tx_, tx_ + 1, YB + 6, YB + 18, tz_, tz_ + 1, TRUNK)
+            leaf_blob(tx_, YB + 23, tz_, 6, 90 + tu, LEAF2, anchor=(tx_, YB + 17, tz_), squash=1.0, keep=0.3)
+        for (pu, pv) in ((Wd // 4, Dp // 3), (3 * Wd // 4, Dp // 3), (Wd // 4, 2 * Dp // 3), (3 * Wd // 4, 2 * Dp // 3)):
+            fr.box(pu - 6, pu + 6, YC - 1, YC, pv - 4, pv + 4, CEIL_LAMP)              # light-box ceiling panels
     return fr, Wd, Dp
 
 # ---- west row (fronts face east onto the promenade)
 shop(PX1 + 2, PRM0, IZ0, 160, "E", "jewelry", "ORO")
 shop(PX1 + 2, PRM0, 160, 232, "E", "bags", "VELOUR")
-shop(PX1 + 2, PRM0, 266, 332, "E", "watches", "NOCTURNE")
+shop(PX1 + 2, PRM0, 232, 332, "E", "tech", "NOVA", sign=CEIL_LAMP)     # (v3.49: a tech store, the old door alcove merged in)
 shop(PX1 + 2, PRM0, 332, PZ1, "E", "perfume", "AURELIA")
 shop(PX1 + 2, PRM0, 428, IZ1, "E", "cafe", "CAFE")
 # ---- east row (fronts face west)
@@ -2413,6 +2486,51 @@ shop(PRM1, IX1, 386, 426, "W", "florist", "FLEUR")
 
 # ---- restaurant LUMIERE (north arcade, front faces south onto the arcade corridor)
 rfr, RW, RD = shop(132, PX1 + 2, 428, IZ1, "S", "restaurant", "LUMIERE", sign=CEIL_LAMP)
+# ---- public restrooms (v3.49): a men's and a women's room side by side, doors on the z1 face
+RESTROOMS = []                                    # (level name, x0, x1, z0, z1, y)
+def pictogram(x0, y0, z, col, women):
+    """a 5 x 7 sign plate on the z face: a white figure on blue / red."""
+    box(x0, x0 + 5, y0, y0 + 7, z, z + 1, col)
+    box(x0 + 2, x0 + 3, y0 + 5, y0 + 6, z, z + 1, SHEET)                              # head
+    if women:
+        box(x0 + 1, x0 + 4, y0 + 2, y0 + 4, z, z + 1, SHEET); box(x0 + 2, x0 + 3, y0 + 4, y0 + 5, z, z + 1, SHEET)
+        box(x0 + 1, x0 + 2, y0 + 1, y0 + 2, z, z + 1, SHEET); box(x0 + 3, x0 + 4, y0 + 1, y0 + 2, z, z + 1, SHEET)
+    else:
+        box(x0 + 1, x0 + 4, y0 + 3, y0 + 5, z, z + 1, SHEET)
+        box(x0 + 1, x0 + 2, y0 + 1, y0 + 3, z, z + 1, SHEET); box(x0 + 3, x0 + 4, y0 + 1, y0 + 3, z, z + 1, SHEET)
+def restrooms(x0, x1, z0, z1, y, top, name):
+    box(x0, x1, y, top, z0, z1, WHITE_TILE)
+    mid = (x0 + x1) // 2
+    for (a, b, col, women) in ((x0 + 2, mid - 1, BLANKET_C, False), (mid + 1, x1 - 2, BLANKET_B, True)):
+        box(a, b, y, top, z0, z1 - 2, 0)
+        for x in range(a, b):
+            for z in range(z0, z1 - 2):
+                G[x, y - 1, z] = TILE_DARK if ((x // 3) + (z // 3)) % 2 else WHITE_TILE
+        paint(a - 1, b + 1, y, y + 10, z0 - 1, z1 - 1, col, [WHITE_TILE])                 # coloured dado
+        paint(a - 1, b + 1, y + 10, y + 11, z0 - 1, z1 - 1, SHEET, [col])
+        dx = (a + b) // 2 - 4
+        box(dx, dx + 9, y, y + 22, z1 - 2, z1, 0)
+        box(dx - 1, dx + 10, y + 22, y + 23, z1 - 1, z1, STEEL)
+        add_door(WORLD, dx, dx + 9, y, y + 22, z1 - 2, z1 - 1, wood_door, hinge=(dx, z1 - 2), open_dir=(0, -1),
+                 tag="hoteldoor wc", stop=STEEL)
+        pictogram(dx + 2, y + 24, z1, col, women)
+        # WC (with its tank) in the back corner, a basin with a mirror and a dryer on the side wall
+        box(a + 1, a + 6, y, y + 4, z0 + 1, z0 + 7, CERAMIC); box(a + 2, a + 5, y + 3, y + 4, z0 + 2, z0 + 6, 0)
+        box(a + 1, a + 6, y + 4, y + 10, z0, z0 + 2, CERAMIC); box(a + 3, a + 4, y + 10, y + 11, z0, z0 + 1, CHROME)
+        box(a + 8, a + 9, y, y + 20, z0, z0 + 9, WHITE_TILE)                             # cubicle screen
+        box(b - 4, b, y + 8, y + 10, z0 + 10, z0 + 16, CERAMIC); box(b - 3, b - 1, y + 9, y + 10, z0 + 11, z0 + 15, 0)
+        box(b - 1, b, y + 10, y + 12, z0 + 12, z0 + 14, CHROME)
+        box(b - 1, b, y + 12, y + 21, z0 + 10, z0 + 16, MIRROR)
+        box(b - 2, b, y + 13, y + 16, z0 + 18, z0 + 21, CHROME)                         # hand dryer
+        if not women:
+            box(a, a + 2, y + 5, y + 11, z0 + 13, z0 + 16, CERAMIC)                     # urinal
+        cx_, cz_ = (a + b) // 2, (z0 + z1) // 2
+        box(cx_ - 1, cx_ + 2, top - 1, top, cz_ - 1, cz_ + 2, CEIL_LAMP)
+        light(cx_ + 0.5, top - 2.5, cz_ + 0.5, (0.95, 0.97, 1.0), 1.2, 0.2)
+    RESTROOMS.append((name, x0, x1, z0, z1, y))
+WC_BOX = (PRM0 + 6, PRM0 + 46, IZ0, IZ0 + 30)               # south end of the B1 promenade (and below it in B2)
+restrooms(WC_BOX[0], WC_BOX[1], WC_BOX[2], WC_BOX[3], YB, YC, "B1")
+
 rfr.box(2, RW - 2, YB, YB + 10, RD - 3, RD - 2, WAINS)
 rfr.box(2, RW - 2, YB + 10, YB + 11, RD - 3, RD - 2, CHAIR_RAIL)
 rfr.box(8, RW - 30, YB, YB + 11, RD - 16, RD - 11, WOOD_DARK)                     # bar
@@ -3153,20 +3271,21 @@ def cafe_table(cx, cz, col):
             box(x_, x_ + 1, Y2 + 4, Y2 + 5, min(bz_, z_), max(bz_, z_) + 1, DARK_METAL)
 S_COURT = (FS_X0, SEr[0] - 4, IZ0, ST_Z0 - 10)                # x 238..338, z 88..162 (the SE lift lobby east of it)
 N_COURT = (FS_X0, NEr[0] - 4, ST_Z1 + 10, IZ1)                # x 238..312, z 422..496 (the NE stair lobby east of it)
-for (cx_, cz_, c_) in ((FS_X0 + 22, 108, UPHOL2), (FS_X0 + 52, 108, BLANKET_B), (FS_X0 + 22, 140, BLANKET_B),
-                       (FS_X0 + 52, 140, UPHOL2), (FS_X0 + 82, 124, UPHOL2),
+restrooms(WC_BOX[0], WC_BOX[1], WC_BOX[2], WC_BOX[3], Y2, YC2, "B2")
+for (cx_, cz_, c_) in ((FS_X0 + 18, 108, UPHOL2), (FS_X0 + 44, 108, BLANKET_B), (FS_X0 + 18, 140, BLANKET_B),
+                       (FS_X0 + 44, 140, UPHOL2), (FS_X0 + 72, 146, UPHOL2),
                        (FS_X0 + 26, 444, BLANKET_C), (FS_X0 + 56, 444, UPHOL2), (FS_X0 + 56, 474, BLANKET_C)):
     cafe_table(cx_, cz_, c_)
-for (px_, pz_) in ((S_COURT[1] - 4, IZ0 + 5), (FS_X0 + 6, ST_Z0 - 16), (FS_X0 + 6, ST_Z1 + 14), (N_COURT[1] - 4, IZ1 - 6)):
+for (px_, pz_) in ((FS_X0 + 6, IZ0 + 6), (FS_X0 + 6, ST_Z0 - 16), (FS_X0 + 6, ST_Z1 + 14), (N_COURT[1] - 4, IZ1 - 6)):
     planter(px_, pz_, r=3, h=6)
 for (lx_, lz_) in ((FS_X0 + 37, 124), (FS_X0 + 41, 459)):
     box(lx_ - 3, lx_ + 4, YC2 - 1, YC2, lz_ - 3, lz_ + 4, BRASS)
     box(lx_ - 2, lx_ + 3, YC2 - 2, YC2 - 1, lz_ - 2, lz_ + 3, CEIL_LAMP)
     light(lx_ + 0.5, YC2 - 4, lz_ + 0.5, (1.0, 0.85, 0.65), 2.4, 0.4)
 eat_fr = Frame(0, IZ0, 1, 0, 0, -1)                           # on the south wall, read from the north
-box(S_COURT[0] + 18, S_COURT[1] - 18, Y2 + 12, Y2 + 31, IZ0, IZ0 + 1, TIRE)
-big_text(eat_fr, "EAT", (S_COURT[0] + S_COURT[1]) // 2 + 1, Y2 + 29, -1, MEMORY, k=3)
-light((S_COURT[0] + S_COURT[1]) / 2, Y2 + 20, IZ0 + 6, (1.0, 0.5, 0.8), 1.2, 0.3)
+box(FS_X0 + 10, FS_X0 + 54, Y2 + 12, Y2 + 31, IZ0, IZ0 + 1, TIRE)
+big_text(eat_fr, "EAT", FS_X0 + 33, Y2 + 29, -1, MEMORY, k=3)
+light(FS_X0 + 32, Y2 + 20, IZ0 + 6, (1.0, 0.5, 0.8), 1.2, 0.3)
 box(N_COURT[0] + 18, N_COURT[1] - 12, Y2 + 12, Y2 + 31, IZ1 - 1, IZ1, TIRE)  # north wall: a big neon B2
 nfr = Frame(0, IZ1 - 1, -1, 0, 0, 1)
 big_text(nfr, "B2", -((N_COURT[0] + N_COURT[1]) // 2 + 3), Y2 + 29, -1, POOL_LAMP, k=3)
@@ -3273,6 +3392,106 @@ SOUND_SPOTS.extend([("mall", TC, Y2 + 15, z_) for z_ in (200, 300, 400)] + [("ma
 SOUND_SPOTS.extend([("garage", sum(CP_AISLE) // 2, Y2 + 15, z_) for z_ in (150, 300, 450)])
 B2 = dict(food=(FS_X0, FS_X1), park=(CP_X0, CP_X1), stalls=STALLS, tables=TABLES, door=B2_DOOR, cols=COLS2,
           w_bays=W2_BAYS, e_bays=E2_BAYS, aisle=CP_AISLE, lanterns=LANTERNS, ramp=(R3_X0, R3_X1, R3_TOP, R3_BOT))
+
+# ============================================================================
+# 8f. Bowling alley (v3.49) in the room under the atrium lawn: 4 lanes with gutters, pin decks behind a
+#     masking wall, scoreboards, ball racks with a reset button per lane, a snack bar and a lounge.
+#     main.lua spawns the pins and balls ("bowlinglane" locations) and resets a lane on E.
+# ============================================================================
+BW_Z0, BW_Z1 = ZP + 3, az1                      # room interior (z), x ax0..ax1, y G0..BW_TOP
+BW_TOP = PODY - SLAB_T
+FOUL_Z, DECK_Z, PIT_Z, END_Z = ZP + 24, az1 - 20, az1 - 6, az1 - 1
+LANE_X = [ax0 + 46, ax0 + 64, ax0 + 86, ax0 + 104]   # lane beds (12 wide): two lanes each side of the x = 236 columns
+BOWL_LANES = []                                   # (lane, head pin (x, z), rack ball spots [(x, z), ...])
+BOWL_BUTTONS = []                                 # (name, arr, gmin, tags) -> TAGGED_SHAPES
+BRNG2 = random.Random(4949)
+paint(ax0, ax1, BW_TOP, BW_TOP + 1, BW_Z0, BW_Z1, CABLE)                         # black ceiling
+for (xa, xb, za, zb) in ((ax0 - 1, ax0, BW_Z0, BW_Z1), (ax1, ax1 + 1, BW_Z0, BW_Z1), (ax0, ax1, BW_Z1, BW_Z1 + 1), (ax0, ax1, BW_Z0 - 1, BW_Z0)):
+    paint(xa, xb, G0, BW_TOP, za, zb, BLANKET_C)                                 # deep blue walls
+    paint(xa, xb, G0 + 9, G0 + 10, za, zb, POOL_LAMP)                            # a neon line all round
+# carpet: midnight blue with neon confetti
+for x in range(ax0, ax1):
+    for z in range(BW_Z0, BW_Z1):
+        h_ = (x * 7 + z * 13 + (x * z) % 11) % 23
+        G[x, G0 - 1, z] = (MEMORY if h_ == 0 else POOL_LAMP if h_ == 1 else YELLOW_PAINT if h_ == 2 else CARP_BL2 if (x + z) % 2 else CARP_BL)
+for i_, lx in enumerate(LANE_X):
+    for x in range(lx, lx + 12):                                                  # maple boards
+        G[x, G0 - 1, FOUL_Z:DECK_Z] = WOOD_LIGHT if (x - lx) % 3 else PARQUET
+    G[lx:lx + 12, G0 - 1, DECK_Z:PIT_Z] = MARBLE_W                                # pin deck
+    box(lx, lx + 12, G0 - 1, G0, FOUL_Z, FOUL_Z + 1, TV_BODY)                     # foul line
+    for k_ in range(-2, 3):                                                       # aiming arrows
+        G[lx + 6 + 2 * k_, G0 - 1, FOUL_Z + 34 + abs(k_) * 3] = TV_BODY
+        G[lx + 6 + 2 * k_, G0 - 1, FOUL_Z + 12] = TV_BODY
+    for gx in (lx - 2, lx + 12):                                                  # gutters
+        box(gx, gx + 2, G0 - 1, G0, FOUL_Z, PIT_Z, 0)
+        box(gx, gx + 2, G0 - 2, G0 - 1, FOUL_Z, PIT_Z, STEEL)
+    box(lx - 2, lx + 14, G0 - 1, G0, PIT_Z, END_Z, 0)                               # pit + its curtain
+    box(lx - 2, lx + 14, G0 - 2, G0 - 1, PIT_Z, END_Z, TV_BODY)
+    box(lx - 2, lx + 14, G0, G0 + 12, END_Z, END_Z + 1, TIRE)
+    # pin-deck lamp under the masking wall, scoreboard over the approach
+    box(lx, lx + 12, G0 + 13, G0 + 14, PIT_Z - 3, PIT_Z - 2, CEIL_LAMP)
+    light(lx + 6, G0 + 11, PIT_Z - 4.5, (1.0, 0.95, 0.88), 1.6, 0.3)
+    box(lx - 2, lx + 14, BW_TOP - 7, BW_TOP, FOUL_Z - 4, FOUL_Z - 3, TV_BODY)
+    box(lx - 1, lx + 13, BW_TOP - 6, BW_TOP - 1, FOUL_Z - 5, FOUL_Z - 4, TV_SCREEN)
+    ftext(Frame(0, FOUL_Z - 5, -1, 0, 0, 1), f"L{i_ + 1}", -(lx + 6), BW_TOP - 1, -1, CEIL_LAMP)
+    pins_ = [(lx + 6 + (k_ - r_ / 2) * 3, DECK_Z + 3 + r_ * 3) for r_ in range(4) for k_ in range(r_ + 1)]
+    for (px_, pz_) in pins_:
+        G[int(px_), G0 - 1, int(pz_)] = TV_BODY                                    # pin spots
+    BOWL_LANES.append((i_ + 1, (lx + 6, DECK_Z + 3), None))
+# lane cappings with neon tops (between lanes and at both ends); the masking wall over the pin decks
+for (c0, c1) in ((LANE_X[0] - 4, LANE_X[0] - 2), (LANE_X[1] - 4, LANE_X[1] - 2), (LANE_X[1] + 14, LANE_X[2] - 2),
+                 (LANE_X[3] - 4, LANE_X[3] - 2), (LANE_X[3] + 14, LANE_X[3] + 16)):
+    box(c0, c1, G0 - 1, G0 + 2, FOUL_Z, PIT_Z, TV_BODY)
+    box(c0, c1, G0 + 2, G0 + 3, FOUL_Z, PIT_Z, COVE_LAMP)
+box(LANE_X[0] - 4, LANE_X[3] + 16, G0 + 14, BW_TOP, PIT_Z - 3, PIT_Z, TV_BODY)
+for i_, lx in enumerate(LANE_X):                                                   # neon lane numbers on the masking
+    ftext(Frame(0, PIT_Z - 4, -1, 0, 0, 1), str(i_ + 1), -(lx + 6), G0 + 24, 0, (MEMORY, POOL_LAMP, EXIT_SIGN, STREET_LMP)[i_])
+mfr = Frame(0, PIT_Z - 4, -1, 0, 0, 1)
+ftext(mfr, "STRIKE", -((LANE_X[1] + LANE_X[2]) // 2 + 6), BW_TOP - 2, 0, COVE_LAMP)
+# ball racks between the two lanes of each pair, with a red reset button for each lane
+for p_ in range(2):
+    la, lb = LANE_X[2 * p_], LANE_X[2 * p_ + 1]
+    rx0, rx1 = la + 10, lb + 2                                                    # (straddles the capping)
+    rz0, rz1 = FOUL_Z - 18, FOUL_Z - 4
+    box(rx0, rx1, G0, G0 + 5, rz0, rz1, DARK_METAL)
+    box(rx0, rx1, G0 + 5, G0 + 6, rz0, rz1, CHROME)
+    box(rx0 + 1, rx1 - 1, G0 + 5, G0 + 6, rz0 + 1, rz1 - 1, TV_BODY)             # tray (the balls sit in it)
+    for j_, (bx_, lane_) in enumerate(((rx0, 2 * p_), (rx1 - 5, 2 * p_ + 1))):
+        spots_ = [(bx_ + 2.5, rz0 + 3.5), (bx_ + 2.5, rz0 + 9.5)]
+        n_, hd_, _ = BOWL_LANES[lane_]
+        BOWL_LANES[lane_] = (n_, hd_, spots_)
+        ba_ = np.zeros((2, 2, 1), np.uint8); ba_[:, :, :] = RED
+        BOWL_BUTTONS.append((f"bowl_reset{lane_ + 1}", ba_, (bx_ + 1, G0 + 2, rz0 - 1), f"bowlreset lane={lane_ + 1}"))
+        box(bx_ + 1, bx_ + 3, G0 + 1, G0 + 2, rz0 - 1, rz0, YELLOW_PAINT)       # (a yellow sill under the button)
+# lounge on the west side: neon BOWL sign, curved bench seats, tables; snack bar on the east side
+box(ax0, ax0 + 1, G0 + 12, G0 + 25, BW_Z0 + 30, BW_Z0 + 72, TV_BODY)
+ftext(Frame(ax0 + 1, 0, 0, -1, -1, 0), "BOWL", -(BW_Z0 + 51), G0 + 22, 0, MEMORY)
+for (sz0, sz1) in ((BW_Z0 + 24, BW_Z0 + 48), (BW_Z0 + 64, BW_Z0 + 88), (BW_Z0 + 104, BW_Z0 + 128)):
+    box(ax0, ax0 + 6, G0, G0 + 4, sz0, sz1, BLANKET_B)                             # bench seats along the west wall
+    box(ax0, ax0 + 2, G0 + 4, G0 + 10, sz0, sz1, BLANKET_B)
+    box(ax0 + 12, ax0 + 20, G0 + 6, G0 + 7, (sz0 + sz1) // 2 - 5, (sz0 + sz1) // 2 + 5, MARBLE_B)   # table
+    box(ax0 + 15, ax0 + 17, G0, G0 + 6, (sz0 + sz1) // 2 - 1, (sz0 + sz1) // 2 + 1, CHROME)
+box(ax0 + 14, ax0 + 19, BW_TOP - 1, BW_TOP, BW_Z0 + 74, BW_Z0 + 79, CEIL_LAMP)          # lounge downlight
+light(ax0 + 16.5, BW_TOP - 3.5, BW_Z0 + 76.5, (1.0, 0.7, 0.9), 1.4, 0.3)
+EB0 = LANE_X[3] + 22                                                                # snack bar along the east wall
+box(EB0, EB0 + 6, G0, G0 + 11, BW_Z0 + 20, BW_Z0 + 80, TV_BODY)
+box(EB0 - 1, EB0 + 6, G0 + 11, G0 + 12, BW_Z0 + 19, BW_Z0 + 81, MARBLE_W)
+box(EB0 - 1, EB0, G0 + 1, G0 + 2, BW_Z0 + 20, BW_Z0 + 80, POOL_LAMP)              # neon kick strip
+for sz_ in range(BW_Z0 + 24, BW_Z0 + 78, 8):
+    if min(abs(sz_ - (ZP + 50)), abs(sz_ - (ZP + 100))) < 5:
+        continue                                                                    # (a column stands there)
+    box(EB0 - 5, EB0 - 4, G0, G0 + 8, sz_, sz_ + 1, CHROME)
+    box(EB0 - 6, EB0 - 3, G0 + 8, G0 + 9, sz_ - 1, sz_ + 2, BLANKET_B)
+box(ax1 - 4, ax1, G0, G0 + 20, BW_Z0 + 22, BW_Z0 + 78, DARK_METAL)                  # back fridge wall
+for sz_ in range(BW_Z0 + 24, BW_Z0 + 76, 6):
+    box(ax1 - 5, ax1 - 4, G0 + 6, G0 + 18, sz_, sz_ + 4, GLASS_DOOR)
+    box(ax1 - 4, ax1 - 3, G0 + 8, G0 + 16, sz_ + 1, sz_ + 3, BRNG2.choice((RED, YELLOW_PAINT, LEAF, POOL_TILE)))
+box(ax1 - 4, ax1 - 3, G0 + 19, G0 + 20, BW_Z0 + 22, BW_Z0 + 78, EXIT_SIGN)          # fridge light strip
+light(EB0 - 2, BW_TOP - 4, BW_Z0 + 50, (0.85, 0.95, 1.0), 1.3, 0.3)
+box(EB0 - 3, EB0 + 2, BW_TOP - 1, BW_TOP, BW_Z0 + 48, BW_Z0 + 53, CEIL_LAMP)
+# neon sign over the door from the lounge (lounge side)
+ftext(Frame(0, ZP - 1, -1, 0, 0, 1), "BOWL", -(DX0 + 5), G0 + 30, 0, MEMORY)
+BOWL = dict(lanes=BOWL_LANES, x=LANE_X, foul=FOUL_Z, deck=DECK_Z, pit=PIT_Z, room=(ax0, ax1, BW_Z0, BW_Z1))
 
 # music for the arcade (the player's song, looped from the nearest speaker)
 for (sx_, sz_) in ((310, 140), (310, 260), (310, 380), (310, 470), (185, 462), (180, 414), (372, 130)):
@@ -3494,12 +3713,33 @@ def make_crt():
     a[2:6, 0, 3:7] = DARK_METAL
     return a
 
+def make_pin():
+    a = np.zeros((2, 5, 2), np.uint8)
+    a[:, :, :] = CERAMIC
+    a[:, 3, :] = RED                                  # the red neck stripe
+    return a
+
+def make_bball(col):
+    r = 2
+    a = np.zeros((5, 5, 5), np.uint8)
+    for x in range(5):
+        for y in range(5):
+            for z in range(5):
+                if (x - r) ** 2 + (y - r) ** 2 + (z - r) ** 2 <= r * r + 1.5:
+                    a[x, y, z] = col
+    a[2, 4, 1] = TV_BODY; a[1, 4, 2] = TV_BODY; a[3, 4, 2] = TV_BODY        # finger holes
+    return a
+
 PROP_SHAPES = {"car_a": make_car(CAR_A), "car_b": make_car(CAR_B), "car_c": make_car(CAR_C), "luggage_cart": make_cart(),
                "beach_ball": make_ball(), "swim_ring": make_ring(), "kickboard": make_kickboard(),
-               "crate": make_crate(), "barrel": make_barrel(), "sofa": make_sofa(), "crt_tv": make_crt()}
+               "crate": make_crate(), "barrel": make_barrel(), "sofa": make_sofa(), "crt_tv": make_crt(),
+               "bowling_pin": make_pin(), "bowling_ball": make_bball(BALL_R), "bowling_ball2": make_bball(BALL_B)}
+PROP_TAGS = {"bowling_pin": "bowlpin", "bowling_ball": "bowlball", "bowling_ball2": "bowlball"}
+PROP_DENSITY = {"bowling_ball": 0.3, "bowling_ball2": 0.3}       # (heavy-metal look, a 6-7 kg ball to throw)
 SPAWNABLE = [("car_a", "Car (blue)"), ("car_b", "Car (silver)"), ("car_c", "Car (red)"), ("luggage_cart", "Luggage cart"),
              ("beach_ball", "Beach ball"), ("swim_ring", "Swim ring"), ("kickboard", "Kickboard"),
-             ("crate", "Wooden crate"), ("barrel", "Red barrel"), ("sofa", "Lobby sofa"), ("crt_tv", "Old TV")]
+             ("crate", "Wooden crate"), ("barrel", "Red barrel"), ("sofa", "Lobby sofa"), ("crt_tv", "Old TV"),
+             ("bowling_pin", "Bowling pin"), ("bowling_ball", "Bowling ball (red)"), ("bowling_ball2", "Bowling ball (blue)")]
 
 # ============================================================================
 # 10b. Street south of the parking lot (beyond the original grid edge z = 0):
@@ -4321,7 +4561,7 @@ for (ppx, ppz) in ((PH_X1 - 8, PT_Z0 + 6), (PH_X1 - 8, PH_Z0 - 12)):            
     mo = keep_connected(mo, [(4, 0, 4)]) & (G[Xo, Yo, Zo] == 0)
     G[Xo[mo], Yo[mo], Zo[mo]] = np.where((Xo[mo] + Yo[mo] + Zo[mo]) % 3 > 0, LEAF2, LEAF3)
 # ---- switches inside the entrance: lights (a room switch, room "ph") and privacy glass
-TAGGED_SHAPES = []                                                     # (name, arr, gmin, tags): own static shapes
+TAGGED_SHAPES = list(BOWL_BUTTONS)                                     # (name, arr, gmin, tags): own static shapes
 PH_SW = (ENT_X + 13, PY + 11, PH_Z1 - 3)                                 # on the north wall, right of the door (inside)
 sw_ = np.full((2, 3, 1), SWITCH, np.uint8); sw_[:, 1, 0] = DARK_METAL
 TAGGED_SHAPES.append(("ph_switch_lights", sw_, PH_SW, "roomswitch room=ph on=1 tv=0"))
@@ -4685,8 +4925,10 @@ def export():
     lines = []
     for pname, label in SPAWNABLE:
         with open(os.path.join(pdir, pname + ".xml"), "w") as f:
-            f.write(f'<prefab version="1.6.0">\n\t<group name="{pname}">\n\t\t<body dynamic="true">\n'
-                    f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{pname}.vox" object="shape"/>\n\t\t</body>\n\t</group>\n</prefab>\n')
+            tg_ = f' tags="{PROP_TAGS[pname]}"' if pname in PROP_TAGS else ""
+            f.write(f'<prefab version="1.6.0">\n\t<group name="{pname}">\n\t\t<body dynamic="true"{tg_}>\n'
+                    f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{pname}.vox" object="shape"'
+                    + (f' density="{PROP_DENSITY[pname]}"' if pname in PROP_DENSITY else '') + '/>\n\t\t</body>\n\t</group>\n</prefab>\n')
         if not pname.startswith("car_"):
             lines.append(f"prefab/{pname}.xml : Liminal Atrium/{label}")
     with open(os.path.join(OUT, "spawn.txt"), "w") as f:
@@ -4906,6 +5148,9 @@ def export():
     # the hotel's public-address announcement (main.lua plays it now and then, softly, anywhere inside)
     xml.append(f'\t<location tags="pazone x0={bx0 * 0.1 - CX:.2f} x1={bx1 * 0.1 - CX:.2f} y0={(YB2 - 2) * 0.1:.2f} y1={(ROOF_Y + 2) * 0.1:.2f} '
                f'z0={bz0 * 0.1 - CZ:.2f} z1={bz1 * 0.1 - CZ:.2f}" pos="{f3(((bx0 + bx1) * 0.05 - CX, G0 * 0.1, (bz0 + bz1) * 0.05 - CZ))}"/>\n')
+    for (ln_, (hx_, hz_), spots_) in BOWL_LANES:                       # bowling: head pin + the lane's two ball spots
+        sp_ = " ".join(f"b{j}={(bx_) * 0.1 - CX:.2f},{(G0 + 6) * 0.1 + 0.02:.2f},{bz_ * 0.1 - CZ:.2f}" for j, (bx_, bz_) in enumerate(spots_))
+        xml.append(f'\t<location tags="bowlinglane lane={ln_} {sp_}" pos="{f3(((hx_) * 0.1 - CX, G0 * 0.1 + 0.01, hz_ * 0.1 - CZ))}"/>\n')
     xml.append(f'\t<location tags="respawn" pos="{f3(spawn)}" rot="0 180 0"/>\n')
     for (kind, sx_, sy_, sz_) in SOUND_SPOTS:
         xml.append(f'\t<location tags="ambsound kind={kind}" pos="{f3((sx_ * 0.1 - CX, sy_ * 0.1, sz_ * 0.1 - CZ))}"/>\n')
@@ -4976,7 +5221,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.48\n"
+        f.write("name = Liminal Atrium v3.49\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

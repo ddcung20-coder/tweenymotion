@@ -1895,7 +1895,145 @@ function draw()
 	heliDraw()
 	powerDraw()
 	respawnDraw()
+	bowlDraw()
 	if ammoDebug then drawAmmoDebug() end
+end
+
+
+----------------------------------------------------------------------------------------------------
+-- bowling alley under the atrium lawn: 4 lanes. Pins and balls are spawned here ("bowlinglane"
+-- locations: head pin position, b0 / b1 = the lane's ball spots on the rack); E on a lane's red
+-- button clears that lane and sets up 10 fresh pins and its two balls again. Near the lanes a board
+-- shows how many pins are down on each lane (STRIKE when all ten fall in one go).
+----------------------------------------------------------------------------------------------------
+bowl = { lanes = {}, spawned = false, near = false, time = 0, byButton = {} }
+local PIN_DX, PIN_DZ = 0.3, 0.3
+
+local function vecTag(h, key)
+	local v = GetTagValue(h, key)
+	if not v or v == "" then return nil end
+	local x, y, z = string.match(v, "([-%d%.]+),([-%d%.]+),([-%d%.]+)")
+	if not x then return nil end
+	return Vec(tonumber(x), tonumber(y), tonumber(z))
+end
+
+local function spawnTagged(path, pos, tag)
+	local before = {}
+	local old = FindBodies(tag, true)
+	for i = 1, #old do before[old[i]] = true end
+	local ok = pcall(Spawn, path, Transform(pos))
+	if not ok then return 0 end
+	local now = FindBodies(tag, true)
+	for i = 1, #now do
+		if not before[now[i]] then return now[i] end
+	end
+	return 0
+end
+
+function bowlInit()
+	local ls = FindLocations("bowlinglane", true)
+	for i = 1, #ls do
+		local lane = { id = tagNum(ls[i], "lane", i), head = GetLocationTransform(ls[i]).pos, spots = {},
+			pins = {}, balls = {}, down = 0, firstFall = nil, strike = false }
+		for j = 0, 3 do
+			local v = vecTag(ls[i], "b" .. j)
+			if v then lane.spots[#lane.spots + 1] = v end
+		end
+		bowl.lanes[#bowl.lanes + 1] = lane
+	end
+	table.sort(bowl.lanes, function(a, b) return a.id < b.id end)
+	local bs = FindShapes("bowlreset", true)
+	for i = 1, #bs do
+		local id = tagNum(bs[i], "lane", 0)
+		for _, lane in ipairs(bowl.lanes) do
+			if lane.id == id then bowl.byButton[bs[i]] = lane; lane.button = bs[i] end
+		end
+		SetTag(bs[i], "interact", "Reset lane " .. id)
+	end
+end
+
+function bowlReset(lane)
+	for _, p in ipairs(lane.pins) do
+		if p.body ~= 0 and IsHandleValid(p.body) then Delete(p.body) end
+	end
+	for _, b in ipairs(lane.balls) do
+		if b ~= 0 and IsHandleValid(b) then Delete(b) end
+	end
+	lane.pins, lane.balls = {}, {}
+	for r = 0, 3 do
+		for k = 0, r do
+			local pos = VecAdd(lane.head, Vec((k - r / 2) * PIN_DX, 0, r * PIN_DZ))
+			lane.pins[#lane.pins + 1] = { body = spawnTagged("MOD/prefab/bowling_pin.xml", pos, "bowlpin"), p0 = pos }
+		end
+	end
+	for j, sp in ipairs(lane.spots) do
+		local path = (j % 2 == 1) and "MOD/prefab/bowling_ball.xml" or "MOD/prefab/bowling_ball2.xml"
+		lane.balls[#lane.balls + 1] = spawnTagged(path, sp, "bowlball")
+	end
+	lane.down, lane.firstFall, lane.strike = 0, nil, false
+end
+
+function pinDown(p)
+	if p.body == 0 or not IsHandleValid(p.body) then return true end
+	local t = GetBodyTransform(p.body)
+	local up = TransformToParentVec(t, Vec(0, 1, 0))
+	local dx, dz = t.pos[1] - p.p0[1], t.pos[3] - p.p0[3]
+	return up[2] < 0.6 or t.pos[2] < p.p0[2] - 0.25 or (dx * dx + dz * dz) > 0.35 * 0.35
+end
+
+function bowlTick(dt)
+	bowl.time = bowl.time + dt
+	if not bowl.spawned then
+		bowl.spawned = true
+		for _, lane in ipairs(bowl.lanes) do bowlReset(lane) end
+	end
+	local cam = GetCameraTransform().pos
+	bowl.near = false
+	for _, lane in ipairs(bowl.lanes) do
+		local n = 0
+		for _, p in ipairs(lane.pins) do
+			if pinDown(p) then n = n + 1 end
+		end
+		if n > 0 and not lane.firstFall then lane.firstFall = bowl.time end
+		if n == #lane.pins and #lane.pins > 0 and lane.down < n and lane.firstFall and bowl.time - lane.firstFall < 2.5 then
+			lane.strike = true
+		end
+		lane.down = n
+		if math.abs(cam[1] - lane.head[1]) < 9 and cam[3] > lane.head[3] - 16 and cam[3] < lane.head[3] + 2
+			and math.abs(cam[2] - lane.head[2] - 1.6) < 2 then
+			bowl.near = true
+		end
+	end
+end
+
+-- returns true when the pressed shape was a lane's reset button
+function bowlInteract(s)
+	local lane = bowl.byButton[s]
+	if not lane then return false end
+	if not IsShapeBroken(s) then
+		bowlReset(lane)
+		PlaySound(snd.click, GetShapeWorldTransform(s).pos, 0.8)
+	end
+	return true
+end
+
+function bowlDraw()
+	if not bowl.near or #bowl.lanes == 0 then return end
+	UiPush()
+		UiTranslate(UiWidth() - 300, 40)
+		UiColor(0.05, 0.03, 0.12, 0.8); UiRect(260, 40 + 34 * #bowl.lanes)
+		UiTranslate(16, 30)
+		UiFont("bold.ttf", 24); UiColor(1, 0.45, 0.85, 1); UiText("BOWLING")
+		UiFont("regular.ttf", 22)
+		for _, lane in ipairs(bowl.lanes) do
+			UiTranslate(0, 34)
+			if lane.strike then
+				UiColor(1, 0.85, 0.3, 1); UiText("LANE " .. lane.id .. "   STRIKE!")
+			else
+				UiColor(0.75, 0.95, 1, 1); UiText("LANE " .. lane.id .. "   " .. lane.down .. " / " .. #lane.pins)
+			end
+		end
+	UiPop()
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -1930,6 +2068,7 @@ function init()
 	respawnInit()
 	missionInit()
 	paInit()
+	bowlInit()
 	say("Front desk: ring the bell when you are ready to dream.", 7)
 end
 
@@ -1955,10 +2094,11 @@ function tick(dt)
 	if InputPressed("interact") then
 		local s = GetPlayerInteractShape()
 		if s ~= 0 then
-			interactHandled = curtainsInteract(s) or powerInteract(s) or smartInteract(s) or roomsInteract(s) or missionInteract(s)
+			interactHandled = curtainsInteract(s) or powerInteract(s) or smartInteract(s) or bowlInteract(s) or roomsInteract(s) or missionInteract(s)
 		end
 	end
 	carsTick()
+	bowlTick(dt)
 	powerTick(dt)
 	panelTick()
 	respawnTick(dt)
