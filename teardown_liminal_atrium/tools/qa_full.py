@@ -131,7 +131,7 @@ for name, b, fr, bw in ns["room_frames"]():
     for k in range(FLOORS):
         if k == 0 and (name == "S" and b in (1, 2) or name == "N"):      # lobby / back of house
             continue
-        x, z = fr.pt(bw // 2, 22)
+        x, z = fr.pt(bw // 2, 36 if (k == FLOORS - 1 and ns["SUITE_ROLE"].get((name, b), (0, ""))[1] == "dining") else 22)
         if not reachable(x, fy(k), z):
             bad_rooms.append((name, b, k))
 report(f"all {len(ns['room_log'])} hotel rooms reachable on foot (doors open)", not bad_rooms, str(bad_rooms[:10]))
@@ -197,6 +197,12 @@ checks["bowling: approach of lane 1"] = (BWq["x"][0] + 6, G0, BWq["foul"] - 2)
 checks["bowling: lounge"] = (ns["ax0"] + 10, G0, BWq["room"][2] + 60)
 checks["bowling: snack bar"] = (ns["ax1"] - 40, G0, BWq["room"][2] + 50)
 checks["B1 tech store (NOVA)"] = (262, YB, 282)
+BQq = ns["BANQUET"]
+checks["banquet hall: foyer"] = ((BQq["x"][0] + BQq["x"][1]) // 2, G0, BQq["z"][0] + 20)
+checks["banquet hall: among the tables"] = (BQq["tables"][4][0] + 9, G0, BQq["tables"][4][1] + 12)
+checks["banquet hall: dance floor"] = ((BQq["x"][0] + BQq["x"][1]) // 2, G0, BQq["stage"] - 15)
+checks["banquet hall: on the stage (up the steps)"] = ((BQq["x"][0] + BQq["x"][1]) // 2 + 20, G0 + 6, BQq["stage"] + 15)
+checks["glass link to the banquet hall"] = ((BQq["link"][0] + BQq["link"][1]) // 2, G0, ns["bz1"] + 20)
 checks["B2 food street: south court"] = (288, YB2, 100)
 checks["B2 food street: west walkway"] = (280, YB2, 290)
 checks["B2 food street: east walkway"] = (342, YB2, 290)
@@ -333,6 +339,8 @@ for name, b, fr, bw in ns["room_frames"]():
             x0, x1, z0, z1 = fr._rect(u0, u1, v0, v1)
             frac = float((FULL[x0:x1, y + 1:y + 20, z0:z1] > 0).mean())
             need = 0.6 if wname == "corridor" else 0.97      # the corridor wall has the entrance door in it
+            if k == FLOORS - 1 and wname != "corridor" and (name, b) in ns["SUITE_ROLE"]:
+                need = 0.75                                  # (a suite: an opening to the next room of the suite)
             if frac < need:
                 open_rooms.append((name, b, k + 1, wname, round(frac, 2)))
 report("every hotel room has all its walls", not open_rooms, str(open_rooms[:8]))
@@ -462,10 +470,14 @@ for l in ns["LIGHTS"]:
     t = dict(kv.split("=") for kv in l[6].split() if "=" in kv)
     if "room" in t: per[(t["room"], t["rl"])] += 1
 NS = ns["ROOM_NSTANDS"]
-kinds_ok = all(per[(str(i), k)] == 1 for i in range(len(ns["room_log"])) for k in ("ceil", "bath", "tv")) and \
+SL_ = ns["SUITE_LOG"]
+def need_kinds(i):
+    role = SL_[i][1] if i in SL_ else "room"
+    return {"room": ("ceil", "bath", "tv"), "bedroom": ("ceil", "bath", "tv"), "living": ("ceil", "tv"), "dining": ("ceil",)}[role]
+kinds_ok = all(per[(str(i), k)] == 1 for i in range(len(ns["room_log"])) for k in need_kinds(i)) and \
            all(per[(str(i), "lamp")] == NS[i] >= 1 for i in range(len(ns["room_log"])))
-lamp_rooms = sum(1 for L in ns["LAMPS"] if any("room=" in lt[6] and "room=ph" not in lt[6] for lt in L["lights"]))
-need = sum(3 + NS[i] for i in range(len(ns["room_log"])))
+lamp_rooms = sum(1 for L in ns["LAMPS"] if any("room=" in lt[6] and not any(f"room={r_} " in lt[6] + " " for r_ in ("ph", "banquet", "stage")) for lt in L["lights"]))
+need = sum(len(need_kinds(i)) + NS[i] for i in range(len(ns["room_log"])))
 mixed = [i for i, L in enumerate(ns["LAMPS"]) if len({lt[6] for lt in L["lights"]}) > 1 and any("room=" in lt[6] for lt in L["lights"])]
 report("every room: ceiling, EVERY bedside lamp, bathroom light + TV, each its own switchable lamp", kinds_ok and not mixed and lamp_rooms == need,
        f"{lamp_rooms}/{need} room lamps, {sum(1 for v in NS.values() if v > 1)} rooms with 2 bedside lamps, mixed {mixed[:4]}")
@@ -707,6 +719,19 @@ report("bowling: a reset button per lane, prefabs for pins and balls (tagged)",
 report("restrooms: men + women on B1 and B2; changing rooms behind both pool doors",
        len(ns["RESTROOMS"]) == 2 and len(ns["CHANGING"]) == 2 and sum(1 for d in ns["DOORS"] if "changing" in d["tag"]) == 2
        and sum(1 for d in ns["DOORS"] if "wc" in d["tag"]) == 4)
+# v3.50: 6F suites -- 6 two-room + 2 three-room, one corridor door each (in the living room)
+suites_ = collections.defaultdict(list)
+for rid_, (sn_, role_, size_) in SL_.items():
+    suites_[sn_].append((role_, rid_))
+sz_c = collections.Counter(len(v) for v in suites_.values())
+liv_doors = sum(1 for d in ns["DOORS"] if d["kind"] == "swing" and abs(d["gmin"][1] - fy(FLOORS - 1)) < 2 and d["arr"].shape[1] >= 20
+                and d["tag"] == "hoteldoor")
+report("6F suites: 6 two-room + 2 three-room, every bay of a suite reachable from its living room",
+       sz_c[2] == 6 and sz_c[3] == 2 and all(r_ == "bedroom" for v in suites_.values() for (r_, _) in v[:1]), f"{dict(sz_c)}")
+bsw_ = [t_ for t_ in ns["TAGGED_SHAPES"] if "room=banquet" in t_[3] or "room=stage" in t_[3]]
+bq_l = [l for l in ns["LIGHTS"] if "room=banquet" in l[6] or "room=stage" in l[6]]
+report("banquet hall: 12 tables, stage + dance floor, chandeliers and stage spots on two switches",
+       len(BQq["tables"]) >= 12 and len(bsw_) == 2 and len(bq_l) == 6 and all(body_hits(t_[1], t_[2]) == 0 for t_ in bsw_), f"{len(BQq['tables'])} tables, {len(bq_l)} lights")
 # v3.47: HOTEL letters each their own lamp, penthouse TV, public-address announcement
 let_ = [r_ for r_ in ns["ROOF_SHAPES"] if r_[0].startswith("hotel_letter")]
 sign_left = int((FULL[bx0:bx1, RY + 10:RY + 30, bz0:bz0 + 8] == ns["STREET_LMP"]).sum())
@@ -754,7 +779,7 @@ for l in ns["LIGHTS"]:
     for kv in l[6].split():
         if kv.startswith("pw="):
             pw_[int(kv[3:])] += 1
-room_pw = all(("pw=" in l[6]) for l in ns["LIGHTS"] if "room=" in l[6])
+room_pw = all(("pw=" in l[6]) for l in ns["LIGHTS"] if "room=" in l[6] and "room=banquet" not in l[6] and "room=stage" not in l[6])
 report("every floor's lights are on its power circuit (rooms, corridors, electrical rooms)",
        all(pw_[k] > 40 for k in range(FLOORS)) and room_pw, str(dict(pw_)))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)

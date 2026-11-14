@@ -967,7 +967,7 @@ def wall_art(fr, u_face, y0, v0, w, h, along_v=True, plane=None):
             t = ((yy - y0) * 3 + (vv - v0) * 2 + rng.randint(0, 2)) // max(1, (h + w) // 3)
             fr.box(u_face, u_face + 1, yy, yy + 1, vv, vv + 1, cols[t % 3])
 
-def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False, rid=0):
+def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False, rid=0, door=True):
     y = fy(k)
     U0, U1 = T_PART, bw
     lit = state.startswith("lit")
@@ -1123,6 +1123,22 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False, rid=0):
         fr.box(bu0 + 4, bu0 + 6, y + 10, y + 11, sb + 3, sb + 7, CHROME)
     # ---- entrance door (corridor partition: v in [ROOM_D, ROOM_D+T_PART))
     du0 = U0 + 8
+    if door:
+        room_door(fr, du0, y)
+    else:
+        rng.random()                              # (same random draws as with a door: the rest of the map stays put)
+    # light switch beside the entrance, on the bathroom wall (separate shape: E toggles the room's lights)
+    sarr, smin = frame_shape(fr, bu0b - 1, bu0b, y + 11, y + 14, ROOM_D - 2, ROOM_D,
+                             lambda a_, b_, c_, A, B, C: DARK_METAL if (b_ == 1 and c_ == 0) else SWITCH)
+    ROOM_SWITCHES.append((sarr, smin, rid, lit, state == "tv"))
+    fr.box(du0 - 3, du0 - 2, y + 15, y + 17, ROOM_D - 1, ROOM_D, SWITCH)         # thermostat
+    if door:
+        room_door_clutter(fr, du0, y)
+    else:
+        rng.random()
+    room_ceiling(fr, U0, U1, y, rid)
+
+def room_door(fr, du0, y, plate=BRASS):
     fr.box(du0, du0 + 9, y, y + 22, ROOM_D, ROOM_D + T_PART, 0)
     fr.box(du0 - 1, du0 + 10, y + 22, y + 23, ROOM_D, ROOM_D + T_PART + 1, WOOD_DARK)
     fr.box(du0 - 1, du0, y, y + 22, ROOM_D + T_PART, ROOM_D + T_PART + 1, WOOD_DARK)
@@ -1131,18 +1147,17 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False, rid=0):
     # real door leaf in the room-side layer of the partition, hinged on the wardrobe side, opens inward
     add_door(fr, du0, du0 + 9, y, y + 22, ROOM_D, ROOM_D + 1, wood_door,
              hinge=(du0, ROOM_D), open_dir=(0, -1), start_open=rng.random() < 0.25)
-    fr.box(du0 + 11, du0 + 14, y + 15, y + 17, ROOM_D + T_PART, ROOM_D + T_PART + 1, BRASS)   # number plate
-    # light switch beside the entrance, on the bathroom wall (separate shape: E toggles the room's lights)
-    sarr, smin = frame_shape(fr, bu0b - 1, bu0b, y + 11, y + 14, ROOM_D - 2, ROOM_D,
-                             lambda a_, b_, c_, A, B, C: DARK_METAL if (b_ == 1 and c_ == 0) else SWITCH)
-    ROOM_SWITCHES.append((sarr, smin, rid, lit, state == "tv"))
-    fr.box(du0 - 3, du0 - 2, y + 15, y + 17, ROOM_D - 1, ROOM_D, SWITCH)         # thermostat
+    fr.box(du0 + 11, du0 + 14, y + 15, y + 17, ROOM_D + T_PART, ROOM_D + T_PART + 1, plate)   # number plate
+
+def room_door_clutter(fr, du0, y):
     # corridor-side clutter: room service tray / do-not-disturb sign
     r = rng.random()
     if r < 0.15:
         fr.box(du0 + 1, du0 + 7, y, y + 1, ROOM_D + T_PART, ROOM_D + T_PART + 4, STEEL)
         fr.box(du0 + 2, du0 + 4, y + 1, y + 2, ROOM_D + T_PART + 1, ROOM_D + T_PART + 3, CERAMIC)
         fr.box(du0 + 5, du0 + 6, y + 1, y + 3, ROOM_D + T_PART + 1, ROOM_D + T_PART + 2, GLASS_DOOR)
+
+def room_ceiling(fr, U0, U1, y, rid):
     # ceiling: fixture, smoke detector, AC grille
     cu = (U0 + U1) // 2
     fr.box(cu - 2, cu + 2, y + FH - SLAB_T - 1, y + FH - SLAB_T, 18, 22, CEIL_LAMP)
@@ -1150,6 +1165,104 @@ def furnish_room(fr, bw, k, state, twin, blanket, carpet, keycard=False, rid=0):
     fr.box(cu, cu + 1, y + FH - SLAB_T - 1, y + FH - SLAB_T, 30, 31, SWITCH)
     fr.box(U0 + 9, U0 + 17, y + FH - SLAB_T - 1, y + FH - SLAB_T, ROOM_D - 5, ROOM_D - 2, HVAC)
     fr.light(cu, y + FH - SLAB_T - 2, 20, (1.0, 0.82, 0.55), 2.2, 0.3, f"room={rid} rl=ceil")
+
+
+# ---- 6F suites (v3.50): bays joined into 2-room (bedroom + living) and 3-room (+ dining) suites. Each bay
+#      stays a "room" for the light switches; the suite's only door to the corridor is in its living room.
+SUITES = {"W": [(0, 1), (2, 3, 4), (6, 7)], "E": [(0, 1), (2, 3, 4), (6, 7)], "S": [(0, 1)], "N": [(0, 1)]}
+SUITE_ROLE = {}                                     # (side, bay) -> (suite no, role)
+_sn = 0
+for side_ in "WESN":
+    for grp_ in SUITES[side_]:
+        _sn += 1
+        for j_, b_ in enumerate(grp_):
+            SUITE_ROLE[(side_, b_)] = (_sn, ("bedroom", "living", "dining")[j_], len(grp_))
+SUITE_LOG = {}                                      # room id -> (suite no, role, size)
+
+def furnish_suite(fr, bw, k, role, carpet, keycard, rid):
+    """the living room or dining room bay of a suite (frame u from the previous bay's side)."""
+    y = fy(k)
+    U0, U1 = T_PART, bw
+    fr.box(U0, U1, y - 1, y, 0, ROOM_D, carpet)
+    for (x0_, x1_, v0_, v1_) in ((U0 + 4, U1 - 4, 6, ROOM_D - 8),):              # a big rug
+        fr.box(x0_, x1_, y - 1, y, v0_, v1_, RUG_BRD); fr.box(x0_ + 1, x1_ - 1, y - 1, y, v0_ + 1, v1_ - 1, RUG)
+    fr.paint(U0 - 1, U0, y, y + 1, 0, ROOM_D, WOOD_DARK, WALLS_ROOM)
+    fr.paint(U1, U1 + 1, y, y + 1, 0, ROOM_D, WOOD_DARK, WALLS_ROOM)
+    fr.box(bw // 2 - 8, bw // 2 + 9, y + 1, y + 6, 0, 2, RADIATOR)
+    fr.box(0, T_PART, y, y + 22, 4, 13, 0)                                          # opening to the previous room
+    fr.box(0, T_PART, y + 22, y + 23, 3, 14, WOOD_DARK)
+    lamps_ = 0
+    if role == "living":
+        fr.box(U0, U0 + 5, y, y + 5, 17, 33, WOOD_DARK)                             # media console + TV
+        fr.box(U0, U0 + 1, y + 9, y + 19, 18, 32, TV_BODY)
+        fr.box(U0 + 1, U0 + 2, y + 10, y + 18, 19, 31, TV_SCREEN)
+        fr.box(U0, U0 + 3, y + 5, y + 9, 24, 26, TV_BODY)
+        fr.light(U0 + 3, y + 14, 25.5, (0.45, 0.6, 1.0), 1.0, 0.2, f"room={rid} rl=tv")
+        so0 = U1 - 7                                                                  # sofa facing the TV
+        fr.box(so0, U1, y, y + 4, 15, 36, UPHOL)
+        fr.box(U1 - 2, U1, y + 4, y + 10, 15, 36, UPHOL)
+        fr.box(so0, U1, y + 4, y + 7, 15, 17, UPHOL); fr.box(so0, U1, y + 4, y + 7, 34, 36, UPHOL)
+        for cv in (19, 25, 31):
+            fr.box(so0 + 1, so0 + 5, y + 4, y + 5, cv - 2, cv + 2, UPHOL2)
+            fr.box(U1 - 3, U1 - 2, y + 5, y + 8, cv - 1, cv + 1, PILLOW)
+        fr.box(bw // 2 - 4, bw // 2 + 3, y + 3, y + 4, 20, 30, MARBLE_W)            # coffee table
+        fr.box(bw // 2 - 4, bw // 2 + 3, y, y + 3, 24, 26, BRASS)
+        fr.box(bw // 2 - 1, bw // 2 + 1, y + 4, y + 6, 24, 26, LEAF2)                 # (flowers)
+        fr.box(bw // 2 - 3, bw // 2 + 3, y, y + 4, 5, 10, UPHOL2)                     # armchair by the window
+        fr.box(bw // 2 - 3, bw // 2 + 3, y + 4, y + 9, 5, 6, UPHOL2)
+        fr.box(U1 - 3, U1 - 2, y, y + 13, 39, 40, BRASS)                              # floor lamp
+        fr.box(U1 - 4, U1 - 1, y + 13, y + 16, 38, 41, LAMPSHADE)
+        fr.light(U1 - 1, y + 12, 39, (1.0, 0.78, 0.45), 1.4, 0.15, f"room={rid} rl=lamp")
+        lamps_ = 1
+        fr.box(U0 + 19, U1 - 6, y, y + 9, ROOM_D - 5, ROOM_D, WOOD_DARK)            # bar counter + glasses
+        fr.box(U0 + 18, U1 - 6, y + 9, y + 10, ROOM_D - 6, ROOM_D, MARBLE_B)
+        for gu in range(U0 + 20, U1 - 7, 2):
+            fr.box(gu, gu + 1, y + 10, y + 12, ROOM_D - 2, ROOM_D - 1, GLASS_DOOR)
+        du0 = U0 + 8
+        room_door(fr, du0, y, plate=COR_GOLD)                                        # the suite's own door
+        fr.box(du0 + 11, du0 + 16, y + 13, y + 19, ROOM_D + T_PART, ROOM_D + T_PART + 1, BRASS)  # SUITE plate
+        sw_u = du0 + 10
+        sarr, smin = frame_shape(fr, sw_u, sw_u + 1, y + 11, y + 14, ROOM_D - 1, ROOM_D,
+                                 lambda a_, b_, c_, A, B, C: DARK_METAL if b_ == 1 else SWITCH)
+        if keycard:
+            arr, gmin = frame_shape(fr, bw // 2 - 2, bw // 2 + 1, y + 4, y + 5, 21, 23,
+                                    lambda a_, b_, c_, A, B, C: DREAM_CLOUD if a_ == 1 else MEMORY)
+            KEYCARDS.append(dict(arr=arr, gmin=gmin, floor=k))
+    else:                                                                             # dining room + study corner
+        tu0, tu1 = bw // 2 - 8, bw // 2 + 8
+        fr.box(tu0, tu1, y + 7, y + 8, 16, 28, WOOD_DARK)
+        for (lu, lv) in ((tu0 + 1, 17), (tu1 - 2, 17), (tu0 + 1, 26), (tu1 - 2, 26)):
+            fr.box(lu, lu + 1, y, y + 7, lv, lv + 1, WOOD_DARK)
+        for cu_ in (tu0 + 2, bw // 2 - 2, tu1 - 6):
+            for (cv0, back) in ((12, 12), (29, 31)):
+                fr.box(cu_, cu_ + 4, y + 4, y + 5, cv0, cv0 + 3, UPHOL2)
+                fr.box(cu_, cu_ + 4, y + 5, y + 11, back, back + 1, WOOD_DARK)
+                for (lu_, lv_) in ((cu_, cv0), (cu_ + 3, cv0), (cu_, cv0 + 2), (cu_ + 3, cv0 + 2)):
+                    fr.box(lu_, lu_ + 1, y, y + 4, lv_, lv_ + 1, WOOD_DARK)
+        for i_, cu_ in enumerate(range(tu0 + 2, tu1 - 2, 4)):
+            fr.box(cu_, cu_ + 2, y + 8, y + 9, 19 + (i_ % 2) * 4, 21 + (i_ % 2) * 4, CERAMIC)      # plates
+        fr.box(U1 - 4, U1, y, y + 9, 12, 32, WOOD_MED)                               # sideboard + lamp
+        fr.box(U1 - 4, U1, y + 9, y + 10, 12, 32, MARBLE_W)
+        fr.box(U1 - 3, U1 - 2, y + 10, y + 13, 28, 29, BRASS)
+        fr.box(U1 - 4, U1 - 1, y + 13, y + 16, 27, 30, LAMPSHADE)
+        fr.light(U1 - 1, y + 12, 28, (1.0, 0.78, 0.45), 1.2, 0.15, f"room={rid} rl=lamp")
+        lamps_ = 1
+        fr.box(U0, U0 + 3, y, y + 22, ROOM_D - 14, ROOM_D - 1, WOOD_DARK)            # bookcase + study desk
+        for sy in range(y + 4, y + 22, 5):
+            fr.box(U0 + 1, U0 + 3, sy, sy + 1, ROOM_D - 13, ROOM_D - 2, WOOD_MED)
+            for bv in range(ROOM_D - 13, ROOM_D - 2, 2):
+                fr.box(U0 + 2, U0 + 3, sy + 1, sy + 4, bv, bv + 1, rng.choice((BLANKET_B, BLANKET_C, ART2, CARP_OR)))
+        fr.box(U1 - 12, U1 - 1, y + 7, y + 8, ROOM_D - 7, ROOM_D - 1, WOOD_DARK)
+        fr.box(U1 - 12, U1 - 11, y, y + 7, ROOM_D - 7, ROOM_D - 1, WOOD_DARK)
+        sarr, smin = frame_shape(fr, U0, U0 + 1, y + 11, y + 14, 15, 16,
+                                 lambda a_, b_, c_, A, B, C: DARK_METAL if b_ == 1 else SWITCH)
+        if keycard:
+            arr, gmin = frame_shape(fr, tu0 + 1, tu0 + 4, y + 8, y + 9, 17, 19,
+                                    lambda a_, b_, c_, A, B, C: DREAM_CLOUD if a_ == 1 else MEMORY)
+            KEYCARDS.append(dict(arr=arr, gmin=gmin, floor=k))
+    ROOM_NSTANDS[rid] = lamps_
+    ROOM_SWITCHES.append((sarr, smin, rid, True, False))
+    room_ceiling(fr, U0, U1, y, rid)
 
 KEYCARD_ROOMS = {}
 _cands = [(n_, b_, k_) for (n_, b_, f_, bw_) in room_frames() for k_ in range(FLOORS) if not (k_ == 0 and (n_ == "S" and b_ in (1, 2) or n_ == "N"))]
@@ -1184,7 +1297,18 @@ def build_rooms():
             blanket = rng.choice([BLANKET_A, BLANKET_A, BLANKET_B, BLANKET_C])
             carpet = rng.choice([CARP_A, CARP_A, CARP_B])
             ff = fr.mirrored(T_PART, bw) if rng.random() < 0.5 else fr
-            furnish_room(ff, bw, k, state, twin, blanket, carpet, keycard=(name, b, k) in KEYCARD_ROOMS, rid=len(room_log))
+            suite_ = SUITE_ROLE.get((name, b)) if k == FLOORS - 1 else None
+            if suite_ and suite_[1] != "bedroom":
+                furnish_suite(fr, bw, k, suite_[1], carpet, (name, b, k) in KEYCARD_ROOMS, len(room_log))
+            elif suite_:                                # the suite's bedroom: double bed, bath away from the living room
+                fm_ = fr.mirrored(T_PART, bw)
+                furnish_room(fm_, bw, k, state, False, blanket, carpet,
+                             keycard=(name, b, k) in KEYCARD_ROOMS, rid=len(room_log))
+                fm_.box(T_PART, T_PART + 9, y, y + 22, 3, 13, 0)  # (walk-through to the living room's opening)
+            else:
+                furnish_room(ff, bw, k, state, twin, blanket, carpet, keycard=(name, b, k) in KEYCARD_ROOMS, rid=len(room_log))
+            if suite_:
+                SUITE_LOG[len(room_log)] = suite_
             room_log.append((name, b, k, state))
             # a few shop-window mannequins standing at open windows, looking out over the atrium
             if name in "WE" and state in ("lit_open", "dark_open", "tv") and MRNG.random() < 0.15:
@@ -2095,6 +2219,8 @@ for (ppx, ppz) in ((ix0 + 8, iz1 - 10), (ix1 - 10, iz1 - 10), (ix0 + 8, iz0 + 10
     box(ppx - 3, ppx + 3, DY, DY + 8, ppz - 3, ppz + 3, CERAMIC)
     box(ppx, ppx + 1, DY + 8, DY + 10, ppz, ppz + 1, TRUNK)
     leaf_blob(ppx, DY + 16, ppz, 6, 61, LEAF2, anchor=(ppx, DY + 9, ppz), squash=0.7, keep=0.42)
+
+
 # roof plant on the annex
 box(cxN - 20, cxN + 20, DY + HALL_H + 4, DY + HALL_H + 14, AZ1 - 50, AZ1 - 30, HVAC)
 box(cxN - 18, cxN + 18, DY + HALL_H + 14, DY + HALL_H + 15, AZ1 - 48, AZ1 - 32, DARK_METAL)
@@ -3493,6 +3619,133 @@ box(EB0 - 3, EB0 + 2, BW_TOP - 1, BW_TOP, BW_Z0 + 48, BW_Z0 + 53, CEIL_LAMP)
 ftext(Frame(0, ZP - 1, -1, 0, 0, 1), "BOWL", -(DX0 + 5), G0 + 30, 0, MEMORY)
 BOWL = dict(lanes=BOWL_LANES, x=LANE_X, foul=FOUL_Z, deck=DECK_Z, pit=PIT_Z, room=(ax0, ax1, BW_Z0, BW_Z1))
 
+# ============================================================================
+# 8g. Banquet hall "AURORA" (v3.50) on the lawn east of the pool annex, joined to the hotel's north-east
+#     corridor by a glass link: foyer, 12 round tables, dance floor, stage with curtain and spots,
+#     three crystal chandeliers; light switches for the hall and the stage.
+# ============================================================================
+HX0, HX1, HZ0, HZ1 = A_X1, W - 4, AZ0 + 4, D - 6              # outer walls (the west wall backs onto the annex)
+HT = G0 + 50                                                  # roof top; ceiling underside G0 + 46
+LKX0, LKX1 = bx1 - 22, bx1 + 6                                # glass link (outer x)
+box(HX0, HX1, BED_Y + 1, G0, HZ0, HZ1, SLAB)
+box(HX0, HX1, G0, HT, HZ0, HZ1, EXT_WALL)
+box(HX0 + 4, HX1 - 4, G0, G0 + 46, HZ0 + 4, HZ1 - 4, 0)
+box(HX0 - 1, HX1 + 1, HT - 2, HT, HZ0 - 1, HZ1 + 1, EXT_TRIM)
+box(HX0, HX1, G0, G0 + 10, HZ0, HZ0 + 1, BASE_STONE)                              # plinth on the street side
+hx0, hx1, hz0, hz1 = HX0 + 4, HX1 - 4, HZ0 + 4, HZ1 - 4       # interior
+paint(hx0 - 1, hx1 + 1, G0, G0 + 46, hz0 - 1, hz1 + 1, LOBBY_WALL, [EXT_WALL])
+paint(hx0 - 1, hx1 + 1, G0, G0 + 12, hz0 - 1, hz1 + 1, WAINS, [LOBBY_WALL])
+paint(hx0 - 1, hx1 + 1, G0 + 12, G0 + 13, hz0 - 1, hz1 + 1, CHAIR_RAIL, [WAINS])
+paint(hx0, hx1, G0 + 46, G0 + 47, hz0, hz1, CEIL)
+for z in range(hz0, hz1, 20):                                                     # coffered ceiling beams
+    box(hx0, hx1, G0 + 44, G0 + 46, z, z + 2, CORNICE)
+for x in range(hx0, hx1, 20):
+    box(x, x + 2, G0 + 44, G0 + 46, hz0, hz1, CORNICE)
+# floor: red ballroom carpet with gold medallions, parquet dance floor, stage at the north end
+for x in range(hx0, hx1):
+    for z in range(hz0, hz1):
+        m_ = ((x - hx0) % 12, (z - hz0) % 12)
+        G[x, G0 - 1, z] = COR_GOLD if (abs(m_[0] - 6) + abs(m_[1] - 6) == 3) else (COR_CARP if (x + z) % 5 else COR_CARP2)
+STG_Z = hz1 - 30
+DF = (hx0 + 24, hx1 - 24, STG_Z - 30, STG_Z)
+for x in range(DF[0], DF[1]):
+    for z in range(DF[2], DF[3]):
+        G[x, G0 - 1, z] = PARQUET if ((x // 4) + (z // 4)) % 2 else PARQUET2
+box(hx0 + 10, hx1 - 10, G0, G0 + 6, STG_Z, hz1, WOOD_DARK)                       # stage
+box(hx0 + 10, hx1 - 10, G0 + 5, G0 + 6, STG_Z, hz1, PARQUET)
+for k_ in range(3):                                                                # steps up in the middle
+    box((hx0 + hx1) // 2 - 8, (hx0 + hx1) // 2 + 8, G0, G0 + 2 * (k_ + 1), STG_Z - 9 + 3 * k_, STG_Z - 6 + 3 * k_, WOOD_DARK)
+for x in range(hx0 + 10, hx1 - 10):                                                # red velvet curtain in folds
+    box(x, x + 1, G0 + 6, G0 + 42, hz1 - 2 - (x % 3 == 0), hz1, BLANKET_B if x % 3 else CAR_C)
+box(hx0 + 10, hx1 - 10, G0 + 38, G0 + 46, hz1 - 5, hz1, COR_GOLD)                   # pelmet (carries the name)
+ftext(Frame(0, hz1 - 6, -1, 0, 0, 1), "AURORA", -((hx0 + hx1) // 2), G0 + 44, 0, BRASS)
+box((hx0 + hx1) // 2 - 3, (hx0 + hx1) // 2 + 3, G0 + 6, G0 + 18, STG_Z + 8, STG_Z + 12, WOOD_DARK)   # lectern
+box((hx0 + hx1) // 2 - 4, (hx0 + hx1) // 2 + 4, G0 + 18, G0 + 19, STG_Z + 7, STG_Z + 13, WOOD_MED)
+box((hx0 + hx1) // 2, (hx0 + hx1) // 2 + 1, G0 + 19, G0 + 23, STG_Z + 9, STG_Z + 10, CHROME)          # microphone
+box((hx0 + hx1) // 2 - 32, (hx0 + hx1) // 2 + 33, G0 + 40, G0 + 41, STG_Z + 2, STG_Z + 4, DARK_METAL)   # lighting truss
+for sx_ in ((hx0 + hx1) // 2 - 30, (hx0 + hx1) // 2, (hx0 + hx1) // 2 + 30):
+    box(sx_, sx_ + 1, G0 + 41, G0 + 46, STG_Z + 2, STG_Z + 3, DARK_METAL)
+    box(sx_ - 1, sx_ + 2, G0 + 37, G0 + 40, STG_Z + 2, STG_Z + 4, DARK_METAL)
+    box(sx_ - 1, sx_ + 2, G0 + 37, G0 + 38, STG_Z + 4, STG_Z + 5, CEIL_LAMP)
+    light(sx_ + 0.5, G0 + 35.5, STG_Z + 5.5, (1.0, 0.92, 0.8), 1.6, 0.2, "room=stage rl=ceil")
+# round banquet tables (white cloth, flowers, a candle) with eight gold chairs each
+def banquet_table(cx, cz, r=6):
+    for x in range(cx - r, cx + r + 1):
+        for z in range(cz - r, cz + r + 1):
+            d_ = ((x - cx) ** 2 + (z - cz) ** 2) ** 0.5
+            if d_ <= r:
+                box(x, x + 1, G0 + 7, G0 + 8, z, z + 1, SHEET)
+                if d_ > r - 1:
+                    box(x, x + 1, G0 + 4, G0 + 7, z, z + 1, SHEET)                    # cloth drop
+    box(cx, cx + 1, G0, G0 + 7, cz, cz + 1, DARK_METAL)
+    box(cx - 1, cx + 2, G0 + 8, G0 + 10, cz - 1, cz + 2, LEAF2)
+    box(cx, cx + 1, G0 + 10, G0 + 11, cz, cz + 1, ROSE)
+    for a_ in range(0, 360, 45):
+        sx_ = cx + int(round(9 * np.cos(np.radians(a_)))); sz_ = cz + int(round(9 * np.sin(np.radians(a_))))
+        box(sx_ - 1, sx_ + 1, G0 + 4, G0 + 5, sz_ - 1, sz_ + 1, UPHOL2)
+        for (lx_, lz_) in ((sx_ - 1, sz_ - 1), (sx_, sz_)):
+            box(lx_, lx_ + 1, G0, G0 + 4, lz_, lz_ + 1, BRASS)
+        bx_ = sx_ + int(round(np.cos(np.radians(a_)))); bz_ = sz_ + int(round(np.sin(np.radians(a_))))
+        c_, s_ = np.cos(np.radians(a_)), np.sin(np.radians(a_))
+        if abs(c_) >= abs(s_):
+            bx_ = sx_ + 1 if c_ > 0 else sx_ - 2
+            box(bx_, bx_ + 1, G0 + 4, G0 + 11, sz_ - 1, sz_ + 1, BRASS)
+        else:
+            bz_ = sz_ + 1 if s_ > 0 else sz_ - 2
+            box(sx_ - 1, sx_ + 1, G0 + 4, G0 + 11, bz_, bz_ + 1, BRASS)
+BQ_TABLES = [(x_, z_) for z_ in range(hz0 + 40, STG_Z - 40, 30) for x_ in (hx0 + 20, (hx0 + hx1) // 2, hx1 - 20)]
+for (tx_, tz_) in BQ_TABLES:
+    banquet_table(tx_, tz_)
+# crystal chandeliers on the hall's circuit, a long buffet in the foyer, a coat rack, the hall light switches
+for cz_ in (hz0 + 60, (hz0 + STG_Z) // 2 + 10, STG_Z - 20):
+    cx_ = (hx0 + hx1) // 2
+    box(cx_, cx_ + 1, G0 + 38, G0 + 46, cz_, cz_ + 1, BRASS)
+    box(cx_ - 6, cx_ + 7, G0 + 37, G0 + 38, cz_ - 6, cz_ + 7, BRASS)
+    box(cx_ - 5, cx_ + 6, G0 + 37, G0 + 38, cz_ - 5, cz_ + 6, 0)
+    box(cx_, cx_ + 1, G0 + 37, G0 + 38, cz_ - 6, cz_ + 7, BRASS); box(cx_ - 6, cx_ + 7, G0 + 37, G0 + 38, cz_, cz_ + 1, BRASS)
+    for (dx_, dz_) in ((-6, -6), (6, -6), (-6, 6), (6, 6), (0, -6), (0, 6), (-6, 0), (6, 0)):
+        box(cx_ + dx_, cx_ + dx_ + 1, G0 + 34, G0 + 37, cz_ + dz_, cz_ + dz_ + 1, CEIL_LAMP)
+    box(cx_ - 1, cx_ + 2, G0 + 33, G0 + 37, cz_ - 1, cz_ + 2, CEIL_LAMP)
+    light(cx_ + 0.5, G0 + 31.5, cz_ + 0.5, (1.0, 0.88, 0.68), 2.6, 0.4, "room=banquet rl=ceil")
+box(hx0 + 4, hx0 + 40, G0, G0 + 8, hz0 + 6, hz0 + 12, WOOD_DARK)                 # buffet / registration
+box(hx0 + 3, hx0 + 41, G0 + 8, G0 + 9, hz0 + 5, hz0 + 13, SHEET)
+for bu_ in range(hx0 + 6, hx0 + 38, 6):
+    box(bu_, bu_ + 4, G0 + 9, G0 + 11, hz0 + 7, hz0 + 11, CHROME)                    # chafing dishes
+box(hx1 - 8, hx1 - 7, G0, G0 + 20, hz0 + 8, hz0 + 9, BRASS)                         # coat rack
+box(hx1 - 11, hx1 - 4, G0 + 19, G0 + 20, hz0 + 8, hz0 + 9, BRASS)
+# tall windows on the east wall with velvet drapes
+for wz_ in range(hz0 + 20, STG_Z - 10, 30):
+    box(hx1, HX1, G0 + 8, G0 + 38, wz_, wz_ + 10, 0)
+    box(hx1 + 2, hx1 + 3, G0 + 8, G0 + 38, wz_, wz_ + 10, GLASS_EXT)
+    box(hx1 + 2, hx1 + 3, G0 + 8, G0 + 38, wz_ + 5, wz_ + 6, FRAME)
+    box(hx1 - 1, hx1, G0 + 6, G0 + 42, wz_ - 3, wz_, BLANKET_B); box(hx1 - 1, hx1, G0 + 6, G0 + 42, wz_ + 10, wz_ + 13, BLANKET_B)
+# the glass link from the hotel's north-east corridor; the door into the hall
+box(LKX0 - 2, LKX1 + 2, G0, G0 + 40, bz1, HZ0, 0)
+box(LKX0, LKX1, BED_Y + 1, G0, bz1, HZ0, SLAB)
+for x in range(LKX0 + 2, LKX1 - 2):
+    for z in range(bz1, HZ0):
+        G[x, G0 - 1, z] = MARBLE_W if ((x // 4) + (z // 4)) % 2 else MARBLE_B
+for xw in (LKX0, LKX1 - 2):
+    box(xw, xw + 2, G0, G0 + 28, bz1, HZ0, FRAME)
+    box(xw, xw + 2, G0 + 1, G0 + 27, bz1 + 1, HZ0 - 1, 0)
+    box(xw + (1 if xw == LKX0 else 0), xw + (2 if xw == LKX0 else 1), G0 + 1, G0 + 27, bz1 + 1, HZ0 - 1, GLASS_EXT)
+    for z in range(bz1, HZ0, 8):
+        box(xw, xw + 2, G0, G0 + 28, z, z + 1, FRAME)
+box(LKX0, LKX1, G0 + 28, G0 + 31, bz1, HZ0, SLAB)
+box(LKX0 - 1, LKX1 + 1, G0 + 30, G0 + 31, bz1, HZ0, EXT_TRIM)
+LD = ((LKX0 + LKX1) // 2 - 6, (LKX0 + LKX1) // 2 + 6)                             # door gaps (hotel side, hall side)
+box(LD[0], LD[1], G0, G0 + 22, bz1 - T_EXT - 1, bz1 + 3, 0)
+box(LD[0] - 1, LD[1] + 1, G0 + 22, G0 + 24, bz1 - T_EXT - 1, bz1, LINTEL)
+box(LD[0], LD[1], G0, G0 + 24, HZ0, hz0, 0)
+box(LD[0] - 1, LD[1] + 1, G0 + 24, G0 + 26, HZ0, hz0, BRASS)
+box((LKX0 + LKX1) // 2 - 1, (LKX0 + LKX1) // 2 + 2, G0 + 27, G0 + 28, (bz1 + HZ0) // 2 - 1, (bz1 + HZ0) // 2 + 2, CEIL_LAMP)
+light((LKX0 + LKX1) / 2 + 0.5, G0 + 25.5, (bz1 + HZ0) / 2 + 0.5, (1.0, 0.9, 0.75), 1.4, 0.3)
+BANQUET_SWITCHES = []
+for (nm_, rm_, sx_) in (("banquet_switch", "banquet", LD[1] + 2), ("stage_switch", "stage", LD[1] + 6)):
+    a_ = np.full((2, 3, 1), SWITCH, np.uint8); a_[:, 1, 0] = DARK_METAL if rm_ == "banquet" else RED
+    BANQUET_SWITCHES.append((nm_, a_, (sx_, G0 + 11, hz0), f"roomswitch room={rm_} on=1 tv=0"))
+BANQUET = dict(x=(hx0, hx1), z=(hz0, hz1), stage=STG_Z, tables=BQ_TABLES, link=(LKX0, LKX1), door=LD)
+
 # music for the arcade (the player's song, looped from the nearest speaker)
 for (sx_, sz_) in ((310, 140), (310, 260), (310, 380), (310, 470), (185, 462), (180, 414), (372, 130)):
     SOUND_SPOTS.append(("mall", sx_, YB + 15, sz_))
@@ -4561,7 +4814,7 @@ for (ppx, ppz) in ((PH_X1 - 8, PT_Z0 + 6), (PH_X1 - 8, PH_Z0 - 12)):            
     mo = keep_connected(mo, [(4, 0, 4)]) & (G[Xo, Yo, Zo] == 0)
     G[Xo[mo], Yo[mo], Zo[mo]] = np.where((Xo[mo] + Yo[mo] + Zo[mo]) % 3 > 0, LEAF2, LEAF3)
 # ---- switches inside the entrance: lights (a room switch, room "ph") and privacy glass
-TAGGED_SHAPES = list(BOWL_BUTTONS)                                     # (name, arr, gmin, tags): own static shapes
+TAGGED_SHAPES = list(BOWL_BUTTONS) + list(BANQUET_SWITCHES)                                     # (name, arr, gmin, tags): own static shapes
 PH_SW = (ENT_X + 13, PY + 11, PH_Z1 - 3)                                 # on the north wall, right of the door (inside)
 sw_ = np.full((2, 3, 1), SWITCH, np.uint8); sw_[:, 1, 0] = DARK_METAL
 TAGGED_SHAPES.append(("ph_switch_lights", sw_, PH_SW, "roomswitch room=ph on=1 tv=0"))
@@ -5221,7 +5474,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.49\n"
+        f.write("name = Liminal Atrium v3.50\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
