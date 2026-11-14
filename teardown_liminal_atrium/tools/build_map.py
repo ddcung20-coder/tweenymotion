@@ -3359,6 +3359,13 @@ def export():
     for (kind_, fb_, gx_, gy_, gz_, ry_) in CAR_SPOTS:
         cxp, czp = (gx_ + 10) * 0.1 - CX, (gz_ + 22) * 0.1 - CZ                   # bay centre on the ground
         xml.append(f'\t<location tags="carspawn kind={kind_} fallback={fb_}" pos="{cxp:.2f} {gy_ * 0.1 + 0.05:.2f} {czp:.2f}" rot="0 {ry_} 0"/>\n')
+    # where the pool sounds may be heard: the pool hall, and (quieter) the glass connector to it
+    def zone(tag, gx0, gx1, gy0, gy1, gz0, gz1):
+        xml.append(f'\t<location tags="soundzone kind={tag} x0={gx0 * 0.1 - CX:.2f} x1={gx1 * 0.1 - CX:.2f} y0={gy0 * 0.1:.2f} '
+                   f'y1={gy1 * 0.1:.2f} z0={gz0 * 0.1 - CZ:.2f} z1={gz1 * 0.1 - CZ:.2f}" pos="{f3(((gx0 + gx1) * 0.05 - CX, gy0 * 0.1, (gz0 + gz1) * 0.05 - CZ))}"/>\n')
+    zone("hall", ix0, ix1, DY - 20, DY + HALL_H + 2, iz0, iz1)
+    zone("connector", cxN - CW, cxN + CW, G0 - 2, DY + 30, bz1 - 20, AZ0 + 4)
+    xml.append(f'\t<location tags="respawn" pos="{f3(spawn)}" rot="0 180 0"/>\n')
     for (kind, sx_, sy_, sz_) in SOUND_SPOTS:
         xml.append(f'\t<location tags="ambsound kind={kind}" pos="{f3((sx_ * 0.1 - CX, sy_ * 0.1, sz_ * 0.1 - CZ))}"/>\n')
     xml.append('\t<group name="props" pos="0 0 0">\n')
@@ -3427,7 +3434,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.31\n"
+        f.write("name = Liminal Atrium v3.32\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

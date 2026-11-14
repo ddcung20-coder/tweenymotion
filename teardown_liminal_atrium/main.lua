@@ -462,8 +462,33 @@ end
 -- positional ambience (pool hall, spa)
 ----------------------------------------------------------------------------------------------------
 local spots = {}
+local zones = {}
+
+-- pool sounds only inside the pool hall (full) or its glass connector (half); 0 elsewhere
+local function poolZone(p)
+	for i = 1, #zones do
+		local z = zones[i]
+		if p[1] >= z.x0 and p[1] <= z.x1 and p[2] >= z.y0 and p[2] <= z.y1 and p[3] >= z.z0 and p[3] <= z.z1 then
+			return z.kind == "hall" and 1 or 0.45
+		end
+	end
+	return 0
+end
+
+-- linear fade: full volume up to `near` metres, silent from `far`
+local function fade(d, near, far)
+	if d <= near then return 1 end
+	if d >= far then return 0 end
+	return (far - d) / (far - near)
+end
 
 local function spotsInit()
+	local zl = FindLocations("soundzone", true)
+	for i = 1, #zl do
+		local h = zl[i]
+		zones[#zones + 1] = { kind = GetTagValue(h, "kind"), x0 = tagNum(h, "x0", 0), x1 = tagNum(h, "x1", 0),
+			y0 = tagNum(h, "y0", 0), y1 = tagNum(h, "y1", 0), z0 = tagNum(h, "z0", 0), z1 = tagNum(h, "z1", 0) }
+	end
 	local locs = FindLocations("ambsound", true)
 	for i = 1, #locs do
 		spots[#spots + 1] = { pos = GetLocationTransform(locs[i]).pos, kind = GetTagValue(locs[i], "kind") }
@@ -482,8 +507,9 @@ local function radioTick(cam)
 		return
 	end
 	local p = GetShapeWorldTransform(radio).pos
-	if dist(p, cam) < 60 then
-		PlayLoop(snd.song, p, 0.9)
+	local v = 0.9 * poolZone(cam) * fade(dist(p, cam), 5, 24)
+	if v > 0.01 then
+		PlayLoop(snd.song, p, v)
 	end
 end
 
@@ -511,10 +537,12 @@ local function spotsTick(cam)
 	for i = 1, #spots do
 		local sp = spots[i]
 		local d = dist(sp.pos, cam)
-		if sp.kind == "pool" and d < 45 then
-			PlayLoop(snd.pool, sp.pos, 0.45)
-		elseif sp.kind == "spa" and d < 18 then
-			PlayLoop(snd.spa, sp.pos, 0.5)
+		if sp.kind == "pool" then
+			local v = 0.45 * poolZone(cam) * fade(d, 8, 28)
+			if v > 0.01 then PlayLoop(snd.pool, sp.pos, v) end
+		elseif sp.kind == "spa" then
+			local v = 0.5 * poolZone(cam) * fade(d, 3, 12)
+			if v > 0.01 then PlayLoop(snd.spa, sp.pos, v) end
 		elseif sp.kind == "fountain" and d < 22 then
 			PlayLoop(snd.fountain, sp.pos, 0.55)
 		end
@@ -1274,6 +1302,55 @@ local function heliDraw()
 end
 
 ----------------------------------------------------------------------------------------------------
+-- respawn: dying is not the end; after a short fade the player is back at the lobby, healed and armed
+----------------------------------------------------------------------------------------------------
+local deadT = nil
+local respawnT = nil
+RESPAWN_DELAY = 2.5
+
+local function respawnInit()
+	local l = FindLocation("respawn", true)
+	if l ~= 0 then respawnT = GetLocationTransform(l) end
+end
+
+local function respawnTick(dt)
+	local hp = GetPlayerHealth and GetPlayerHealth() or 1
+	if hp > 0 then
+		deadT = nil
+		return
+	end
+	deadT = (deadT or 0) + dt
+	if deadT >= RESPAWN_DELAY then
+		local ok = false
+		if RespawnPlayer then ok = pcall(RespawnPlayer) end
+		if SetPlayerHealth then SetPlayerHealth(1) end
+		if respawnT and (not ok or (GetPlayerHealth and GetPlayerHealth() <= 0)) then SetPlayerTransform(respawnT) end
+		if respawnT and not RespawnPlayer then SetPlayerTransform(respawnT) end
+		giveTools()
+		topUpAmmo()
+		PlaySound(snd.deskbell, GetCameraTransform().pos, 0.6)
+		deadT = nil
+	end
+end
+
+local function respawnDraw()
+	if not deadT then return end
+	UiPush()
+		local a = math.min(1, deadT / 1.2)
+		UiColor(0.02, 0.0, 0.05, 0.85 * a)
+		UiRect(UiWidth(), UiHeight())
+		UiAlign("center middle")
+		UiTranslate(UiCenter(), UiMiddle())
+		UiFont("bold.ttf", 40)
+		UiColor(0.9, 0.8, 1, a)
+		UiText("checking you back in...")
+		UiTranslate(0, 44)
+		UiFont("regular.ttf", 22)
+		UiText(string.format("respawning in %d", math.max(1, math.ceil(RESPAWN_DELAY - deadT))))
+	UiPop()
+end
+
+----------------------------------------------------------------------------------------------------
 -- the map's own spawn menu (N key, or "Liminal Spawn" in the pause menu)
 ----------------------------------------------------------------------------------------------------
 local SPAWN_ITEMS = {
@@ -1336,6 +1413,7 @@ end
 function draw()
 	drawMission()
 	heliDraw()
+	respawnDraw()
 	if ammoDebug then drawAmmoDebug() end
 	if not menuOpen then return end
 	UiMakeInteractive()
@@ -1386,6 +1464,7 @@ function init()
 	roomsInit()
 	autoInit()
 	heliInit()
+	respawnInit()
 	missionInit()
 	say("Front desk: ring the bell when you are ready to dream.", 7)
 end
@@ -1415,6 +1494,7 @@ function tick(dt)
 		end
 	end
 	carsTick()
+	respawnTick(dt)
 	heliTick(dt)
 	curtainsTick(dt)
 	autoTick(dt)

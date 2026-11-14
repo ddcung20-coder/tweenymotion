@@ -3545,6 +3545,9 @@
 	<location tags="carspawn kind=salooncar fallback=car_a" pos="-2.20 0.45 -26.30" rot="0 0 0"/>
 	<location tags="carspawn kind=stationwagon fallback=car_c" pos="-13.00 0.45 -18.30" rot="0 0 0"/>
 	<location tags="carspawn kind=suv1 fallback=car_b" pos="-2.20 0.45 -6.30" rot="0 0 0"/>
+	<location tags="soundzone kind=hall x0=-9.60 x1=9.60 y0=4.00 y1=12.20 z0=15.90 z1=35.10" pos="0 4 25.5"/>
+	<location tags="soundzone kind=connector x0=-1.40 x1=1.40 y0=3.80 y1=9.00 z0=9.50 z1=15.90" pos="0 3.8 12.7"/>
+	<location tags="respawn" pos="0 4.1 -21.1" rot="0 180 0"/>
 	<location tags="ambsound kind=pool" pos="0 6 25"/>
 	<location tags="ambsound kind=spa" pos="6.6 6 18.5"/>
 	<location tags="ambsound kind=fountain" pos="7.4 1 -9.9"/>

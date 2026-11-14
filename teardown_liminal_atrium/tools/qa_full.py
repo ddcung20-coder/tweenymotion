@@ -472,6 +472,23 @@ blade_hit = sum(1 for (a, b, c) in zip(*np.nonzero(RO_)) if b >= 8 and body_cell
             sum(1 for (a, b, c) in zip(*np.nonzero(TA_)) if a >= 4 and body_cell(H_["tail_gmin"], a, b, c))
 report("rotor blades clear the helicopter body (only the shafts sit inside)", blade_hit == 0, f"{blade_hit} cells")
 report("stairs lead from the room-ring roof up to the helipad roof", reachable(255, ns["ROOF_Y"], 125, r=4) and reachable(255, ns["RT"], 170, r=6) and reachable(ns["HCX"] + 40, ns["RT"], ns["HCZ"], r=6))
+zones_ = []
+for loc in root.iter("location"):
+    t = loc.get("tags", "")
+    if t.startswith("soundzone"):
+        kv = dict(x.split("=") for x in t.split()[1:])
+        zones_.append((kv["kind"], *(float(kv[k]) for k in ("x0", "x1", "y0", "y1", "z0", "z1"))))
+CXq, CZq = W * 0.05, D * 0.05
+def in_zone(gx, gy, gz):
+    wx, wy, wz = gx * 0.1 - CXq, gy * 0.1, gz * 0.1 - CZq
+    return [k for (k, x0_, x1_, y0_, y1_, z0_, z1_) in zones_ if x0_ <= wx <= x1_ and y0_ <= wy <= y1_ and z0_ <= wz <= z1_]
+pool_src = [sp for sp in ns["SOUND_SPOTS"] if sp[0] in ("pool", "spa")]
+rgx, rgy, rgz = ns["RADIO"]["gmin"]
+outside = [((ns["ax0"] + ns["ax1"]) // 2, G0 + 2, (az0 + ns["az1"]) // 2), ((ns["ax0"] + ns["ax1"]) // 2 + 20, G0 + 2, az0 - 30), (310, ns["YB"] + 2, 250)]
+report("pool water / spa / radio are heard only in the pool hall (+ quieter in its connector)",
+       all(in_zone(x, y, z) == ["hall"] for (_, x, y, z) in pool_src) and in_zone(rgx, rgy, rgz) == ["hall"] and not any(in_zone(*p_) for p_ in outside),
+       str([in_zone(x, y, z) for (_, x, y, z) in pool_src]))
+report("respawn point exists (lobby spawn)", any(l.get("tags") == "respawn" for l in root.iter("location")))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
