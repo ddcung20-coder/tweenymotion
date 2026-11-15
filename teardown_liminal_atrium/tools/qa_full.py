@@ -989,19 +989,41 @@ gar_main = [sp for sp in gar_ if ns["bx0"] <= sp[1] < ns["bx1"]]
 gar_h = [sp for sp in gar_ if HQx[0] <= sp[1] < HQx[1]]
 report(f"car-park ambience: {len(gar_main)} speakers in the main hotel's car parks, {len(gar_h)} in HALCYON's, all in open air",
        len(gar_main) >= 6 and len(gar_h) >= 3 and len(gar_main) + len(gar_h) == len(gar_) and all(FULL[int(x), int(y), int(z)] == 0 for (_, x, y, z) in gar_), str(len(gar_)))
+# v3.60: settled snow -- one voxel on every surface open to the sky, nothing inside a wall, a door's swing or a car bay
+snow_n, snow_bad = 0, 0
+SNOWC = np.zeros((W, D), bool)
+for t_ in ns["SNOW_TILES"]:
+    gx_, gy_, gz_ = t_["gmin"]; X_, Y_, Z_ = np.nonzero(t_["arr"])
+    snow_n += len(X_)
+    if gz_ >= 0:
+        snow_bad += int((FULL[X_ + gx_, Y_ + gy_, Z_ + gz_] > 0).sum())
+        SNOWC[X_ + gx_, Z_ + gz_] = True
+SNOWY = np.full((W, D), -99)
+for t_ in ns["SNOW_TILES"]:
+    gx_, gy_, gz_ = t_["gmin"]; X_, Y_, Z_ = np.nonzero(t_["arr"])
+    if gz_ >= 0: SNOWY[X_ + gx_, Z_ + gz_] = Y_ + gy_
+door_hit = 0
+for d in ns["DOORS"]:
+    if d["kind"] != "swing": continue
+    px, pz = d["pivot"]; r_ = max(d["arr"].shape[0], d["arr"].shape[2]) + 1
+    sub_ = SNOWY[max(int(px - r_), 0):int(px + r_) + 1, max(int(pz - r_), 0):int(pz + r_) + 1]
+    door_hit += int((np.abs(sub_ - d["gmin"][1]) <= 2).sum())
+bay_hit = sum(int(SNOWC[int(gx_ + 10) - 10:int(gx_ + 10) + 10, int(gz_ + 22) - 10:int(gz_ + 22) + 10].sum()) for (_, _, gx_, gy_, gz_, ry_) in ns["CAR_SPOTS"])
+report(f"snow: {len(ns['SNOW_TILES'])} tiles, {snow_n} voxels on open-sky surfaces; none inside anything, no door swing or car bay snowed in",
+       snow_n > 600000 and snow_bad == 0 and door_hit == 0 and bay_hit == 0, f"inside {snow_bad} doors {door_hit} bays {bay_hit}")
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
 LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "heli_rotor.ogg",
-         "boiler.ogg", "laundry.ogg"}
+         "boiler.ogg", "laundry.ogg", "rain_outside.ogg", "snowfall.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)
     peak = float(np.abs(x).max())
     ok = sr == 44100 and 0.05 < peak <= 1.0
     detail = f"{len(x) / sr:.1f}s peak {peak:.2f}"
     if f in LOOPS:
-        jump = abs(x[0] - x[-1]); step = max(np.abs(np.diff(x)).max() * 1.15 + 1e-3, 0.012)   # seam no bigger than the signal's own steps (Vorbis edge error ~0.005)
+        jump = float(np.abs(x[0] - x[-1]).max()); step = max(np.abs(np.diff(x, axis=0)).max() * 1.15 + 1e-3, 0.012)   # (stereo too)   # seam no bigger than the signal's own steps (Vorbis edge error ~0.005)
         ok = ok and jump < step
         detail += f" loop-seam {jump:.3f}"
     report(f"sound {f}", ok, detail)

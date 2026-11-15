@@ -16,6 +16,7 @@ A deserted hotel at night. Six floors of fully furnished rooms around a purple-l
 [*]Helipad with a drivable, breakable helicopter (W/S forward/back, A/D turn, Space/Ctrl up/down)
 [*]Base-game drivable cars in the parking lot, street and car park
 [*]Dreamcore mission [b]SWEET DREAMS[/b]: ring the front-desk bell, follow the pastel dreamers to six lost memories and wake up (M or the pause menu stops it)
+[*]Weather panel (ESC): night / day, clear / rain / snow - settled snow on every roof, street and tree, rain you hear outdoors, a soft song while it snows
 [*]Respawn in the lobby when you die
 [/list]
 
@@ -43,6 +44,7 @@ M - stop the mission
 [*]헬리패드와 운전·파괴 가능한 헬기 (W/S 전진/후진, A/D 회전, Space/Ctrl 상승/하강)
 [*]주차장·도로·지하주차장에 기본 게임 운전 가능 차량
 [*]드림코어 미션 [b]SWEET DREAMS[/b]: 프런트 벨을 누르고 파스텔 드리머를 따라 잃어버린 기억 6개를 모으면 깨어납니다 (M 또는 일시정지 메뉴로 중단)
+[*]날씨 패널(ESC): 밤/낮, 맑음/비/눈 - 지붕·도로·나무에 쌓이는 눈, 밖에서 들리는 빗소리, 눈 오는 동안 은은한 노래
 [*]죽으면 로비에서 부활
 [/list]
 

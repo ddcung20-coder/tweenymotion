@@ -113,6 +113,8 @@ local function loadSounds()
 	snd.boiler    = LoadLoop("MOD/snd/boiler.ogg")
 	snd.laundry   = LoadLoop("MOD/snd/laundry.ogg")
 	snd.announce  = LoadSound("MOD/snd/announcement.ogg")
+	snd.rainOut   = LoadLoop("MOD/snd/rain_outside.ogg")     -- (v3.60) rain heard outdoors
+	snd.snowSong  = LoadLoop("MOD/snd/snowfall.ogg")         -- (v3.60) soft song everywhere while it snows
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -1845,7 +1847,7 @@ local ENV_DAY = {
 	ambient = 1.0, fogColor = { 0.78, 0.8, 0.86 }, fogParams = { 60, 320, 0.9, 4 }, sunBrightness = 3.5,
 	sunColorTint = { 1, 0.95, 0.85 }, sunDir = { -0.35, 0.8, 0.45 }, exposure = { 1, 3 }, nightlight = false,
 }
-settings = { day = false, rain = true }
+settings = { day = false, rain = true, weather = "rain" }     -- weather: "clear" | "rain" | "snow"
 local panelOpen = false
 
 local function envSet(name, v)
@@ -1857,31 +1859,110 @@ local function envSet(name, v)
 	end
 end
 
+-- (v3.60) settled snow: static tiles (tag snowlayer, sy = their real height) wait 60 m below the map; while it
+-- snows they sit on every surface open to the sky (the engine's own snow-on-ground only exists at level load)
+local snowTiles = nil
+function snowShow(on)
+	if not snowTiles then
+		snowTiles = {}
+		local bs = FindBodies("snowlayer", true)
+		for i = 1, #bs do
+			local t = GetBodyTransform(bs[i])
+			local sy = tonumber(GetTagValue(bs[i], "sy")) or (t.pos[2] + 60)
+			snowTiles[#snowTiles + 1] = { body = bs[i], hidden = Transform(VecCopy(t.pos), t.rot),
+				shown = Transform(Vec(t.pos[1], sy, t.pos[3]), t.rot) }
+		end
+	end
+	for i = 1, #snowTiles do
+		local st = snowTiles[i]
+		if IsHandleValid(st.body) then SetBodyTransform(st.body, on and st.shown or st.hidden) end
+	end
+end
+
 function applyEnvironment()
 	local e = settings.day and ENV_DAY or ENV_NIGHT
 	for k, v in pairs(e) do envSet(k, v) end
-	if settings.rain then
+	local w = settings.weather
+	settings.rain = (w == "rain")
+	if w == "rain" then
 		envSet("rain", 0.75); envSet("wetness", 0.65); envSet("puddleamount", 0.4); envSet("puddlesize", 0.5)
+		envSet("snowamount", 0)
 		if settings.day then                                   -- overcast
 			envSet("sunBrightness", 0.8); envSet("skyboxbrightness", 0.45); envSet("fogParams", { 30, 200, 0.9, 4 })
 		end
+	elseif w == "snow" then
+		envSet("rain", 0); envSet("wetness", 0.12); envSet("puddleamount", 0)
+		envSet("snowamount", 0.55); envSet("snowdir", { 0, -1, 0, 0.35 })
+		if settings.day then                                   -- white winter overcast
+			envSet("sunBrightness", 0.7); envSet("skyboxbrightness", 0.6)
+			envSet("fogColor", { 0.62, 0.65, 0.72 }); envSet("fogParams", { 20, 170, 0.9, 4 })
+		else
+			envSet("fogColor", { 0.11, 0.11, 0.15 }); envSet("fogParams", { 25, 160, 0.9, 4 })
+		end
 	else
-		envSet("rain", 0); envSet("wetness", 0); envSet("puddleamount", 0)
+		envSet("rain", 0); envSet("wetness", 0); envSet("puddleamount", 0); envSet("snowamount", 0)
 	end
+	snowShow(w == "snow")
 	SetBool("savegame.mod.liminal.day", settings.day)
-	SetBool("savegame.mod.liminal.clear", not settings.rain)
+	SetBool("savegame.mod.liminal.clear", w ~= "rain")
+	SetString("savegame.mod.liminal.weather", w)
 end
 
 local function settingsInit()
 	settings.day = GetBool("savegame.mod.liminal.day")
-	settings.rain = not GetBool("savegame.mod.liminal.clear")
+	local w = GetString("savegame.mod.liminal.weather")
+	if w ~= "clear" and w ~= "rain" and w ~= "snow" then
+		w = GetBool("savegame.mod.liminal.clear") and "clear" or "rain"     -- (saves from before v3.60)
+	end
+	settings.weather = w
 	applyEnvironment()
+end
+
+-- weather sounds: the rain loop outdoors (barely inside), the snow song softly everywhere; both fade in / out
+local indoorZones = nil
+local wxVol = { rain = 0, snow = 0 }
+local wxInside, wxCheckT = false, 0
+local function isIndoor(p)
+	if not indoorZones then
+		indoorZones = {}
+		local ls = FindLocations("indoor", true)
+		for i = 1, #ls do
+			local z = {}
+			for _, k in ipairs({ "x0", "x1", "y0", "y1", "z0", "z1" }) do z[k] = tonumber(GetTagValue(ls[i], k)) or 0 end
+			indoorZones[#indoorZones + 1] = z
+		end
+	end
+	for i = 1, #indoorZones do
+		local z = indoorZones[i]
+		if p[1] >= z.x0 and p[1] <= z.x1 and p[2] >= z.y0 and p[2] <= z.y1 and p[3] >= z.z0 and p[3] <= z.z1 then return true end
+	end
+	if p[2] < GROUND_Y - 0.8 and QueryRaycast then            -- underground: covered, unless open to the sky (the car ramp)
+		local hit = QueryRaycast(p, Vec(0, 1, 0), 40)
+		return hit and true or false
+	end
+	return false
+end
+local function toward(v, target, rate)
+	if v < target then return math.min(target, v + rate) end
+	return math.max(target, v - rate)
+end
+function weatherTick(dt, cam)
+	wxCheckT = wxCheckT - dt
+	if wxCheckT <= 0 then wxCheckT = 0.25; wxInside = isIndoor(cam) end
+	local tr = (settings.weather == "rain") and (wxInside and 0.05 or 0.85) or 0
+	wxVol.rain = toward(wxVol.rain, tr, dt * 0.9)
+	if wxVol.rain > 0.004 then PlayLoop(snd.rainOut, cam, wxVol.rain) end
+	local ts = (settings.weather == "snow") and 0.3 or 0
+	wxVol.snow = toward(wxVol.snow, ts, dt * 0.15)
+	if wxVol.snow > 0.004 then PlayLoop(snd.snowSong, cam, wxVol.snow) end
 end
 
 -- panel buttons (also called by the offline tests)
 function panelAction(a)
 	if a == "time" then settings.day = not settings.day; applyEnvironment()
-	elseif a == "weather" then settings.rain = not settings.rain; applyEnvironment()
+	elseif a == "weather" then                                  -- clear -> rain -> snow -> clear
+		settings.weather = (settings.weather == "clear") and "rain" or (settings.weather == "rain") and "snow" or "clear"
+		applyEnvironment()
 	elseif a == "stop" then stopMissionRequested = true; panelOpen = false
 	elseif a == "close" then panelOpen = false end
 end
@@ -1911,7 +1992,8 @@ local function drawPanel()
 		UiColor(0.85, 0.8, 1, 1)
 		if UiTextButton(settings.day and "Time: Day  (switch to night)" or "Time: Night  (switch to day)", w - 40, rowH - 8) then panelAction("time") end
 		UiTranslate(0, rowH)
-		if UiTextButton(settings.rain and "Weather: Rain  (stop the rain)" or "Weather: Clear  (make it rain)", w - 40, rowH - 8) then panelAction("weather") end
+		local wl = { clear = "Weather: Clear  (make it rain)", rain = "Weather: Rain  (make it snow)", snow = "Weather: Snow  (clear skies)" }
+		if UiTextButton(wl[settings.weather] or wl.clear, w - 40, rowH - 8) then panelAction("weather") end
 		UiTranslate(0, rowH)
 		if M and M.state == "active" then
 			UiColor(1, 0.75, 0.85, 1)
@@ -2149,6 +2231,7 @@ function tick(dt)
 	spotsTick(cam)
 	radioTick(cam)
 	paTick(dt, cam)
+	weatherTick(dt, cam)
 end
 
 function update(dt)
