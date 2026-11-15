@@ -601,6 +601,29 @@
 		<body name="snow63" tags="snowlayer sy=7.60" pos="20.4 -52.4 -47.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_63.vox" object="shape"/></body>
 		<body name="snow64" tags="snowlayer sy=7.70" pos="20.4 -52.3 -39.6" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_64.vox" object="shape"/></body>
 	</group>
+	<location tags="powerzone k=-1 x0=-9.60 x1=-5.60 y0=3.90 y1=7.10 z0=-32.70 z1=-30.10" pos="-7.6 3.9 -31.4"/>
+	<location tags="powerzone k=-2 x0=-9.60 x1=-5.60 y0=0.30 y1=3.50 z0=-32.70 z1=-30.10" pos="-7.6 0.3 -31.4"/>
+	<location tags="powerzone k=9 x0=-39.60 x1=-35.60 y0=3.90 y1=7.10 z0=-29.30 z1=-26.70" pos="-37.6 3.9 -28"/>
+	<location tags="powerzone k=9 x0=-53.60 x1=-31.20 y0=-5.00 y1=7.30 z0=-26.70 z1=4.70" pos="-42.4 -5 -11"/>
+	<location tags="powerzone k=13 x0=-53.60 x1=-31.20 y0=19.50 y1=37.70 z0=-26.70 z1=4.70" pos="-42.4 19.5 -11"/>
+	<location tags="powerzone k=10 x0=-53.60 x1=-31.20 y0=7.30 y1=10.30 z0=-26.70 z1=4.70" pos="-42.4 7.3 -11"/>
+	<location tags="powerzone k=11 x0=-53.60 x1=-31.20 y0=10.30 y1=13.30 z0=-26.70 z1=4.70" pos="-42.4 10.3 -11"/>
+	<location tags="powerzone k=12 x0=-53.60 x1=-31.20 y0=13.30 y1=16.30 z0=-26.70 z1=4.70" pos="-42.4 13.3 -11"/>
+	<location tags="powerzone k=13 x0=-53.60 x1=-31.20 y0=16.30 y1=19.50 z0=-26.70 z1=4.70" pos="-42.4 16.3 -11"/>
+	<location tags="powerzone k=6 x0=-15.60 x1=15.60 y0=25.50 y1=37.70 z0=-30.50 z1=11.90" pos="0 25.5 -9.3"/>
+	<location tags="powerzone k=-2 x0=-15.20 x1=15.20 y0=-5.00 y1=3.70 z0=-30.10 z1=11.50" pos="0 -5 -9.3"/>
+	<location tags="powerzone k=-1 x0=-15.20 x1=15.20 y0=3.70 y1=7.30 z0=-30.10 z1=11.50" pos="0 3.7 -9.3"/>
+	<location tags="powerzone k=0 x0=-15.20 x1=15.20 y0=7.30 y1=10.30 z0=-30.10 z1=11.50" pos="0 7.3 -9.3"/>
+	<location tags="powerzone k=1 x0=-15.20 x1=15.20 y0=10.30 y1=13.30 z0=-30.10 z1=11.50" pos="0 10.3 -9.3"/>
+	<location tags="powerzone k=2 x0=-15.20 x1=15.20 y0=13.30 y1=16.30 z0=-30.10 z1=11.50" pos="0 13.3 -9.3"/>
+	<location tags="powerzone k=3 x0=-15.20 x1=15.20 y0=16.30 y1=19.30 z0=-30.10 z1=11.50" pos="0 16.3 -9.3"/>
+	<location tags="powerzone k=4 x0=-15.20 x1=15.20 y0=19.30 y1=22.30 z0=-30.10 z1=11.50" pos="0 19.3 -9.3"/>
+	<location tags="powerzone k=5 x0=-15.20 x1=15.20 y0=22.30 y1=25.50 z0=-30.10 z1=11.50" pos="0 22.3 -9.3"/>
+	<location tags="powerzone k=0 x0=-9.80 x1=9.80 y0=4.00 y1=37.70 z0=15.70 z1=35.30" pos="0 4 25.5"/>
+	<location tags="powerzone k=0 x0=-1.60 x1=1.60 y0=4.00 y1=37.70 z0=11.30 z1=16.10" pos="0 4 13.7"/>
+	<location tags="powerzone k=0 x0=-7.80 x1=-3.20 y0=4.00 y1=37.70 z0=11.70 z1=15.70" pos="-5.5 4 13.7"/>
+	<location tags="powerzone k=0 x0=10.20 x1=23.00 y0=4.00 y1=37.70 z0=16.10 z1=37.70" pos="16.6 4 26.9"/>
+	<location tags="powerzone k=0 x0=12.80 x1=16.00 y0=4.00 y1=37.70 z0=10.90 z1=16.50" pos="14.4 4 13.7"/>
 	<location tags="indoor x0=-15.20 x1=15.20 y0=0.10 y1=25.50 z0=-30.10 z1=11.50" pos="0 0.1 -9.3"/>
 	<location tags="indoor x0=-9.80 x1=9.80 y0=7.00 y1=16.00 z0=15.70 z1=35.30" pos="0 7 25.5"/>
 	<location tags="indoor x0=-1.60 x1=1.60 y0=7.00 y1=12.80 z0=11.30 z1=16.10" pos="0 7 13.7"/>
@@ -6277,32 +6300,32 @@
 	<location tags="bowlinglane lane=3 b0=1.85,8.22,-9.95 b1=1.85,8.22,-9.35" pos="1.2 7.61 2.6"/>
 	<location tags="bowlinglane lane=4 b0=2.35,8.22,-9.95 b1=2.35,8.22,-9.35" pos="3 7.61 2.6"/>
 	<location tags="respawn" pos="0 7.7 -21.1" rot="0 180 0"/>
-	<location tags="ambsound kind=pool" pos="0 9.6 25"/>
-	<location tags="ambsound kind=spa" pos="6.6 9.6 18.5"/>
-	<location tags="ambsound kind=garage" pos="-7.4 5.5 -23.5"/>
-	<location tags="ambsound kind=garage" pos="-7.4 5.5 -8.5"/>
-	<location tags="ambsound kind=garage" pos="-12.6 5.5 -8.9"/>
-	<location tags="ambsound kind=laundry" pos="2.1 8.4 5.7"/>
-	<location tags="ambsound kind=boiler" pos="6.1 8.6 6"/>
-	<location tags="ambsound kind=mall" pos="7.5 1.9 -18.5"/>
-	<location tags="ambsound kind=mall" pos="7.5 1.9 -8.5"/>
-	<location tags="ambsound kind=mall" pos="7.5 1.9 1.5"/>
-	<location tags="ambsound kind=mall" pos="3.9 1.9 -26.1"/>
-	<location tags="ambsound kind=mall" pos="4.3 1.9 7.4"/>
-	<location tags="ambsound kind=garage" pos="-7.5 1.9 -23.5"/>
-	<location tags="ambsound kind=garage" pos="-7.5 1.9 -8.5"/>
-	<location tags="ambsound kind=garage" pos="-7.5 1.9 6.5"/>
-	<location tags="ambsound kind=mall" pos="7.4 5.5 -24.5"/>
-	<location tags="ambsound kind=mall" pos="7.4 5.5 -12.5"/>
-	<location tags="ambsound kind=mall" pos="7.4 5.5 -0.5"/>
-	<location tags="ambsound kind=mall" pos="7.4 5.5 8.5"/>
-	<location tags="ambsound kind=mall" pos="-5.1 5.5 7.7"/>
-	<location tags="ambsound kind=mall" pos="-5.6 5.5 2.9"/>
-	<location tags="ambsound kind=mall" pos="13.6 5.5 -25.5"/>
-	<location tags="ambsound kind=garage" pos="-45.5 5.5 -20.5"/>
-	<location tags="ambsound kind=garage" pos="-39.5 5.5 -5.5"/>
-	<location tags="ambsound kind=garage" pos="-49.6 5.5 0.5"/>
-	<location tags="ambsound kind=garage" pos="-34.6 5.5 -18.5"/>
+	<location tags="ambsound kind=pool pw=0" pos="0 9.6 25"/>
+	<location tags="ambsound kind=spa pw=0" pos="6.6 9.6 18.5"/>
+	<location tags="ambsound kind=garage pw=-1" pos="-7.4 5.5 -23.5"/>
+	<location tags="ambsound kind=garage pw=-1" pos="-7.4 5.5 -8.5"/>
+	<location tags="ambsound kind=garage pw=-1" pos="-12.6 5.5 -8.9"/>
+	<location tags="ambsound kind=laundry pw=0" pos="2.1 8.4 5.7"/>
+	<location tags="ambsound kind=boiler pw=0" pos="6.1 8.6 6"/>
+	<location tags="ambsound kind=mall pw=-2" pos="7.5 1.9 -18.5"/>
+	<location tags="ambsound kind=mall pw=-2" pos="7.5 1.9 -8.5"/>
+	<location tags="ambsound kind=mall pw=-2" pos="7.5 1.9 1.5"/>
+	<location tags="ambsound kind=mall pw=-2" pos="3.9 1.9 -26.1"/>
+	<location tags="ambsound kind=mall pw=-2" pos="4.3 1.9 7.4"/>
+	<location tags="ambsound kind=garage pw=-2" pos="-7.5 1.9 -23.5"/>
+	<location tags="ambsound kind=garage pw=-2" pos="-7.5 1.9 -8.5"/>
+	<location tags="ambsound kind=garage pw=-2" pos="-7.5 1.9 6.5"/>
+	<location tags="ambsound kind=mall pw=-1" pos="7.4 5.5 -24.5"/>
+	<location tags="ambsound kind=mall pw=-1" pos="7.4 5.5 -12.5"/>
+	<location tags="ambsound kind=mall pw=-1" pos="7.4 5.5 -0.5"/>
+	<location tags="ambsound kind=mall pw=-1" pos="7.4 5.5 8.5"/>
+	<location tags="ambsound kind=mall pw=-1" pos="-5.1 5.5 7.7"/>
+	<location tags="ambsound kind=mall pw=-1" pos="-5.6 5.5 2.9"/>
+	<location tags="ambsound kind=mall pw=-1" pos="13.6 5.5 -25.5"/>
+	<location tags="ambsound kind=garage pw=9" pos="-45.5 5.5 -20.5"/>
+	<location tags="ambsound kind=garage pw=9" pos="-39.5 5.5 -5.5"/>
+	<location tags="ambsound kind=garage pw=9" pos="-49.6 5.5 0.5"/>
+	<location tags="ambsound kind=garage pw=9" pos="-34.6 5.5 -18.5"/>
 	<group name="props" pos="0 0 0">
 		<body name="luggage_cart_0" pos="5.2 7.62 -19.9" rot="0 15 0" dynamic="true">
 			<vox pos="0 0 0" file="MOD/vox/luggage_cart.vox" object="shape"/>
@@ -8006,10 +8029,10 @@
 			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
 			<joint pos="-0.4 1.9 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door333" tags="autodoor grp=2 slide sx=-0.80 sz=0.00" pos="-5.6 4 1.5">
+		<body name="door333" tags="autodoor grp=2 slide sx=-0.80 sz=0.00 pw=-1" pos="-5.6 4 1.5">
 			<vox pos="0 0 0" file="MOD/vox/door_19.vox" object="shape"/>
 		</body>
-		<body name="door334" tags="autodoor grp=2 slide sx=0.80 sz=0.00" pos="-4.8 4 1.5">
+		<body name="door334" tags="autodoor grp=2 slide sx=0.80 sz=0.00 pw=-1" pos="-4.8 4 1.5">
 			<vox pos="0 0 0" file="MOD/vox/door_19.vox" object="shape"/>
 		</body>
 		<body name="door335" tags="hoteldoor" pos="-6.6 7.65 9.2" rot="0 0 0" dynamic="true">
@@ -8047,10 +8070,10 @@
 			<joint pos="-0.4 0.2 -0.1" type="ball" size="0.1" collide="true"/>
 			<joint pos="-0.4 1.9 -0.1" type="ball" size="0.1" collide="true"/>
 		</body>
-		<body name="door342" tags="autodoor grp=3 slide sx=0.00 sz=-0.80" pos="0.1 0.4 8.9">
+		<body name="door342" tags="autodoor grp=3 slide sx=0.00 sz=-0.80 pw=-2" pos="0.1 0.4 8.9">
 			<vox pos="0 0 0" file="MOD/vox/door_21.vox" object="shape"/>
 		</body>
-		<body name="door343" tags="autodoor grp=3 slide sx=0.00 sz=0.80" pos="0.1 0.4 9.7">
+		<body name="door343" tags="autodoor grp=3 slide sx=0.00 sz=0.80 pw=-2" pos="0.1 0.4 9.7">
 			<vox pos="0 0 0" file="MOD/vox/door_21.vox" object="shape"/>
 		</body>
 		<body name="door344" tags="hoteldoor" pos="11.3 25.65 1.9" rot="0 0 0" dynamic="true">

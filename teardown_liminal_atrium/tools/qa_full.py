@@ -1011,6 +1011,20 @@ for d in ns["DOORS"]:
 bay_hit = sum(int(SNOWC[int(gx_ + 10) - 10:int(gx_ + 10) + 10, int(gz_ + 22) - 10:int(gz_ + 22) + 10].sum()) for (_, _, gx_, gy_, gz_, ry_) in ns["CAR_SPOTS"])
 report(f"snow: {len(ns['SNOW_TILES'])} tiles, {snow_n} voxels on open-sky surfaces; none inside anything, no door swing or car bay snowed in",
        snow_n > 600000 and snow_bad == 0 and door_hit == 0 and bay_hit == 0, f"inside {snow_bad} doors {door_hit} bays {bay_hit}")
+# v3.62: the exported power zones say the same circuit as the build for every light (music / PA / ambience follow them);
+#        automatic doors and sound spots carry the circuit of their floor
+PZ_ = ns["power_zones"]()
+def zone_k(x, y, z):
+    for (x0_, x1_, y0_, y1_, z0_, z1_, k_) in PZ_:
+        if x0_ <= x < x1_ and y0_ <= y < y1_ and z0_ <= z < z1_:
+            return k_
+    return 100
+mism = [(int(gx), int(gy), int(gz)) for (gx, gy, gz, *_r) in ns["LIGHTS"] if zone_k(gx, gy, gz) != ns["power_floor"](gx, gy, gz)]
+XML_ = open("main.xml").read()
+ad_pw = re.findall(r'tags="autodoor grp=\d+ slide sx=[-\d.]+ sz=[-\d.]+ pw=(-?\d+)"', XML_)
+sp_pw = re.findall(r'tags="ambsound kind=(\w+) pw=(-?\d+)"', XML_)
+report(f"power zones match every light's circuit; {len(ad_pw)} automatic door leaves and {len(sp_pw)} sound spots on circuits",
+       not mism and len(ad_pw) >= 4 and all(k_ != "100" for k_ in ad_pw) and len(sp_pw) == len(ns["SOUND_SPOTS"]), f"{mism[:4]} doors {ad_pw}")
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless

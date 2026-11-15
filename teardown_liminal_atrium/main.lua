@@ -140,7 +140,7 @@ end
 function paTick(dt, cam)
 	pa.timer = pa.timer - dt
 	if pa.timer > 0 then return end
-	if paInside(cam) then
+	if paInside(cam) and placeLive(cam) then           -- (v3.62) the speakers where you stand need power
 		PlaySound(snd.announce, VecAdd(cam, Vec(0, 2.5, 0)), 0.32)        -- from the ceiling speakers, softly
 		pa.played = pa.played + 1
 		pa.timer = 180 + math.random() * 180
@@ -340,8 +340,19 @@ local function setState(c, state)
 	end
 end
 
+-- (v3.62) a lift runs while the master is on and at least one circuit of its building is live (total blackout: dead)
+function elevPowered(c)
+	if not floorPowered then return true end
+	if not floorPowered(SITE_CIRCUIT or 100) then return false end
+	local circ = (string.sub(c.shaft, 1, 1) == "H") and { 9, 10, 11, 12, 13 } or { -2, -1, 0, 1, 2, 3, 4, 5, 6 }
+	for i = 1, #circ do
+		if floorPowered(circ[i]) then return true end
+	end
+	return false
+end
+
 local function request(c, floor)
-	if c == nil or floor == nil or c.broken then return end
+	if c == nil or floor == nil or c.broken or not elevPowered(c) then return end
 	c.target = floor
 	if (c.state == "idle" or c.state == "autoclose") and floor == c.floor then
 		setState(c, "opening")
@@ -374,7 +385,9 @@ function padPress(k)
 	if k == "back" then p.entry = string.sub(p.entry, 1, -2); return end
 	if k == "go" then
 		local f = parseFloor(p.entry, p.car.roof)
-		if f ~= nil and p.car.doors[f] ~= nil and not p.car.broken then
+		if not elevPowered(p.car) then
+			p.msg, p.msgT, p.entry = "No power", 1.5, ""
+		elseif f ~= nil and p.car.doors[f] ~= nil and not p.car.broken then
 			PlaySound(snd.click, cabCenter(p.car), 0.8)
 			request(p.car, f)
 			elevPad = nil
@@ -470,8 +483,10 @@ local function elevTick(dt)
 	end
 	if near then
 		local p = cabCenter(near)
-		if near.state == "moving" then PlayLoop(snd.hum, p, 0.55) end
-		PlayLoop(snd.muzak, p, 0.28)
+		if elevPowered(near) then                          -- (no power: no hum, no music)
+			if near.state == "moving" then PlayLoop(snd.hum, p, 0.55) end
+			PlayLoop(snd.muzak, p, 0.28)
+		end
 	end
 end
 
@@ -495,7 +510,13 @@ local function elevUpdate(dt)
 		local c = cars[i]
 		checkBroken(c, dt)
 		supportCheck(c, dt)
-		if not c.broken then
+		if not c.broken and not elevPowered(c) then          -- no power: the cab just hangs where it is
+			if IsHandleValid(c.body) then
+				local t = GetBodyTransform(c.body)
+				ConstrainPosition(c.body, 0, t.pos, Vec(c.x, c.y, c.z), 4)
+				ConstrainOrientation(c.body, 0, t.rot, c.rot)
+			end
+		elseif not c.broken then
 		local door = c.doors[c.floor]
 		if c.state == "idle" then
 			if c.target ~= c.floor then
@@ -667,6 +688,32 @@ local function fade(d, near, far)
 	return (far - d) / (far - near)
 end
 
+-- (v3.62) a speaker / machine only sounds while its circuit has power
+function spotLive(sp)
+	return not floorPowered or floorPowered(sp.pw)
+end
+-- the circuit of a place (the "powerzone" boxes, first match; anywhere else: the site circuit)
+local pzones = nil
+function circuitAt(p)
+	if not pzones then
+		pzones = {}
+		local ls = FindLocations("powerzone", true)
+		for i = 1, #ls do
+			local z = { k = tonumber(GetTagValue(ls[i], "k")) or 100 }
+			for _, n in ipairs({ "x0", "x1", "y0", "y1", "z0", "z1" }) do z[n] = tonumber(GetTagValue(ls[i], n)) or 0 end
+			pzones[#pzones + 1] = z
+		end
+	end
+	for i = 1, #pzones do
+		local z = pzones[i]
+		if p[1] >= z.x0 and p[1] < z.x1 and p[2] >= z.y0 and p[2] < z.y1 and p[3] >= z.z0 and p[3] < z.z1 then return z.k end
+	end
+	return SITE_CIRCUIT or 100
+end
+function placeLive(p)
+	return not floorPowered or floorPowered(circuitAt(p))
+end
+
 local function spotsInit()
 	local zl = FindLocations("soundzone", true)
 	for i = 1, #zl do
@@ -676,7 +723,8 @@ local function spotsInit()
 	end
 	local locs = FindLocations("ambsound", true)
 	for i = 1, #locs do
-		spots[#spots + 1] = { pos = GetLocationTransform(locs[i]).pos, kind = GetTagValue(locs[i], "kind") }
+		spots[#spots + 1] = { pos = GetLocationTransform(locs[i]).pos, kind = GetTagValue(locs[i], "kind"),
+			pw = tonumber(GetTagValue(locs[i], "pw")) }
 	end
 end
 
@@ -692,6 +740,7 @@ local function radioTick(cam)
 		return
 	end
 	local p = GetShapeWorldTransform(radio).pos
+	if not placeLive(p) then return end                 -- (v3.62) no power at the pool: the radio is silent
 	local v = 0.9 * poolZone(cam) * fade(dist(p, cam), 5, 24)
 	if v > 0.01 then
 		PlayLoop(snd.song, p, v)
@@ -703,7 +752,7 @@ local function spotsTick(cam)
 	local near, nd = nil, 45
 	for i = 1, #spots do
 		local sp = spots[i]
-		if sp.kind == "mall" and cam[2] < sp.pos[2] + 2.2 and cam[2] > sp.pos[2] - 2.6 then
+		if sp.kind == "mall" and spotLive(sp) and cam[2] < sp.pos[2] + 2.2 and cam[2] > sp.pos[2] - 2.6 then
 			local d = dist(sp.pos, cam)
 			if d < nd then near, nd = sp, d end
 		end
@@ -713,7 +762,7 @@ local function spotsTick(cam)
 	near, nd = nil, 40
 	for i = 1, #spots do
 		local sp = spots[i]
-		if sp.kind == "garage" and cam[2] < sp.pos[2] + 2.2 and cam[2] > sp.pos[2] - 2.6 then
+		if sp.kind == "garage" and spotLive(sp) and cam[2] < sp.pos[2] + 2.2 and cam[2] > sp.pos[2] - 2.6 then
 			local d = dist(sp.pos, cam)
 			if d < nd then near, nd = sp, d end
 		end
@@ -725,10 +774,10 @@ local function spotsTick(cam)
 		if sp.kind == "pool" then
 			local v = 0.45 * poolZone(cam) * fade(d, 8, 28)
 			if v > 0.01 then PlayLoop(snd.pool, sp.pos, v) end
-		elseif sp.kind == "spa" then
+		elseif sp.kind == "spa" and spotLive(sp) then
 			local v = 0.5 * poolZone(cam) * fade(d, 3, 12)
 			if v > 0.01 then PlayLoop(snd.spa, sp.pos, v) end
-		elseif (sp.kind == "boiler" or sp.kind == "laundry") and math.abs(cam[2] - sp.pos[2]) < 2.5 then
+		elseif (sp.kind == "boiler" or sp.kind == "laundry") and spotLive(sp) and math.abs(cam[2] - sp.pos[2]) < 2.5 then
 			local v = (sp.kind == "boiler" and 0.55 or 0.45) * fade(d, 2.5, 11)       -- staff rooms (ground floor)
 			if v > 0.01 then PlayLoop(sp.kind == "boiler" and snd.boiler or snd.laundry, sp.pos, v) end
 		end
@@ -1055,7 +1104,7 @@ local function autoInit()
 		local grp = GetTagValue(b, "grp")
 		local g = autoGroups[grp]
 		if not g then
-			g = { leaves = {}, amount = 0, target = 0, hold = 0 }
+			g = { leaves = {}, amount = 0, target = 0, hold = 0, pw = tagNum(b, "pw", nil) }
 			autoGroups[grp] = g
 		end
 		g.leaves[#g.leaves + 1] = { body = b, t0 = GetBodyTransform(b), shapes = GetBodyShapes(b),
@@ -1071,6 +1120,7 @@ end
 local function autoTick(dt)
 	local pp = GetPlayerTransform().pos
 	for _, g in pairs(autoGroups) do
+	  if not g.pw or floorPowered(g.pw) then                -- (v3.62) no power on the floor: the door stays as it is
 		local dx, dz = pp[1] - g.center[1], pp[3] - g.center[3]
 		local near = math.sqrt(dx * dx + dz * dz) < 3.2 and math.abs(pp[2] - g.center[2]) < 2.5
 		if near then g.hold = 1.2 else g.hold = g.hold - dt end
@@ -1102,6 +1152,7 @@ local function autoTick(dt)
 				end
 			end
 		end
+	  end
 	end
 end
 
@@ -1942,7 +1993,8 @@ local function isIndoor(p)
 	end
 	return false
 end
-local function toward(v, target, rate)
+ambVol = 0.3
+function toward(v, target, rate)
 	if v < target then return math.min(target, v + rate) end
 	return math.max(target, v - rate)
 end
@@ -1952,7 +2004,7 @@ function weatherTick(dt, cam)
 	local tr = (settings.weather == "rain") and (wxInside and 0.05 or 0.85) or 0
 	wxVol.rain = toward(wxVol.rain, tr, dt * 0.9)
 	if wxVol.rain > 0.004 then PlayLoop(snd.rainOut, cam, wxVol.rain) end
-	local ts = (settings.weather == "snow" and not wxInside) and 0.3 or 0     -- (v3.61) outdoors only: no clash with the hotel music
+	local ts = (settings.weather == "snow" and not wxInside) and 0.55 or 0    -- (v3.61) outdoors only: no clash with the hotel music
 	wxVol.snow = toward(wxVol.snow, ts, dt * (ts > wxVol.snow and 0.15 or 0.3))
 	if wxVol.snow > 0.004 then PlayLoop(snd.snowSong, cam, wxVol.snow) end
 end
@@ -2224,7 +2276,8 @@ function tick(dt)
 	autoTick(dt)
 	missionTick(dt)
 	local cam = GetCameraTransform().pos
-	PlayLoop(snd.ambience, cam, 0.3)
+	ambVol = toward(ambVol, placeLive(cam) and 0.3 or 0, dt * 0.6)     -- (v3.62) the building hum dies with the power
+	if ambVol > 0.004 then PlayLoop(snd.ambience, cam, ambVol) end
 	doorsTick(cam)
 	elevTick(dt)
 	flickerTick(dt, cam)

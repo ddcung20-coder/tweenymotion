@@ -5797,6 +5797,31 @@ for e_ in ELEVATORS:
     lo_ = lvl_y(min(e_["levels"])) - 2; hi_ = lvl_y(max(e_["levels"])) - 2 + sy_
     G[gx_:gx_ + sx_, lo_ - 1:hi_ + 1, gz_:gz_ + sz_] = 0
 
+def power_zones():
+    """(v3.62) the same circuits as power_floor() as an ordered list of boxes (first match wins, else the site):
+    main.lua uses it to know whether the place the player stands in has power (music, announcements)."""
+    Z = [(x0_, x1_, y0_, y1_, z0_, z1_, k_) for (x0_, x1_, y0_, y1_, z0_, z1_, k_) in POWER_ZONES]
+    if WEST:
+        Z.append((HX0, HX1, -50, G0 - SLAB_T, HZ0, HZ1, H_CIRCUIT0 - 1))
+        Z.append((HX0, HX1, H_ROOF - 1, H + 60, HZ0, HZ1, H_CIRCUIT0 + H_FL - 1))
+        lo_ = G0 - SLAB_T
+        for k in range(H_FL):
+            hi_ = fy(k) + FH - SLAB_T if k < H_FL - 1 else H_ROOF - 1
+            Z.append((HX0, HX1, lo_, hi_, HZ0, HZ1, H_CIRCUIT0 + k)); lo_ = hi_
+    Z.append((bx0 - 4, bx1 + 4, ROOF_Y - 1, H + 60, bz0 - 4, bz1 + 4, FLOORS))
+    Z.append((bx0, bx1, -50, YB - SLAB_T, bz0, bz1, -2))
+    Z.append((bx0, bx1, YB - SLAB_T, G0 - SLAB_T, bz0, bz1, -1))
+    lo_ = G0 - SLAB_T
+    for k in range(FLOORS):
+        hi_ = fy(k) + FH - SLAB_T if k < FLOORS - 1 else ROOF_Y - 1
+        Z.append((bx0, bx1, lo_, hi_, bz0, bz1, k)); lo_ = hi_
+    for (x0_, x1_, z0_, z1_) in ((ix0 - 2, ix1 + 2, iz0 - 2, iz1 + 2), (cxN - CW - 2, cxN + CW + 2, bz1 - 2, AZ0 + 6),
+                                 (CH_X0 - 2, CH_X1 + 2, CH_Z0 - 2, AZ0 + 2),
+                                 (BANQUET["x"][0] - 2, BANQUET["x"][1] + 2, BANQUET["z"][0] - 2, BANQUET["z"][1] + 2),
+                                 (BANQUET["link"][0] - 2, BANQUET["link"][1] + 2, bz1 - 6, BANQUET["z"][0] + 2)):
+        Z.append((x0_, x1_, YB, H + 60, z0_, z1_, 0))
+    return Z
+
 def power_floor(gx, gy, gz):
     """the circuit (electrical room) a light / glowing fitting hangs on. Every light has one (v3.58):
     -2 B2, -1 B1, 0..5 floors 1-6, 6 roof (main hotel; pool annex, banquet hall, bowling on 0),
@@ -6290,6 +6315,9 @@ def export():
     ind_ += [(x0_, x1_, ROOF_Y - 2, ROOF_Y + 60, z0_, z1_) for (x0_, x1_, z0_, z1_) in ROOF_POWER_ZONES]
     if WEST:
         ind_ += [(HX0, HX1, YB - 4, H_ROOF - 1, HZ0, HZ1), (MASTER["x"][0], MASTER["x"][1], G0, G0 + 50, MASTER["z"][0], MASTER["z"][1])]
+    for (x0_, x1_, y0_, y1_, z0_, z1_, k_) in power_zones():               # (v3.62) circuit of a place, first match wins
+        xml.append(f'\t<location tags="powerzone k={k_} x0={x0_ * 0.1 - CX:.2f} x1={x1_ * 0.1 - CX:.2f} y0={y0_ * 0.1:.2f} y1={y1_ * 0.1:.2f} '
+                   f'z0={z0_ * 0.1 - CZ:.2f} z1={z1_ * 0.1 - CZ:.2f}" pos="{f3(((x0_ + x1_) * 0.05 - CX, y0_ * 0.1, (z0_ + z1_) * 0.05 - CZ))}"/>\n')
     for (x0_, x1_, y0_, y1_, z0_, z1_) in ind_:
         xml.append(f'\t<location tags="indoor x0={x0_ * 0.1 - CX:.2f} x1={x1_ * 0.1 - CX:.2f} y0={y0_ * 0.1:.2f} y1={y1_ * 0.1:.2f} '
                    f'z0={z0_ * 0.1 - CZ:.2f} z1={z1_ * 0.1 - CZ:.2f}" pos="{f3(((x0_ + x1_) * 0.05 - CX, y0_ * 0.1, (z0_ + z1_) * 0.05 - CZ))}"/>\n')
@@ -6439,7 +6467,7 @@ def export():
         xml.append(f'\t<location tags="bowlinglane lane={ln_} {sp_}" pos="{f3(((hx_) * 0.1 - CX, G0 * 0.1 + 0.01, hz_ * 0.1 - CZ))}"/>\n')
     xml.append(f'\t<location tags="respawn" pos="{f3(spawn)}" rot="0 180 0"/>\n')
     for (kind, sx_, sy_, sz_) in SOUND_SPOTS:
-        xml.append(f'\t<location tags="ambsound kind={kind}" pos="{f3((sx_ * 0.1 - CX, sy_ * 0.1, sz_ * 0.1 - CZ))}"/>\n')
+        xml.append(f'\t<location tags="ambsound kind={kind} pw={power_floor(int(sx_), int(sy_), int(sz_))}" pos="{f3((sx_ * 0.1 - CX, sy_ * 0.1, sz_ * 0.1 - CZ))}"/>\n')
     xml.append('\t<group name="props" pos="0 0 0">\n')
     for i, (pname, gx, gy, gz, roty) in enumerate(PROPS):
         sx, sy, sz = PROP_SHAPES[pname].shape
@@ -6486,6 +6514,8 @@ def export():
         ox = (gx + sx // 2) * 0.1 - CX; oy = gy * 0.1; oz = (gz + sz - sz // 2) * 0.1 - CZ
         if d["kind"] == "slide":   # elevator landing doors: moved by main.lua
             tags = d["tag"] + f" slide sx={d['slide'][0] * 0.1:.2f} sz={d['slide'][1] * 0.1:.2f}"
+            if d["tag"].startswith("autodoor"):                       # (v3.62) its motor hangs on the floor's circuit
+                tags += f" pw={power_floor(gx, gy + 2, gz)}"
             xml.append(f'\t\t<body name="door{i}" tags="{tags}" pos="{f3((ox, oy, oz))}">\n'
                        f'\t\t\t<vox pos="0 0 0" file="MOD/vox/{d["file"]}.vox" object="shape"/>\n\t\t</body>\n')
             continue
@@ -6511,7 +6541,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.61\n"
+        f.write("name = Liminal Atrium v3.62\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
