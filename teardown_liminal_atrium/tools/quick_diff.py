@@ -50,7 +50,10 @@ def snapshot(root, out):
     noise[9:25] = True                                   # plants (their shapes are hashed on y)
     for k in ("SOIL", "BEDROCK"):
         noise[ns[k]] = True                              # earth
-    np.savez(out, G=G, pal=pal, glass=glass, G0=ns["G0"], noise=noise)
+    hpal = pal.copy()                                    # the HALCYON lot's own colours (x < WEST)
+    for i, v in (ns.get("H_PAL") or {}).items():
+        hpal[i] = v
+    np.savez(out, G=G, pal=pal, glass=glass, G0=ns["G0"], noise=noise, hpal=hpal, west=ns.get("WEST", 0))
 
 
 def iso(reg, hot, pal, glass, cut_y, maxw=760, tint=True):

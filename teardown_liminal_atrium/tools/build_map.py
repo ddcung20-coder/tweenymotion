@@ -26,6 +26,7 @@ rng = random.Random(7)
 # The MATL finish (diffuse / metal / glass / emit) only changes the look.
 # ----------------------------------------------------------------------------
 PAL = {}
+H_PAL = {}    # (v3.54) colour overrides for every shape of the HALCYON lot (x < WEST): same materials, its own look
 def P(i, rgb, fin="diffuse", **kw):
     assert i not in PAL, i
     PAL[i] = (rgb, fin, kw)
@@ -180,7 +181,8 @@ SHORT_BAYS, SHORT_BAY_W = 4, 40
 AX = SHORT_BAYS * SHORT_BAY_W        # atrium X size 160 (16 m)
 AZ = LONG_BAYS * LONG_BAY_W          # atrium Z size 272 (27.2 m)
 BX, BZ = AX + 2 * T, AZ + 2 * T
-W, D = BX + 2 * M, BZ + 2 * M
+WEST = int(os.environ.get("LA_WEST", "360"))   # (v3.54) extra site west of the hotel: the HALCYON hotel stands there
+W, D = BX + 2 * M + WEST, BZ + 2 * M
 FLOORS, FH, SLAB_T = 6, 30, 3
 BASE_H = 36                          # basement B1 floor-to-floor (3.6 m)
 BASE2_H = 36                         # basement B2 floor-to-floor (3.6 m, v3.46)
@@ -193,8 +195,8 @@ ROOF_Y = G0 + FLOORS * FH            # 184: roof surface of the room ring
 ATR_TOP = ROOF_Y + 22                # 206: atrium ceiling underside
 H = ATR_TOP + 3 + 4 + 2 + 30         # + rooftop sign (every shape is still <= 256 tall)
 
-bx0, bz0 = M, M
-bx1, bz1 = M + BX, M + BZ
+bx0, bz0 = M + WEST, M
+bx1, bz1 = M + WEST + BX, M + BZ
 ax0, az0 = bx0 + T, bz0 + T
 ax1, az1 = ax0 + AX, az0 + AZ
 AZ0 = bz1 + 40                        # pool annex (north of the hotel)
@@ -434,7 +436,7 @@ def tree(x, z, h=None, draw=True):
         ox, oy, oz = rng.randint(-6, 6), rng.randint(-4, 5), rng.randint(-6, 6)
         r = rng.randint(5, 8)
         canopy |= ((X - x - ox) ** 2 + (Y - cy - oy) ** 2 * 1.3 + (Z - z - oz) ** 2) <= r * r
-    canopy &= hash3(X, Y, Z, 5) > 0.18
+    canopy &= hash3(X - WEST, Y, Z, 5) > 0.18
     canopy &= ~((X >= bx0 - 5) & (X < bx1 + 5) & (Z >= bz0 - 5) & (Z < bz1 + 5))   # (no leaves in or on the hotel's walls)
     # the trunk top is the anchor: only foliage connected to it survives (no floating leaves)
     canopy[R - 1:R + 1, :R + 1, R - 1:R + 1] = True
@@ -442,13 +444,13 @@ def tree(x, z, h=None, draw=True):
         return                                    # (the random draws still happen: the rest of the map stays put)
     canopy = keep_connected(canopy, [(R, R - 1, R)])
     ok = (X >= 0) & (X < W) & (Y >= 0) & (Y < H) & (Z >= 0) & (Z < D) & canopy
-    t = hash3(X[ok], Y[ok], Z[ok], 9)
+    t = hash3(X[ok] - WEST, Y[ok], Z[ok], 9)
     G[X[ok], Y[ok], Z[ok]] = np.where(t < 0.4, LEAF, np.where(t < 0.75, LEAF3, LEAF2))
 
 for z in range(bz0 + 50, bz1 - 40, 70):
     tree(bx0 - SW // 2 - 2, z); tree(bx1 + SW // 2 + 2, z)
 for x in range(bx0 + 50, bx1 - 40, 70):
-    tree(x, bz1 + SW // 2 + 2, draw=not (150 <= x <= 215))     # (the pool changing-room wing stands there)
+    tree(x, bz1 + SW // 2 + 2, draw=not (150 <= x - WEST <= 215))     # (the pool changing-room wing stands there)
 # parking lot (south): bays, wheel stops
 for i in range(13):
     x = bx0 - 30 + i * 30
@@ -525,7 +527,7 @@ for x in range(IX0, IX1):
             continue
         G[x, YB - 1, z] = MARBLE_W if ((x // 6) + (z // 6)) % 2 == 0 else MARBLE_W2
 # promenade: black border + gold inlay down the middle
-PRM0, PRM1 = 290, 330
+PRM0, PRM1 = WEST + 290, WEST + 330
 box(PRM0, PRM0 + 1, YB - 1, YB, IZ0, IZ1, MARBLE_B); box(PRM1 - 1, PRM1, YB - 1, YB, IZ0, IZ1, MARBLE_B)
 box(PRM0 + 19, PRM0 + 21, YB - 1, YB, IZ0, IZ1, BRASS)
 for z in range(IZ0 + 10, IZ1, 24):
@@ -562,7 +564,7 @@ def ramp3_y(z):                      # z >= R3_BOT (cars come out heading north 
     return YB - int(round((z - R3_TOP) * (YB - YB2) / (R3_BOT - R3_TOP)))
 
 # ---- ramp from the street (south-west) down along the west side, then a tunnel into the car park
-RX0, RX1 = 6, 54
+RX0, RX1 = WEST + 6, WEST + 54
 RZ_TOP, RZ_BOT, RZ_END = 60, 240, 312
 TZ0, TZ1 = 260, 310                  # tunnel / car park entry
 def ramp_y(z):
@@ -714,7 +716,7 @@ box(ax0 + 12, ax0 + 15, PODY + 9, PODY + 11, az1 - 4, az1 - 2, RED)      # contr
 def leaf_blob(cx_, cy_, cz_, r, seed, col=LEAF, anchor=None, squash=1.4, keep=0.35):
     xs = np.arange(cx_ - r - 1, cx_ + r + 2); ys = np.arange(cy_ - r - 1, cy_ + r + 2); zs = np.arange(cz_ - r - 1, cz_ + r + 2)
     X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
-    m = (((X - cx_) ** 2 + ((Y - cy_) * squash) ** 2 + (Z - cz_) ** 2) <= r * r) & (hash3(X, Y, Z, seed) > keep)
+    m = (((X - cx_) ** 2 + ((Y - cy_) * squash) ** 2 + (Z - cz_) ** 2) <= r * r) & (hash3(X - WEST, Y, Z, seed) > keep)
     ax_, ay_, az_ = anchor if anchor else (cx_, cy_ - r, cz_)
     sd = (ax_ - xs[0], ay_ - ys[0], az_ - zs[0])
     if 0 <= sd[0] < m.shape[0] and 0 <= sd[1] < m.shape[1] and 0 <= sd[2] < m.shape[2]:
@@ -745,7 +747,7 @@ for cx_ in (ax0 + 40, ax0 + 80, ax0 + 120):
         box(cx_ - 2, cx_ + 2, G0, PODY - SLAB_T, cz_ - 2, cz_ + 2, SLAB)
 LZ = np.arange(ZP, az1)
 for x in range(ax0, ax1):                                                 # artificial lawn (a little mottled)
-    t_ = hash3(np.full(len(LZ), x), np.full(len(LZ), PODY), LZ, 47)
+    t_ = hash3(np.full(len(LZ), x - WEST), np.full(len(LZ), PODY), LZ, 47)
     G[x, PODY - 1, ZP:az1] = np.where(t_ < 0.12, LEAF3, LAWN)
 box(ax0 + 16, ax1, PODY, PODY + 1, ZP, ZP + 1, STEEL)                     # balustrade: steel shoe, glass, cap rail
 box(ax0 + 16, ax1, PODY + 1, PODY + 10, ZP, ZP + 1, GLASS)
@@ -1853,7 +1855,7 @@ def elevators(fr, key):
             sup = []
             for (Q, Y) in ((q0 + 2, y + 11), (q0 + 19, y + 11), (q0 + 13, y + 25)):
                 wx_, wz_ = cont(fr, -T_PART - 0.6, Q + 0.5)
-                sup.append(f"{wx_ * 0.1 - W * 0.05:.3f},{(Y + 0.5) * 0.1:.3f},{wz_ * 0.1 - D * 0.05:.3f}")
+                sup.append(f"{wx_ * 0.1 - (W + WEST) * 0.05:.3f},{(Y + 0.5) * 0.1:.3f},{wz_ * 0.1 - D * 0.05:.3f}")
             sdx, sdz = fr.ux, fr.uz
             # the leaf runs one layer in from the corridor face and opens into a pocket behind the face skin
             # (both pockets between the two shafts), so an open door is hidden in the wall, never on it
@@ -2005,7 +2007,7 @@ def tile_face(x0, x1, y0, y1, z0, z1, base=WHITE_TILE, alt=WHITE_TILE2, grout=GR
     X, Y, Z = np.meshgrid(np.arange(xa, xb), np.arange(ya, yb), np.arange(za, zb), indexing="ij")
     mask = sub > 0 if only is None else np.isin(sub, only)
     grout_m = ((X % size == 0) & (xb - xa > 1)) | ((Y % size == 0) & (yb - ya > 1)) | ((Z % size == 0) & (zb - za > 1))
-    t = hash3(X // size, Y // size, Z // size, 77)
+    t = hash3((X - WEST) // size, Y // size, Z // size, 77)
     col = np.where(grout_m, grout, np.where(t < 0.8, base, alt)).astype(np.uint8)
     sub[mask] = col[mask]
 
@@ -2618,7 +2620,7 @@ shop(PRM1, IX1, 316, 386, "W", "gallery", "LUNE")
 shop(PRM1, IX1, 386, 426, "W", "florist", "FLEUR")
 
 # ---- restaurant LUMIERE (north arcade, front faces south onto the arcade corridor)
-rfr, RW, RD = shop(132, PX1 + 2, 428, IZ1, "S", "restaurant", "LUMIERE", sign=CEIL_LAMP)
+rfr, RW, RD = shop(WEST + 132, PX1 + 2, 428, IZ1, "S", "restaurant", "LUMIERE", sign=CEIL_LAMP)
 # ---- public restrooms (v3.49): a men's and a women's room side by side, doors on the z1 face
 RESTROOMS = []                                    # (level name, x0, x1, z0, z1, y)
 def pictogram(x0, y0, z, col, women):
@@ -2714,15 +2716,15 @@ for z in (140, 380, 476):
 planter(PRM0 + 6, 318, 301); planter(PRM1 - 7, 318, 302)
 planter(PRM0 + 6, 438, 303); planter(PRM1 - 7, 254, 305)
 # SE elevator hall, NW elevator lobby, arcade corridor
-pendant(335, 130); pendant(374, 165); planter(374, 98, 306)
-pendant(96, 452); pendant(96, 485); planter(118, 488, 307)
+pendant(WEST + 335, 130); pendant(WEST + 374, 165); planter(WEST + 374, 98, 306)
+pendant(WEST + 96, 452); pendant(WEST + 96, 485); planter(WEST + 118, 488, 307)
 for x in (110, 150, 210, 262):
-    pendant(x, 414)
+    pendant(WEST + x, 414)
 bench(Frame(IX0, PZ1 + 2, 1, 0, 0, 1), 26, 38, 1)
 # north-east corner: the stairwell comes down here; small seating by its door
-box(366, 382, YB, YB + 4, 486, 491, UPHOL); box(366, 382, YB + 4, YB + 10, 489, 491, UPHOL)
-box(366, 368, YB + 4, YB + 7, 486, 491, UPHOL); box(380, 382, YB + 4, YB + 7, 486, 491, UPHOL)
-pendant(374, 470)
+box(WEST + 366, WEST + 382, YB, YB + 4, 486, 491, UPHOL); box(WEST + 366, WEST + 382, YB + 4, YB + 10, 489, 491, UPHOL)
+box(WEST + 366, WEST + 368, YB + 4, YB + 7, 486, 491, UPHOL); box(WEST + 380, WEST + 382, YB + 4, YB + 7, 486, 491, UPHOL)
+pendant(WEST + 374, 470)
 
 # ---- automatic sliding glass doors between the car park and the arcade
 def autodoor_style(a, b, c, A, B, C):
@@ -2753,9 +2755,9 @@ def auto_door(grp, along_x, wall0, a0, a1, y=None):
         box(wall0 + 2, wall0 + 3, YB + 26, YB + 27, mid - 2, mid + 2, DARK_METAL)
     AUTODOORS.append((grp, along_x, wall0, a0, a1))
 # (v3.47: the door in the x divider is gone -- the ramp down to B2 runs along that wall; the arcade keeps door 2)
-auto_door(2, True, PZ1, 176, 192)
+auto_door(2, True, PZ1, WEST + 176, WEST + 192)
 # "MALL" above the door on the car-park side
-ftext(Frame(192 - 1, PZ1, -1, 0, 0, 1), "MALL", 8, YC - 1, -1, CEIL_LAMP)
+ftext(Frame(WEST + 192 - 1, PZ1, -1, 0, 0, 1), "MALL", 8, YC - 1, -1, CEIL_LAMP)
 
 # ---- car park: bays, aisle line, columns, tube lights, pipes, signs, parked cars
 # 90-degree bays 2.5 m wide x 5 m deep along both long walls; columns stand in a strip on the aisle side of the
@@ -2842,20 +2844,20 @@ for bz in BEAM_Z:      # (all clear of the EXIT sign over the tunnel mouth)
     xs_ = [x for x in range(IX0, PX1 - 2) if garage_ok(x, x + 1, bz - 2, bz + 2, 1)]
     for x in xs_:
         box(x, x + 1, YC - 2, YC, bz - 2, bz + 2, SLAB)
-box(146, 147, YC - 1, YC, IZ0, PZ1, RED)
+box(WEST + 146, WEST + 147, YC - 1, YC, IZ0, PZ1, RED)
 for z in range(IZ0 + 6, PZ1, 20):
-    if garage_ok(145, 148, z, z + 1, 0):
-        box(146, 147, YC - 2, YC - 1, z, z + 1, CHROME)                   # sprinkler heads
+    if garage_ok(WEST + 145, WEST + 148, z, z + 1, 0):
+        box(WEST + 146, WEST + 147, YC - 2, YC - 1, z, z + 1, CHROME)                   # sprinkler heads
 for z in range(IZ0, PZ1):
-    if garage_ok(218, 224, z, z + 1, 0) and not (z % 40 < 2):
-        box(218, 224, YC - 1, YC, z, z + 1, STEEL)
-        box(219, 223, YC - 2, YC - 1, z, z + 1, TIRE if z % 3 else CABLE)   # cables in the tray
+    if garage_ok(WEST + 218, WEST + 224, z, z + 1, 0) and not (z % 40 < 2):
+        box(WEST + 218, WEST + 224, YC - 1, YC, z, z + 1, STEEL)
+        box(WEST + 219, WEST + 223, YC - 2, YC - 1, z, z + 1, TIRE if z % 3 else CABLE)   # cables in the tray
 DZ1 = 392
-box(175, 182, YC - 2, YC, IZ0, DZ1, HVAC)
+box(WEST + 175, WEST + 182, YC - 2, YC, IZ0, DZ1, HVAC)
 for z in range(IZ0 + 14, DZ1 - 6, 30):
-    box(176, 181, YC - 2, YC - 1, z, z + 6, DARK_METAL)                   # supply grilles (flush with the duct)
+    box(WEST + 176, WEST + 181, YC - 2, YC - 1, z, z + 6, DARK_METAL)                   # supply grilles (flush with the duct)
     for gz in range(z, z + 6, 2):
-        box(177, 180, YC - 2, YC - 1, gz, gz + 1, HVAC)
+        box(WEST + 177, WEST + 180, YC - 2, YC - 1, gz, gz + 1, HVAC)
 # bay numbers on the walls, wheel stops, oil stains
 for (lbl_, bays_, west_) in (("A", WEST_BAYS, True), ("B", EAST_BAYS, False)):
     for i, z in enumerate(bays_):
@@ -2898,6 +2900,7 @@ box(IX0 + 30, IX0 + 40, YB + 6, YB + 22, IZ0, IZ0 + 2, DARK_METAL)
 box(IX0 + 33, IX0 + 37, YB + 16, YB + 19, IZ0 + 2, IZ0 + 3, YELLOW_PAINT)
 box(IX0 + 3, IX0 + 7, YB, YB + 9, IZ0 + 2, IZ0 + 6, DUMPSTER)       # (the north-east corner is the turn into the ramp)
 for (cx_, cz_) in ((95, 128), (95, 140), (99, 152)):             # cones parked on the stair walkway, off the aisle
+    cx_ += WEST
     box(cx_ - 2, cx_ + 3, YB, YB + 1, cz_ - 2, cz_ + 3, TIRE)
     box(cx_ - 1, cx_ + 2, YB + 1, YB + 5, cz_ - 1, cz_ + 2, WALL_ORANGE)
     box(cx_ - 1, cx_ + 2, YB + 3, YB + 4, cz_ - 1, cz_ + 2, CEIL)
@@ -2928,6 +2931,7 @@ def inside(poly, x, z):
 PUDDLES = []
 for (pcx, pcz, rx, rz) in ((161, 198, 11, 8), (167, 338, 9, 8), (108, 296, 11, 7), (100, 243, 8, 7),
                           (205, 118, 9, 7), (150, 380, 10, 7), (100, 346, 6, 6), (172, 128, 13, 9)):
+    pcx += WEST
     pts = []
     for a_ in range(0, 360, 30):
         f_ = BRNG.uniform(0.7, 1.0)
@@ -3219,7 +3223,7 @@ TAB_X = ((FS_X0 + FS_X1) // 2 - 5, (FS_X0 + FS_X1) // 2 + 5)  # long tables down
 TC = (FS_X0 + FS_X1) // 2                                      # (x 311: the street's centre line)
 
 Xt_, Zt_ = np.meshgrid(np.arange(FS_X0, FS_X1), np.arange(IZ0, IZ1), indexing="ij")
-TERRAZZO = hash3(Xt_, np.full_like(Xt_, Y2), Zt_, 31)
+TERRAZZO = hash3(Xt_ - WEST, np.full_like(Xt_, Y2), Zt_, 31)
 # ---- floors: stone tiles on the walkways, oak parquet under the tables, terrazzo courts with brass inlay
 for x in range(FS_X0, FS_X1):
     for z in range(IZ0, IZ1):
@@ -3228,7 +3232,7 @@ for x in range(FS_X0, FS_X1):
         elif ST_Z0 <= z < ST_Z1 and (x < WALK_W[0] or x >= WALK_E[1]):
             c_ = WHITE_TILE if ((x // 3) + (z // 3)) % 2 else TILE_DARK          # stall kitchens
         elif ST_Z0 <= z < ST_Z1:
-            c_ = BASE_STONE if ((x // 8) + (z // 8)) % 2 else BASE_STONE2
+            c_ = BASE_STONE if (((x - WEST) // 8) + (z // 8)) % 2 else BASE_STONE2
         else:
             c_ = FLOOR_MED if TERRAZZO[x - FS_X0, z - IZ0] > 0.12 else MARBLE_B
         G[x, Y2 - 1, z] = c_
@@ -3243,7 +3247,7 @@ for (xa, xb, za, zb) in ((FS_X0 - 1, FS_X0, IZ0, IZ1), (FS_X1, FS_X1 + 1, IZ0, I
         for x in range(xa, xb):
             for z in range(za, zb):
                 if G[x, y, z] in (SLAB, STAIR_CONC, FLOOR_STN):
-                    G[x, y, z] = BRICK if ((y // 2) + ((x + z) // 4 + (y // 2) % 2) // 1) % 7 else BRICK2
+                    G[x, y, z] = BRICK if ((y // 2) + ((x - WEST + z) // 4 + (y // 2) % 2) // 1) % 7 else BRICK2
 # exposed duct + cable tray along the hall, hung from the ceiling
 box(TC - 3, TC + 3, YC2 - 4, YC2, ST_Z0 - 4, ST_Z1 + 4, STEEL)
 for z in range(ST_Z0, ST_Z1, 16):
@@ -3347,7 +3351,7 @@ def planter(cx, cz, r=3, h=6):
     box(cx - r + 1, cx + r - 1, Y2 + h - 1, Y2 + h, cz - r + 1, cz + r - 1, SOIL)
     box(cx, cx + 1, Y2 + h, Y2 + h + 8, cz, cz + 1, TRUNK)
     Xo, Yo, Zo = np.meshgrid(np.arange(cx - 5, cx + 6), np.arange(Y2 + h + 4, Y2 + h + 14), np.arange(cz - 5, cz + 6), indexing="ij")
-    mo = (((Xo - cx) ** 2 + ((Yo - Y2 - h - 9) * 1.2) ** 2 + (Zo - cz) ** 2) <= 22) & (hash3(Xo, Yo, Zo, cx + cz) > 0.3)
+    mo = (((Xo - cx) ** 2 + ((Yo - Y2 - h - 9) * 1.2) ** 2 + (Zo - cz) ** 2) <= 22) & (hash3(Xo - WEST, Yo, Zo, cx - WEST + cz) > 0.3)
     mo[5, :5, 5] = True
     mo = keep_connected(mo, [(5, 0, 5)]) & (G[Xo, Yo, Zo] == 0)
     G[Xo[mo], Yo[mo], Zo[mo]] = np.where((Xo[mo] + Yo[mo] + Zo[mo]) % 3 > 0, LEAF2, LEAF3)
@@ -3772,7 +3776,7 @@ BANQUET = dict(x=(hx0, hx1), z=(hz0, hz1), stage=STG_Z, tables=BQ_TABLES, link=(
 
 # music for the arcade (the player's song, looped from the nearest speaker)
 for (sx_, sz_) in ((310, 140), (310, 260), (310, 380), (310, 470), (185, 462), (180, 414), (372, 130)):
-    SOUND_SPOTS.append(("mall", sx_, YB + 15, sz_))
+    SOUND_SPOTS.append(("mall", WEST + sx_, YB + 15, sz_))
 
 # ============================================================================
 # 9. Texture pass: per-voxel / per-panel colour variation
@@ -3783,9 +3787,9 @@ def vary(base, variants, cell=(1, 1, 1), seed=0, mix=0.0, weights=None):
     X, Y, Z = np.nonzero(G == base)
     if len(X) == 0:
         return
-    t = hash3(X // cell[0], Y // cell[1], Z // cell[2], seed)
+    t = hash3((X - WEST) // cell[0], Y // cell[1], Z // cell[2], seed)
     if mix:
-        t = (1 - mix) * t + mix * hash3(X, Y, Z, seed + 101)
+        t = (1 - mix) * t + mix * hash3(X - WEST, Y, Z, seed + 101)
     w = np.cumsum(weights if weights else [1] * len(variants)); w = w / w[-1]
     idx = np.searchsorted(w, t, side="right").clip(0, len(variants) - 1)
     G[X, Y, Z] = np.array(variants, np.uint8)[idx]
@@ -3794,7 +3798,7 @@ def brick_bond():
     X, Y, Z = np.nonzero(G == BRICK)
     along = X + Z                       # one of the two is constant on a wall face
     off = (Y % 2) * 1                   # stagger every other course
-    t = hash3((along + off) // 3, Y, np.zeros_like(Y), 41)
+    t = hash3((along - WEST + off) // 3, Y, np.zeros_like(Y), 41)
     G[X, Y, Z] = np.where(t < 0.45, BRICK, np.where(t < 0.8, BRICK2, BRICK3))
 
 brick_bond()
@@ -3834,7 +3838,7 @@ def grout(base, line, step):
 def speckle(base, specks, seed):
     """per-voxel noise: specks = [(colour, fraction), ...]."""
     X, Y, Z = np.nonzero(G == base)
-    t = hash3(X, Y, Z, seed)
+    t = hash3(X - WEST, Y, Z, seed)
     acc = 0.0
     for col, frac in specks:
         m = (t >= acc) & (t < acc + frac)
@@ -3844,7 +3848,7 @@ def speckle(base, specks, seed):
 def blotch(base, col, cell, frac, seed, mix=0.35):
     """soft patches (stains, weathering): cell-level choice broken up by per-voxel noise."""
     X, Y, Z = np.nonzero(G == base)
-    t = (1 - mix) * hash3(X // cell, Y // cell, Z // cell, seed) + mix * hash3(X, Y, Z, seed + 7)
+    t = (1 - mix) * hash3((X - WEST) // cell, Y // cell, Z // cell, seed) + mix * hash3(X - WEST, Y, Z, seed + 7)
     m = t < frac
     G[X[m], Y[m], Z[m]] = col
 
@@ -4034,14 +4038,16 @@ def rb(x0, x1, y0, y1, z0, z1, c):
 # ground: same layers as the site (bedrock, earth, asphalt on top -> surface at G0)
 rb(0, W, BED_Y, BED_Y + 1, 0, RD, BEDROCK); rb(0, W, BED_Y + 1, G0 - 3, 0, RD, SOIL); rb(0, W, G0 - 3, G0, 0, RD, ASPHALT)
 XR = np.arange(W)[:, None]; ZR = np.arange(RD)[None, :]
-tex = hash3(np.broadcast_to(XR, (W, RD)), np.zeros((W, RD), int), np.broadcast_to(ZR, (W, RD)), 77)
+tex = hash3(np.broadcast_to(XR - WEST, (W, RD)), np.zeros((W, RD), int), np.broadcast_to(ZR, (W, RD)), 77)
 ROAD[:, G0 - 1, :] = np.where(tex < 0.25, ASPHALT2, ASPHALT)
 NS0, NS1 = 128, RD          # north sidewalk (along the parking lot)
 NC0 = 126                   # north curb
 RZ0, RZ1 = 54, 126          # carriageway (2 x 3.6 m)
 SC0 = 52                    # south curb
 SS0, SS1 = 26, 52           # south sidewalk
-DRIVEWAYS = [(70, 170), (300, 400), (4, 58)]          # (the last: the car-park ramp)
+DRIVEWAYS = [(WEST + 70, WEST + 170), (WEST + 300, WEST + 400), (WEST + 4, WEST + 58)]          # (the last: the car-park ramp)
+if WEST:
+    DRIVEWAYS.append((196, 296))                      # (v3.54) the HALCYON lot
 def on_drive(x):
     return any(a <= x < b for (a, b) in DRIVEWAYS)
 for x in range(W):
@@ -4066,43 +4072,47 @@ for x in range(ENT - 26, ENT + 26):                      # dropped curbs at the 
     rb(x, x + 1, G0, G0 + 1, NC0, NS0, 0); rb(x, x + 1, G0, G0 + 1, SC0, RZ0, 0)
 # manholes, storm drains
 for (mx, mz) in ((150, MID + 10), (330, MID - 12), (40, MID - 10)):
+    mx += WEST
     for dx in range(-3, 4):
         for dz in range(-3, 4):
             if dx * dx + dz * dz <= 10:
                 rb(mx + dx, mx + dx + 1, G0 - 1, G0, mz + dz, mz + dz + 1, DARK_METAL if (dx + dz) % 2 else TIRE)
-for x in range(30, W - 30, 80):
+for x in range((30 + WEST) % 80, W - 30, 80):
     for z0_ in (RZ0, RZ1 - 2):
         rb(x, x + 6, G0 - 1, G0, z0_, z0_ + 2, TIRE)
         for gx in range(x, x + 6, 2):
             rb(gx, gx + 1, G0 - 1, G0, z0_, z0_ + 2, DARK_METAL)
 # street lamps on the south sidewalk (heads are separate lamp shapes), trees in pits between them
-for x in range(40, W - 20, 90):
+for x in range((40 + WEST) % 90, W - 20, 90):
     rb(x - 1, x + 3, G0 + 1, G0 + 3, SS1 - 6, SS1 - 2, DARK_METAL)
     rb(x, x + 2, G0 + 1, G0 + 50, SS1 - 5, SS1 - 3, DARK_METAL)
     rb(x, x + 2, G0 + 48, G0 + 50, SS1 - 3, SS1 + 6, DARK_METAL)              # arm over the road
     head = np.full((4, 2, 4), STREET_LMP, np.uint8)
     ROAD_LAMPS.append((head, (x - 1, G0 + 46, SS1 + 3 - RD), (x + 1, G0 + 45, SS1 + 5 - RD)))
-for x in range(85, W - 20, 90):
+for x in range((85 + WEST) % 90, W - 20, 90):
+    if WEST and x < WEST and any(abs(x - s_) < 20 for s_ in (172, WEST)):
+        continue                                     # (v3.54: no crown across an export seam)
     rb(x - 5, x + 6, G0 - 1, G0 + 1, SS0 + 6, SS0 + 17, CURB)
     rb(x - 4, x + 5, G0, G0 + 1, SS0 + 7, SS0 + 16, SOIL)
     rb(x, x + 2, G0 + 1, G0 + 40, SS0 + 11, SS0 + 13, TRUNK)
     R_ = 12
     X3, Y3, Z3 = np.meshgrid(np.arange(-R_, R_ + 1), np.arange(-R_, R_ + 1), np.arange(-R_, R_ + 1), indexing="ij")
     can = np.zeros(X3.shape, bool)
+    TRNG = random.Random(9000 + x - WEST)                    # (own RNG per tree: trees added in the west move nothing)
     for _ in range(7):
-        ox, oy, oz = RRNG.randint(-5, 5), RRNG.randint(-3, 4), RRNG.randint(-5, 5); rr = RRNG.randint(5, 7)
+        ox, oy, oz = TRNG.randint(-5, 5), TRNG.randint(-3, 4), TRNG.randint(-5, 5); rr = TRNG.randint(5, 7)
         can |= (X3 - ox) ** 2 + ((Y3 - oy) ** 2) * 1.3 + (Z3 - oz) ** 2 <= rr * rr
-    can &= hash3(X3 + x, Y3, Z3, 9) > 0.2
+    can &= hash3(X3 + x - WEST, Y3, Z3, 9) > 0.2
     can[R_, :R_ + 1, R_] = True
     can = keep_connected(can, [(R_, 0, R_)])
     cy, cz = G0 + 40 + 6, SS0 + 12
     for (i, j, k) in zip(*np.nonzero(can)):
         gx, gy, gz = x + i - R_, cy + j - R_, cz + k - R_
         if 0 <= gx < W and gy < RH and 0 <= gz < RD and ROAD[gx, gy, gz] == 0:
-            ROAD[gx, gy, gz] = LEAF if hash3(np.array([gx]), np.array([gy]), np.array([gz]), 3)[0] < 0.5 else LEAF2
+            ROAD[gx, gy, gz] = LEAF if hash3(np.array([gx - WEST]), np.array([gy]), np.array([gz]), 3)[0] < 0.5 else LEAF2
     rb(x, x + 2, G0 + 30, cy, SS0 + 11, SS0 + 13, TRUNK)                          # trunk up into the crown
 # bus stop: shelter, bench, timetable, sign
-BS = 300
+BS = WEST + 300
 rb(BS, BS + 40, G0 + 1, G0 + 26, SS0 + 2, SS0 + 3, GLASS_EXT)                     # back glass
 for px in (BS, BS + 39):
     rb(px, px + 1, G0 + 1, G0 + 26, SS0 + 2, SS0 + 14, STEEL)
@@ -4125,7 +4135,7 @@ for x in range(0, W, 8):
     rb(x, x + 1, G0 + 9, G0 + 20, 15, 17, DARK_METAL)
 rb(0, W, G0 + 18, G0 + 19, 15, 17, DARK_METAL)
 for x in range(W):
-    h_ = 6 + int(3 * hash3(np.array([x // 3]), np.array([0]), np.array([0]), 21)[0])
+    h_ = 6 + int(3 * hash3(np.array([(x - WEST) // 3]), np.array([0]), np.array([0]), 21)[0])
     rb(x, x + 1, G0 + 1, G0 + 1 + h_, 19, SS0, LEAF3 if (x // 5) % 3 else LEAF)
 # both road ends are closed: striped barricades + cones (the map ends there)
 for x0_ in (3, W - 9):
@@ -4139,13 +4149,13 @@ for x0_ in (3, W - 9):
         rb(cx_ - 1, cx_ + 2, G0 + 1, G0 + 6, z - 1, z + 2, WALL_ORANGE)
         rb(cx_ - 1, cx_ + 2, G0 + 3, G0 + 4, z - 1, z + 2, CEIL)
 # a van parked at the south kerb (base-game vehicle, along the road)
-ROAD_CARS.append(("van", "car_a", 410, G0, SC0 + 14 - RD, 90))
+ROAD_CARS.append(("van", "car_a", WEST + 410, G0, SC0 + 14 - RD, 90))
 
 # ============================================================================
 # 10c. Upper roof: stairs from the room-ring roof, helipad, flyable helicopter
 # ============================================================================
 RT = ATR_TOP + 4                  # walking surface of the upper (atrium) roof
-STX0, STX1 = 250, 262             # stairs: up the south side, ending at the upper roof's edge
+STX0, STX1 = WEST + 250, WEST + 262             # stairs: up the south side, ending at the upper roof's edge
 STZ_TOP = az0 - 5                 # last tread (the upper roof starts 4 voxels south of az0)
 box(STX0 - 1, STX1 + 1, ROOF_Y, RT + 9, STZ_TOP - 40, STZ_TOP + 1, 0)         # clear (a wall vent sat here)
 for s_ in range(13):
@@ -4315,17 +4325,17 @@ def plant_blob(cx_, cy_, cz_, r, seed, cols, squash=1.3, keep=0.3, flowers=None,
     """leaf ball rooted in the soil below it; writes only into air; flowers on its sunny side."""
     xs = np.arange(cx_ - r - 1, cx_ + r + 2); ys = np.arange(SOIL_Y - 1, cy_ + r + 2); zs = np.arange(cz_ - r - 1, cz_ + r + 2)
     X, Y, Z = np.meshgrid(xs, ys, zs, indexing="ij")
-    m = (((X - cx_) ** 2 + ((Y - cy_) * squash) ** 2 + (Z - cz_) ** 2) <= r * r) & (hash3(X, Y, Z, seed) > keep)
+    m = (((X - cx_) ** 2 + ((Y - cy_) * squash) ** 2 + (Z - cz_) ** 2) <= r * r) & (hash3(X - WEST, Y, Z, seed) > keep)
     m |= (X == cx_) & (Z == cz_) & (Y < cy_)                                   # stem down to the soil
     m &= (G[X, Y, Z] == 0) | ((X == cx_) & (Z == cz_) & (Y == SOIL_Y - 1))
     m &= BEDS[X, Z]                                                            # never over the path
     m = keep_connected(m, [(cx_ - xs[0], 0, cz_ - zs[0])])
-    t = hash3(X, Y, Z, seed + 1)
+    t = hash3(X - WEST, Y, Z, seed + 1)
     col = np.where(t < 0.4, cols[0], np.where(t < 0.75, cols[1], cols[2]))
     if flowers:
         above_free = np.ones_like(m); above_free[:, :-1, :] = ~m[:, 1:, :]
-        fl = m & above_free & (hash3(X, Y, Z, seed + 2) < fp) & (Y >= SOIL_Y + 1)
-        fc = np.array(flowers)[(hash3(X, Y, Z, seed + 3) * len(flowers)).astype(int).clip(0, len(flowers) - 1)]
+        fl = m & above_free & (hash3(X - WEST, Y, Z, seed + 2) < fp) & (Y >= SOIL_Y + 1)
+        fc = np.array(flowers)[(hash3(X - WEST, Y, Z, seed + 3) * len(flowers)).astype(int).clip(0, len(flowers) - 1)]
         col = np.where(fl, fc, col)
     G[X[m], Y[m], Z[m]] = col[m]
 def line3(p, q):
@@ -4413,7 +4423,7 @@ for n_ in range(1400):
                 for dx in range(-r + 1, r):
                     for dz in range(-r + 1, r):
                         if dx * dx + dz * dz <= (r - 1) ** 2 + 1 and G[x + dx, SOIL_Y, z + dz] == 0:
-                            hgt = 3 + int(hash3(np.array([x + dx]), np.array([0]), np.array([z + dz]), 7)[0] * 4)
+                            hgt = 3 + int(hash3(np.array([x + dx - WEST]), np.array([0]), np.array([z + dz]), 7)[0] * 4)
                             box(x + dx, x + dx + 1, SOIL_Y - 1, SOIL_Y + hgt - 2, z + dz, z + dz + 1, LEAF3)
                             box(x + dx, x + dx + 1, SOIL_Y + hgt - 2, SOIL_Y + hgt, z + dz, z + dz + 1, DREAM_LILAC)
             placed.append((x, z, r))
@@ -4541,7 +4551,7 @@ for ux_ in (GXC - 17, GXC + 16):
         for z in range(uz_ - 4, uz_ + 5):
             for y in range(ROOF_Y + 11, ROOF_Y + 20):
                 if (x - ux_) ** 2 + (z - uz_) ** 2 + (y - ROOF_Y - 15) ** 2 <= 14 and G[x, y, z] == 0:
-                    G[x, y, z] = LEAF if hash3(np.array([x]), np.array([y]), np.array([z]), 21)[0] < 0.6 else LEAF3
+                    G[x, y, z] = LEAF if hash3(np.array([x - WEST]), np.array([y]), np.array([z]), 21)[0] < 0.6 else LEAF3
 # ---- Victorian lamp posts along the path (crook arm, lantern hanging over the path)
 for pz_ in (GZ0 + 32, GZ0 + 60, GZ1 - 58, GZ1 - 28):             # (clear of the shape seam at z 224)
     for (px_, d_) in ((PW0 - 1, 1), (PW1, -1)):
@@ -4833,7 +4843,7 @@ for (ppx, ppz) in ((PH_X1 - 8, PT_Z0 + 6), (PH_X1 - 8, PH_Z0 - 12)):            
                 box(x, x + 1, PY, PY + 7, z, z + 1, CARP_OR if (x - ppx) ** 2 + (z - ppz) ** 2 > 4 else SOIL)
     box(ppx, ppx + 1, PY + 7, PY + 17, ppz, ppz + 1, TRUNK)
     Xo, Yo, Zo = np.meshgrid(np.arange(ppx - 4, ppx + 5), np.arange(PY + 13, PY + 20), np.arange(ppz - 4, ppz + 5), indexing="ij")
-    mo = (((Xo - ppx) ** 2 + ((Yo - PY - 16) * 1.3) ** 2 + (Zo - ppz) ** 2) <= 16) & (hash3(Xo, Yo, Zo, 44) > 0.3)
+    mo = (((Xo - ppx) ** 2 + ((Yo - PY - 16) * 1.3) ** 2 + (Zo - ppz) ** 2) <= 16) & (hash3(Xo - WEST, Yo, Zo, 44) > 0.3)
     mo[4, :5, 4] = True                                                          # (the trunk top is the anchor)
     mo = keep_connected(mo, [(4, 0, 4)]) & (G[Xo, Yo, Zo] == 0)
     G[Xo[mo], Yo[mo], Zo[mo]] = np.where((Xo[mo] + Yo[mo] + Zo[mo]) % 3 > 0, LEAF2, LEAF3)
@@ -4900,7 +4910,7 @@ ROOF_POWER_ZONES = [(GX0 - 3, GX1 + 3, GZ0 - 3, GZ1 + 1), (PH_X0 - 2, PH_X1 + 2,
 box(bx0 + T_EXT, GX0, ROOF_Y, ROOF_Y + 5, GZ0 - 2, GZ1, BRICK)
 box(bx0 + T_EXT, GX0, ROOF_Y + 4, ROOF_Y + 5, GZ0 - 1, GZ1 - 1, SOIL)
 Xh, Zh = np.meshgrid(np.arange(bx0 + T_EXT, GX0), np.arange(GZ0 - 1, GZ1 - 1), indexing="ij")
-Hh = 3 + (hash3(Xh, np.full_like(Xh, ROOF_Y), Zh, 91) * 3).astype(int)
+Hh = 3 + (hash3(Xh - WEST, np.full_like(Xh, ROOF_Y), Zh, 91) * 3).astype(int)
 for (x, z, h_) in zip(Xh.ravel(), Zh.ravel(), Hh.ravel()):
     box(x, x + 1, ROOF_Y + 5, ROOF_Y + 5 + h_, z, z + 1, LEAF2 if (x + z) % 3 else LEAF3)
 
@@ -4992,6 +5002,504 @@ HELI = dict(gmin=(hx0, RT, hz0),
             tail_gmin=(hx0 + 10, RT + 31 - 10, hz0 + 112 - 10),       # shaft in the gearbox, blades right of the fin
             seat=(7, 12, 16), light=(12, 4, 7))
 
+# ============================================================================
+# 10g. HALCYON (v3.54): a smaller sister hotel on the new west lot. The same bones as the main hotel -- a ring
+#      of rooms around a skylit atrium, corridors along the outside walls, stairs in two corners, the same stone
+#      plinth / string courses / cornice / quoins -- but its own dream: buff brick outside, a 1990s pastel
+#      interior (mint corridors, coral carpet, peach atrium, terrazzo), a dry fountain under the skylight,
+#      fluorescent panels that hum and flicker, an ice machine humming to nobody, lifts that never come.
+#      Built with the same material indices as the main hotel (same physics); every shape on the lot is
+#      written with the H_PAL colours (see write_vox).
+# ============================================================================
+H_LB, H_SB = 5, 2                                   # long bays (34) per side, short bays (40)
+HX0, HZ0 = 60, 118                                  # (z: its bay lines meet the export bands at 224 / 360)
+HAX0, HAZ0 = HX0 + T, HZ0 + T
+HAX1, HAZ1 = HAX0 + H_SB * SHORT_BAY_W, HAZ0 + H_LB * LONG_BAY_W
+HX1, HZ1 = HAX1 + T, HAZ1 + T
+H_FL = 4                                            # 1F lobby + rooms, 2F-4F rooms
+H_ROOF = fy(H_FL)
+H_ATOP = H_ROOF + 14                                # skylight over the atrium (clerestory below it)
+H_CX = (HAX0 + HAX1) // 2                           # 172: also the shape seam through the building
+XS_WEST = [0, H_CX, WEST] if WEST else [0]          # x seams of the export (each piece <= 256 wide)
+H_ROOMS = []                                        # (side, bay, floor, state, room id)
+HALCYON = dict(x=(HX0, HX1), z=(HZ0, HZ1), ax=(HAX0, HAX1), az=(HAZ0, HAZ1), floors=H_FL, roof=H_ROOF,
+               atop=H_ATOP, cx=H_CX, rooms=H_ROOMS, door=(H_CX - 13, H_CX + 13))
+H_PAL.update({
+    BRICK: (204, 178, 140), BRICK2: (192, 166, 128), BRICK3: (214, 190, 152),          # buff brick
+    COR_WALL: (180, 218, 202), COR_STRIPE: (142, 190, 174),                             # mint corridors
+    COR_CARP: (196, 102, 96), COR_CARP2: (178, 88, 86), COR_GOLD: (226, 186, 96),       # coral carpet
+    CARP_BL: (54, 128, 130), CARP_BL2: (48, 116, 118),
+    ROOM_WALL: (238, 200, 188), ROOM_WALL_B: (206, 196, 228), ROOM_WALL_C: (240, 228, 178),   # salmon / lilac / butter
+    ATR_WALL: (242, 214, 198), ATR_WALL2: (236, 206, 190), ATR_WALL3: (246, 222, 208),        # peach stucco
+    CARP_A: (126, 170, 174), CARP_A2: (116, 160, 164), CARP_B: (182, 146, 166), CARP_B2: (170, 136, 156),
+    WOOD_DARK: (210, 186, 148), WOOD_DARK2: (200, 176, 138), WOOD_HEAD: (232, 222, 206),     # whitewashed ash
+    WOOD_MED: (222, 202, 166), WOOD_MED2: (212, 192, 156), WOOD_DOOR: (84, 156, 154),        # teal doors
+    UPHOL: (78, 146, 146), UPHOL2: (220, 156, 166),
+    BLANKET_A: (224, 146, 162), BLANKET_B: (116, 180, 172), BLANKET_C: (160, 140, 198),
+    CURT_DARK: (120, 162, 160), CURT_DARK2: (104, 146, 144), CURT_LIT: (255, 196, 186), CURT_LIT2: (238, 170, 164),
+    FRAME: (64, 142, 140),                                                                   # teal frames
+    MARBLE_W: (230, 222, 208), MARBLE_W2: (226, 166, 162), MARBLE_B: (88, 160, 160),         # terrazzo
+    STAIR_WALL: (216, 226, 220), STAIR_WALL2: (150, 196, 184),
+    CEIL_LAMP: (232, 246, 255), LAMPSHADE: (255, 214, 204), MEMORY: (255, 104, 180),          # cold tubes, pink neon
+    TILE: (190, 226, 222), TILE_DARK: (120, 180, 176), LOBBY_WALL: (240, 224, 196),
+})
+
+
+def _swap_globals(**kw):
+    old = {k_: globals()[k_] for k_ in kw}
+    globals().update(kw)
+    return old
+
+
+def build_halcyon():
+    HR = random.Random(5454)                        # own RNG for the lot's own choices
+    T0 = G0
+    # ---- site: lot surface (asphalt is already there), sidewalk ring, curbs, lawn beds, trees, lamps
+    box(HX0 - SW, HX1 + SW, G0, G0 + 1, HZ0 - SW, HZ1 + SW, PAVER)
+    box(HX0, HX1, G0, G0 + 1, HZ0, HZ1, 0)                                      # (sidewalk only outside)
+    box(HX0 - SW - 2, HX1 + SW + 2, G0 - 1, G0 + 1, HZ0 - SW - 2, HZ0 - SW, CURB)
+    box(HX0 - SW - 2, HX1 + SW + 2, G0 - 1, G0 + 1, HZ1 + SW, HZ1 + SW + 2, CURB)
+    box(HX0 - SW - 2, HX0 - SW, G0 - 1, G0 + 1, HZ0 - SW - 2, HZ1 + SW + 2, CURB)
+    box(HX1 + SW, HX1 + SW + 2, G0 - 1, G0 + 1, HZ0 - SW - 2, HZ1 + SW + 2, CURB)
+    for (x0, x1, z0, z1) in [(HX0 - SW + 4, HX0 - 6, HZ0 + 30, HZ1 - 30), (HX1 + 6, HX1 + SW - 4, HZ0 + 30, HZ1 - 30),
+                             (HX0 + 30, HX1 - 30, HZ1 + 6, HZ1 + SW - 4)]:
+        box(x0, x1, G0, G0 + 2, z0, z1, LAWN)
+        box(x0 - 1, x1 + 1, G0, G0 + 2, z0 - 1, z0, CURB); box(x0 - 1, x1 + 1, G0, G0 + 2, z1, z1 + 1, CURB)
+        box(x0 - 1, x0, G0, G0 + 2, z0, z1, CURB); box(x1, x1 + 1, G0, G0 + 2, z0, z1, CURB)
+    # lawn all round the lot outside the sidewalk ring (north of the parking strip), and between the lot and
+    # the main hotel's car ramp
+    for (x0, x1, z0, z1) in [(4, HX0 - SW - 4, 96, D - 6), (HX1 + SW + 4, WEST - 4, 96, D - 6),
+                             (HX0 - SW - 2, HX1 + SW + 2, HZ1 + SW + 6, D - 6)]:
+        box(x0, x1, G0, G0 + 2, z0, z1, LAWN)
+        box(x0 - 1, x1 + 1, G0, G0 + 2, z0 - 1, z0, CURB)
+    # trees (the canopy mask in tree() keeps leaves off this building's walls too)
+    old = _swap_globals(bx0=HX0, bx1=HX1, bz0=HZ0, bz1=HZ1)
+    trng = random.Random(77)
+    old_rng = globals()["rng"]; globals()["rng"] = trng
+    # (no canopy across an export seam: x 172 / 360, z 224 / 360 / 534)
+    for z in (168, 258, 308, 400):
+        tree(HX0 - SW // 2 - 2, z); tree(HX1 + SW // 2 + 2, z)
+    for z in (150, 290, 420, 600, 690):
+        tree(18, z); tree(WEST - 30, z)
+    for x in (96, 140, 210, 250):
+        tree(x, HZ1 + SW // 2 + 2)
+    globals()["rng"] = old_rng
+    _swap_globals(**old)
+    # street lamps at the corners
+    for (sx, sz) in [(HX0 - 14, HZ0 - 14), (HX1 + 12, HZ0 - 14), (HX0 - 14, HZ1 + 12), (HX1 + 12, HZ1 + 12)]:
+        box(sx - 1, sx + 3, G0, G0 + 3, sz - 1, sz + 3, DARK_METAL)
+        box(sx - 1, sx + 3, G0 + 49, G0 + 50, sz - 1, sz + 3, STREET_LMP)
+        box(sx, sx + 2, G0, G0 + 50, sz, sz + 2, DARK_METAL)
+        box(sx - 2, sx + 4, G0 + 50, G0 + 52, sz - 2, sz + 4, DARK_METAL)
+        light(sx + 1, G0 + 48.5, sz - 0.5, (1.0, 0.75, 0.45), 6.0, 0.3)
+    # parking strip in front (south), walkway from the street to the door, low monument sign
+    for x in range(70, HX1 + 20, 30):
+        if H_CX - 26 <= x <= H_CX + 26:
+            continue
+        box(x, x + 1, G0 - 1, G0, 4, 50, PAINT_LINE)
+        box(x + 8, x + 22, G0, G0 + 1, 45, 47, CURB)
+    box(H_CX - 12, H_CX + 12, G0, G0 + 1, 0, HZ0 - SW, PAVER)
+    box(H_CX - 14, H_CX - 12, G0 - 1, G0 + 1, 0, HZ0 - SW, CURB); box(H_CX + 12, H_CX + 14, G0 - 1, G0 + 1, 0, HZ0 - SW, CURB)
+    box(H_CX - 60, H_CX - 30, G0, G0 + 14, 70, 76, EXT_TRIM)                 # monument: stone slab, coping, pink letters
+    box(H_CX - 61, H_CX - 29, G0 + 14, G0 + 15, 69, 77, LINTEL)
+    box(H_CX - 62, H_CX - 28, G0, G0 + 2, 68, 78, BASE_STONE)
+    ftext(Frame(0, 70, -1, 0, 0, 1), "HALCYON", -(H_CX - 45), G0 + 11, -1, MEMORY)
+    light(H_CX - 45, G0 + 8, 64, (1.0, 0.45, 0.72), 1.6, 0.3)
+    for (px_, pz_) in ((H_CX - 68, 73), (H_CX - 22, 73)):                      # planters at its ends
+        box(px_ - 3, px_ + 3, G0, G0 + 5, pz_ - 3, pz_ + 3, PLANTER)
+        box(px_ - 2, px_ + 2, G0 + 4, G0 + 5, pz_ - 2, pz_ + 2, SOIL)
+        leaf_blob(px_, G0 + 8, pz_, 4, px_ + pz_, LEAF2, anchor=(px_, G0 + 5, pz_), squash=1.2, keep=0.2)
+    CAR_SPOTS.append(("stationwagon", "car_b", 226, G0, 5, 0))
+
+    # ---- structure: foundation, floor slabs, outer walls, ornaments (same profile as the main hotel)
+    box(HX0, HX1, G0 - 3, G0, HZ0, HZ1, SLAB)
+    for k in range(1, H_FL + 1):
+        box(HX0, HX1, fy(k) - SLAB_T, fy(k), HZ0, HZ1, SLAB)
+    for (x0, x1, z0, z1) in [(HX0, HX1, HZ0, HZ0 + T_EXT), (HX0, HX1, HZ1 - T_EXT, HZ1),
+                             (HX0, HX0 + T_EXT, HZ0, HZ1), (HX1 - T_EXT, HX1, HZ0, HZ1)]:
+        box(x0, x1, G0, H_ROOF + PAR, z0, z1, BRICK)
+    box(HX0 + T_EXT - 1, HX1 - T_EXT + 1, G0, H_ROOF, HZ0 + T_EXT - 1, HZ0 + T_EXT, COR_WALL)
+    box(HX0 + T_EXT - 1, HX1 - T_EXT + 1, G0, H_ROOF, HZ1 - T_EXT, HZ1 - T_EXT + 1, COR_WALL)
+    box(HX0 + T_EXT - 1, HX0 + T_EXT, G0, H_ROOF, HZ0 + T_EXT, HZ1 - T_EXT, COR_WALL)
+    box(HX1 - T_EXT, HX1 - T_EXT + 1, G0, H_ROOF, HZ0 + T_EXT, HZ1 - T_EXT, COR_WALL)
+
+    def h_outer(y0, y1, d, c):
+        box(HX0 - d, HX1 + d, y0, y1, HZ0 - d, HZ0, c); box(HX0 - d, HX1 + d, y0, y1, HZ1, HZ1 + d, c)
+        box(HX0 - d, HX0, y0, y1, HZ0, HZ1, c); box(HX1, HX1 + d, y0, y1, HZ0, HZ1, c)
+    h_outer(G0, G0 + 10, 1, BASE_STONE)
+    h_outer(G0 + 10, G0 + 11, 2, EXT_TRIM2)
+    for k in range(1, H_FL):
+        h_outer(fy(k) - 3, fy(k) - 1, 1, EXT_TRIM)
+    h_outer(H_ROOF - 4, H_ROOF, 1, EXT_TRIM)
+    h_outer(H_ROOF, H_ROOF + 2, 2, EXT_TRIM)
+    for (x0, x1, z0, z1) in [(HX0 - 1, HX1 + 1, HZ0 - 1, HZ0 + T_EXT), (HX0 - 1, HX1 + 1, HZ1 - T_EXT, HZ1 + 1),
+                             (HX0 - 1, HX0 + T_EXT, HZ0 - 1, HZ1 + 1), (HX1 - T_EXT, HX1 + 1, HZ0 - 1, HZ1 + 1)]:
+        box(x0, x1, H_ROOF + PAR, H_ROOF + PAR + 1, z0, z1, LINTEL)
+    for west in (True, False):
+        for south in (True, False):
+            cxo = HX0 - 1 if west else HX1
+            czo = HZ0 - 1 if south else HZ1
+            dx = 1 if west else -1
+            dz = 1 if south else -1
+            for y in range(G0 + 11, H_ROOF - 4, 6):
+                L = 10 if (y // 6) % 2 == 0 else 6
+                box(cxo, cxo + dx * (L + 1), y, y + 5, czo, czo + 1, EXT_TRIM)
+                box(cxo, cxo + 1, y, y + 5, czo, czo + dz * (L + 1), EXT_TRIM)
+    box(HX0 + T_EXT, HX1 - T_EXT, H_ROOF - 1, H_ROOF, HZ0 + T_EXT, HZ1 - T_EXT, ROOF)
+    # atrium: face ring (peach stucco, white bands at the floors), void, clerestory, glass vault
+    box(HAX0 - T_FAC, HAX1 + T_FAC, G0, H_ATOP, HAZ0 - T_FAC, HAZ1 + T_FAC, ATR_WALL)
+    box(HAX0, HAX1, G0, H_ATOP + 2, HAZ0, HAZ1, 0)
+    box(HAX0 - T_FAC, HAX1 + T_FAC, H_ROOF, H_ATOP, HAZ0 - T_FAC, HAZ1 + T_FAC, BRICK)
+    box(HAX0 - T_FAC + 1, HAX1 + T_FAC - 1, H_ROOF, H_ATOP, HAZ0 - T_FAC + 1, HAZ1 + T_FAC - 1, ATR_WALL)
+    box(HAX0, HAX1, H_ROOF, H_ATOP, HAZ0, HAZ1, 0)
+    for k in range(1, H_FL + 1):
+        paint(HAX0 - T_FAC, HAX1 + T_FAC, fy(k) - 3, fy(k) - 1, HAZ0 - T_FAC, HAZ1 + T_FAC, CEIL, [ATR_WALL])
+    for x in range(HAX0 + 4, HAX1 - 8, 12):                                        # clerestory windows
+        for zf in (HAZ0 - T_FAC, HAZ1):
+            box(x, x + 8, H_ROOF + 3, H_ATOP - 3, zf, zf + T_FAC, FRAME)
+            box(x + 1, x + 7, H_ROOF + 4, H_ATOP - 4, zf, zf + T_FAC, 0)
+            box(x + 1, x + 7, H_ROOF + 4, H_ATOP - 4, zf + 1, zf + 2, GLASS)
+    for z in range(HAZ0 + 5, HAZ1 - 8, 12):
+        for xf in (HAX0 - T_FAC, HAX1):
+            box(xf, xf + T_FAC, H_ROOF + 3, H_ATOP - 3, z, z + 8, FRAME)
+            box(xf, xf + T_FAC, H_ROOF + 4, H_ATOP - 4, z + 1, z + 7, 0)
+            box(xf + 1, xf + 2, H_ROOF + 4, H_ATOP - 4, z + 1, z + 7, GLASS)
+    box(HAX0 - T_FAC - 1, HAX1 + T_FAC + 1, H_ATOP, H_ATOP + 2, HAZ0 - T_FAC - 1, HAZ1 + T_FAC + 1, EXT_TRIM)
+    box(HAX0, HAX1, H_ATOP, H_ATOP + 2, HAZ0, HAZ1, 0)
+    box(HAX0, HAX1, H_ATOP, H_ATOP + 1, HAZ0, HAZ1, GLASS)
+    for x in range(HAX0 + 9, HAX1, 10):
+        box(x, x + 1, H_ATOP, H_ATOP + 2, HAZ0, HAZ1, FRAME)
+    for z in range(HAZ0 + 9, HAZ1, 10):
+        box(HAX0, HAX1, H_ATOP, H_ATOP + 2, z, z + 1, FRAME)
+    box(H_CX - 1, H_CX + 1, H_ATOP, H_ATOP + 2, HAZ0, HAZ1, FRAME)                # (a rib on the shape seam)
+
+    # ---- room ring: walls, then furnished rooms (the main hotel's own room kit, its own colours)
+    def h_frames():
+        F = []
+        for b in range(H_LB):
+            F.append(("W", b, Frame(HAX0 - T_FAC - 1, HAZ0 + b * LONG_BAY_W, 0, 1, -1, 0), LONG_BAY_W))
+        for b in range(H_LB):
+            F.append(("E", b, Frame(HAX1 + T_FAC, HAZ1 - 1 - b * LONG_BAY_W, 0, -1, 1, 0), LONG_BAY_W))
+        for b in range(H_SB):
+            F.append(("S", b, Frame(HAX1 - 1 - b * SHORT_BAY_W, HAZ0 - T_FAC - 1, -1, 0, 0, -1), SHORT_BAY_W))
+        for b in range(H_SB):
+            F.append(("N", b, Frame(HAX0 + b * SHORT_BAY_W, HAZ1 + T_FAC, 1, 0, 0, 1), SHORT_BAY_W))
+        return F
+    frames = h_frames()
+    for name, b, fr, bw in frames:
+        for k in range(H_FL):
+            y = fy(k)
+            fr.box(0, T_PART, y - SLAB_T if k else G0, y + FH - SLAB_T, 0, ROOM_D, ROOM_WALL)
+            fr.box(0, bw, y - SLAB_T if k else G0, y + FH - SLAB_T, ROOM_D, ROOM_D + 1, ROOM_WALL)
+            fr.box(0, bw, y - SLAB_T if k else G0, y + FH - SLAB_T, ROOM_D + 1, ROOM_D + T_PART, COR_WALL)
+        if b == (H_LB if name in "WE" else H_SB) - 1:
+            fr.box(bw, bw + T_PART, G0, H_ROOF - SLAB_T, 0, ROOM_D, ROOM_WALL)
+    STATES_H = ["lit_closed"] * 6 + ["lit_open"] * 7 + ["dark_closed"] * 8 + ["dark_open"] * 6 + ["dark_blinds"] * 3 + ["tv"] * 4
+    for name, b, fr, bw in frames:
+        for k in range(H_FL):
+            if k == 0 and name == "S":
+                continue                                   # the lobby
+            y = fy(k)
+            u0 = window_in_facade(fr, bw, y)
+            state = HR.choice(STATES_H)
+            wall = HR.choice([ROOM_WALL, ROOM_WALL_B, ROOM_WALL_C])
+            fr.paint(1, 2, y, y + FH - SLAB_T, 0, ROOM_D, wall, [ROOM_WALL])
+            fr.paint(bw, bw + 1, y, y + FH - SLAB_T, 0, ROOM_D, wall, [ROOM_WALL])
+            fr.paint(T_PART, bw, y, y + FH - SLAB_T, ROOM_D, ROOM_D + 1, wall, [ROOM_WALL])
+            fr.paint(T_PART, bw, y, y + FH - SLAB_T, -1, 0, wall, [ATR_WALL])
+            rid = f"h{len(H_ROOMS)}"
+            curtains(fr, u0, y, state, rid=rid)
+            twin = bw >= 40 and HR.random() < 0.6
+            blanket = HR.choice([BLANKET_A, BLANKET_B, BLANKET_C])
+            carpet = HR.choice([CARP_A, CARP_B])
+            ff = fr.mirrored(T_PART, bw) if HR.random() < 0.5 else fr
+            furnish_room(ff, bw, k, state, twin, blanket, carpet, rid=rid)
+            H_ROOMS.append((name, b, k, state, rid))
+
+    # ---- corner blocks: SW / NE stairs, NW lifts (out of order), SE ice + vending alcove
+    corner = {
+        "SW": Frame(HX0 + T_EXT + COR_W + T_PART, HZ0 + T_EXT + COR_W + T_PART, 1, 0, 0, 1),
+        "NE": Frame(HX1 - T_EXT - COR_W - T_PART - 1, HZ1 - T_EXT - COR_W - T_PART - 1, -1, 0, 0, -1),
+        "NW": Frame(HX0 + T_EXT + COR_W + T_PART, HZ1 - T_EXT - COR_W - T_PART - 1, 1, 0, 0, -1),
+        "SE": Frame(HX1 - T_EXT - COR_W - T_PART - 1, HZ0 + T_EXT + COR_W + T_PART, -1, 0, 0, 1),
+    }
+    for key, fr in corner.items():
+        fr.box(-T_PART, CB, G0, H_ROOF - SLAB_T, -T_PART, 0, STAIR_WALL)
+        fr.box(-T_PART, 0, G0, H_ROOF - SLAB_T, -T_PART, CB, STAIR_WALL)
+        fr.box(CB - T_FAC, CB, G0, H_ROOF - SLAB_T, 0, CB, STAIR_WALL)
+        fr.box(0, CB, G0, H_ROOF - SLAB_T, CB - T_FAC, CB, STAIR_WALL)
+    old = _swap_globals(FLOORS=H_FL, ROOF_Y=H_ROOF, ATR_TOP=H_ROOF + 22)
+    stairwell(corner["SW"]); stairwell(corner["NE"])
+    _swap_globals(**old)
+    for xp_ in (228, 240):                       # NE roof door: jambs under its lintel (that side of the z 360 seam)
+        box(xp_, xp_ + 1, H_ROOF, H_ROOF + 21, 358, 360, LINTEL)
+    # NW: two lift doors per floor on the west corridor, a call panel, tape and a notice: OUT OF ORDER
+    xw = HX0 + T_EXT + COR_W                         # the block's corridor face (x of the wall's first layer)
+    zN = HZ1 - T_EXT - COR_W - T_PART                # the block's north edge (z, exclusive)
+    for k in range(H_FL):
+        y = fy(k)
+        for (dz0, dz1) in ((zN - 44, zN - 30), (zN - 22, zN - 8)):
+            box(xw, xw + 1, y, y + 24, dz0 - 1, dz1 + 1, CHROME)                   # frame
+            box(xw, xw + 1, y, y + 23, dz0, dz1, STEEL)                            # leaves
+            box(xw, xw + 1, y, y + 23, (dz0 + dz1) // 2, (dz0 + dz1) // 2 + 1, DARK_METAL)
+            box(xw, xw + 1, y + 24, y + 27, (dz0 + dz1) // 2 - 3, (dz0 + dz1) // 2 + 3, TV_BODY)   # dead indicator
+            for i_ in range(14):                                                    # yellow tape, crossed
+                yy = y + 3 + i_ * 17 // 13
+                box(xw - 1, xw, yy, yy + 2, dz0 + i_, dz0 + i_ + 1, YELLOW_PAINT)
+                box(xw - 1, xw, yy, yy + 2, dz1 - 1 - i_, dz1 - i_, YELLOW_PAINT)
+        zc = zN - 26
+        box(xw - 1, xw, y + 19, y + 23, zc - 1, zc + 1, CHROME)                     # call panel, its button dark
+        box(xw - 2, xw - 1, y + 21, y + 22, zc - 1, zc, TV_BODY)
+        box(xw - 1, xw, y + 5, y + 18, zc - 13, zc + 13, SWITCH)                    # notice taped across the doors
+        nf_ = Frame(xw, 0, 0, 1, 1, 0)
+        ftext(nf_, "OUT OF", zc, y + 16, -2, RED)
+        ftext(nf_, "ORDER", zc, y + 10, -2, RED)
+    # SE: ice + vending alcove open to the east corridor, a fluorescent tube that buzzes
+    fe = corner["SE"]
+    for k in range(H_FL):
+        y = fy(k)
+        fe.box(-T_PART, 0, y, y + 22, 6, 38, 0)
+        fe.box(-T_PART, 0, y + 22, y + 23, 5, 39, CHROME)
+        fe.box(0, CB - T_FAC, y - 1, y, 0, CB - T_FAC, WHITE_TILE)
+        for u in range(0, CB - T_FAC, 4):
+            fe.box(u, u + 1, y - 1, y, 0, CB - T_FAC, GROUT_TILE)
+        fe.box(4, 16, y, y + 24, 30, 42, TV_BODY)                                   # vending machine
+        fe.box(3, 4, y + 3, y + 23, 30, 42, TV_BODY)
+        fe.box(3, 4, y + 4, y + 22, 31, 41, POOL_LAMP)
+        fe.box(4, 16, y, y + 18, 4, 18, STEEL)                                      # ice machine
+        fe.box(3, 4, y + 6, y + 14, 6, 16, CHROME)
+        fe.box(4, 16, y + 18, y + 20, 4, 18, CHROME)
+        fe.box(20, 21, y + 26, y + 27, 14, 30, CEIL_LAMP)
+        fe.light(20, y + 24.5, 22, (0.82, 0.96, 1.0), 1.5, 0.2, "flicker" if k % 2 == 0 else "")
+        fe.light(1, y + 12, 36, (0.4, 0.9, 1.0), 0.8, 0.2)
+
+    # ---- corridors (ring along the outside walls): coral carpet, mint walls, cold panels, windows
+    L_ns = HX1 - HX0 - 2 * T_EXT
+    L_we = HZ1 - HZ0 - 2 * T_EXT
+    cors = [("W", Frame(HX0 + T_EXT + COR_W - 1, HZ0 + T_EXT, 0, 1, -1, 0), L_we),
+            ("E", Frame(HX1 - T_EXT - COR_W, HZ1 - T_EXT - 1, 0, -1, 1, 0), L_we),
+            ("S", Frame(HX1 - T_EXT - 1, HZ0 + T_EXT + COR_W - 1, -1, 0, 0, -1), L_ns),
+            ("N", Frame(HX0 + T_EXT, HZ1 - T_EXT - COR_W, 1, 0, 0, 1), L_ns)]
+    n_panel = 0
+    for k in range(H_FL):
+        y = fy(k)
+        top = y + FH - SLAB_T
+        for name, fr, L in cors:
+            fr.box(0, L, y - 1, y, 0, COR_W, COR_CARP)
+            fr.box(0, L, y - 1, y, 2, 3, COR_CARP2); fr.box(0, L, y - 1, y, COR_W - 3, COR_W - 2, COR_CARP2)
+            for u in range(8, L - 8, 14):                                           # teal + gold diamonds
+                for d_ in range(4):
+                    fr.box(u - d_, u + d_ + 1, y - 1, y, 9 - (3 - d_), 9 - (3 - d_) + 1, CARP_BL)
+                    fr.box(u - d_, u + d_ + 1, y - 1, y, 9 + (3 - d_), 9 + (3 - d_) + 1, CARP_BL)
+                fr.box(u, u + 1, y - 1, y, 9, 10, COR_GOLD)
+            fr.paint(0, L, y, y + 9, COR_W, COR_W + 1, COR_STRIPE, [COR_WALL])       # dado (outside wall)
+            fr.paint(0, L, y + 9, y + 10, COR_W, COR_W + 1, CEIL, [COR_WALL, COR_STRIPE])
+            fr.paint(0, L, y, y + 9, -1, 0, COR_STRIPE, [COR_WALL])                  # dado (room side)
+            fr.paint(0, L, y + 9, y + 10, -1, 0, CEIL, [COR_WALL, COR_STRIPE])
+            fr.box(0, L, top - 1, top, 0, COR_W, CEIL)                               # ceiling
+            for u in range(18, L - 10, 40):                                          # fluorescent panels
+                n_panel += 1
+                dead = n_panel % 11 == 5
+                fr.box(u - 4, u + 4, top - 2, top - 1, 6, 12, STEEL)
+                fr.box(u - 3, u + 3, top - 2, top - 1, 7, 11, GROUT_TILE if dead else CEIL_LAMP)
+                if not dead:
+                    fr.light(u, top - 3, 9, (0.84, 0.96, 1.0), 1.7, 0.3, "flicker" if n_panel % 7 == 3 else "")
+            # windows in the outside wall (one per bay, never at the entrance)
+            for u in range(26, L - 20, 34 if name in "WE" else 40):
+                if k == 0 and name == "S" and abs(fr.pt(u, 0)[0] - H_CX) < 26:
+                    continue
+                fr.box(u - 5, u + 5, y + 9, y + 23, COR_W, COR_W + T_EXT, 0)
+                fr.box(u - 5, u + 5, y + 9, y + 23, COR_W + 1, COR_W + 2, FRAME)
+                fr.box(u - 4, u + 4, y + 10, y + 22, COR_W + 1, COR_W + 2, GLASS_EXT)
+                fr.box(u - 5, u + 5, y + 16, y + 17, COR_W + 1, COR_W + 2, FRAME)
+                fr.box(u - 6, u + 6, y + 8, y + 9, COR_W + T_EXT - 1, COR_W + T_EXT + 1, EXT_TRIM)
+                fr.box(u - 6, u + 6, y + 23, y + 25, COR_W + T_EXT - 1, COR_W + T_EXT, EXT_TRIM)
+        # a housekeeping cart left in the north corridor, an ice bucket by a door in the south one
+        fn = cors[3][1]
+        cu = 60 + 40 * k
+        fn.box(cu, cu + 14, y + 2, y + 3, 4, 11, STEEL)
+        fn.box(cu, cu + 14, y + 10, y + 11, 4, 11, STEEL)
+        for (a_, b_) in ((cu, 4), (cu + 13, 4), (cu, 10), (cu + 13, 10)):
+            fn.box(a_, a_ + 1, y, y + 14, b_, b_ + 1, CHROME)
+        fn.box(cu + 1, cu + 8, y + 11, y + 15, 5, 10, TOWEL)
+        fn.box(cu + 9, cu + 13, y + 3, y + 9, 5, 10, BLANKET_C)
+        fs = cors[2][1]
+        fs.box(30 + 20 * k, 33 + 20 * k, y, y + 3, 2, 5, CHROME)
+
+    # ---- ground floor: entrance, lobby (the two south bays), glass front onto the atrium
+    y = G0
+    lz0, lz1 = HAZ0 - T_FAC - ROOM_D, HAZ0 - T_FAC
+    box(HAX0, HAX1, y, fy(1) - SLAB_T, lz0, lz1, 0)
+    box(HAX0, HAX1, y - 1, y, lz0, lz1, MARBLE_W)
+    box(HAX0, HAX1, y - 1, y, HAZ0, HAZ1, MARBLE_W)
+    box(HAX0, HAX1, fy(1) - SLAB_T - 1, fy(1) - SLAB_T, lz0, lz1, CEIL)
+    paint(HAX0 - 2, HAX1 + 4, y, y + 9, lz0 - 1, lz1 + 1, COR_STRIPE, [ROOM_WALL, COR_WALL, STAIR_WALL, ATR_WALL])
+    paint(HAX0 - 2, HAX1 + 4, y + 9, y + 10, lz0 - 1, lz1 + 1, CEIL, [ROOM_WALL, COR_WALL, STAIR_WALL, ATR_WALL])
+    # entrance: glass double doors in the south wall, a teal canopy, a wide opening from the corridor
+    zS = HZ0
+    box(H_CX - 14, H_CX + 14, y, y + 23, zS, zS + T_EXT, FRAME)
+    box(H_CX - 13, H_CX + 13, y, y + 22, zS - 2, zS + T_EXT, 0)                 # (through the plinth too)
+    add_door(WORLD, H_CX - 13, H_CX, y, y + 22, zS + 1, zS + 2, glass_door, hinge=(H_CX - 13, zS + 2), open_dir=(0, 1), stop=FRAME)
+    add_door(WORLD, H_CX, H_CX + 13, y, y + 22, zS + 1, zS + 2, lambda a, b, c, A, B, C: glass_door(A - 1 - a, b, c, A, B, C),
+             hinge=(H_CX + 13, zS + 2), open_dir=(0, 1), stop=FRAME)
+    box(H_CX - 22, H_CX + 22, y + 26, y + 28, zS - 22, zS, FRAME)                # canopy (hangs off the wall)
+    box(H_CX - 22, H_CX + 22, y + 28, y + 29, zS - 22, zS - 20, FRAME)
+    for px_ in (H_CX - 21, H_CX + 20):
+        box(px_, px_ + 1, y + 1, y + 26, zS - 21, zS - 20, CHROME)                   # posts
+    box(H_CX - 6, H_CX + 6, y + 25, y + 26, zS - 14, zS - 8, CEIL_LAMP)
+    light(H_CX, y + 23.5, zS - 11, (1.0, 0.8, 0.85), 2.0, 0.3)
+    box(H_CX - 20, H_CX + 20, y, y + 1, zS - 18, zS, RUG_BRD)                    # mat under the canopy
+    pz0 = HZ0 + T_EXT + COR_W                                                    # corridor / lobby partition
+    box(H_CX - 16, H_CX + 16, y, y + 24, pz0, pz0 + T_PART, 0)
+    box(H_CX - 17, H_CX + 17, y + 24, y + 25, pz0, pz0 + T_PART, CEIL)
+    # glass front lobby -> atrium with a pair of doors in the middle
+    box(HAX0 + 4, HAX1 - 4, y, y + 24, HAZ0 - T_FAC, HAZ0, 0)
+    box(HAX0 + 4, HAX1 - 4, y, y + 1, HAZ0 - T_FAC, HAZ0, FRAME)
+    box(HAX0 + 4, HAX1 - 4, y + 23, y + 24, HAZ0 - T_FAC, HAZ0, FRAME)
+    box(HAX0 + 4, HAX1 - 4, y + 1, y + 23, HAZ0 - 2, HAZ0 - 1, GLASS_DOOR)
+    for x in list(range(HAX0 + 4, H_CX - 14, 12)) + list(range(H_CX + 14, HAX1 - 3, 12)) + [HAX1 - 5]:
+        box(x, x + 1, y, y + 24, HAZ0 - 3, HAZ0, FRAME)
+    box(H_CX - 14, H_CX + 14, y, y + 24, HAZ0 - 3, HAZ0, FRAME)
+    box(H_CX - 13, H_CX + 13, y, y + 22, HAZ0 - T_FAC, HAZ0, 0)
+    add_door(WORLD, H_CX - 13, H_CX, y, y + 22, HAZ0 - 3, HAZ0 - 2, glass_door, hinge=(H_CX - 13, HAZ0 - 2), open_dir=(0, 1), stop=FRAME)
+    add_door(WORLD, H_CX, H_CX + 13, y, y + 22, HAZ0 - 3, HAZ0 - 2, lambda a, b, c, A, B, C: glass_door(A - 1 - a, b, c, A, B, C),
+             hinge=(H_CX + 13, HAZ0 - 2), open_dir=(0, 1), stop=FRAME)
+    # reception along the west wall: desk, key board, pink neon name, a bell nobody rings
+    box(HAX0 + 12, HAX0 + 18, y, y + 11, lz0 + 8, lz1 - 10, WOOD_MED)
+    box(HAX0 + 11, HAX0 + 18, y + 11, y + 12, lz0 + 7, lz1 - 9, MARBLE_W2)
+    box(HAX0 + 18, HAX0 + 19, y + 2, y + 9, lz0 + 8, lz1 - 10, FRAME)
+    box(HAX0 + 14, HAX0 + 15, y + 12, y + 13, lz0 + 20, lz0 + 21, CHROME)
+    box(HAX0, HAX0 + 1, y + 6, y + 18, lz0 + 10, lz0 + 22, WOOD_DARK)            # key board
+    for kz in range(lz0 + 11, lz0 + 21, 3):
+        for ky in range(y + 8, y + 17, 3):
+            box(HAX0 + 1, HAX0 + 2, ky, ky + 1, kz, kz + 1, BRASS)
+    ftext(Frame(HAX0 - 1, 0, 0, -1, -1, 0), "HALCYON", -(lz0 + 22), y + 24, -1, MEMORY)
+    light(HAX0 + 3, y + 21, lz0 + 22, (1.0, 0.45, 0.72), 1.4, 0.3)
+    # waiting area: two teal sofas facing a low table, palms, a floor lamp
+    def sofa_h(x0, z0, z1, face):
+        box(x0, x0 + 7, y, y + 4, z0, z1, UPHOL)
+        bx_ = x0 + (6 if face < 0 else 0)
+        box(bx_, bx_ + 1, y + 4, y + 11, z0, z1, UPHOL)
+        box(x0, x0 + 7, y + 4, y + 7, z0, z0 + 1, UPHOL); box(x0, x0 + 7, y + 4, y + 7, z1 - 1, z1, UPHOL)
+        box(x0 + 1, x0 + 6, y + 4, y + 5, z0 + 1, z1 - 1, UPHOL2)
+    sofa_h(H_CX + 6, lz0 + 12, lz0 + 32, +1)
+    sofa_h(H_CX + 26, lz0 + 12, lz0 + 32, -1)
+    box(H_CX + 15, H_CX + 25, y + 4, y + 5, lz0 + 16, lz0 + 28, GLASS_DOOR)
+    for (a_, b_) in ((H_CX + 15, lz0 + 16), (H_CX + 24, lz0 + 16), (H_CX + 15, lz0 + 27), (H_CX + 24, lz0 + 27)):
+        box(a_, a_ + 1, y, y + 4, b_, b_ + 1, CHROME)
+    box(H_CX + 4, H_CX + 36, y - 1, y, lz0 + 9, lz0 + 35, CARP_BL)
+    potted_plant(HAX1 - 8, lz0 + 6, h=22, pot=8)
+    potted_plant(HAX1 - 8, lz1 - 8, h=22, pot=8)
+    for (lx_, lz_) in ((H_CX - 22, lz0 + 14), (H_CX + 22, lz0 + 14), (H_CX - 22, lz1 - 12), (H_CX + 22, lz1 - 12)):
+        box(lx_ - 2, lx_ + 2, fy(1) - SLAB_T - 2, fy(1) - SLAB_T - 1, lz_ - 2, lz_ + 2, CEIL_LAMP)
+        light(lx_, fy(1) - SLAB_T - 3, lz_, (1.0, 0.9, 0.82), 1.8, 0.3)
+
+    # ---- the atrium floor: terrazzo, a rosette, a dry fountain, palms, benches, rows of empty chairs
+    acz = (HAZ0 + HAZ1) // 2
+    X_, Z_ = np.meshgrid(np.arange(HAX0, HAX1), np.arange(HAZ0, HAZ1), indexing="ij")
+    r_ = np.sqrt((X_ - H_CX + 0.5) ** 2 + (Z_ - acz + 0.5) ** 2)
+    ring = ((r_ > 28) & (r_ <= 30)) | ((r_ > 34) & (r_ <= 35))
+    band = (np.minimum.reduce([X_ - HAX0, HAX1 - 1 - X_, Z_ - HAZ0, HAZ1 - 1 - Z_]) < 4)
+    G[X_[ring], y - 1, Z_[ring]] = MARBLE_B
+    G[X_[band], y - 1, Z_[band]] = np.where(((X_[band] + Z_[band]) // 2) % 2 == 0, MARBLE_B, MARBLE_W2)
+    rr2 = r_ <= 17
+    G[X_[rr2], y, Z_[rr2]] = EXT_TRIM                                            # basin: rim, dry floor, stains
+    G[X_[rr2], y + 1, Z_[rr2]] = EXT_TRIM
+    inner = r_ <= 15
+    G[X_[inner], y, Z_[inner]] = TILE
+    G[X_[inner], y + 1, Z_[inner]] = 0
+    rim = (r_ > 15) & (r_ <= 17)
+    G[X_[rim], y + 2, Z_[rim]] = LINTEL
+    st_ = inner & (hash3(X_ - WEST, np.zeros_like(X_), Z_, 61) < 0.12)
+    G[X_[st_], y, Z_[st_]] = TILE_DARK
+    for (cx_, cz_) in ((H_CX - 6, acz + 4), (H_CX + 5, acz - 7)):
+        box(cx_, cx_ + 1, y + 1, y + 2, cz_, cz_ + 1, BRASS)                     # coins
+    ped = r_ <= 2.5
+    for yy in range(y + 1, y + 16):
+        G[X_[ped], yy, Z_[ped]] = EXT_TRIM
+    bowl = (r_ <= 7) & (r_ > 2.5)
+    G[X_[bowl], y + 14, Z_[bowl]] = LINTEL
+    G[X_[(r_ > 6) & (r_ <= 7)], y + 15, Z_[(r_ > 6) & (r_ <= 7)]] = LINTEL
+    top_ = r_ <= 1.5
+    for yy in range(y + 16, y + 20):
+        G[X_[top_], yy, Z_[top_]] = LINTEL
+    for (px_, pz_) in ((HAX0 + 10, HAZ0 + 10), (HAX1 - 10, HAZ0 + 10), (HAX0 + 10, HAZ1 - 10), (HAX1 - 10, HAZ1 - 10)):
+        potted_plant(px_, pz_, h=46, pot=10)
+    for (bx_, bz_, along_x) in ((H_CX - 10, acz - 26, True), (H_CX - 10, acz + 23, True)):
+        box(bx_, bx_ + 20, y + 4, y + 5, bz_, bz_ + 4, WOOD_MED)
+        for ux_ in (bx_, bx_ + 19):
+            box(ux_, ux_ + 1, y, y + 4, bz_, bz_ + 4, DARK_METAL)
+    for row in range(2):                                                           # empty waiting chairs
+        zc_ = HAZ1 - 34 + row * 9
+        for i_ in range(6):
+            cx_ = HAX0 + 14 + i_ * 9
+            box(cx_, cx_ + 5, y + 4, y + 5, zc_, zc_ + 5, UPHOL2)
+            box(cx_, cx_ + 5, y + 5, y + 11, zc_ + 4, zc_ + 5, UPHOL2)
+            for (a_, b_) in ((cx_, zc_), (cx_ + 4, zc_), (cx_, zc_ + 4), (cx_ + 4, zc_ + 4)):
+                box(a_, a_ + 1, y, y + 4, b_, b_ + 1, CHROME)
+    # globe pendants hanging from the vault ribs on long chains
+    for (gx_, gz_) in ((HAX0 + 19, HAZ0 + 29), (HAX1 - 21, HAZ0 + 29), (HAX0 + 19, HAZ1 - 31), (HAX1 - 21, HAZ1 - 31)):
+        gy_ = fy(2) + 6
+        box(gx_, gx_ + 1, gy_ + 3, H_ATOP, gz_, gz_ + 1, DARK_METAL)
+        sph = [(dx, dy, dz) for dx in range(-3, 4) for dy in range(-3, 4) for dz in range(-3, 4) if dx * dx + dy * dy + dz * dz <= 9]
+        for (dx, dy, dz) in sph:
+            G[gx_ + dx, gy_ + dy, gz_ + dz] = CEIL_LAMP
+        light(gx_ + 0.5, gy_ - 4.5, gz_ + 0.5, (1.0, 0.86, 0.8), 3.2, 0.4)
+
+    # ---- roof: plant, vents, and the pink HALCYON sign on the south parapet (own lamp shapes, like HOTEL)
+    for (x0, z0) in ((HX0 + 30, HZ1 - 70), (HX1 - 50, HZ0 + 60)):
+        box(x0, x0 + 20, H_ROOF, H_ROOF + 12, z0, z0 + 14, HVAC)
+        box(x0 + 2, x0 + 18, H_ROOF + 12, H_ROOF + 13, z0 + 2, z0 + 12, DARK_METAL)
+        box(x0 + 4, x0 + 9, H_ROOF + 13, H_ROOF + 14, z0 + 4, z0 + 9, STEEL)
+    FONT.update({
+        "A": [".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
+        "C": [".###.", "#...#", "#....", "#....", "#....", "#...#", ".###."],
+        "Y": ["#...#", "#...#", ".#.#.", "..#..", "..#..", "..#..", "..#.."],
+        "N": ["#...#", "##..#", "#.#.#", "#..##", "#...#", "#...#", "#...#"],
+    })
+    word = "HALCYON"
+    sx0 = H_CX - (len(word) * 12) // 2
+    sz_ = HZ0 + T_EXT - 2
+    box(sx0 - 4, sx0 + len(word) * 12, H_ROOF, H_ROOF + 28, sz_ + 2, sz_ + 3, DARK_METAL)
+    for i in range(sx0 - 2, sx0 + len(word) * 12, 10):
+        box(i, i + 1, H_ROOF, H_ROOF + 28, sz_ + 3, sz_ + 4, DARK_METAL)
+    for li, ch in enumerate(word):
+        lx0 = sx0 + (len(word) - 1 - li) * 12
+        la = np.zeros((10, 14, 2), np.uint8)
+        la[:, :, 1] = DARK_METAL
+        for r_i, row_ in enumerate(FONT[ch]):
+            for c_i, cc in enumerate(row_):
+                if cc == "#":
+                    xx = (4 - c_i) * 2; yy = (6 - r_i) * 2
+                    la[xx:xx + 2, yy:yy + 2, :] = MEMORY
+        ROOF_SHAPES.append((f"halcyon_letter_{ch}{li}", la, (lx0, H_ROOF + 13, sz_),
+                            [(lx0 + 4.5, H_ROOF + 20, sz_ - 3, (1.0, 0.42, 0.72), 1.8, 0.3)]))
+
+    # ---- texture: brick bond, carpet fibre, terrazzo chips, stucco (inside the lot only)
+    sl = (slice(0, WEST), slice(0, H), slice(0, D))
+    Gw = G[sl]
+    def tex(base, variants, seed, cell=(1, 1, 1), weights=None):
+        X, Y, Z = np.nonzero(Gw == base)
+        if not len(X):
+            return
+        t = hash3(X // cell[0], Y // cell[1], Z // cell[2], seed)
+        w = np.cumsum(weights if weights else [1] * len(variants)); w = w / w[-1]
+        Gw[X, Y, Z] = np.array(variants, np.uint8)[np.searchsorted(w, t, side="right").clip(0, len(variants) - 1)]
+    X, Y, Z = np.nonzero(Gw == BRICK)
+    t = hash3((X + Z + (Y % 2)) // 3, Y, np.zeros_like(Y), 141)
+    Gw[X, Y, Z] = np.where(t < 0.45, BRICK, np.where(t < 0.8, BRICK2, BRICK3))
+    tex(COR_CARP, [COR_CARP, COR_CARP2], 142, weights=[5, 1])
+    tex(CARP_A, [CARP_A, CARP_A2], 143, weights=[4, 1])
+    tex(CARP_B, [CARP_B, CARP_B2], 144, weights=[4, 1])
+    tex(MARBLE_W, [MARBLE_W, MARBLE_W2, MARBLE_B, TILE], 145, weights=[84, 7, 6, 3])
+    tex(ATR_WALL, [ATR_WALL, ATR_WALL2, ATR_WALL3], 146, cell=(4, 3, 4))
+    tex(ROOF, [ROOF, ROOF2], 147, cell=(6, 1, 6))
+
+
+if WEST:
+    build_halcyon()
+
+
 def power_floor(gx, gy, gz):
     if gy >= ROOF_Y - 1:
         for (x0_, x1_, z0_, z1_) in ROOF_POWER_ZONES:
@@ -5040,8 +5548,9 @@ def vox_dict(d):
 def chunk(cid, content, children=b""):
     return cid + struct.pack("<ii", len(content), len(children)) + content + children
 
-def write_vox(path, sub):
-    """sub: array indexed [x, y(up), z] in Teardown axes. Writes MV axes (x, -z, y)."""
+def write_vox(path, sub, west=False):
+    """sub: array indexed [x, y(up), z] in Teardown axes. Writes MV axes (x, -z, y).
+    west: the shape belongs to the HALCYON lot -> palette colours from H_PAL (the material stays the index's)."""
     sx, sy, sz = sub.shape
     xs, ys, zs = np.nonzero(sub)
     cols = sub[xs, ys, zs]
@@ -5056,7 +5565,7 @@ def write_vox(path, sub):
     nshp = chunk(b"nSHP", struct.pack("<i", 3) + vox_dict({}) + struct.pack("<ii", 1, 0) + vox_dict({}))
     rgba = bytearray()
     for i in range(1, 257):
-        r, g, b_ = PAL[i][0] if i in PAL else (128, 128, 128)
+        r, g, b_ = (H_PAL[i] if west and i in H_PAL else PAL[i][0]) if i in PAL else (128, 128, 128)
         rgba += bytes((r, g, b_, 255))
     rgba_c = chunk(b"RGBA", bytes(rgba))
     matls = b"".join(chunk(b"MATL", struct.pack("<i", i) + vox_dict(matl_dict(i))) for i in range(1, 256) if i in PAL)
@@ -5070,7 +5579,7 @@ def export():
     for fn in os.listdir(VOXDIR):
         if fn.endswith(".vox"):
             os.remove(os.path.join(VOXDIR, fn))
-    CX, CZ = (W / 2) * 0.1, (D / 2) * 0.1
+    CX, CZ = ((W - WEST) / 2 + WEST) * 0.1, (D / 2) * 0.1      # (the old map keeps its world coordinates)
     # ---- lamps become their own small shapes, each carrying its light(s) --------------------------
     # Teardown turns a shape's lights off when that shape is damaged. With every lamp a separate shape,
     # shooting a lamp kills exactly its light, and damage anywhere else never touches it.
@@ -5114,10 +5623,11 @@ def export():
         arr = np.zeros(tuple(mx - mn), np.uint8)
         arr[V[:, 0] - mn[0], V[:, 1] - mn[1], V[:, 2] - mn[2]] = G[V[:, 0], V[:, 1], V[:, 2]]
         G[V[:, 0], V[:, 1], V[:, 2]] = 0                       # removed from the world chunks
-        key = (arr.shape, arr.tobytes())
+        west_ = bool(mn[0] < WEST)
+        key = (arr.shape, arr.tobytes(), west_)
         if key not in lamp_files:
             lamp_files[key] = f"lamp_{len(lamp_files)}"
-            write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr)
+            write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr, west=west_)
         L["file"] = lamp_files[key]
         sx, sy, sz = arr.shape
         L["pos"] = ((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)
@@ -5203,18 +5713,19 @@ def export():
                 mn = W_.min(0); mx = W_.max(0) + 1
                 arr = np.zeros(tuple(mx - mn), np.uint8)
                 arr[W_[:, 0] - mn[0], W_[:, 1] - mn[1], W_[:, 2] - mn[2]] = vals_
-                key = (arr.shape, arr.tobytes())
+                west_ = bool(mn[0] < WEST)
+                key = (arr.shape, arr.tobytes(), west_)
                 if key not in lamp_files:
                     lamp_files[key] = f"lamp_{len(lamp_files)}"
-                    write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr)
+                    write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr, west=west_)
                 sx, sy, sz = arr.shape
                 NEONS.append(dict(file=lamp_files[key], arr=arr, gmin=tuple(int(v) for v in mn),
                                   pos=((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)))
     # Few, large shapes (<= 256 per axis), split only along party-wall planes and never
     # horizontally: Teardown judges support per shape, so seams through structure make
     # whole slabs of wall drop off when something near a seam is shot.
-    XS_MAIN = [0, ax0 + 2 * SHORT_BAY_W, W]
-    XS_ANNEX = [0, A_X0 - 16, A_X1 + 16, W]          # the pool hall stays in one shape
+    XS_MAIN = XS_WEST + [ax0 + 2 * SHORT_BAY_W, W]
+    XS_ANNEX = XS_WEST + [A_X0 - 16, A_X1 + 16, W]          # the pool hall stays in one shape
     BANDS = [(0, az0 + 2 * LONG_BAY_W, XS_MAIN), (az0 + 2 * LONG_BAY_W, az0 + 6 * LONG_BAY_W, XS_MAIN),
              (az0 + 6 * LONG_BAY_W, AZ0 - 6, XS_MAIN), (AZ0 - 6, D, XS_ANNEX)]
     YS = [0, SEAM, H]                                  # B2 band | the rest
@@ -5235,7 +5746,7 @@ def export():
                 gx0, gy0, gz0 = x0 + bx_[0], y0 + by_[0], z0 + bz_[0]
                 sx, sy, sz = sub.shape
                 name = f"c_{xi}_{yi}_{zi}"
-                n = write_vox(os.path.join(VOXDIR, name + ".vox"), sub)
+                n = write_vox(os.path.join(VOXDIR, name + ".vox"), sub, west=x1_ <= WEST)
                 total += n
                 # Teardown vox origin from the grid min corner: (floor(sx/2), 0, sz - floor(sz/2))
                 ox = (gx0 + sx // 2) * 0.1 - CX
@@ -5277,10 +5788,11 @@ def export():
         write_vox(os.path.join(VOXDIR, f"elev_car_{e['shaft']}.vox"), e["arr"])
     door_files = {}
     for d in DOORS:
-        key = (d["arr"].shape, d["arr"].tobytes())
+        west_ = bool(d["gmin"][0] < WEST)
+        key = (d["arr"].shape, d["arr"].tobytes(), west_)
         if key not in door_files:
             door_files[key] = f"door_{len(door_files)}"
-            write_vox(os.path.join(VOXDIR, door_files[key] + ".vox"), d["arr"])
+            write_vox(os.path.join(VOXDIR, door_files[key] + ".vox"), d["arr"], west=west_)
         d["file"] = door_files[key]
 
     def owner(gx, gy, gz):
@@ -5295,11 +5807,12 @@ def export():
         return f'{ind}<light{t_} pos="{f3(p)}" type="sphere" color="{f3(rgb)}" scale="{scale:g}" size="{size:g}"/>\n'
 
     spawn = ((ax0 + ax1) / 2 * 0.1 - CX, G0 * 0.1 + 0.1, (az0 + 18) * 0.1 - CZ)
-    half_w, half_d = W / 2 * 0.1, D / 2 * 0.1
+    half_w, half_d = (W - WEST) / 2 * 0.1, D / 2 * 0.1
+    west_w = -half_w - WEST * 0.1
     south = -half_d - RD * 0.1                                             # the street extends the map south
     xml = []
     # scene format version as the current game writes it: "6" was read as a pre-spawn-menu legacy level
-    xml.append('<scene version="2.0.0" shadowVolume="%d %d %d">\n' % (int(W * 0.1) + 4, int(H * 0.1) * 2 + 6, int(D * 0.1) + 4))
+    xml.append('<scene version="2.0.0" shadowVolume="%d %d %d">\n' % (int((W - WEST) * 0.1 + 2 * WEST * 0.1) + 4, int(H * 0.1) * 2 + 6, int(D * 0.1) + 4))
     xml.append('\t<environment skybox="cloudy.dds" skyboxtint="0.35 0.3 0.5" skyboxbrightness="0.12" skyboxrot="0" '
                'constant="0.004 0.003 0.006" ambient="0.25" ambientexponent="1.6" fogColor="0.07 0.06 0.1" '
                'fogParams="30 160 0.9 4" sunBrightness="0" sunColorTint="0.6 0.6 1" sunDir="auto" sunSpread="0" '
@@ -5311,7 +5824,7 @@ def export():
     # (our own logic lives in the mod-root main.lua, which the game runs automatically;
     #  it guards itself so it never runs twice even if "main.lua" resolves to it)
     xml.append('\t<boundary>\n')
-    for (bx_, bz_) in [(-half_w, south), (half_w, south), (half_w, half_d), (-half_w, half_d)]:
+    for (bx_, bz_) in [(west_w, south), (half_w, south), (half_w, half_d), (west_w, half_d)]:
         xml.append(f'\t\t<vertex pos="{bx_:.1f} {bz_:.1f}"/>\n')
     xml.append('\t</boundary>\n')
     xml.append('\t<group name="liminal_atrium" pos="0 0 0">\n')
@@ -5335,18 +5848,18 @@ def export():
         gx, gy, gz = gmin
         return ((gx + sx // 2) * 0.1 - CX, gy * 0.1, (gz + sz - sz // 2) * 0.1 - CZ)
     shape_files = {}
-    def shape_file(prefix, arr):
-        key = (prefix, arr.shape, arr.tobytes())
+    def shape_file(prefix, arr, west=False):
+        key = (prefix, arr.shape, arr.tobytes(), bool(west))
         if key not in shape_files:
             shape_files[key] = f"{prefix}_{sum(1 for k_ in shape_files if k_[0] == prefix)}"
-            write_vox(os.path.join(VOXDIR, shape_files[key] + ".vox"), arr)
+            write_vox(os.path.join(VOXDIR, shape_files[key] + ".vox"), arr, west=bool(west))
         return shape_files[key]
     xml.append('\t<group name="curtains" pos="0 0 0">\n')
     for i, c in enumerate(CURTAINS):
         o = body_origin(c["arr"], c["gmin"])
         tg = f"curtain cid={c['cid']} sx={c['slide'][0] * 0.1:.2f} sz={c['slide'][1] * 0.1:.2f}" + (" startopen" if c["start_open"] else "") \
              + (f" room={c['rid']}" if c["lit"] else "")
-        xml.append(f'\t\t<body name="curtain{i}" tags="{tg}" pos="{f3(o)}"><vox pos="0 0 0" file="MOD/vox/{shape_file("curtain", c["arr"])}.vox" object="shape"/></body>\n')
+        xml.append(f'\t\t<body name="curtain{i}" tags="{tg}" pos="{f3(o)}"><vox pos="0 0 0" file="MOD/vox/{shape_file("curtain", c["arr"], c["gmin"][0] < WEST)}.vox" object="shape"/></body>\n')
     xml.append('\t</group>\n')
     xml.append('\t<group name="smartglass" pos="0 0 0">\n')
     for i, sg in enumerate(SMART_GLASS):
@@ -5362,7 +5875,7 @@ def export():
     xml.append('\t<group name="roomswitches" pos="0 0 0">\n')
     for (sarr, smin, rid, on, tv) in ROOM_SWITCHES:
         xml.append(f'\t\t<vox tags="roomswitch room={rid} on={int(on)} tv={int(tv)}" pos="{f3(body_origin(sarr, smin))}" '
-                   f'file="MOD/vox/{shape_file("switch", sarr)}.vox" object="shape"/>\n')
+                   f'file="MOD/vox/{shape_file("switch", sarr, smin[0] < WEST)}.vox" object="shape"/>\n')
     xml.append('\t</group>\n')
     xml.append('\t<group name="mission" pos="0 0 0">\n')
     bo = body_origin(BELL["arr"], BELL["gmin"])
@@ -5564,7 +6077,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.53\n"
+        f.write("name = Liminal Atrium v3.54\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

@@ -20,7 +20,7 @@ for sg_ in SG_:
 sg_overlap = int(((FULL > 0) & (SG_GRID > 0)).sum())
 FULL[SG_GRID > 0] = SG_GRID[SG_GRID > 0]
 ns["export"]()
-G = ns["G"]; W, H, D = G.shape; PAL = ns["PAL"]
+G = ns["G"]; W, H, D = G.shape; PAL = ns["PAL"]; WEST_ = ns["WEST"]
 issues = []
 def report(name, ok, detail=""):
     print(f"[{'OK ' if ok else 'BAD'}] {name}" + (f" -- {detail}" if detail else ""))
@@ -60,8 +60,8 @@ for p_ in os.listdir("prefab"):
 report("prefab XML files parse", True)
 
 # 4. structure (see audit_map.py): islands per shape, buried lights, props overlap
-XS_MAIN = [0, ns["ax0"] + 2 * ns["SHORT_BAY_W"], W]
-XS_ANNEX = [0, ns["A_X0"] - 16, ns["A_X1"] + 16, W]
+XS_MAIN = ns["XS_WEST"] + [ns["ax0"] + 2 * ns["SHORT_BAY_W"], W]
+XS_ANNEX = ns["XS_WEST"] + [ns["A_X0"] - 16, ns["A_X1"] + 16, W]
 az0 = ns["az0"]
 BANDS = [(0, az0 + 68, XS_MAIN), (az0 + 68, az0 + 204, XS_MAIN), (az0 + 204, ns["AZ0"] - 6, XS_MAIN), (ns["AZ0"] - 6, D, XS_ANNEX)]
 isl = 0
@@ -170,7 +170,7 @@ checks["rooftop glasshouse: entrance foyer"] = ((GH_["x0"] + GH_["x1"]) // 2, ns
 checks["rooftop glasshouse: pond plaza"] = (GH_["plaza"][0], ns["ROOF_Y"], GH_["plaza"][1] - 16)
 checks["rooftop glasshouse: north terrace"] = ((GH_["x0"] + GH_["x1"]) // 2 - 16, ns["ROOF_Y"], GH_["z1"] - 13)
 YB = ns["YB"]
-checks["B1 car-park ramp (top, street level)"] = (30, G0, 66)
+checks["B1 car-park ramp (top, street level)"] = (WEST_ + 30, G0, 66)
 for (rn_, (rx_, rz_)) in ns["PENTHOUSE"]["rooms"].items():
     checks[f"penthouse: {rn_}"] = (rx_, ns["ROOF_Y"], rz_)
 checks["roof walkway beside the glasshouse (atrium side)"] = (ns["GLASSHOUSE"]["x1"] + 5, ns["ROOF_Y"], 300)
@@ -182,14 +182,14 @@ for key_ in ("NW", "SE"):
 for (bn_, bx0_, bx1_, bz0_, bz1_) in ns["BOH"]:
     checks[f"back of house: {bn_} (staff passage)"] = ((bx0_ + bx1_) // 2, G0, bz1_ - 6)
 checks["back of house: kitchen floor by the island"] = (ns["BOH"][0][1] + 20, G0, ns["BOH"][0][3] - 18)
-checks["B1 car-park ramp (bottom)"] = (30, YB, 280)
+checks["B1 car-park ramp (bottom)"] = (WEST_ + 30, YB, 280)
 B2q = ns["B2"]; YB2 = ns["YB2"]
 ATq = ns["ATRIUM"]
-checks["atrium lounge (from the lobby doors)"] = (200, G0, 200)
+checks["atrium lounge (from the lobby doors)"] = (WEST_ + 200, G0, 200)
 checks["atrium lounge: in front of the bar"] = (ATq["bar"][0] + 30, G0, ATq["bar"][2] - 8)
 checks["atrium lounge: behind the bar"] = (ATq["bar"][0] + 30, G0, ATq["zp"] - 9)
-checks["atrium lawn on the podium (up the stair)"] = (236, ATq["pody"], 350)
-checks["atrium store room under the lawn (through its door)"] = (236, G0, ATq["zp"] + 20)
+checks["atrium lawn on the podium (up the stair)"] = (WEST_ + 236, ATq["pody"], 350)
+checks["atrium store room under the lawn (through its door)"] = (WEST_ + 236, G0, ATq["zp"] + 20)
 for (wn_, wx0, wx1, wz0, wz1, wy) in ns["RESTROOMS"]:
     checks[f"{wn_} restroom (men)"] = ((wx0 + (wx0 + wx1) // 2) // 2 + 3, wy, (wz0 + wz1) // 2 + 4)
     checks[f"{wn_} restroom (women)"] = (((wx0 + wx1) // 2 + wx1) // 2 - 3, wy, (wz0 + wz1) // 2 + 4)
@@ -199,36 +199,45 @@ BWq = ns["BOWL"]
 checks["bowling: approach of lane 1"] = (BWq["x"][0] + 6, G0, BWq["foul"] - 2)
 checks["bowling: lounge"] = (ns["ax0"] + 10, G0, BWq["room"][2] + 60)
 checks["bowling: snack bar"] = (ns["ax1"] - 40, G0, BWq["room"][2] + 50)
-checks["B1 tech store (NOVA)"] = (262, YB, 282)
+checks["B1 tech store (NOVA)"] = (WEST_ + 262, YB, 282)
 BQq = ns["BANQUET"]
 checks["banquet hall: foyer"] = ((BQq["x"][0] + BQq["x"][1]) // 2, G0, BQq["z"][0] + 20)
 checks["banquet hall: among the tables"] = (BQq["tables"][4][0] + 9, G0, BQq["tables"][4][1] + 12)
 checks["banquet hall: dance floor"] = ((BQq["x"][0] + BQq["x"][1]) // 2, G0, BQq["stage"] - 15)
 checks["banquet hall: on the stage (up the steps)"] = ((BQq["x"][0] + BQq["x"][1]) // 2 + 20, G0 + 6, BQq["stage"] + 15)
 checks["glass link to the banquet hall"] = ((BQq["link"][0] + BQq["link"][1]) // 2, G0, ns["bz1"] + 20)
-checks["B2 food street: south court"] = (288, YB2, 100)
-checks["B2 food street: west walkway"] = (280, YB2, 290)
-checks["B2 food street: east walkway"] = (342, YB2, 290)
-checks["B2 food street: long tables"] = (300, YB2, 250)
-checks["B2 food street: north court"] = (300, YB2, 440)
-checks["B2 food street: lift lobby (SE)"] = (375, YB2, 130)
-checks["B2 food street: stair lobby (NE)"] = (375, YB2, 455)
+checks["B2 food street: south court"] = (WEST_ + 288, YB2, 100)
+checks["B2 food street: west walkway"] = (WEST_ + 280, YB2, 290)
+checks["B2 food street: east walkway"] = (WEST_ + 342, YB2, 290)
+checks["B2 food street: long tables"] = (WEST_ + 300, YB2, 250)
+checks["B2 food street: north court"] = (WEST_ + 300, YB2, 440)
+checks["B2 food street: lift lobby (SE)"] = (WEST_ + 375, YB2, 130)
+checks["B2 food street: stair lobby (NE)"] = (WEST_ + 375, YB2, 455)
 for i_, (nm_, (sx_, sz_)) in enumerate(B2q["stalls"]):
     checks[f"B2 stall {nm_} counter"] = (int(sx_), YB2, int(sz_))
-checks["B2 car park (aisle)"] = (161, YB2, 300)
-checks["B2 car park: lift lobby (NW)"] = (96, YB2, 455)
-checks["B2 car park: stair lobby (SW)"] = (96, YB2, 140)
-checks["B2 car park: through the automatic door"] = (200, YB2, 478)
-checks["B2 car park: south bays (D)"] = (210, YB2, 130)
-checks["B2 ramp: foot (B2 north end)"] = (210, YB2, 400)
-checks["B2 ramp: top (B1 south end)"] = (210, YB, 150)
-checks["B1 car park: north end beside the drop"] = (210, YB, 380)
-checks["B1 car park"] = (162, YB, 200)
-checks["B1 arcade promenade"] = (310, YB, 250)
-checks["B1 arcade corridor (through automatic door 2)"] = (184, YB, 412)
-checks["B1 SE elevator hall"] = (374, YB, 130)
-checks["B1 NW elevator lobby"] = (96, YB, 452)
-checks["B1 lounge"] = (366, YB, 470)
+checks["B2 car park (aisle)"] = (WEST_ + 161, YB2, 300)
+checks["B2 car park: lift lobby (NW)"] = (WEST_ + 96, YB2, 455)
+checks["B2 car park: stair lobby (SW)"] = (WEST_ + 96, YB2, 140)
+checks["B2 car park: through the automatic door"] = (WEST_ + 200, YB2, 478)
+checks["B2 car park: south bays (D)"] = (WEST_ + 210, YB2, 130)
+checks["B2 ramp: foot (B2 north end)"] = (WEST_ + 210, YB2, 400)
+checks["B2 ramp: top (B1 south end)"] = (WEST_ + 210, YB, 150)
+checks["B1 car park: north end beside the drop"] = (WEST_ + 210, YB, 380)
+checks["B1 car park"] = (WEST_ + 162, YB, 200)
+checks["B1 arcade promenade"] = (WEST_ + 310, YB, 250)
+checks["B1 arcade corridor (through automatic door 2)"] = (WEST_ + 184, YB, 412)
+checks["B1 SE elevator hall"] = (WEST_ + 374, YB, 130)
+checks["B1 NW elevator lobby"] = (WEST_ + 96, YB, 452)
+checks["B1 lounge"] = (WEST_ + 366, YB, 470)
+HQ = ns["HALCYON"]; HQx, HQz, HQax, HQaz = HQ["x"], HQ["z"], HQ["ax"], HQ["az"]
+checks["HALCYON: entrance walk (outside)"] = (HQ["cx"], G0 + 1, HQz[0] - 30)
+checks["HALCYON: lobby"] = (HQ["cx"] - 8, G0, HQaz[0] - 25)
+checks["HALCYON: atrium (by the dry fountain)"] = (HQ["cx"], G0, HQaz[0] + 30)
+for k_ in range(HQ["floors"]):
+    checks[f"HALCYON: {k_ + 1}F corridor (west)"] = (HQx[0] + 13, ns["fy"](k_), (HQz[0] + HQz[1]) // 2)
+    checks[f"HALCYON: {k_ + 1}F corridor (east)"] = (HQx[1] - 13, ns["fy"](k_), (HQz[0] + HQz[1]) // 2)
+    checks[f"HALCYON: {k_ + 1}F ice + vending alcove"] = (HQx[1] - 50, ns["fy"](k_), HQz[0] + 48)
+checks["HALCYON: roof (up the stairs)"] = (HQx[0] + 40, HQ["roof"], (HQz[0] + HQz[1]) // 2)
 for (nm_, kind_, sx_, sz_) in ns["SHOPS"]:
     checks[f"B1 {kind_} '{nm_}' (inside)"] = (sx_, YB, sz_)
 for nm, (x, y, z) in checks.items():
@@ -407,7 +416,8 @@ for i, c in enumerate(ns["CURTAINS"]):
         cur_cells[cc] = i
 groups = collections.Counter(c["cid"] for c in ns["CURTAINS"])
 report(f"all {len(ns['CURTAINS'])} curtain panels slide open/shut without hitting anything", not cur_bad, str(cur_bad[:6]))
-report("every window has exactly two curtain panels", set(groups.values()) == {2} and len(groups) == len(ns["room_log"]))
+N_ROOMS_ALL = len(ns["room_log"]) + len(ns["H_ROOMS"])          # (v3.54) + the HALCYON rooms
+report("every window has exactly two curtain panels", set(groups.values()) == {2} and len(groups) == N_ROOMS_ALL)
 kc_bad = []
 for i, k_ in enumerate(ns["KEYCARDS"]):
     arr, (gx, gy, gz) = k_["arr"], k_["gmin"]
@@ -467,7 +477,7 @@ for (sarr, smin, rid, on, tv) in ns["ROOM_SWITCHES"]:
     if body_hits(sarr, smin) or any(c in door_occ for c in cells_of(sarr, smin)) \
             or not reachable(int(smin[0]), int(smin[1]) - 11, int(smin[2]), r=4, dy=4):
         sw_bad.append(rid)
-report(f"{len(ns['ROOM_SWITCHES'])} room light switches: clear of walls / doors and within reach", not sw_bad and len(ns["ROOM_SWITCHES"]) == len(ns["room_log"]), str(sw_bad[:8]))
+report(f"{len(ns['ROOM_SWITCHES'])} room light switches: clear of walls / doors and within reach", not sw_bad and len(ns["ROOM_SWITCHES"]) == N_ROOMS_ALL, str(sw_bad[:8]))
 per = collections.Counter()
 for l in ns["LIGHTS"]:
     t = dict(kv.split("=") for kv in l[6].split() if "=" in kv)
@@ -479,8 +489,10 @@ def need_kinds(i):
     return {"room": ("ceil", "bath", "tv"), "bedroom": ("ceil", "bath", "tv"), "living": ("ceil", "tv"), "dining": ("ceil",)}[role]
 kinds_ok = all(per[(str(i), k)] == 1 for i in range(len(ns["room_log"])) for k in need_kinds(i)) and \
            all(per[(str(i), "lamp")] == NS[i] >= 1 for i in range(len(ns["room_log"])))
+H_IDS = [r_[4] for r_ in ns["H_ROOMS"]]
+kinds_ok = kinds_ok and all(per[(h_, k_)] == 1 for h_ in H_IDS for k_ in ("ceil", "bath", "tv")) and all(per[(h_, "lamp")] == NS[h_] >= 1 for h_ in H_IDS)
 lamp_rooms = sum(1 for L in ns["LAMPS"] if any("room=" in lt[6] and not any(f"room={r_} " in lt[6] + " " for r_ in ("ph", "banquet", "stage")) for lt in L["lights"]))
-need = sum(len(need_kinds(i)) + NS[i] for i in range(len(ns["room_log"])))
+need = sum(len(need_kinds(i)) + NS[i] for i in range(len(ns["room_log"]))) + sum(3 + NS[h_] for h_ in H_IDS)
 mixed = [i for i, L in enumerate(ns["LAMPS"]) if len({lt[6] for lt in L["lights"]}) > 1 and any("room=" in lt[6] for lt in L["lights"])]
 report("every room: ceiling, EVERY bedside lamp, bathroom light + TV, each its own switchable lamp", kinds_ok and not mixed and lamp_rooms == need,
        f"{lamp_rooms}/{need} room lamps, {sum(1 for v in NS.values() if v > 1)} rooms with 2 bedside lamps, mixed {mixed[:4]}")
@@ -541,7 +553,7 @@ YBq, A0q, A1q = ns["YB"], ns["AISLE0"], ns["AISLE1"]; G0q = ns["G0"]
 van_path = [("tunnel", FULL[ns["RX1"]:ns["IX0"], YBq:YBq + 31, ns["TZ0"] + 4:ns["TZ1"] - 4]),
             ("ramp bottom", FULL[ns["RX0"] + 2:ns["RX1"] - 2, YBq:YBq + 31, ns["RZ_BOT"]:ns["RZ_END"]]),
             ("aisle", FULL[A0q + 7:A1q - 7, YBq:YBq + 31, 162:ns["PZ1"] - 2]),
-            ("aisle by the stair core", FULL[158:A1q - 7, YBq:YBq + 31, ns["IZ0"] + 2:162])]
+            ("aisle by the stair core", FULL[WEST_ + 158:A1q - 7, YBq:YBq + 31, ns["IZ0"] + 2:162])]
 ramp_bad = 0
 for zq in range(ns["RZ_TOP"] - 4, ns["RZ_BOT"]):
     ry_ = ns["ramp_y"](zq)
@@ -553,7 +565,7 @@ for zq in range(R3[2], R3[3] + 1):
     ry_ = ns["ramp3_y"](zq)
     if (FULL[R3[0] + 2:R3[1] - 2, ry_:ry_ + 31, zq] > 0).any():
         van_bad.append(f"ramp3 z{zq}"); break
-for (n_, r_) in (("B1 turn into the ramp (south end)", FULL[160:R3[1] - 6, YBq:YBq + 31, ns["IZ0"] + 6:R3[2]]),
+for (n_, r_) in (("B1 turn into the ramp (south end)", FULL[WEST_ + 160:R3[1] - 6, YBq:YBq + 31, ns["IZ0"] + 6:R3[2]]),
                  ("B2 turn at the ramp's foot (north end)", FULL[B2v["aisle"][0] + 2:R3[1] - 2, YB2v:YB2v + 31, R3[3]:B2v["door"][0] - 2]),
                  ("B2 aisle", FULL[B2v["aisle"][0] + 7:B2v["aisle"][1] - 7, YB2v:YB2v + 31, 160:420]),
                  ("B1 aisle full width (no columns)", FULL[ns["AISLE0"]:ns["AISLE1"], YBq:YBq + 31, 162:ns["PZ1"] - 2])):
@@ -630,7 +642,7 @@ for (nm, arr_, gm_, l_) in ns["ROOF_SHAPES"]:
     RSG[gm_[0]:gm_[0] + arr_.shape[0], gm_[1]:gm_[1] + arr_.shape[1], gm_[2]:gm_[2] + arr_.shape[2]][arr_ > 0] = 1
 def rs_supported(nm, arr_, gm_):
     below = (FULL | RSG)[gm_[0]:gm_[0] + arr_.shape[0], gm_[1] - 1, gm_[2]:gm_[2] + arr_.shape[2]][arr_[:, 0, :] > 0] > 0
-    if nm.startswith("hotel_letter") or nm.startswith("sconce"):       # hangs on the wall / panel beside it
+    if nm.startswith("hotel_letter") or nm.startswith("halcyon_letter") or nm.startswith("sconce"):       # hangs on the wall / panel beside it
         m_ = np.pad(arr_ > 0, 1)
         nb_ = (np.roll(m_, 1, 0) | np.roll(m_, -1, 0) | np.roll(m_, 1, 1) | np.roll(m_, -1, 1) | np.roll(m_, 1, 2) | np.roll(m_, -1, 2)) & ~m_
         X_, Y_, Z_ = np.nonzero(nb_)
@@ -783,20 +795,20 @@ report("back of house replaces the ground-floor north rooms (kitchen, laundry, b
 blade_hit = sum(1 for (a, b, c) in zip(*np.nonzero(RO_)) if b >= 8 and body_cell(H_["rotor_gmin"], a, b, c)) + \
             sum(1 for (a, b, c) in zip(*np.nonzero(TA_)) if a >= 4 and body_cell(H_["tail_gmin"], a, b, c))
 report("rotor blades clear the helicopter body (only the shafts sit inside)", blade_hit == 0, f"{blade_hit} cells")
-report("stairs lead from the room-ring roof up to the helipad roof", reachable(255, ns["ROOF_Y"], 125, r=4) and reachable(255, ns["RT"], 170, r=6) and reachable(ns["HCX"] + 40, ns["RT"], ns["HCZ"], r=6))
+report("stairs lead from the room-ring roof up to the helipad roof", reachable(WEST_ + 255, ns["ROOF_Y"], 125, r=4) and reachable(WEST_ + 255, ns["RT"], 170, r=6) and reachable(ns["HCX"] + 40, ns["RT"], ns["HCZ"], r=6))
 zones_ = []
 for loc in root.iter("location"):
     t = loc.get("tags", "")
     if t.startswith("soundzone"):
         kv = dict(x.split("=") for x in t.split()[1:])
         zones_.append((kv["kind"], *(float(kv[k]) for k in ("x0", "x1", "y0", "y1", "z0", "z1"))))
-CXq, CZq = W * 0.05, D * 0.05
+CXq, CZq = (W + WEST_) * 0.05, D * 0.05
 def in_zone(gx, gy, gz):
     wx, wy, wz = gx * 0.1 - CXq, gy * 0.1, gz * 0.1 - CZq
     return [k for (k, x0_, x1_, y0_, y1_, z0_, z1_) in zones_ if x0_ <= wx <= x1_ and y0_ <= wy <= y1_ and z0_ <= wz <= z1_]
 pool_src = [sp for sp in ns["SOUND_SPOTS"] if sp[0] in ("pool", "spa")]
 rgx, rgy, rgz = ns["RADIO"]["gmin"]
-outside = [((ns["ax0"] + ns["ax1"]) // 2, G0 + 2, (az0 + ns["az1"]) // 2), ((ns["ax0"] + ns["ax1"]) // 2 + 20, G0 + 2, az0 - 30), (310, ns["YB"] + 2, 250)]
+outside = [((ns["ax0"] + ns["ax1"]) // 2, G0 + 2, (az0 + ns["az1"]) // 2), ((ns["ax0"] + ns["ax1"]) // 2 + 20, G0 + 2, az0 - 30), (WEST_ + 310, ns["YB"] + 2, 250)]
 report("pool water / spa / radio are heard only in the pool hall (+ quieter in its connector)",
        all(in_zone(x, y, z) == ["hall"] for (_, x, y, z) in pool_src) and in_zone(rgx, rgy, rgz) == ["hall"] and not any(k_ in ("hall", "connector") for p_ in outside for k_ in in_zone(*p_)),
        str([in_zone(x, y, z) for (_, x, y, z) in pool_src]))
@@ -809,7 +821,8 @@ for l in ns["LIGHTS"]:
     for kv in l[6].split():
         if kv.startswith("pw="):
             pw_[int(kv[3:])] += 1
-room_pw = all(("pw=" in l[6]) for l in ns["LIGHTS"] if "room=" in l[6] and "room=banquet" not in l[6] and "room=stage" not in l[6])
+room_pw = all(("pw=" in l[6]) for l in ns["LIGHTS"] if "room=" in l[6] and "room=banquet" not in l[6] and "room=stage" not in l[6]
+              and not re.search(r"room=h\d", l[6]))                    # (HALCYON: its own building, always on)
 report("every floor's lights are on its power circuit (rooms, corridors, electrical rooms)",
        all(pw_[k] > 40 for k in range(FLOORS)) and room_pw, str(dict(pw_)))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
