@@ -1,0 +1,7 @@
+<prefab version="1.6.0">
+	<group name="bowling_ball">
+		<body dynamic="true" tags="bowlball">
+			<vox pos="0 0 0" file="MOD/vox/bowling_ball.vox" object="shape" density="0.3"/>
+		</body>
+	</group>
+</prefab>

@@ -1,0 +1,7 @@
+<prefab version="1.6.0">
+	<group name="crt_tv">
+		<body dynamic="true">
+			<vox pos="0 0 0" file="MOD/vox/crt_tv.vox" object="shape"/>
+		</body>
+	</group>
+</prefab>

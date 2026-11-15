@@ -1,0 +1,299 @@
+<title>Liminal Atrium Hotel</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italiana&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a night-time hotel guide — a cover, then sections set like brochure spreads; brass on plum, one lilac glow. */
+:root {
+  --bg: #15101d;
+  --panel: #1e1729;
+  --line: #3a2f4a;
+  --ink: #ece6f3;
+  --muted: #a99fb8;
+  --brass: #c9a35a;
+  --glow: #b89cff;
+  --display: "Italiana", "Noto Serif KR", Georgia, serif;
+  --head: "Noto Serif KR", Georgia, serif;
+  --body: "Noto Sans KR", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0;
+}
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+/* cover */
+.cover {
+  padding-block: 64px 48px;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(ellipse 60% 70% at 70% 0%, color-mix(in srgb, var(--glow) 22%, transparent), transparent 70%),
+    var(--bg);
+}
+.cover .wrap { display: grid; gap: 28px; }
+.cover h1 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(44px, 9vw, 96px);
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+}
+.cover h1 span { display: block; color: var(--brass); }
+.cover .lede { font-family: var(--head); font-size: clamp(17px, 2.4vw, 21px); color: var(--ink); max-width: 34em; }
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.fact { background: var(--bg); padding: 16px 18px; display: grid; gap: 2px; }
+.fact b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.fact span { color: var(--muted); font-size: 13px; }
+/* sections */
+section { padding-block: 56px; border-bottom: 1px solid var(--line); }
+.sec-head { display: grid; gap: 10px; margin-bottom: 28px; max-width: 40em; }
+.sec-head h2 { font-family: var(--head); font-weight: 600; font-size: clamp(24px, 3.4vw, 32px); }
+.sec-head p { color: var(--muted); }
+/* rooms */
+.rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.room {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 22px;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 14px;
+  min-width: 0;
+}
+.room.signature { border-color: var(--brass); }
+.room-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.room h3 { font-family: var(--head); font-weight: 600; font-size: 19px; }
+.room .where { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+.plan { flex: none; }
+.plan rect { fill: none; stroke: var(--brass); stroke-width: 1.5; }
+.plan .bed { fill: color-mix(in srgb, var(--glow) 35%, transparent); stroke: none; }
+.specs { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 13px; }
+.specs dt { color: var(--muted); }
+.specs dd { margin: 0; }
+.room p.desc { color: var(--ink); font-size: 14px; }
+.price {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-top: 1px solid var(--line); padding-top: 12px;
+}
+.price b { font-family: var(--mono); font-weight: 500; font-size: 22px; color: var(--brass); font-variant-numeric: tabular-nums; }
+.price span { color: var(--muted); font-size: 12px; }
+.tag {
+  display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+  padding: 2px 8px; border: 1px solid var(--glow); color: var(--glow); text-transform: uppercase;
+}
+.notes { margin-top: 18px; color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+/* floor directory: an elevator keypad down the side */
+.dir { display: grid; grid-template-columns: 1fr; gap: 0; border: 1px solid var(--line); }
+.floor { display: grid; grid-template-columns: 64px 1fr; border-bottom: 1px solid var(--line); }
+.floor:last-child { border-bottom: none; }
+.key {
+  display: grid; place-items: center;
+  font-family: var(--mono); font-weight: 500; font-size: 18px;
+  border-right: 1px solid var(--line); color: var(--brass);
+  background: color-mix(in srgb, var(--brass) 7%, var(--bg));
+}
+.floor div:last-child { padding: 14px 18px; min-width: 0; }
+.floor h3 { font-family: var(--head); font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+.floor p { color: var(--muted); font-size: 14px; }
+/* facilities */
+.fac { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px 32px; }
+.fac article { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.fac h3 { font-family: var(--head); font-size: 18px; font-weight: 600; }
+.fac .loc { font-family: var(--mono); font-size: 12px; color: var(--brass); letter-spacing: 0.06em; }
+.fac p { color: var(--muted); font-size: 14px; }
+.stalls { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.stalls span { font-family: var(--mono); font-size: 11px; padding: 1px 7px; border: 1px solid var(--line); color: var(--ink); }
+/* guide */
+.guide { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px 32px; }
+.guide div { display: grid; gap: 4px; min-width: 0; }
+.guide h3 { font-size: 15px; font-weight: 700; }
+.guide p { color: var(--muted); font-size: 14px; }
+kbd {
+  font-family: var(--mono); font-size: 12px; padding: 0 6px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+}
+footer { padding-block: 32px 48px; color: var(--muted); font-size: 12px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
+@media (prefers-reduced-motion: no-preference) {
+  .room { transition: border-color 0.2s; }
+  .room:hover { border-color: var(--glow); }
+}
+</style>
+
+<header class="cover">
+  <div class="wrap">
+    <div class="eyebrow">Hotel guide · 호텔 안내</div>
+    <h1>Liminal<span>Atrium Hotel</span></h1>
+    <p class="lede">보라빛 아트리움을 둘러싼 6개 층의 객실, 잔디 중정 아래 볼링장, 지하 푸드 스트리트, 옥상 유리 식물정원까지. 밤이 길어지는 호텔에 오신 것을 환영합니다.</p>
+    <div class="facts">
+      <div class="fact"><b>129</b><span>객실 (스위트 9실 포함)</span></div>
+      <div class="fact"><b>약 270명</b><span>최대 숙박 인원</span></div>
+      <div class="fact"><b>B2–R</b><span>지하 2층 · 지상 6층 · 옥상</span></div>
+      <div class="fact"><b>★★★★</b><span>4성급 시티 호텔</span></div>
+    </div>
+  </div>
+</header>
+
+<section id="rooms">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Rooms &amp; rates</div>
+      <h2>객실 안내</h2>
+      <p>모든 객실은 아트리움 쪽으로 창이 나 있습니다. 1층 객실은 창밖으로 라운지와 잔디 중정의 단 벽, 볼링장이 보여 요금을 낮게 책정했습니다. 요금은 1박, 2인 기준입니다.</p>
+    </div>
+    <div class="rooms">
+      <article class="room">
+        <div class="room-top">
+          <div><h3>스탠다드 코트야드</h3><div class="where">1F · 18실</div></div>
+          <svg class="plan" width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect x="8" y="2" width="28" height="40"/><rect class="bed" x="14" y="8" width="16" height="12"/></svg>
+        </div>
+        <dl class="specs"><dt>면적</dt><dd>15–18㎡</dd><dt>침대</dt><dd>더블 17실 · 트윈 1실</dd><dt>전망</dt><dd>아트리움 1층 (라운지, 단 벽, 볼링장)</dd></dl>
+        <p class="desc">로비, 라운지 바, 볼링장과 가장 가까운 객실. 창 밖 풍경 대신 편의를 택한 분께 추천합니다.</p>
+        <div class="price"><b>₩129,000</b><span>최저 요금</span></div>
+      </article>
+      <article class="room">
+        <div class="room-top">
+          <div><h3>디럭스 아트리움 뷰</h3><div class="where">2F–5F · 96실</div></div>
+          <svg class="plan" width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect x="8" y="2" width="28" height="40"/><rect class="bed" x="14" y="8" width="16" height="12"/></svg>
+        </div>
+        <dl class="specs"><dt>면적</dt><dd>15–18㎡</dd><dt>침대</dt><dd>더블 76실 · 트윈 20실</dd><dt>전망</dt><dd>보라빛 아트리움과 잔디 중정</dd></dl>
+        <p class="desc">호텔의 대표 객실. 층마다 다른 테마의 복도, 조명·TV 스위치, 여닫는 커튼이 있습니다.</p>
+        <div class="price"><b>₩189,000</b><span>2F 기준, 층당 +₩5,000</span></div>
+      </article>
+      <article class="room">
+        <div class="room-top">
+          <div><h3>프리미어</h3><div class="where">6F · 6실</div></div>
+          <svg class="plan" width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect x="8" y="2" width="28" height="40"/><rect class="bed" x="14" y="8" width="16" height="12"/></svg>
+        </div>
+        <dl class="specs"><dt>면적</dt><dd>15–18㎡</dd><dt>침대</dt><dd>더블 2실 · 트윈 4실</dd><dt>전망</dt><dd>아트리움 최상층</dd></dl>
+        <p class="desc">스위트 층에 자리한 일반 객실. 가장 높은 곳에서 아트리움의 천장 조명을 가까이 봅니다.</p>
+        <div class="price"><b>₩229,000</b><span>스위트 층</span></div>
+      </article>
+      <article class="room">
+        <div class="room-top">
+          <div><h3>주니어 스위트</h3><div class="where">6F · 6실 · 2실 구성</div></div>
+          <svg class="plan" width="64" height="44" viewBox="0 0 64 44" aria-hidden="true"><rect x="2" y="2" width="28" height="40"/><rect x="34" y="2" width="28" height="40"/><rect class="bed" x="8" y="8" width="16" height="12"/></svg>
+        </div>
+        <dl class="specs"><dt>면적</dt><dd>30–35㎡</dd><dt>구성</dt><dd>침실 + 거실 (소파, TV, 바 카운터)</dd><dt>정원</dt><dd>2인, 소파베드로 3인</dd></dl>
+        <p class="desc">객실 두 칸을 이은 스위트. 거실 쪽이 스위트 입구이며 금색 번호판을 달았습니다.</p>
+        <div class="price"><b>₩390,000</b><span>1박</span></div>
+      </article>
+      <article class="room">
+        <div class="room-top">
+          <div><h3>이그제큐티브 스위트</h3><div class="where">6F · 2실 · 3실 구성</div></div>
+          <svg class="plan" width="94" height="44" viewBox="0 0 94 44" aria-hidden="true"><rect x="2" y="2" width="28" height="40"/><rect x="33" y="2" width="28" height="40"/><rect x="64" y="2" width="28" height="40"/><rect class="bed" x="8" y="8" width="16" height="12"/></svg>
+        </div>
+        <dl class="specs"><dt>면적</dt><dd>45–53㎡</dd><dt>구성</dt><dd>침실 + 거실 + 다이닝·서재 (6인 식탁)</dd><dt>정원</dt><dd>2인, 최대 4인</dd></dl>
+        <p class="desc">서쪽과 동쪽 날개 가운데에 하나씩. 사이드보드, 책장, 작은 서재 책상이 있는 다이닝 룸이 딸려 있습니다.</p>
+        <div class="price"><b>₩590,000</b><span>1박</span></div>
+      </article>
+      <article class="room signature">
+        <div class="room-top">
+          <div><h3>펜트하우스</h3><div class="where">ROOF · 1실</div></div>
+          <span class="tag">Signature</span>
+        </div>
+        <dl class="specs"><dt>면적</dt><dd>약 95㎡ + 테라스 32㎡</dd><dt>구성</dt><dd>바, 벽난로 거실, 6인 다이닝, 킹 침실, 욕실</dd><dt>특징</dt><dd>자쿠지 테라스, 스마트 글라스, 전용 조명</dd></dl>
+        <p class="desc">옥상 동쪽의 단독 스위트. 버튼 하나로 모든 유리가 불투명해지고, 테라스에서 엘리베이터 옥상 정류장으로 바로 나갑니다.</p>
+        <div class="price"><b>₩1,800,000</b><span>1박</span></div>
+      </article>
+    </div>
+    <div class="notes">
+      <span>체크인 15:00 · 체크아웃 11:00</span>
+      <span>조식 1인 ₩35,000</span>
+      <span>엑스트라 베드 ₩50,000</span>
+      <span>주차 투숙객 무료 (B1 · B2)</span>
+    </div>
+  </div>
+</section>
+
+<section id="floors">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Floor directory</div>
+      <h2>층별 안내</h2>
+      <p>엘리베이터 4대가 B2부터 옥상까지 운행합니다. 안의 키패드에 층을 입력하세요. 지하 2층은 B, 2를 차례로 누릅니다.</p>
+    </div>
+    <div class="dir">
+      <div class="floor"><div class="key">R</div><div><h3>옥상</h3><p>유리 식물정원 FLORA · 펜트하우스와 자쿠지 테라스 · 헬리패드 · 옥상 전기실</p></div></div>
+      <div class="floor"><div class="key">6</div><div><h3>스위트 층</h3><p>주니어 스위트 6 · 이그제큐티브 스위트 2 · 프리미어 6</p></div></div>
+      <div class="floor"><div class="key">2–5</div><div><h3>객실 층</h3><p>디럭스 아트리움 뷰 96실 · 층마다 전기실 · 2층 자판기 코너 · 2층 높이 잔디 중정</p></div></div>
+      <div class="floor"><div class="key">1</div><div><h3>로비 층</h3><p>프런트 데스크 · 아트리움 라운지 바 · 볼링장 · 스탠다드 객실 · 수영장 별관과 연회장 AURORA 연결통로</p></div></div>
+      <div class="floor"><div class="key">B1</div><div><h3>명품 상가 · 주차장</h3><p>레스토랑 LUMIERE · CAFE · 부티크 8곳 · 분수 · 화장실 · 주차장 (도로에서 경사로)</p></div></div>
+      <div class="floor"><div class="key">B2</div><div><h3>푸드 스트리트 · 주차장</h3><p>노점 12곳 · 긴 테이블과 홍등 · 화장실 · 주차장 (B1 주차장에서 경사로)</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="facilities">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Facilities</div>
+      <h2>부대시설</h2>
+    </div>
+    <div class="fac">
+      <article><div class="loc">1F · 아트리움</div><h3>라운지 바</h3><p>금색 LED가 흐르는 검은 바, 청록 네온 스크린, 원통형 벽등. 잔디 중정 아래 자리한 호텔의 거실입니다.</p></article>
+      <article><div class="loc">1F · 잔디 중정 아래</div><h3>볼링장</h3><p>레인 4개. 공을 들고 굴린 뒤 볼 거치대의 빨간 버튼으로 핀을 다시 세웁니다. 스낵바와 네온 라운지가 함께 있습니다.</p></article>
+      <article><div class="loc">별관 · 1F 북동 연결통로</div><h3>연회장 AURORA</h3><p>약 263㎡. 원형 테이블 12개 96석, 무대와 댄스 플로어, 샹들리에 3개. 홀 조명과 무대 조명을 따로 켭니다.</p></article>
+      <article><div class="loc">별관 · 1F 북쪽 연결통로</div><h3>실내 수영장과 스파</h3><p>수영장, 스파, 선베드, 안전요원 의자. 남녀 탈의실에 사물함과 샤워 칸이 있습니다.</p></article>
+      <article><div class="loc">옥상 서쪽</div><h3>유리 식물정원 FLORA</h3><p>유리 지붕과 큐폴라 아래 연못, 야자수, 꽃밭, 등나무. 옥상 전기실이 조명을 맡습니다.</p></article>
+      <article><div class="loc">B1</div><h3>LUMIERE · CAFE · 명품 상가</h3><p>ORO, VELOUR, AURELIA, MAISON, SOLE, LUNE, FLEUR, 그리고 테크 스토어 NOVA.</p></article>
+      <article>
+        <div class="loc">B2</div><h3>푸드 스트리트</h3><p>네온 간판과 줄무늬 차양 아래 노점 12곳.</p>
+        <div class="stalls"><span>RAMEN</span><span>TACOS</span><span>DIMSUM</span><span>BBQ</span><span>PHO</span><span>CURRY</span><span>SUSHI</span><span>WAFFLE</span><span>BOBA</span><span>PIZZA</span><span>KEBAB</span><span>TTEOK</span></div>
+      </article>
+      <article><div class="loc">B1 · B2</div><h3>주차장</h3><p>도로에서 B1, B1 주차장 안 경사로로 B2까지 이어집니다. B1 7면, B2 13면. 밴도 드나듭니다.</p></article>
+      <article><div class="loc">옥상 위층</div><h3>헬리패드</h3><p>투숙객용 헬기가 대기합니다. 착륙 표시등과 투광등 4개가 패드를 밝힙니다.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="guide">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Using the hotel</div>
+      <h2>이용 안내</h2>
+    </div>
+    <div class="guide">
+      <div><h3>객실 조명과 TV</h3><p>문 옆 스위치를 보고 <kbd>E</kbd>를 누르면 조명이 켜지고 꺼집니다. TV는 화면을 보고 <kbd>E</kbd>.</p></div>
+      <div><h3>커튼</h3><p>커튼을 보고 <kbd>E</kbd>를 누르면 양쪽이 함께 열리고 닫힙니다.</p></div>
+      <div><h3>정전이 되었을 때</h3><p>층마다 엘리베이터 옆 전기실의 배전반에서 <kbd>E</kbd>로 전원을 다시 올립니다. 배전반이 부서졌다면 복구할 수 없습니다.</p></div>
+      <div><h3>안내방송</h3><p>건물 안에서는 몇 분에 한 번 안내방송이 잔잔하게 흘러나옵니다.</p></div>
+      <div><h3>낮과 밤, 비</h3><p>일시정지 메뉴의 Liminal Atrium 패널에서 시간과 날씨를 바꿀 수 있습니다.</p></div>
+      <div><h3>프런트 데스크</h3><p>준비가 되면 프런트의 벨을 울려 주세요. 잠들지 못하는 손님을 위한 안내가 시작됩니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Liminal Atrium Hotel · Teardown 맵 v3.50</span>
+    <span>요금과 등급은 맵 속 설정입니다.</span>
+  </div>
+</footer>
