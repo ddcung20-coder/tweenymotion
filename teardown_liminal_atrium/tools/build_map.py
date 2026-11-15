@@ -1597,21 +1597,59 @@ add_door(WORLD, cx - 13, cx, y, y + 22, az0 - 3, az0 - 2, glass_door, hinge=(cx 
 add_door(WORLD, cx, cx + 13, y, y + 22, az0 - 3, az0 - 2, lambda a, b, c, A, B, C: glass_door(A - 1 - a, b, c, A, B, C),
          hinge=(cx + 13, az0 - 2), open_dir=(0, 1), stop=FRAME)
 box(cx - 4, cx + 4, y + 23, y + 26, az0 - 5, az0 - 4, EXIT_SIGN)
-# reception desk with key cubbies behind it
-box(lx0 + 8, lx0 + 36, y, y + 11, lz0 + 14, lz0 + 20, WOOD_DARK)
-for xx in range(lx0 + 9, lx0 + 36, 4):
-    box(xx, xx + 2, y + 2, y + 9, lz0 + 19, lz0 + 20, WOOD_MED)
-box(lx0 + 8, lx0 + 36, y + 11, y + 12, lz0 + 13, lz0 + 21, WOOD_LIGHT)
-BELL = dict(arr=np.full((2, 2, 2), BRASS, np.uint8), gmin=(lx0 + 12, y + 12, lz0 + 16))   # front-desk bell (mission)
+# reception (v3.55): a long L-shaped counter (3.4 m + a 0.8 m return), fluted oak front with brass reeds,
+#   a warm glow line under the white marble top, a dark-stone back wall with brass key cubbies and RECEPTION
+#   letters, three globe pendants over the counter, two clerk stools behind it
+RC_X0, RC_X1, RC_Z0, RC_Z1 = lx0 + 4, lx0 + 38, lz0 + 13, lz0 + 21              # main run (x), clerks on the south side
+box(RC_X0, RC_X1, y, y + 10, RC_Z0, RC_Z1, WOOD_DARK)                            # body
+box(RC_X0 + 1, RC_X1, y, y + 1, RC_Z1 - 1, RC_Z1, BRASS)                        # brass kick line
+for xx in range(RC_X0 + 1, RC_X1, 2):                                        # fluting on the front, a brass reed every 6
+    box(xx, xx + 1, y + 1, y + 9, RC_Z1 - 1, RC_Z1, WOOD_MED if (xx - RC_X0) % 6 else BRASS)
+box(RC_X0 + 1, RC_X1, y + 9, y + 10, RC_Z1, RC_Z1 + 1, LAMPSHADE)               # glow line under the lip
+box(RC_X0, RC_X1 + 1, y + 10, y + 11, RC_Z0 - 1, RC_Z1 + 2, MARBLE_W)          # marble top, overhangs the front
+box(RC_X0, RC_X1 + 1, y + 11, y + 12, RC_Z1 - 2, RC_Z1 + 2, MARBLE_W2)         # raised transaction ledge (front)
+box(RC_X0, RC_X1 + 1, y + 10, y + 12, RC_Z1 + 1, RC_Z1 + 2, BRASS)             # brass nosing
+RW_X0, RW_X1, RW_Z1 = RC_X0, RC_X0 + 7, RC_Z1 + 8                                    # return wing towards the atrium (west)
+box(RW_X0, RW_X1, y, y + 10, RC_Z1, RW_Z1, WOOD_DARK)
+for zz in range(RC_Z1 + 1, RW_Z1, 2):
+    box(RW_X1 - 1, RW_X1, y + 1, y + 9, zz, zz + 1, WOOD_MED if (zz - RC_Z1) % 6 else BRASS)
+box(RW_X1 - 1, RW_X1, y, y + 1, RC_Z1, RW_Z1, BRASS)
+box(RW_X1, RW_X1 + 1, y + 9, y + 10, RC_Z1 + 2, RW_Z1, LAMPSHADE)
+box(RW_X0, RW_X1 + 2, y + 10, y + 11, RC_Z1, RW_Z1 + 1, MARBLE_W)
+box(RW_X0, RW_X1 + 2, y + 10, y + 12, RW_Z1, RW_Z1 + 1, BRASS)
+box(RW_X1 + 1, RW_X1 + 2, y + 10, y + 12, RC_Z1 + 2, RW_Z1, BRASS)
+box(RW_X0 + 1, RW_X0 + 5, y + 11, y + 12, RC_Z1 + 2, RC_Z1 + 7, SHEET)          # guest book + pen on the wing
+box(RW_X0 + 2, RW_X0 + 4, y + 12, y + 13, RC_Z1 + 4, RC_Z1 + 5, BRASS)
+for (vx_, vz_) in ((RC_X1 - 3, RC_Z0 + 1),):                                   # orchid in a white pot at the far end
+    box(vx_, vx_ + 2, y + 11, y + 14, vz_, vz_ + 2, CERAMIC)
+    box(vx_, vx_ + 1, y + 14, y + 19, vz_, vz_ + 1, TRUNK)
+    for (ox_, oy_) in ((1, 18), (-1, 17), (1, 16)):
+        box(vx_ + ox_, vx_ + ox_ + 1, y + oy_, y + oy_ + 1, vz_, vz_ + 1, ROSE)
+for sx_ in (RC_X0 + 10, RC_X0 + 28):                                          # clerk stools (clear of the column)
+    box(sx_, sx_ + 1, y, y + 7, RC_Z0 - 5, RC_Z0 - 4, CHROME)
+    box(sx_ - 1, sx_ + 3, y, y + 1, RC_Z0 - 6, RC_Z0 - 3, CHROME)
+    box(sx_ - 2, sx_ + 3, y + 7, y + 8, RC_Z0 - 7, RC_Z0 - 2, UPHOL)
+BELL = dict(arr=np.full((2, 2, 2), BRASS, np.uint8), gmin=(lx0 + 12, y + 11, lz0 + 16))   # front-desk bell (mission)
 MISSION_START = (lx0 + 24, y, lz0 + 28)
-box(lx0 + 26, lx0 + 31, y + 12, y + 16, lz0 + 15, lz0 + 17, TV_BODY)       # monitor
+box(lx0 + 26, lx0 + 31, y + 11, y + 16, lz0 + 15, lz0 + 17, TV_BODY)       # monitor
 box(lx0 + 27, lx0 + 30, y + 13, y + 15, lz0 + 17, lz0 + 18, TV_SCREEN)
-box(lx0 + 8, lx0 + 36, y + 8, y + 22, lz0 + 1, lz0 + 3, WOOD_DARK)
-for xx in range(lx0 + 9, lx0 + 35, 3):
-    for yy in range(y + 9, y + 21, 3):
-        box(xx, xx + 2, yy, yy + 2, lz0 + 2, lz0 + 3, 0)
+# back wall: dark marble panel, brass key cubbies, RECEPTION in brass, wall washers
+box(RC_X0 - 2, RC_X1 + 2, y, y + 26, lz0 + 1, lz0 + 2, MARBLE_B)
+box(RC_X0 - 2, RC_X1 + 2, y + 25, y + 26, lz0 + 1, lz0 + 3, BRASS)
+box(RC_X0 - 2, RC_X1 + 2, y, y + 1, lz0 + 1, lz0 + 3, BRASS)
+box(RC_X0 + 2, RC_X1 - 2, y + 6, y + 18, lz0 + 2, lz0 + 4, WOOD_DARK)
+for xx in range(RC_X0 + 3, RC_X1 - 3, 3):
+    for yy in range(y + 7, y + 17, 3):
+        box(xx, xx + 2, yy, yy + 2, lz0 + 3, lz0 + 4, 0)
         if rng.random() < 0.7:
-            box(xx, xx + 1, yy, yy + 1, lz0 + 1, lz0 + 2, BRASS)              # keys
+            box(xx, xx + 1, yy, yy + 1, lz0 + 3, lz0 + 4, BRASS)              # keys
+box(RC_X0, RC_X1, y + 19, y + 20, lz0 + 2, lz0 + 3, LAMPSHADE)                # LED line washing the letters
+light((RC_X0 + RC_X1) / 2, y + 18, lz0 + 4.5, (1.0, 0.8, 0.5), 1.4, 0.3)
+# globe pendants over the counter
+for px_ in (RC_X0 + 6, RC_X0 + 17, RC_X0 + 28):
+    box(px_, px_ + 1, y + 19, y + 26, RC_Z0 + 3, RC_Z0 + 4, BRASS)
+    box(px_ - 1, px_ + 2, y + 16, y + 19, RC_Z0 + 2, RC_Z0 + 5, LAMPSHADE)
+    light(px_ + 0.5, y + 15, RC_Z0 + 3.5, (1.0, 0.82, 0.55), 1.6, 0.25)
 # sofas + coffee table + plants + chandelier
 for sz, back in ((lz0 + 10, lz0 + 10), (lz0 + 28, lz0 + 34)):
     box(lx1 - 30, lx1 - 10, y, y + 5, sz, sz + 7, UPHOL)
@@ -2346,6 +2384,9 @@ def ftext(fr, s, u_mid, y_top, v, col):
                     x_, z_ = fr.pt(u + c_, v); fx_, fz_ = fr.pt(u + c_, v - 1)
                     SIGN_CELLS.append(((x_, y_top - r_ - 1, z_), (fx_, y_top - r_ - 1, fz_), s))
         u += w_ + 1
+
+# (v3.55) brass RECEPTION over the main hotel's key wall (drawn here: ftext is defined above)
+ftext(Frame(0, lz0 + 1, 1, 0, 0, -1), "RECEPTION", (RC_X0 + RC_X1) // 2, G0 + 24, -1, BRASS)
 
 def ceiling_panel(fr, u, v, rgb, scale=1.8, half=4):
     fr.box(u - half, u + half, YC - 1, YC, v - half, v + half, BRASS)
@@ -6077,7 +6118,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.54\n"
+        f.write("name = Liminal Atrium v3.55\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
