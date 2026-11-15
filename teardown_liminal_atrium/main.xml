@@ -534,73 +534,8 @@
 		<vox tags="switchgear floor=9 corner=HB1" pos="-37.9 4 -29" file="MOD/vox/switchgear_0.vox" object="shape"/>
 		<vox tags="switchgear floor=100 corner=MASTER" pos="-46.6 7.8 20.7" file="MOD/vox/switchgear_3.vox" object="shape"/>
 	</group>
-	<group name="snow" pos="0 0 0">
-		<body name="snow0" tags="snowlayer sy=7.60" pos="-53.2 -52.4 -32.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_0.vox" object="shape"/></body>
-		<body name="snow1" tags="snowlayer sy=7.70" pos="-53.2 -52.3 -19.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_1.vox" object="shape"/></body>
-		<body name="snow2" tags="snowlayer sy=7.70" pos="-53.2 -52.3 -6.5" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_2.vox" object="shape"/></body>
-		<body name="snow3" tags="snowlayer sy=7.70" pos="-53.2 -52.3 6.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_3.vox" object="shape"/></body>
-		<body name="snow4" tags="snowlayer sy=7.80" pos="-53.2 -52.2 19.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_4.vox" object="shape"/></body>
-		<body name="snow5" tags="snowlayer sy=7.80" pos="-53.2 -52.2 31.9" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_5.vox" object="shape"/></body>
-		<body name="snow6" tags="snowlayer sy=7.80" pos="-53.2 -52.2 38.4" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_6.vox" object="shape"/></body>
-		<body name="snow7" tags="snowlayer sy=7.60" pos="-40.4 -52.4 -32.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_7.vox" object="shape"/></body>
-		<body name="snow8" tags="snowlayer sy=19.60" pos="-40.4 -40.4 -19.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_8.vox" object="shape"/></body>
-		<body name="snow9" tags="snowlayer sy=19.60" pos="-40.4 -40.4 -6.5" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_9.vox" object="shape"/></body>
-		<body name="snow10" tags="snowlayer sy=7.70" pos="-40.4 -52.3 6.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_10.vox" object="shape"/></body>
-		<body name="snow11" tags="snowlayer sy=7.80" pos="-40.4 -52.2 19.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_11.vox" object="shape"/></body>
-		<body name="snow12" tags="snowlayer sy=7.80" pos="-40.4 -52.2 31.9" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_12.vox" object="shape"/></body>
-		<body name="snow13" tags="snowlayer sy=7.80" pos="-40.4 -52.2 38.4" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_13.vox" object="shape"/></body>
-		<body name="snow14" tags="snowlayer sy=6.30" pos="-27.6 -53.7 -32.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_14.vox" object="shape"/></body>
-		<body name="snow15" tags="snowlayer sy=4.00" pos="-27.6 -56 -19.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_15.vox" object="shape"/></body>
-		<body name="snow16" tags="snowlayer sy=4.00" pos="-27.6 -56 -6.5" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_16.vox" object="shape"/></body>
-		<body name="snow17" tags="snowlayer sy=7.70" pos="-27.6 -52.3 6.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_17.vox" object="shape"/></body>
-		<body name="snow18" tags="snowlayer sy=7.80" pos="-27.6 -52.2 19.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_18.vox" object="shape"/></body>
-		<body name="snow19" tags="snowlayer sy=7.80" pos="-27.6 -52.2 31.9" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_19.vox" object="shape"/></body>
-		<body name="snow20" tags="snowlayer sy=7.80" pos="-27.6 -52.2 38.4" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_20.vox" object="shape"/></body>
-		<body name="snow21" tags="snowlayer sy=6.30" pos="-14.8 -53.7 -32.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_21.vox" object="shape"/></body>
-		<body name="snow22" tags="snowlayer sy=4.00" pos="-14.8 -56 -19.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_22.vox" object="shape"/></body>
-		<body name="snow23" tags="snowlayer sy=29.50" pos="-11.9 -30.5 -15.6" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_23.vox" object="shape"/></body>
-		<body name="snow24" tags="snowlayer sy=4.00" pos="-14.8 -56 -6.5" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_24.vox" object="shape"/></body>
-		<body name="snow25" tags="snowlayer sy=29.50" pos="-11.9 -30.5 -9.2" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_25.vox" object="shape"/></body>
-		<body name="snow26" tags="snowlayer sy=7.70" pos="-14.8 -52.3 6.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_26.vox" object="shape"/></body>
-		<body name="snow27" tags="snowlayer sy=7.60" pos="-14.8 -52.4 19.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_27.vox" object="shape"/></body>
-		<body name="snow28" tags="snowlayer sy=7.60" pos="-14.8 -52.4 31.9" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_28.vox" object="shape"/></body>
-		<body name="snow29" tags="snowlayer sy=7.60" pos="-14.8 -52.4 38.4" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_29.vox" object="shape"/></body>
-		<body name="snow30" tags="snowlayer sy=7.60" pos="-2 -52.4 -32.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_30.vox" object="shape"/></body>
-		<body name="snow31" tags="snowlayer sy=25.60" pos="-2 -34.4 -19.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_31.vox" object="shape"/></body>
-		<body name="snow32" tags="snowlayer sy=28.20" pos="-2 -31.8 -6.5" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_32.vox" object="shape"/></body>
-		<body name="snow33" tags="snowlayer sy=7.60" pos="-2 -52.4 6.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_33.vox" object="shape"/></body>
-		<body name="snow34" tags="snowlayer sy=7.60" pos="-2 -52.4 19.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_34.vox" object="shape"/></body>
-		<body name="snow35" tags="snowlayer sy=7.60" pos="-2 -52.4 31.9" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_35.vox" object="shape"/></body>
-		<body name="snow36" tags="snowlayer sy=7.60" pos="-2 -52.4 38.4" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_36.vox" object="shape"/></body>
-		<body name="snow37" tags="snowlayer sy=7.60" pos="10.8 -52.4 -32.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_37.vox" object="shape"/></body>
-		<body name="snow38" tags="snowlayer sy=7.70" pos="10.8 -52.3 -19.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_38.vox" object="shape"/></body>
-		<body name="snow39" tags="snowlayer sy=7.70" pos="10.8 -52.3 -6.5" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_39.vox" object="shape"/></body>
-		<body name="snow40" tags="snowlayer sy=7.60" pos="10.8 -52.4 6.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_40.vox" object="shape"/></body>
-		<body name="snow41" tags="snowlayer sy=7.60" pos="10.8 -52.4 19.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_41.vox" object="shape"/></body>
-		<body name="snow42" tags="snowlayer sy=7.60" pos="10.8 -52.4 31.9" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_42.vox" object="shape"/></body>
-		<body name="snow43" tags="snowlayer sy=7.60" pos="10.8 -52.4 38.4" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_43.vox" object="shape"/></body>
-		<body name="snow44" tags="snowlayer sy=7.60" pos="20.4 -52.4 -32.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_44.vox" object="shape"/></body>
-		<body name="snow45" tags="snowlayer sy=7.60" pos="20.4 -52.4 -19.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_45.vox" object="shape"/></body>
-		<body name="snow46" tags="snowlayer sy=7.60" pos="20.4 -52.4 -6.5" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_46.vox" object="shape"/></body>
-		<body name="snow47" tags="snowlayer sy=7.60" pos="20.4 -52.4 6.3" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_47.vox" object="shape"/></body>
-		<body name="snow48" tags="snowlayer sy=7.60" pos="20.4 -52.4 19.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_48.vox" object="shape"/></body>
-		<body name="snow49" tags="snowlayer sy=7.60" pos="20.4 -52.4 31.9" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_49.vox" object="shape"/></body>
-		<body name="snow50" tags="snowlayer sy=7.60" pos="20.4 -52.4 38.4" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_50.vox" object="shape"/></body>
-		<body name="snow51" tags="snowlayer sy=7.60" pos="-53.2 -52.4 -47.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_51.vox" object="shape"/></body>
-		<body name="snow52" tags="snowlayer sy=7.70" pos="-53.2 -52.3 -39.6" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_52.vox" object="shape"/></body>
-		<body name="snow53" tags="snowlayer sy=7.60" pos="-40.4 -52.4 -47.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_53.vox" object="shape"/></body>
-		<body name="snow54" tags="snowlayer sy=7.60" pos="-40.4 -52.4 -39.6" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_54.vox" object="shape"/></body>
-		<body name="snow55" tags="snowlayer sy=7.60" pos="-27.6 -52.4 -47.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_55.vox" object="shape"/></body>
-		<body name="snow56" tags="snowlayer sy=7.60" pos="-27.6 -52.4 -39.6" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_56.vox" object="shape"/></body>
-		<body name="snow57" tags="snowlayer sy=7.60" pos="-14.8 -52.4 -47.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_57.vox" object="shape"/></body>
-		<body name="snow58" tags="snowlayer sy=7.60" pos="-14.8 -52.4 -39.6" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_58.vox" object="shape"/></body>
-		<body name="snow59" tags="snowlayer sy=7.60" pos="-2 -52.4 -47.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_59.vox" object="shape"/></body>
-		<body name="snow60" tags="snowlayer sy=7.60" pos="-2 -52.4 -39.6" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_60.vox" object="shape"/></body>
-		<body name="snow61" tags="snowlayer sy=7.60" pos="10.8 -52.4 -47.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_61.vox" object="shape"/></body>
-		<body name="snow62" tags="snowlayer sy=7.60" pos="10.8 -52.4 -39.6" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_62.vox" object="shape"/></body>
-		<body name="snow63" tags="snowlayer sy=7.60" pos="20.4 -52.4 -47.1" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_63.vox" object="shape"/></body>
-		<body name="snow64" tags="snowlayer sy=7.70" pos="20.4 -52.3 -39.6" dynamic="false"><vox pos="0 0 0" file="MOD/vox/snow_64.vox" object="shape"/></body>
-	</group>
+	<body name="snowbase" tags="snowbase" pos="0 0 0" dynamic="false"><vox tags="snowref" pos="0 -50 0" file="MOD/vox/snowref.vox" object="shape"/></body>
+	<location tags="snowarea x0=-59.60 x1=23.60 z0=-53.50 z1=38.50 ytop=32.50 idx=25" pos="0 0 0"/>
 	<location tags="powerzone k=-1 x0=-9.60 x1=-5.60 y0=3.90 y1=7.10 z0=-32.70 z1=-30.10" pos="-7.6 3.9 -31.4"/>
 	<location tags="powerzone k=-2 x0=-9.60 x1=-5.60 y0=0.30 y1=3.50 z0=-32.70 z1=-30.10" pos="-7.6 0.3 -31.4"/>
 	<location tags="powerzone k=9 x0=-39.60 x1=-35.60 y0=3.90 y1=7.10 z0=-29.30 z1=-26.70" pos="-37.6 3.9 -28"/>

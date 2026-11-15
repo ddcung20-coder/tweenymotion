@@ -1910,24 +1910,118 @@ local function envSet(name, v)
 	end
 end
 
--- (v3.60) settled snow: static tiles (tag snowlayer, sy = their real height) wait 60 m below the map; while it
--- snows they sit on every surface open to the sky (the engine's own snow-on-ground only exists at level load)
-local snowTiles = nil
-function snowShow(on)
-	if not snowTiles then
-		snowTiles = {}
-		local bs = FindBodies("snowlayer", true)
-		for i = 1, #bs do
-			local t = GetBodyTransform(bs[i])
-			local sy = tonumber(GetTagValue(bs[i], "sy")) or (t.pos[2] + 60)
-			snowTiles[#snowTiles + 1] = { body = bs[i], hidden = Transform(VecCopy(t.pos), t.rot),
-				shown = Transform(Vec(t.pos[1], sy, t.pos[3]), t.rot) }
+-- (v3.63) settled snow, made in game: when it starts to snow, rays fall straight down over the whole map (a few
+-- thousand per frame, so the snow settles over ~3 s) and one voxel of snow is drawn on the first surface each ray
+-- hits -- the map as it is right now, broken parts included. Moving things (cars, doors, props) get none.
+-- The snow lives in new shapes on the static "snowbase" body (palette of the "snowref" voxel); clear / rain deletes it.
+snow = { jobs = nil, tile = nil, shapes = {}, body = 0, ref = 0, area = nil, budget = 5000, active = false }
+local SNOW_TILE = 128
+local function snowArea()
+	if snow.area then return snow.area end
+	local l = FindLocation("snowarea", true)
+	if not l or l == 0 then return nil end
+	local a = {}
+	for _, k in ipairs({ "x0", "x1", "z0", "z1", "ytop", "idx" }) do a[k] = tonumber(GetTagValue(l, k)) or 0 end
+	a.nx = math.floor((a.x1 - a.x0) * 10 + 0.5)
+	a.nz = math.floor((a.z1 - a.z0) * 10 + 0.5)
+	snow.area = a
+	return a
+end
+function snowClear()
+	for i = 1, #snow.shapes do
+		if IsHandleValid(snow.shapes[i]) then Delete(snow.shapes[i]) end
+	end
+	snow.shapes, snow.jobs, snow.tile = {}, nil, nil
+end
+function snowStart()
+	snowClear()
+	local a = snowArea()
+	if not a or not CreateShape or not DrawShapeLine then return end
+	snow.body = FindBody("snowbase", true)
+	snow.ref = FindShape("snowref", true)
+	if snow.body == 0 or snow.ref == 0 then return end
+	snow.jobs, snow.ji = {}, 1
+	for tx = 0, a.nx - 1, SNOW_TILE do
+		for tz = 0, a.nz - 1, SNOW_TILE do snow.jobs[#snow.jobs + 1] = { tx = tx, tz = tz } end
+	end
+end
+local function snowRay(wx, wz)
+	local a = snow.area
+	if QueryRejectBody then QueryRejectBody(snow.body) end
+	local hit, d, n, sh = QueryRaycast(Vec(wx, a.ytop, wz), Vec(0, -1, 0), a.ytop + 2)
+	if not hit or not sh or sh == 0 then return nil end
+	if n and n[2] and n[2] < 0.5 then return nil end              -- (only on surfaces that face up)
+	local b = GetShapeBody(sh)
+	if b and b ~= 0 and IsBodyDynamic(b) then return nil end      -- (no snow on cars, doors, props)
+	return math.floor((a.ytop - d) * 10 + 0.5)                   -- the snow voxel sits right on the surface
+end
+local function snowTileFinish(t)
+	if t.ymax < t.ymin then return end
+	local a = snow.area
+	local x0w, z0w = a.x0 + t.tx * 0.1, a.z0 + t.tz * 0.1
+	local yb = t.ymin
+	while yb <= t.ymax do                                         -- (a shape stays under 256 voxels tall)
+		local yt = math.min(t.ymax, yb + 249)
+		local sh = CreateShape(snow.body, Transform(Vec(x0w, yb * 0.1, z0w), Quat()), snow.ref)
+		if sh and sh ~= 0 then
+			ResizeShape(sh, 0, 0, 0, t.w - 1, yt - yb, t.d - 1)
+			SetBrush("cube", 1, a.idx)
+			for k = 0, t.d - 1 do
+				local row = t.h[k]
+				if row then
+					local i = 0
+					while i < t.w do
+						local y = row[i]
+						if y and y >= yb and y <= yt then
+							local e = i
+							while e + 1 < t.w and row[e + 1] == y do e = e + 1 end
+							DrawShapeLine(sh, i, y - yb, k, e, y - yb, k)
+							i = e + 1
+						else
+							i = i + 1
+						end
+					end
+				end
+			end
+			snow.shapes[#snow.shapes + 1] = sh
+		end
+		yb = yt + 1
+	end
+end
+function snowTick()
+	if not snow.jobs then return end
+	local a, budget = snow.area, snow.budget
+	while budget > 0 do
+		if not snow.tile then
+			local j = snow.jobs[snow.ji]
+			if not j then snow.jobs = nil return end
+			snow.ji = snow.ji + 1
+			snow.tile = { tx = j.tx, tz = j.tz, w = math.min(SNOW_TILE, a.nx - j.tx), d = math.min(SNOW_TILE, a.nz - j.tz),
+				i = 0, h = {}, ymin = 1e9, ymax = -1e9 }
+		end
+		local t = snow.tile
+		local total = t.w * t.d
+		while budget > 0 and t.i < total do
+			local i, k = t.i % t.w, math.floor(t.i / t.w)
+			local y = snowRay(a.x0 + (t.tx + i + 0.5) * 0.1, a.z0 + (t.tz + k + 0.5) * 0.1)
+			if y then
+				t.h[k] = t.h[k] or {}
+				t.h[k][i] = y
+				if y < t.ymin then t.ymin = y end
+				if y > t.ymax then t.ymax = y end
+			end
+			t.i = t.i + 1
+			budget = budget - 1
+		end
+		if t.i >= total then
+			snowTileFinish(t)
+			snow.tile = nil
 		end
 	end
-	for i = 1, #snowTiles do
-		local st = snowTiles[i]
-		if IsHandleValid(st.body) then SetBodyTransform(st.body, on and st.shown or st.hidden) end
-	end
+end
+function snowShow(on)
+	if on and not snow.active then snowStart() elseif not on and snow.active then snowClear() end
+	snow.active = on
 end
 
 function applyEnvironment()
@@ -2285,6 +2379,7 @@ function tick(dt)
 	radioTick(cam)
 	paTick(dt, cam)
 	weatherTick(dt, cam)
+	snowTick()
 end
 
 function update(dt)

@@ -5937,68 +5937,10 @@ def write_vox(path, sub, west=False, pal_extra=None):
         f.write(b"VOX " + struct.pack("<i", 150) + main)
     return len(xs)
 
-# (v3.60) settled snow: one voxel of snow on every surface open to the sky (ground, roofs, trees, signs, the
-#      street), as static tiles that main.lua lifts into place while it snows (the engine's own "snowonground"
-#      can only be set when a level loads). Kept off glass roofs, parked cars' bays and the helicopter's pad spot.
-SNOW_TILES = []         # dict(file, arr, gmin, pos, sy)
-SNOW_IDX = SOIL         # dirt material (soft), drawn white in the snow files
+# (v3.63) settled snow is computed in game by main.lua (rays down over the "snowarea" when it starts to snow, the
+#      snow drawn into runtime shapes): it always matches the map as it is, broken bits included
+SNOW_IDX = SOIL         # dirt material (soft), drawn white through the snowref palette
 SNOW_RGB = {SOIL: (236, 240, 246)}
-def build_snow_layer(CX, CZ):
-    comp = G.copy()
-    def stamp(arr, gmin):
-        gx, gy, gz = (int(v) for v in gmin); sx, sy, sz = arr.shape
-        if gx < 0 or gz < 0: return
-        reg = comp[gx:gx + sx, gy:gy + sy, gz:gz + sz]; a = arr[:reg.shape[0], :reg.shape[1], :reg.shape[2]]
-        reg[a > 0] = a[a > 0]
-    for (nm_, arr_, gm_, l_) in ROOF_SHAPES: stamp(arr_, gm_)
-    for sg_ in SMART_GLASS:
-        if not sg_["frost"]: stamp(sg_["arr"], sg_["gmin"])
-    glass_ = np.array([i for i, v in PAL.items() if v[1] == "glass"], np.uint8)
-    def layer(grid, z_off, excl):
-        occ = grid > 0
-        has = occ.any(1)
-        top = grid.shape[1] - 1 - np.argmax(occ[:, ::-1, :], axis=1)
-        topv = np.take_along_axis(grid, top[:, None, :], 1)[:, 0, :]
-        ok = has & (top + 1 < min(grid.shape[1], 300)) & ~np.isin(topv, glass_) & ~excl
-        return ok, top + 1
-    excl = np.zeros((W, D), bool)
-    hx_, hy_, hz_ = HELI["gmin"]; hs_ = HELI_BODY.shape
-    excl[max(hx_ - 6, 0):hx_ + hs_[0] + 6, max(hz_ - 6, 0):hz_ + hs_[2] + 6] = True
-    for (kind_, fb_, gx_, gy_, gz_, ry_) in CAR_SPOTS:
-        cx_, cz_ = int(gx_ + 10), int(gz_ + 22)
-        hx2, hz2 = (28, 14) if abs(ry_) == 90 else (14, 28)
-        excl[max(cx_ - hx2, 0):cx_ + hx2, max(cz_ - hz2, 0):cz_ + hz2] = True
-    ok, sy = layer(comp, 0, excl)
-    for d_ in DOORS:                                   # (a door must still swing: no snow in its sweep, at its level)
-        if d_["kind"] != "swing": continue
-        px_, pz_ = d_["pivot"]; r_ = max(d_["arr"].shape[0], d_["arr"].shape[2]) + 2; dy_ = d_["gmin"][1]
-        xa_, xb_, za_, zb_ = max(int(px_ - r_), 0), int(px_ + r_) + 2, max(int(pz_ - r_), 0), int(pz_ + r_) + 2
-        near_ = np.abs(sy[xa_:xb_, za_:zb_] - dy_) <= 3
-        ok[xa_:xb_, za_:zb_] &= ~near_
-    rexcl = np.zeros((W, RD), bool)
-    for (kind_, fb_, cx_, cy_, cz_, ry_) in ROAD_CARS:
-        hx2, hz2 = (30, 14) if abs(ry_) == 90 else (14, 30)
-        rexcl[max(int(cx_) - hx2, 0):int(cx_) + hx2, max(int(cz_) + RD - hz2, 0):int(cz_) + RD + hz2] = True
-    rok, rsy = layer(ROAD, -RD, rexcl)
-    T_ = 128
-    for (okm, sym, z_off, dz) in ((ok, sy, 0, D), (rok, rsy, -RD, RD)):
-        for x0 in range(0, W, T_):
-            for z0 in range(0, dz, T_):
-                m = okm[x0:x0 + T_, z0:z0 + T_]
-                if not m.any(): continue
-                X, Z = np.nonzero(m); Y = sym[x0:x0 + T_, z0:z0 + T_][X, Z]
-                for (ya, yb) in ((Y.min(), Y.min() + 255), (Y.min() + 255, Y.max() + 1)):
-                    sel = (Y >= ya) & (Y < yb)
-                    if not sel.any(): continue
-                    xs, ys, zs = X[sel], Y[sel], Z[sel]
-                    arr = np.zeros((xs.max() - xs.min() + 1, ys.max() - ys.min() + 1, zs.max() - zs.min() + 1), np.uint8)
-                    arr[xs - xs.min(), ys - ys.min(), zs - zs.min()] = SNOW_IDX
-                    gmin = (x0 + int(xs.min()), int(ys.min()), z0 + int(zs.min()) + z_off)
-                    nm = f"snow_{len(SNOW_TILES)}"
-                    write_vox(os.path.join(VOXDIR, nm + ".vox"), arr, pal_extra=SNOW_RGB)
-                    sx, sy_, sz = arr.shape
-                    pos = ((gmin[0] + sx // 2) * 0.1 - CX, gmin[1] * 0.1, (gmin[2] + sz - sz // 2) * 0.1 - CZ)
-                    SNOW_TILES.append(dict(file=nm, arr=arr, gmin=gmin, pos=pos))
 
 def export():
     os.makedirs(VOXDIR, exist_ok=True)
@@ -6006,7 +5948,7 @@ def export():
         if fn.endswith(".vox"):
             os.remove(os.path.join(VOXDIR, fn))
     CX, CZ = ((W - WEST) / 2 + WEST) * 0.1, (D / 2) * 0.1      # (the old map keeps its world coordinates)
-    build_snow_layer(CX, CZ)
+    write_vox(os.path.join(VOXDIR, "snowref.vox"), np.full((1, 1, 1), SNOW_IDX, np.uint8), pal_extra=SNOW_RGB)   # (v3.63)
     # ---- lamps become their own small shapes, each carrying its light(s) --------------------------
     # Teardown turns a shape's lights off when that shape is damaged. With every lamp a separate shape,
     # shooting a lamp kills exactly its light, and damage anywhere else never touches it.
@@ -6301,12 +6243,12 @@ def export():
         xml.append(f'\t\t<vox tags="switchgear floor={g["floor"]} corner={g["corner"]}" pos="{f3(body_origin(g["arr"], g["gmin"]))}" '
                    f'file="MOD/vox/{shape_file("switchgear", g["arr"])}.vox" object="shape"/>\n')
     xml.append('\t</group>\n')
-    xml.append('\t<group name="snow" pos="0 0 0">\n')                          # (v3.60) settled snow, hidden till it snows
-    for i, t_ in enumerate(SNOW_TILES):
-        px_, py_, pz_ = t_["pos"]
-        xml.append(f'\t\t<body name="snow{i}" tags="snowlayer sy={py_:.2f}" pos="{f3((px_, py_ - 60, pz_))}" dynamic="false">'
-                   f'<vox pos="0 0 0" file="MOD/vox/{t_["file"]}.vox" object="shape"/></body>\n')
-    xml.append('\t</group>\n')
+    # (v3.63) settled snow is made in game (main.lua rays down over this area when it starts to snow and draws the
+    #      snow into new shapes on this static body, using the palette of the snowref shape: index SOIL = white)
+    xml.append(f'\t<body name="snowbase" tags="snowbase" pos="0 0 0" dynamic="false"><vox tags="snowref" pos="0 -50 0" '
+               f'file="MOD/vox/snowref.vox" object="shape"/></body>\n')
+    xml.append(f'\t<location tags="snowarea x0={-CX:.2f} x1={W * 0.1 - CX:.2f} z0={-RD * 0.1 - CZ:.2f} z1={D * 0.1 - CZ:.2f} '
+               f'ytop={(min(H, 330) + 8) * 0.1:.2f} idx={SNOW_IDX}" pos="0 0 0"/>\n')
     # where it is "indoors" (main.lua: rain outside, muffled inside): every building, its basements and roof rooms
     ind_ = [(bx0, bx1, YB2 - 3, ROOF_Y - 1, bz0, bz1), (ix0 - 2, ix1 + 2, G0 - 6, DY + HALL_H + 4, iz0 - 2, iz1 + 2),
             (cxN - CW - 2, cxN + CW + 2, G0 - 6, DY + 32, bz1 - 2, AZ0 + 6), (CH_X0 - 2, CH_X1 + 2, G0 - 6, DY + 32, CH_Z0 - 2, AZ0 + 2),
@@ -6541,7 +6483,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.62\n"
+        f.write("name = Liminal Atrium v3.63\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

@@ -989,28 +989,15 @@ gar_main = [sp for sp in gar_ if ns["bx0"] <= sp[1] < ns["bx1"]]
 gar_h = [sp for sp in gar_ if HQx[0] <= sp[1] < HQx[1]]
 report(f"car-park ambience: {len(gar_main)} speakers in the main hotel's car parks, {len(gar_h)} in HALCYON's, all in open air",
        len(gar_main) >= 6 and len(gar_h) >= 3 and len(gar_main) + len(gar_h) == len(gar_) and all(FULL[int(x), int(y), int(z)] == 0 for (_, x, y, z) in gar_), str(len(gar_)))
-# v3.60: settled snow -- one voxel on every surface open to the sky, nothing inside a wall, a door's swing or a car bay
-snow_n, snow_bad = 0, 0
-SNOWC = np.zeros((W, D), bool)
-for t_ in ns["SNOW_TILES"]:
-    gx_, gy_, gz_ = t_["gmin"]; X_, Y_, Z_ = np.nonzero(t_["arr"])
-    snow_n += len(X_)
-    if gz_ >= 0:
-        snow_bad += int((FULL[X_ + gx_, Y_ + gy_, Z_ + gz_] > 0).sum())
-        SNOWC[X_ + gx_, Z_ + gz_] = True
-SNOWY = np.full((W, D), -99)
-for t_ in ns["SNOW_TILES"]:
-    gx_, gy_, gz_ = t_["gmin"]; X_, Y_, Z_ = np.nonzero(t_["arr"])
-    if gz_ >= 0: SNOWY[X_ + gx_, Z_ + gz_] = Y_ + gy_
-door_hit = 0
-for d in ns["DOORS"]:
-    if d["kind"] != "swing": continue
-    px, pz = d["pivot"]; r_ = max(d["arr"].shape[0], d["arr"].shape[2]) + 1
-    sub_ = SNOWY[max(int(px - r_), 0):int(px + r_) + 1, max(int(pz - r_), 0):int(pz + r_) + 1]
-    door_hit += int((np.abs(sub_ - d["gmin"][1]) <= 2).sum())
-bay_hit = sum(int(SNOWC[int(gx_ + 10) - 10:int(gx_ + 10) + 10, int(gz_ + 22) - 10:int(gz_ + 22) + 10].sum()) for (_, _, gx_, gy_, gz_, ry_) in ns["CAR_SPOTS"])
-report(f"snow: {len(ns['SNOW_TILES'])} tiles, {snow_n} voxels on open-sky surfaces; none inside anything, no door swing or car bay snowed in",
-       snow_n > 600000 and snow_bad == 0 and door_hit == 0 and bay_hit == 0, f"inside {snow_bad} doors {door_hit} bays {bay_hit}")
+# v3.63: settled snow is made in game: a static snow base with the white reference voxel, and the area to cover
+X3_ = open("main.xml").read()
+sa_ = re.search(r'tags="snowarea x0=([-\d.]+) x1=([-\d.]+) z0=([-\d.]+) z1=([-\d.]+) ytop=([-\d.]+) idx=(\d+)"', X3_)
+b_ = open("vox/snowref.vox", "rb").read(); j_ = b_.find(b"RGBA")
+idx_ = int(sa_.group(6)) if sa_ else 0
+rgb_ = tuple(b_[j_ + 12 + 4 * (idx_ - 1): j_ + 12 + 4 * (idx_ - 1) + 3]) if sa_ else None
+report("snow: snow base + white reference voxel + snow area (whole map and street) for main.lua", sa_ is not None and 'tags="snowbase"' in X3_
+       and rgb_ == (236, 240, 246) and float(sa_.group(2)) - float(sa_.group(1)) > 80 and float(sa_.group(5)) > 25, f"{rgb_} {sa_.groups() if sa_ else None}")
+
 # v3.62: the exported power zones say the same circuit as the build for every light (music / PA / ambience follow them);
 #        automatic doors and sound spots carry the circuit of their floor
 PZ_ = ns["power_zones"]()
