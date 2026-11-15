@@ -317,3 +317,12 @@ motor = 0.06 * np.sin(2 * np.pi * (round(180 * L) / L) * tt) + 0.03 * np.sin(2 *
 slosh = bandpass(loop_noise(L, 0.9), 200, 2500) * (0.5 + 0.5 * np.sin(2 * np.pi * tt / 1.5)) * 0.25
 save("laundry.ogg", thump + motor + slosh, 0.55)
 print("v3.40 sounds written")
+
+# (v3.65) heat gun: a small blower fan (whoosh + motor whine), 3 s seamless loop
+def heat_gun_sound():
+    sec = 3.0; tt = t(sec)
+    air = lowpass(loop_noise(sec, 0.6), 2400) * 0.9 + bandpass(loop_noise(sec, 0.0), 3000, 7000) * 0.12
+    whine = sum(a_ * np.sin(2 * np.pi * f_ * tt) for f_, a_ in ((240, 0.10), (480, 0.05), (720, 0.03), (1960, 0.012)))
+    wob = 1 + 0.06 * np.sin(2 * np.pi * (1 / 1.5) * tt)
+    return (air + whine) * wob
+save("heatgun.ogg", heat_gun_sound(), 0.6)

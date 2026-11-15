@@ -1016,7 +1016,7 @@ report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in 
 
 # 7. sounds: decodable, not clipped, loops seamless
 import soundfile as sf
-LOOPS = {"elev_hum.ogg", "muzak.ogg", "ambience.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "heli_rotor.ogg",
+LOOPS = {"heatgun.ogg", "elev_hum.ogg", "muzak.ogg", "ambience.ogg", "pool_ambience.ogg", "spa_bubbles.ogg", "dream_pad.ogg", "garage_drips.ogg", "heli_rotor.ogg",
          "boiler.ogg", "laundry.ogg", "rain_outside.ogg", "snowfall.ogg"}
 for f in sorted(os.listdir("snd")):
     x, sr = sf.read("snd/" + f)

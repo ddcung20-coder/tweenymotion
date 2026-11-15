@@ -5942,6 +5942,26 @@ def write_vox(path, sub, west=False, pal_extra=None):
 SNOW_IDX = 105          # (v3.64) plaster: smooth, soft and breakable -- dirt's blotchy texture looked brown and grubby
 SNOW_RGB = {SNOW_IDX: (236, 240, 246)}
 
+# (v3.65) the snow-melting heat gun (a hand tool; 5 cm voxels): orange plastic body, black grip and trigger,
+#         steel nozzle at the front (-z), red-hot coil ring inside the mouth, a little vent grille at the back
+HG_BODY, HG_GRIP, HG_TRIM, HG_NOZ, HG_HOT, HG_VENT = 153, 154, 155, 121, 156, 157
+HEATGUN_RGB = {HG_BODY: (232, 112, 32), HG_GRIP: (34, 34, 38), HG_TRIM: (70, 70, 76), HG_NOZ: (176, 180, 186),
+               HG_HOT: (255, 96, 24), HG_VENT: (20, 20, 22)}
+def heat_gun_model():
+    m = np.zeros((6, 13, 20), np.uint8)              # [x, y(up), z]: barrel along z, the nozzle at z = 0
+    m[0:6, 6:12, 5:19] = HG_BODY                      # main barrel housing
+    m[0, 6, 5:19] = 0; m[5, 6, 5:19] = 0; m[0, 11, 5:19] = 0; m[5, 11, 5:19] = 0     # (rounded edges)
+    m[1:5, 7:11, 19] = HG_TRIM                        # back cap
+    m[2:4, 8:10, 19] = HG_VENT                        # air intake
+    m[0:6, 6:12, 12] = HG_TRIM                        # seam band
+    m[1:5, 7:11, 0:5] = HG_NOZ                        # steel nozzle
+    m[2:4, 8:10, 0:5] = 0                             # (hollow mouth)
+    m[2:4, 8:10, 3] = HG_HOT                          # glowing coil seen inside the mouth
+    m[2:4, 0:6, 13:17] = HG_GRIP                      # pistol grip
+    m[2:4, 0:2, 12:18] = HG_GRIP                      # grip foot
+    m[2:4, 4:6, 11:12] = HG_TRIM                      # trigger
+    return m
+
 def export():
     os.makedirs(VOXDIR, exist_ok=True)
     for fn in os.listdir(VOXDIR):
@@ -5949,6 +5969,7 @@ def export():
             os.remove(os.path.join(VOXDIR, fn))
     CX, CZ = ((W - WEST) / 2 + WEST) * 0.1, (D / 2) * 0.1      # (the old map keeps its world coordinates)
     write_vox(os.path.join(VOXDIR, "snowref.vox"), np.full((1, 1, 1), SNOW_IDX, np.uint8), pal_extra=SNOW_RGB)   # (v3.63)
+    write_vox(os.path.join(VOXDIR, "heatgun.vox"), heat_gun_model(), pal_extra=HEATGUN_RGB)                    # (v3.65) tool
     # ---- lamps become their own small shapes, each carrying its light(s) --------------------------
     # Teardown turns a shape's lights off when that shape is damaged. With every lamp a separate shape,
     # shooting a lamp kills exactly its light, and damage anywhere else never touches it.
@@ -6483,7 +6504,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.64\n"
+        f.write("name = Liminal Atrium v3.65\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

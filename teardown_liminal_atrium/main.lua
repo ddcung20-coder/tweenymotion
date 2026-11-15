@@ -94,6 +94,7 @@ local function loadSounds()
 	snd.doorOpen  = LoadSound("MOD/snd/door_open.ogg")
 	snd.doorClose = LoadSound("MOD/snd/door_close.ogg")
 	snd.hum       = LoadLoop("MOD/snd/elev_hum.ogg")
+	snd.heatgun   = LoadLoop("MOD/snd/heatgun.ogg")
 	snd.muzak     = LoadLoop("MOD/snd/muzak.ogg")
 	snd.ambience  = LoadLoop("MOD/snd/ambience.ogg")
 	snd.pool      = LoadLoop("MOD/snd/pool_ambience.ogg")
@@ -1914,7 +1915,8 @@ end
 -- thousand per frame, so the snow settles over ~3 s) and one voxel of snow is drawn on the first surface each ray
 -- hits -- the map as it is right now, broken parts included. Moving things (cars, doors, props) get none.
 -- The snow lives in new shapes on the static "snowbase" body (palette of the "snowref" voxel); clear / rain deletes it.
-snow = { jobs = nil, tile = nil, shapes = {}, body = 0, ref = 0, area = nil, budget = 5000, active = false }
+snow = { jobs = nil, tile = nil, shapes = {}, meta = {}, body = 0, ref = 0, area = nil, budget = 5000, active = false,
+	eraseOK = nil, eraseCheck = nil }
 local SNOW_TILE = 256                                          -- (v3.64: bigger pieces, fewer seams)
 local function snowArea()
 	if snow.area then return snow.area end
@@ -1931,7 +1933,7 @@ function snowClear()
 	for i = 1, #snow.shapes do
 		if IsHandleValid(snow.shapes[i]) then Delete(snow.shapes[i]) end
 	end
-	snow.shapes, snow.jobs, snow.tile = {}, nil, nil
+	snow.shapes, snow.meta, snow.jobs, snow.tile = {}, {}, nil, nil
 end
 function snowStart()
 	snowClear()
@@ -1955,6 +1957,32 @@ local function snowRay(wx, wz)
 	if b and b ~= 0 and IsBodyDynamic(b) then return nil end      -- (no snow on cars, doors, props)
 	return math.floor((a.ytop - d) * 10 + 0.5)                   -- the snow voxel sits right on the surface
 end
+-- draw one snow piece from its height map (rows of the tile; only the heights inside the piece's band)
+local function snowDraw(m)
+	m.sh = CreateShape(snow.body, Transform(Vec(m.x0w, m.yb * 0.1, m.z0w), Quat()), snow.ref)
+	if not m.sh or m.sh == 0 then return false end
+	ResizeShape(m.sh, 0, 0, 0, m.w - 1, m.yt - m.yb, m.d - 1)
+	SetBrush("cube", 1, snow.area.idx)
+	for k = 0, m.d - 1 do
+		local row = m.h[k]
+		if row then
+			local i = 0
+			while i < m.w do
+				local y = row[i]
+				if y and y >= m.yb and y <= m.yt then
+					local e = i
+					while e + 1 < m.w and row[e + 1] == y do e = e + 1 end
+					DrawShapeLine(m.sh, i, y - m.yb, k, e, y - m.yb, k)
+					i = e + 1
+				else
+					i = i + 1
+				end
+			end
+		end
+	end
+	snow.shapes[#snow.shapes + 1] = m.sh
+	return true
+end
 local function snowTileFinish(t)
 	if t.ymax < t.ymin then return end
 	local a = snow.area
@@ -1962,32 +1990,142 @@ local function snowTileFinish(t)
 	local yb = t.ymin
 	while yb <= t.ymax do                                         -- (a shape stays under 256 voxels tall)
 		local yt = math.min(t.ymax, yb + 255)
-		local sh = CreateShape(snow.body, Transform(Vec(x0w, yb * 0.1, z0w), Quat()), snow.ref)
-		if sh and sh ~= 0 then
-			ResizeShape(sh, 0, 0, 0, t.w - 1, yt - yb, t.d - 1)
-			SetBrush("cube", 1, a.idx)
-			for k = 0, t.d - 1 do
-				local row = t.h[k]
+		local m = { x0w = x0w, z0w = z0w, yb = yb, yt = yt, w = t.w, d = t.d, h = t.h }
+		if snowDraw(m) then snow.meta[#snow.meta + 1] = m end
+		yb = yt + 1
+	end
+end
+
+-- (v3.65) melt the snow around a point: every snow column within r (m) sideways and 0.7 m up/down goes.
+-- The melted voxels are erased with an empty brush; if this game version does not erase that way (checked once,
+-- on the next frame), the piece is drawn again without them instead. Returns the number of melted columns.
+function snowMelt(p, r)
+	local a, n = snow.area, 0
+	if not a or #snow.meta == 0 then return 0 end
+	for mi = 1, #snow.meta do
+		local m = snow.meta[mi]
+		local ci, ck = (p[1] - m.x0w) * 10, (p[3] - m.z0w) * 10
+		local rv = r * 10
+		if ci + rv >= 0 and ci - rv < m.w and ck + rv >= 0 and ck - rv < m.d and m.sh and IsHandleValid(m.sh) then
+			local gone = {}
+			for k = math.max(0, math.floor(ck - rv)), math.min(m.d - 1, math.floor(ck + rv)) do
+				local row = m.h[k]
 				if row then
-					local i = 0
-					while i < t.w do
+					for i = math.max(0, math.floor(ci - rv)), math.min(m.w - 1, math.floor(ci + rv)) do
 						local y = row[i]
-						if y and y >= yb and y <= yt then
-							local e = i
-							while e + 1 < t.w and row[e + 1] == y do e = e + 1 end
-							DrawShapeLine(sh, i, y - yb, k, e, y - yb, k)
-							i = e + 1
-						else
-							i = i + 1
+						if y and y >= m.yb and y <= m.yt and (i + 0.5 - ci) ^ 2 + (k + 0.5 - ck) ^ 2 <= rv * rv
+							and math.abs(y * 0.1 - p[2]) <= 0.7 then
+							row[i] = nil
+							gone[#gone + 1] = { i, y - m.yb, k }
 						end
 					end
 				end
 			end
-			snow.shapes[#snow.shapes + 1] = sh
+			if #gone > 0 then
+				n = n + #gone
+				if snow.eraseOK == false then
+					m.dirty = true                                    -- (redrawn a few times a second)
+				else
+					local before = GetShapeVoxelCount and GetShapeVoxelCount(m.sh) or nil
+					SetBrush("cube", 1, 0)
+					for g = 1, #gone do
+						local v = gone[g]
+						DrawShapeLine(m.sh, v[1], v[2], v[3], v[1], v[2], v[3])
+					end
+					if snow.eraseOK == nil then
+						m.unverified = true                               -- (until the first check says erasing works)
+						if before and not snow.eraseCheck then snow.eraseCheck = { m = m, before = before } end
+					end
+				end
+			end
 		end
-		yb = yt + 1
+	end
+	return n
+end
+local function snowRedrawTick(dt)
+	local c = snow.eraseCheck
+	if c then
+		snow.eraseCheck = nil
+		if c.m.sh and IsHandleValid(c.m.sh) and GetShapeVoxelCount then
+			snow.eraseOK = GetShapeVoxelCount(c.m.sh) < c.before
+			for mi = 1, #snow.meta do
+				local m = snow.meta[mi]
+				if m.unverified and not snow.eraseOK then m.dirty = true end
+				m.unverified = nil
+			end
+		end
+	end
+	snow.redrawT = (snow.redrawT or 0) - dt
+	if snow.redrawT > 0 then return end
+	snow.redrawT = 0.15
+	for mi = 1, #snow.meta do
+		local m = snow.meta[mi]
+		if m.dirty then
+			m.dirty = false
+			local old = m.sh
+			for i = #snow.shapes, 1, -1 do if snow.shapes[i] == old then table.remove(snow.shapes, i) end end
+			if old and IsHandleValid(old) then Delete(old) end
+			snowDraw(m)
+		end
 	end
 end
+
+-- (v3.65) the heat gun: hold the tool button to blow hot air - snow where it points melts away in steam
+local HEAT_RANGE, HEAT_R = 7, 0.55
+heat = { on = 0, steam = 0 }
+function heatInit()
+	if RegisterTool then
+		pcall(RegisterTool, "heatgun", "Heat Gun", "MOD/vox/heatgun.vox", 6)
+		SetBool("game.tool.heatgun.enabled", true)
+		if SetToolEnabled then pcall(SetToolEnabled, "heatgun", true) end
+	end
+end
+local function heatParticles(from, dir, hitp, melted)
+	if not SpawnParticle then return end
+	if ParticleReset then ParticleReset() end
+	if ParticleType then ParticleType("smoke") end
+	if ParticleColor then ParticleColor(1, 0.85, 0.7, 1, 1, 1) end
+	if ParticleAlpha then ParticleAlpha(0.12, 0) end
+	if ParticleRadius then ParticleRadius(0.04, 0.25) end
+	if ParticleGravity then ParticleGravity(0.4) end
+	for i = 1, 2 do                                                   -- shimmering hot air out of the nozzle
+		local v = VecAdd(VecScale(dir, 5 + math.random() * 2), Vec((math.random() - 0.5), (math.random() - 0.5), (math.random() - 0.5)))
+		SpawnParticle(from, v, 0.5 + math.random() * 0.3)
+	end
+	if hitp and melted > 0 then                                      -- steam off the melting snow
+		if ParticleReset then ParticleReset() end
+		if ParticleType then ParticleType("smoke") end
+		if ParticleColor then ParticleColor(0.95, 0.96, 1) end
+		if ParticleAlpha then ParticleAlpha(0.45, 0) end
+		if ParticleRadius then ParticleRadius(0.12, 0.5) end
+		if ParticleGravity then ParticleGravity(1.5) end
+		for i = 1, math.min(6, 1 + math.floor(melted / 8)) do
+			local q = VecAdd(hitp, Vec((math.random() - 0.5) * HEAT_R * 2, 0.05, (math.random() - 0.5) * HEAT_R * 2))
+			SpawnParticle(q, Vec((math.random() - 0.5) * 0.4, 0.8 + math.random() * 0.8, (math.random() - 0.5) * 0.4), 1.2 + math.random())
+		end
+	end
+end
+function heatTick(dt)
+	snowRedrawTick(dt)
+	local using = currentTool() == "heatgun" and InputDown("usetool") and (GetPlayerVehicle == nil or GetPlayerVehicle() == 0)
+	heat.on = toward(heat.on, using and 1 or 0, dt * 4)
+	if heat.on <= 0.01 and not using then return end                -- (idle: nothing to do)
+	local cam = GetCameraTransform()
+	local dir = TransformToParentVec(cam, Vec(0, 0, -1))
+	local nozzle = TransformToParentPoint(cam, Vec(0.25, -0.22, -0.75))
+	if heat.on > 0.01 and snd.heatgun then PlayLoop(snd.heatgun, nozzle, 0.55 * heat.on) end
+	if not using then return end
+	local hit, d = QueryRaycast(cam.pos, dir, HEAT_RANGE)
+	local hitp = hit and VecAdd(cam.pos, VecScale(dir, d)) or nil
+	local melted = 0
+	if hitp then melted = snowMelt(hitp, HEAT_R) end
+	heat.steam = heat.steam - dt
+	if heat.steam <= 0 then
+		heat.steam = 0.05
+		heatParticles(nozzle, dir, hitp, melted)
+	end
+end
+
 function snowTick()
 	if not snow.jobs then return end
 	local a, budget = snow.area, snow.budget
@@ -2332,6 +2470,7 @@ function init()
 	missionInit()
 	paInit()
 	bowlInit()
+	heatInit()
 	say("Front desk: ring the bell when you are ready to dream.", 7)
 end
 
@@ -2380,6 +2519,7 @@ function tick(dt)
 	paTick(dt, cam)
 	weatherTick(dt, cam)
 	snowTick()
+	heatTick(dt)
 end
 
 function update(dt)
