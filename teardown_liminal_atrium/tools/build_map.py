@@ -2808,7 +2808,7 @@ ftext(Frame(WEST + 192 - 1, PZ1, -1, 0, 0, 1), "MALL", 8, YC - 1, -1, CEIL_LAMP)
 AISLE0, AISLE1 = IX0 + 50, PX1 - 2 - 50
 BAY_W = 25
 WEST_BAYS = [322 + i * BAY_W for i in range(3)]     # bay start z (v3.56: the south ones gave way to the turning bowl)
-EAST_BAYS = [365]                                         # (the south end is the turn into the ramp down to B2)
+EAST_BAYS = [342, 367]                                    # (north of the ramp; the south end is the turn into it)
 STAIR_RECTS = []
 for key_ in ("NE",):                                       # (v3.56: the SW stair no longer goes below the ground floor)
     xa_, xb_, za_, zb_ = corner[key_]._rect(-T_PART, CB, -T_PART, CB)
@@ -3154,7 +3154,8 @@ BOH += [("kitchen", KX0, KX1, bz_a, bz_c), ("laundry", LX0, LX1, bz_a, bz_c), ("
 SOUND_SPOTS.extend([("laundry", (LX0 + LX1) / 2, y + 8, bz_a + 10), ("boiler", (BX0_ + BX1_) / 2, y + 10, bz_a + 13)])
 
 BOLT = ["..###", ".###.", "#####", "..##.", ".##..", "##..."]
-for (fr_, y_) in ELEC_ROOMS:
+def elec_signs(rooms):
+  for (fr_, y_) in rooms:
     fr_.box(36, 43, y_ + 12, y_ + 20, -T_PART - 1, -T_PART, YELLOW_PAINT)        # yellow plate on the corridor side
     for r_, row in enumerate(BOLT):
         for c_, cc in enumerate(row):
@@ -3163,6 +3164,7 @@ for (fr_, y_) in ELEC_ROOMS:
     ftext(fr_, "ELEC", 33, y_ + 27, CB - T_FAC - 1, YELLOW_PAINT)                 # inside, above the switchgear
     for uu in range(26, 35, 2):                                                    # hazard stripes on the threshold
         fr_.box(uu, uu + 1, y_ - 1, y_, -T_PART, 0, YELLOW_PAINT)
+elec_signs(ELEC_ROOMS)
 
 # ---- both stairwells continue down to B1 (SW -> car park, NE -> arcade)
 B_GLYPH = ["##.", "#.#", "##.", "#.#", "##."]
@@ -3497,7 +3499,7 @@ for z in range(R3_TOP, R3_BOT, 6):
 box(PX1 - 3, PX1 - 2, YB + 20, YB + 29, R3_TOP - 34, R3_TOP - 6, TIRE)
 ftext(Frame(PX1 - 3, 0, 0, 1, 1, 0), "TO B2", R3_TOP - 20, YB + 27, -1, POOL_LAMP)
 # B2 floor: bays, aisle, walkway from the food-street door to the NW lift lobby
-W2_BAYS = [166 + i * 25 for i in range(4)]     # (v3.56: the north ones are the turning bowl at the ramp's foot)                  # against the west wall (x 88..138), between the cores
+W2_BAYS = [91, 116, 141] + [166 + i * 25 for i in range(4)]     # (v3.57: + 3 where the SW stair stood; the north ones are the turning bowl)                  # against the west wall (x 88..138), between the cores
 E2_BAYS = [IZ0 + 4 + i * 25 for i in range(3)]              # against the divider, south of the ramp (x 186..234)
 for (bays_, xa_, xb_) in ((W2_BAYS, CP_X0, CP_AISLE[0]), (E2_BAYS, CP_AISLE[1] + 2, CP_X1)):
     for z0_ in bays_:
@@ -3510,11 +3512,11 @@ box(CP_AISLE[1] - 1, CP_AISLE[1], Y2 - 1, Y2, E2_BAYS[0], E2_BAYS[-1] + 25, YELL
 for x in range(NWr[1], QX - 2):                              # green walkway (zebra) to the lift lobby
     for z in range(B2_DOOR[0], B2_DOOR[1]):
         G[x, Y2 - 1, z] = DUMPSTER if (x // 3) % 2 else PAINT_LINE
-for x in range(CP_X0, 105):                                   # (walk to the stair door: no parking)
-    for z in range(IZ0, 166):
-        if G[x, Y2 - 1, z] == STAIR_CONC and G[x, Y2, z] == 0 and (x + z) % 7 == 0:
-            G[x, Y2 - 1, z] = YELLOW_PAINT
-for (xa_, xb_, za_, zb_) in ((CP_AISLE[0] + 4, R3_X1 - 4, R3_BOT + 8, B2_DOOR[0] - 6),):   # turning box at the ramp's foot
+N2_BAYS = [495, 545]                                          # (v3.57) parallel bays (x starts) z 443..468: between the
+for x0_ in N2_BAYS:                                           # turning bowl and the zebra walkway to the food street
+    box(x0_, x0_ + 1, Y2 - 1, Y2, 443, 468, PAINT_LINE); box(x0_ + 49, x0_ + 50, Y2 - 1, Y2, 443, 468, PAINT_LINE)
+    box(x0_, x0_ + 50, Y2 - 1, Y2, 443, 444, PAINT_LINE)
+for (xa_, xb_, za_, zb_) in ((CP_AISLE[0] + 4, R3_X1 - 4, R3_BOT + 8, 440),):   # turning box at the ramp's foot
     box(xa_, xb_, Y2 - 1, Y2, za_, za_ + 1, YELLOW_PAINT); box(xa_, xb_, Y2 - 1, Y2, zb_ - 1, zb_, YELLOW_PAINT)
     box(xa_, xa_ + 1, Y2 - 1, Y2, za_, zb_, YELLOW_PAINT); box(xb_ - 1, xb_, Y2 - 1, Y2, za_, zb_, YELLOW_PAINT)
 for (ax_, az_, dz_) in ((sum(CP_AISLE) // 2 - 1, 300, -1), (sum(CP_AISLE) // 2 - 1, 200, -1), (R3_X0 + 22, R3_BOT + 14, 1)):
@@ -3572,8 +3574,8 @@ for (lbl_, bays_, west_) in (("C", W2_BAYS, True), ("D", E2_BAYS, False)):
         else:
             ftext(Frame(CP_X1, zc - 6, 0, 1, 1, 0), lbl_ + str(i + 1), 6, Y2 + 22, -1, YELLOW_PAINT)
             box(CP_X1 - 9, CP_X1 - 7, Y2, Y2 + 1, zc - 5, zc + 5, CURB)
-for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "W", W2_BAYS[1]), ("suv1", "car_b", "W", W2_BAYS[3]),
-                                ("stationwagon", "car_c", "E", E2_BAYS[2])):
+for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "W", 191), ("suv1", "car_b", "W", 241),
+                                ("castanet-500l-gt", "car_b", "W", 116), ("stationwagon", "car_c", "E", E2_BAYS[2])):
     cxp_ = CP_X0 + 28 if side_ == "W" else CP_X1 - 28
     CAR_SPOTS.append((kind_, pn, cxp_ - 10, Y2, z0_ + 12.5 - 22, -90 if side_ == "W" else 90))
 # FOOD STREET over the door on the car-park side (neon on a dark board)
@@ -5293,8 +5295,10 @@ def build_halcyon():
     # NW: two working lifts (B1 - roof) and the floor's electrical room, built like the main hotel's
     old = _swap_globals(FLOORS=H_FL, ROOF_Y=H_ROOF, LEVELS=[-1] + list(range(H_FL + 1)), ELEV_PIT=YB - 4,
                         GEAR_FLOOR0=H_CIRCUIT0)
+    n_er = len(ELEC_ROOMS)
     elevators(corner["NW"], "HNW")
     _swap_globals(**old)
+    elec_signs(ELEC_ROOMS[n_er:])           # (v3.57) the same bolt plate, ELEC letters and hazard stripes as the main hotel
     # ---- B1 car park: bays along both long walls, a column island down the middle, tube lights, signs, cars
     YCq = G0 - SLAB_T
     H_B1_WEST = list(range(200, 350, 25))                                       # bay starts (z), west row
@@ -5308,6 +5312,15 @@ def build_halcyon():
         for z0_ in zs_:
             wx_ = xa_ + 3 if nose == "W" else xb_ - 5
             box(wx_, wx_ + 2, YB, YB + 1, z0_ + 6, z0_ + 19, YELLOW_PAINT)          # wheel stop
+    # (v3.57) + bays against the south and north walls, nose to the wall (clear of the cores and the loop lanes)
+    H_B1_SOUTH = [137, 162, 187]                                                # bay starts (x), z 122..172
+    H_B1_NORTH = [110, 135, 160, 185]                                           # x, z 378..428
+    for (xs_, za_, zb_, ws_) in ((H_B1_SOUTH, HZ0 + T_EXT, HZ0 + T_EXT + 50, HZ0 + T_EXT + 3),
+                                 (H_B1_NORTH, HZ1 - T_EXT - 50, HZ1 - T_EXT, HZ1 - T_EXT - 5)):
+        for x0_ in xs_ + [xs_[-1] + 25]:
+            box(x0_, x0_ + 1, YB - 1, YB, za_, zb_, PAINT_LINE)
+        for x0_ in xs_:
+            box(x0_ + 6, x0_ + 19, YB, YB + 1, ws_, ws_ + 2, YELLOW_PAINT)          # wheel stop
     for z_ in range(205, 346):                                                    # island: kerb + painted hatching
         box(168, 176, YB - 1, YB, z_, z_ + 1, YELLOW_PAINT if (z_ // 3) % 2 else STAIR_CONC)
     for cz_ in (215, 265, 315):                                                   # columns (hazard-striped feet)
@@ -5351,6 +5364,9 @@ def build_halcyon():
     light(RX0 + 4, YB + 35, (TZ0 + TZ1) // 2, (1.0, 0.5, 0.78), 1.6, 0.3)
     CAR_SPOTS.append(("salooncar", "car_a", 91 - 10, YB, 262 - 22, -90))
     CAR_SPOTS.append(("suv1", "car_c", 253 - 10, YB, 167 - 22, 90))
+    CAR_SPOTS.append(("stationwagon", "car_b", 147 - 10, YB, 402 - 22, 0))
+    CAR_SPOTS.append(("castanet-500l-gt", "car_a", 174 - 10, YB, 148 - 22, 0))
+    HALCYON["bays"] = dict(west=H_B1_WEST, east=H_B1_EAST, south=H_B1_SOUTH, north=H_B1_NORTH)
 
     # SE: ice + vending alcove open to the east corridor, a fluorescent tube that buzzes
     fe = corner["SE"]
@@ -6185,7 +6201,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.56\n"
+        f.write("name = Liminal Atrium v3.57\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

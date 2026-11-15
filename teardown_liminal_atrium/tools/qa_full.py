@@ -852,6 +852,36 @@ P2 = _arc(WEST_ + 210, 366, math.pi / 2, 50, math.pi, True); P2 += _arc(*P2[-1],
 h1 = next((p for p in P1 if _car_hits(YB, *p)), None); h2 = next((p for p in P2 if _car_hits(ns["YB2"], *p)), None)
 report("cars: B1 tunnel -> ramp down to B2 in one go (5 m turns), and round at its foot into the B2 aisle", h1 is None and h2 is None
        and abs(P1[-1][0] - (WEST_ + 217)) < 12 and WEST_ + 145 <= P2[-1][0] <= WEST_ + 177, f"{h1} {h2} end {P1[-1][:2]} {P2[-1][:2]}")
+
+# v3.57: every painted bay (main B1 / B2, HALCYON B1) is free of walls / fittings and off both turning paths
+def _sweep(P):
+    M = set()
+    for (x, z, h) in P:
+        ca, sa = math.cos(h), math.sin(h)
+        for a in range(-23, 24, 2):
+            for b in range(-11, 12, 2):
+                M.add((int(x + a * ca - b * sa), int(z + a * sa + b * ca)))
+    return M
+SW1, SW2 = _sweep(P1), _sweep(P2)
+bays_all = []
+for z0_ in ns["WEST_BAYS"]: bays_all.append(("B1", YB, ns["IX0"], ns["AISLE0"], z0_, z0_ + 25, SW1))
+for z0_ in ns["EAST_BAYS"]: bays_all.append(("B1", YB, ns["AISLE1"], ns["PX1"] - 2, z0_, z0_ + 25, SW1))
+for z0_ in ns["W2_BAYS"]: bays_all.append(("B2", ns["YB2"], ns["CP_X0"], ns["CP_AISLE"][0], z0_, z0_ + 25, SW2))
+for z0_ in ns["E2_BAYS"]: bays_all.append(("B2", ns["YB2"], ns["CP_AISLE"][1] + 2, ns["CP_X1"], z0_, z0_ + 25, SW2))
+for x0_ in ns["N2_BAYS"]: bays_all.append(("B2", ns["YB2"], x0_, x0_ + 50, 443, 468, SW2))
+HB_ = ns["HALCYON"]["bays"]; hx0_, hx1_ = ns["HALCYON"]["x"]; hz0_, hz1_ = ns["HALCYON"]["z"]
+for z0_ in HB_["west"]: bays_all.append(("H-B1", YB, hx0_ + 4, 118, z0_, z0_ + 25, set()))
+for z0_ in HB_["east"]: bays_all.append(("H-B1", YB, 226, hx1_ - 4, z0_, z0_ + 25, set()))
+for x0_ in HB_["south"]: bays_all.append(("H-B1", YB, x0_, x0_ + 25, hz0_ + 4, hz0_ + 54, set()))
+for x0_ in HB_["north"]: bays_all.append(("H-B1", YB, x0_, x0_ + 25, hz1_ - 54, hz1_ - 4, set()))
+bay_bad2 = []
+for (lv_, y_, xa_, xb_, za_, zb_, sw_) in bays_all:
+    blocked = int((FULL[xa_ + 3:xb_ - 1, y_ + 2:y_ + 18, za_ + 1:zb_ - 1] > 0).sum())
+    onpath = sum(1 for x_ in range(xa_ + 1, xb_ - 1, 3) for z_ in range(za_ + 1, zb_ - 1, 3) if (x_, z_) in sw_)
+    if blocked or onpath:
+        bay_bad2.append((lv_, xa_, za_, blocked, onpath))
+cnt_ = collections.Counter(b[0] for b in bays_all)
+report(f"parking: {len(bays_all)} bays ({dict(cnt_)}) free of walls and off the B1/B2 turning paths", not bay_bad2, str(bay_bad2[:6]))
 # v3.47: HOTEL letters each their own lamp, penthouse TV, public-address announcement
 let_ = [r_ for r_ in ns["ROOF_SHAPES"] if r_[0].startswith("hotel_letter")]
 sign_left = int((FULL[bx0:bx1, RY + 10:RY + 30, bz0:bz0 + 8] == ns["STREET_LMP"]).sum())
@@ -905,6 +935,12 @@ report("every floor's lights are on its power circuit (rooms, corridors, electri
        all(pw_[k] > 40 for k in range(FLOORS)) and room_pw, str(dict(pw_)))
 h_sw = collections.Counter(g["floor"] for g in ns["SWITCHGEAR"] if g["floor"] >= 10)
 report("HALCYON: an electrical room (switchgear) on every floor, its lights on that circuit", sorted(h_sw) == [10, 11, 12, 13] and all(pw_[k] > 30 for k in (10, 11, 12, 13)), f"{dict(h_sw)} {[pw_[k] for k in (10, 11, 12, 13)]}")
+el_bad = []
+for (fr_, y_) in ns["ELEC_ROOMS"]:                      # (v3.57) every electrical room (main + HALCYON) is signposted
+    x_, z_ = fr_.pt(39, -T_PART - 1)
+    if FULL[x_, y_ + 15, z_] != ns["YELLOW_PAINT"]:
+        el_bad.append((x_, y_, z_))
+report(f"all {len(ns['ELEC_ROOMS'])} electrical rooms carry the yellow lightning plate + ELEC sign", not el_bad, str(el_bad[:4]))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless
