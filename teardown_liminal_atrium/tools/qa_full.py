@@ -370,6 +370,24 @@ for name, b, fr, bw in ns["room_frames"]():
         if int(np.isin(pane, GLASS_IDS).sum()) < (WIN_W - 3) * (WIN_H - 2):
             unglazed.append((name, b, k + 1))
 report("every room window has its glass", not unglazed, str(unglazed[:6]))
+h_open, h_unglazed = [], []
+for name, b, fr, bw in ns["HALCYON"]["frames"]:
+    for k in range(ns["HALCYON"]["floors"]):
+        if k == 0 and name == "S":
+            continue                                                     # the lobby
+        y = fy(k)
+        for wname, (u0, u1, v0, v1) in {"party A": (0, T_PART, 0, ROOM_D), "party B": (bw, bw + T_PART, 0, ROOM_D),
+                                         "corridor": (T_PART, bw, ROOM_D, ROOM_D + T_PART)}.items():
+            x0, x1, z0, z1 = fr._rect(u0, u1, v0, v1)
+            frac = float((FULL[x0:x1, y + 1:y + 20, z0:z1] > 0).mean())
+            if frac < (0.6 if wname == "corridor" else 0.97):
+                h_open.append((name, b, k + 1, wname, round(frac, 2)))
+        u0 = bw // 2 - WIN_W // 2 + 1
+        x0, x1, z0, z1 = fr._rect(u0 + 1, u0 + WIN_W - 1, -T_FAC, 0)
+        pane = FULL[x0:x1, fy(k) + SILL + 1:fy(k) + SILL + WIN_H - 1, z0:z1]
+        if int(np.isin(pane, GLASS_IDS).sum()) < (WIN_W - 3) * (WIN_H - 2):
+            h_unglazed.append((name, b, k + 1))
+report("HALCYON: every room has all its walls and a glazed window", not h_open and not h_unglazed, str(h_open[:6] + h_unglazed[:6]))
 HANDLES = {ns["BRASS"], ns["STEEL"]}
 wrong = []
 for i, d in enumerate(ns["DOORS"]):
@@ -774,6 +792,30 @@ for (nm_, yq) in (("B2", ns["YB2"]), ("B1", YB), ("1F", G0)):
     lb_, nb_ = ndimage.label(dm)
     dark_ += [(nm_, int(c)) for c in np.bincount(lb_.ravel())[1:] if c > 60]
 report("lighting: no dark patch (> 0.6 m², over 5.5 m from any light) on B2, B1 or the ground floor", not dark_, str(dark_))
+# v3.56: the same two checks for HALCYON (every floor, corridors + atrium + lobby; facade of the west building)
+HQq = ns["HALCYON"]
+sh_ = np.zeros(FULL.shape, bool)
+sh_[HQq["x"][0] - 4:HQq["x"][1] + 4, G0 + 16:HQq["roof"] + 12, HQq["z"][0] - 4:HQq["z"][1] + 4] = True
+sh_[HQq["x"][0]:HQq["x"][1], :, HQq["z"][0]:HQq["z"][1]] = False
+poke_h = sh_ & (FULL > 0) & ~np.isin(FULL, okf)
+report("HALCYON outer walls: nothing sticking out of the facade", int(poke_h.sum()) == 0, f"{int(poke_h.sum())} voxels {[tuple(int(v) for v in c) for c in np.argwhere(poke_h)[:4]]}")
+dark_h = []
+for k_ in range(HQq["floors"]):
+    yq = ns["fy"](k_)
+    x0q, x1q, z0q, z1q = HQq["x"][0] + 4, HQq["x"][1] - 4, HQq["z"][0] + 4, HQq["z"][1] - 4
+    fl_q = (FULL[x0q:x1q, yq - 1, z0q:z1q] > 0) & ~(FULL[x0q:x1q, yq:yq + 18, z0q:z1q] > 0).any(1)
+    Ly_ = Lq[(Lq[:, 1] > yq) & (Lq[:, 1] < yq + 70)]
+    Xq, Zq = np.nonzero(fl_q)
+    dq = np.full(len(Xq), 1e9)
+    for (lx_, ly_, lz_) in Ly_:
+        dq = np.minimum(dq, np.hypot(Xq + x0q - lx_, Zq + z0q - lz_))
+    dm = np.zeros(fl_q.shape, bool); dm[Xq[dq > 55], Zq[dq > 55]] = True
+    lb_, nb_ = ndimage.label(dm)
+    for i_, c in enumerate(np.bincount(lb_.ravel())[1:]):
+        if c > 60:
+            cz_ = np.argwhere(lb_ == i_ + 1).mean(0)
+            dark_h.append((k_ + 1, int(c), int(cz_[0] + x0q), int(cz_[1] + z0q)))
+report("HALCYON lighting: no dark patch (> 0.6 m², over 5.5 m from any light) on any floor", not dark_h, str(dark_h[:8]))
 # v3.47: HOTEL letters each their own lamp, penthouse TV, public-address announcement
 let_ = [r_ for r_ in ns["ROOF_SHAPES"] if r_[0].startswith("hotel_letter")]
 sign_left = int((FULL[bx0:bx1, RY + 10:RY + 30, bz0:bz0 + 8] == ns["STREET_LMP"]).sum())

@@ -5227,6 +5227,7 @@ def build_halcyon():
             F.append(("N", b, Frame(HAX0 + b * SHORT_BAY_W, HAZ1 + T_FAC, 1, 0, 0, 1), SHORT_BAY_W))
         return F
     frames = h_frames()
+    HALCYON["frames"] = frames
     for name, b, fr, bw in frames:
         for k in range(H_FL):
             y = fy(k)
