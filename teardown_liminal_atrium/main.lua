@@ -1918,7 +1918,7 @@ local function settingsInit()
 	applyEnvironment()
 end
 
--- weather sounds: the rain loop outdoors (barely inside), the snow song softly everywhere; both fade in / out
+-- weather sounds: the rain loop outdoors (barely inside), the snow song softly outdoors only; both fade in / out
 local indoorZones = nil
 local wxVol = { rain = 0, snow = 0 }
 local wxInside, wxCheckT = false, 0
@@ -1952,8 +1952,8 @@ function weatherTick(dt, cam)
 	local tr = (settings.weather == "rain") and (wxInside and 0.05 or 0.85) or 0
 	wxVol.rain = toward(wxVol.rain, tr, dt * 0.9)
 	if wxVol.rain > 0.004 then PlayLoop(snd.rainOut, cam, wxVol.rain) end
-	local ts = (settings.weather == "snow") and 0.3 or 0
-	wxVol.snow = toward(wxVol.snow, ts, dt * 0.15)
+	local ts = (settings.weather == "snow" and not wxInside) and 0.3 or 0     -- (v3.61) outdoors only: no clash with the hotel music
+	wxVol.snow = toward(wxVol.snow, ts, dt * (ts > wxVol.snow and 0.15 or 0.3))
 	if wxVol.snow > 0.004 then PlayLoop(snd.snowSong, cam, wxVol.snow) end
 end
 
