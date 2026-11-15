@@ -983,6 +983,12 @@ for fn_ in os.listdir("vox"):
         if 169 <= c_ <= 184:
             hard_n[fn_] += 1
 report("breakable: no indestructible voxel (hard metal / hard masonry) anywhere", not hard_n, str(hard_n.most_common(4)))
+# v3.59: every ambience speaker sits in open air inside the space it belongs to (main B1 / B2 car parks, HALCYON B1)
+gar_ = [sp for sp in ns["SOUND_SPOTS"] if sp[0] == "garage"]
+gar_main = [sp for sp in gar_ if ns["bx0"] <= sp[1] < ns["bx1"]]
+gar_h = [sp for sp in gar_ if HQx[0] <= sp[1] < HQx[1]]
+report(f"car-park ambience: {len(gar_main)} speakers in the main hotel's car parks, {len(gar_h)} in HALCYON's, all in open air",
+       len(gar_main) >= 6 and len(gar_h) >= 3 and len(gar_main) + len(gar_h) == len(gar_) and all(FULL[int(x), int(y), int(z)] == 0 for (_, x, y, z) in gar_), str(len(gar_)))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless

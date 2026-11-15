@@ -2992,7 +2992,7 @@ for (pcx, pcz, rx, rz) in ((161, 198, 11, 8), (167, 338, 9, 8), (108, 296, 11, 7
     PUDDLES.append((poly, cells))
 # a slow leak above the puddle by the west wall: rusty drip line on the pipe
 box(IX0 + 10, IX0 + 12, YC - 3, YC - 2, 344, 348, DUMPSTER)
-SOUND_SPOTS.extend([("garage", 162, YB + 15, 150), ("garage", 162, YB + 15, 300), ("garage", 110, YB + 15, 296)])
+SOUND_SPOTS.extend([("garage", WEST + 162, YB + 15, 150), ("garage", WEST + 162, YB + 15, 300), ("garage", WEST + 110, YB + 15, 296)])
 
 # ============================================================================
 # 8d. Back of house (v3.40): the four north rooms of the ground floor are staff space -- a kitchen (two
@@ -6428,7 +6428,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.58\n"
+        f.write("name = Liminal Atrium v3.59\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

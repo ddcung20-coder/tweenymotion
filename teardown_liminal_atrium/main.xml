@@ -6201,9 +6201,9 @@
 	<location tags="respawn" pos="0 7.7 -21.1" rot="0 180 0"/>
 	<location tags="ambsound kind=pool" pos="0 9.6 25"/>
 	<location tags="ambsound kind=spa" pos="6.6 9.6 18.5"/>
-	<location tags="ambsound kind=garage" pos="-43.4 5.5 -23.5"/>
-	<location tags="ambsound kind=garage" pos="-43.4 5.5 -8.5"/>
-	<location tags="ambsound kind=garage" pos="-48.6 5.5 -8.9"/>
+	<location tags="ambsound kind=garage" pos="-7.4 5.5 -23.5"/>
+	<location tags="ambsound kind=garage" pos="-7.4 5.5 -8.5"/>
+	<location tags="ambsound kind=garage" pos="-12.6 5.5 -8.9"/>
 	<location tags="ambsound kind=laundry" pos="2.1 8.4 5.7"/>
 	<location tags="ambsound kind=boiler" pos="6.1 8.6 6"/>
 	<location tags="ambsound kind=mall" pos="7.5 1.9 -18.5"/>
