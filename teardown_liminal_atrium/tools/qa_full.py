@@ -411,9 +411,10 @@ report("every door handle is on the latch side (away from the hinge)", not wrong
 cab = 0
 for e in ns["ELEVATORS"]:
     arr = e["arr"]; gx, gy, gz = e["gmin"]; sx, sy, sz = arr.shape
-    lo = ns["YB"] - 2; hi = gy + (max(e.get("levels", ns["LEVELS"])) - e["floor"]) * ns["FH"] + sy     # B1 .. roof
+    lv_ = e.get("levels", ns["LEVELS"])
+    lo = ns["lvl_y"](min(lv_)) - 3; hi = ns["lvl_y"](max(lv_)) - 2 + sy + 1                     # lowest stop (B2) .. roof
     cab += int((FULL[gx:gx + sx, lo:hi, gz:gz + sz] > 0).sum())
-report("elevator cabs travel B1 - roof without touching anything", cab == 0, f"{cab} voxels in the way")
+report("elevator cabs travel their whole shaft (B2/B1 - roof) without touching anything", cab == 0, f"{cab} voxels in the way")
 
 # 6b. mission + curtains (separate static bodies moved by main.lua)
 def body_hits(arr, gmin, dx=0, dz=0, world=FULL):
@@ -771,7 +772,7 @@ bsw_ = [t_ for t_ in ns["TAGGED_SHAPES"] if "room=banquet" in t_[3] or "room=sta
 bq_l = [l for l in ns["LIGHTS"] if "room=banquet" in l[6] or "room=stage" in l[6]]
 bq_glow_left = int(np.isin(G[BQq["x"][0]:BQq["x"][1], G0:G0 + 47, BQq["z"][0]:BQq["z"][1]], [ns["CEIL_LAMP"], ns["COVE_LAMP"], ns["LAMPSHADE"]]).sum())
 report("banquet hall: every glowing fitting is a lamp or a glow on the hall switch (none left in the world)",
-       bq_glow_left == 0 and len(re.findall(r'tags="glow room=banquet"', open("main.xml").read())) >= 3, f"{bq_glow_left} left")
+       bq_glow_left == 0 and len(re.findall(r'tags="glow room=banquet', open("main.xml").read())) >= 3, f"{bq_glow_left} left")
 gap_link = int((FULL[ns["bx1"]:BQq["link"][1], G0:G0 + 28, ns["bz1"] - 4:ns["bz1"] + 1] == 0).sum())
 report("glass link: sealed against the hotel (no slot to the outside at its east side)", gap_link == 0, str(gap_link))
 report("banquet hall: 12 tables, stage + dance floor, chandeliers and stage spots on two switches",
@@ -805,6 +806,14 @@ sh_[HQq["x"][0] - 4:HQq["x"][1] + 4, G0 + 16:HQq["roof"] + 12, HQq["z"][0] - 4:H
 sh_[HQq["x"][0]:HQq["x"][1], :, HQq["z"][0]:HQq["z"][1]] = False
 poke_h = sh_ & (FULL > 0) & ~np.isin(FULL, okf)
 report("HALCYON outer walls: nothing sticking out of the facade", int(poke_h.sum()) == 0, f"{int(poke_h.sum())} voxels {[tuple(int(v) for v in c) for c in np.argwhere(poke_h)[:4]]}")
+
+# v3.58: no groove (bare asphalt slot) between the west lot's lawns, curbs, walls (outside the parking strip)
+top_ = np.where((FULL[:, G0:G0 + 3, :] > 0).any(1), 1, 0)
+low_ = np.zeros(top_.shape, bool); low_[:ns["RX0"] - 2, 96:] = top_[:ns["RX0"] - 2, 96:] == 0
+low_[ns["RX0"] - 2:ns["bx0"] - ns["SW"] - 2, ns["RZ_END"] + 2:] = top_[ns["RX0"] - 2:ns["bx0"] - ns["SW"] - 2, ns["RZ_END"] + 2:] == 0
+hxq_, hzq_ = ns["HALCYON"]["x"], ns["HALCYON"]["z"]
+low_[hxq_[0] - ns["SW"] - 2:hxq_[1] + ns["SW"] + 2, hzq_[0] - ns["SW"] - 2:hzq_[1] + ns["SW"] + 2] = False   # (the building + its sidewalk)
+report("west lot: no grooves or bare asphalt between lawns, curbs and walls", int(low_.sum()) == 0, f"{int(low_.sum())} cells {[tuple(int(v) for v in c) for c in np.argwhere(low_)[:4]]}")
 dark_h = []
 for k_ in range(HQq["floors"]):
     yq = ns["fy"](k_)
@@ -933,7 +942,7 @@ room_pw = all(("pw=" in l[6]) for l in ns["LIGHTS"] if "room=" in l[6] and "room
 )
 report("every floor's lights are on its power circuit (rooms, corridors, electrical rooms)",
        all(pw_[k] > 40 for k in range(FLOORS)) and room_pw, str(dict(pw_)))
-h_sw = collections.Counter(g["floor"] for g in ns["SWITCHGEAR"] if g["floor"] >= 10)
+h_sw = collections.Counter(g["floor"] for g in ns["SWITCHGEAR"] if 10 <= g["floor"] <= 13)
 report("HALCYON: an electrical room (switchgear) on every floor, its lights on that circuit", sorted(h_sw) == [10, 11, 12, 13] and all(pw_[k] > 30 for k in (10, 11, 12, 13)), f"{dict(h_sw)} {[pw_[k] for k in (10, 11, 12, 13)]}")
 el_bad = []
 for (fr_, y_) in ns["ELEC_ROOMS"]:                      # (v3.57) every electrical room (main + HALCYON) is signposted
@@ -941,6 +950,39 @@ for (fr_, y_) in ns["ELEC_ROOMS"]:                      # (v3.57) every electric
     if FULL[x_, y_ + 15, z_] != ns["YELLOW_PAINT"]:
         el_bad.append((x_, y_, z_))
 report(f"all {len(ns['ELEC_ROOMS'])} electrical rooms carry the yellow lightning plate + ELEC sign", not el_bad, str(el_bad[:4]))
+# v3.58: one master switchboard + a mimic lamp per circuit; electrical rooms on B2 / B1 / HALCYON B1;
+#        every light and every glowing shape hangs on a circuit, and nothing inside a building hangs on the master alone
+X_ = open("main.xml").read()
+lights_x = re.findall(r'<light ([^>]*)/>', X_)
+untagged = [l for l in lights_x if "pw=" not in l]
+heli_n = len(re.findall(r'<light ', X_[X_.find('tags="helibody"'):X_.find('</body>', X_.find('tags="helibody"'))])) if 'tags="helibody"' in X_ else 0
+glow_shapes = re.findall(r'tags="((?:neon|glow|elevcall|elevpad)[^"]*)"', X_)
+report(f"power: all {len(lights_x)} lights and {len(glow_shapes)} glowing shapes hang on a circuit (helicopter: own battery)",
+       len(untagged) <= heli_n and all("pw=" in t for t in glow_shapes), f"untagged {len(untagged)} (heli {heli_n})")
+circ_ = collections.Counter(g["floor"] for g in ns["SWITCHGEAR"])
+need_c = [-2, -1, 0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 100]
+report("power: an electrical room for every circuit (B2, B1, 1F-6F, roof, HALCYON B1-4F) + the master substation",
+       all(circ_[k_] >= 1 for k_ in need_c) and circ_[100] == 1 and len(ns["POWER_LAMPS"]) == len(need_c), str(dict(circ_)))
+inside_site = []
+for (gx, gy, gz, rgb, sc, sz, tg) in ns["LIGHTS"]:
+    k_ = ns["power_floor"](gx, gy, gz)
+    in_bld = (ns["bx0"] <= gx < ns["bx1"] and ns["bz0"] <= gz < ns["bz1"]) or (HQx[0] <= gx < HQx[1] and HQz[0] <= gz < HQz[1])
+    if in_bld and k_ == 100:
+        inside_site.append((int(gx), int(gy), int(gz)))
+report("power: no light inside either hotel hangs on the site circuit (the floors' rooms switch them all)", not inside_site, str(inside_site[:5]))
+for (key_, k_, (px_, pz_), y_) in ns["ELEC_ROOMS_B"]:
+    report(f"reachable: electrical room {key_}", reachable(int(px_), int(y_), int(pz_), r=6))
+MQ_ = ns["MASTER"]
+report("reachable: master substation (inside, in front of the switchboard)", reachable((MQ_["x"][0] + MQ_["x"][1]) // 2, G0 + 2, MQ_["z"][1] - 30, r=6))
+# v3.58: nothing indestructible: no voxel in any written shape uses the hard-metal / hard-masonry slots (169-184)
+hard_n = collections.Counter()
+for fn_ in os.listdir("vox"):
+    b_ = open("vox/" + fn_, "rb").read(); j_ = b_.find(b"XYZI")
+    n_ = struct.unpack("<i", b_[j_ + 12:j_ + 16])[0]
+    for c_ in b_[j_ + 16:j_ + 16 + 4 * n_][3::4]:
+        if 169 <= c_ <= 184:
+            hard_n[fn_] += 1
+report("breakable: no indestructible voxel (hard metal / hard masonry) anywhere", not hard_n, str(hard_n.most_common(4)))
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless

@@ -556,10 +556,20 @@ lightFloor = {}
 local power = {}          -- floor -> { on, dead, gears = {...}, lights = {...} }
 local powerMsg, powerMsgT = nil, 0
 
+-- (v3.58) circuit 100 is the master substation: the main breaker of the whole site. Every other circuit is
+-- live only while its own electrical room AND the master are on; the outside lights hang on 100 directly.
+SITE_CIRCUIT = 100
 function floorPowered(k)
-	local p = k and power[k]
-	return p == nil or (p.on and not p.dead)
+	if k == nil then return true end
+	local p = power[k]
+	local own = p == nil or (p.on and not p.dead)
+	if own and k ~= SITE_CIRCUIT then
+		local m = power[SITE_CIRCUIT]
+		own = m == nil or (m.on and not m.dead)
+	end
+	return own
 end
+local powerLamps = {}     -- mimic board in the substation: { shape, circuit }
 
 local function powerOf(k)
 	if not power[k] then power[k] = { on = true, dead = false, gears = {}, lights = {}, glows = {} } end
@@ -576,13 +586,19 @@ local function powerInit()
 			p.lights[#p.lights + 1] = ls[i]
 		end
 	end
-	-- unlit fittings (decor sconces, the unlit ceiling lamps): their glow follows the floor's power
-	local gl = FindShapes("glow", true)
+	-- every other glowing shape with a circuit (unlit fittings, neon / signs / markers, lift buttons and keypads):
+	-- its glow follows that circuit's power
+	local gl = FindShapes("pw", true)
 	for i = 1, #gl do
-		if not HasTag(gl[i], "room") then                 -- (a room's glows follow its switch: roomsInit)
+		if not HasTag(gl[i], "room") and not HasTag(gl[i], "switchgear") then   -- (a room's glows follow its switch)
 			local p = powerOf(tagNum(gl[i], "pw", 0))
 			p.glows[#p.glows + 1] = gl[i]
 		end
+	end
+	local pl = FindShapes("powerlamp", true)
+	for i = 1, #pl do
+		powerLamps[#powerLamps + 1] = { shape = pl[i], circuit = tagNum(pl[i], "circuit", 0) }
+		powerOf(tagNum(pl[i], "circuit", 0))
 	end
 	local gs = FindShapes("switchgear", true)
 	for i = 1, #gs do
@@ -886,7 +902,11 @@ end
 local roomsOfFloor = nil
 
 local function circuitName(k)
+	if k == SITE_CIRCUIT then return "MAIN POWER (whole site)" end
+	if k == 9 then return "HALCYON B1" end
 	if k >= 10 then return "HALCYON floor " .. (k - 9) end     -- (v3.56) the sister hotel's circuits 10..13
+	if k == -2 then return "B2" end
+	if k == -1 then return "B1" end
 	if k >= ROOF_CIRCUIT then return "Roof (glasshouse + penthouse)" end
 	return "Floor " .. (k + 1)
 end
@@ -900,7 +920,7 @@ end
 local function applyFloor(k)
 	local p = power[k]
 	if not p then return end
-	local live = p.on and not p.dead
+	local live = floorPowered(k)
 	if not roomsOfFloor then
 		roomsOfFloor = {}
 		for _, rm in pairs(rooms) do
@@ -936,10 +956,20 @@ local function applyFloor(k)
 		end
 	end
 	if k == ROOF_CIRCUIT then smartApply() end
+	for i = 1, #powerLamps do                          -- mimic board: lamp lit while its circuit is live
+		local pl = powerLamps[i]
+		if pl.circuit == k and IsHandleValid(pl.shape) and SetShapeEmissiveScale then
+			SetShapeEmissiveScale(pl.shape, (live and floorPowered(SITE_CIRCUIT)) and 1 or 0)
+		end
+	end
 end
 
 local function powerApplyAll()
 	for k, _ in pairs(power) do applyFloor(k) end
+end
+-- one circuit changed: the master takes everything with it
+local function powerApply(k)
+	if k == SITE_CIRCUIT then powerApplyAll() else applyFloor(k) end
 end
 
 local function sparks(pos)
@@ -964,7 +994,7 @@ local function powerInteract(s)
 					powerMsg, powerMsgT = circuitName(k) .. ": switchgear destroyed - no power", 3
 				else
 					p.on = not p.on
-					applyFloor(k)
+					powerApply(k)
 					PlaySound(snd.breaker, pos, 1.0)
 					powerMsg, powerMsgT = circuitName(k) .. " power " .. (p.on and "ON" or "OFF"), 2
 				end
@@ -990,7 +1020,7 @@ local function powerTick(dt)
 					local pos = IsHandleValid(g.shape) and GetShapeWorldTransform(g.shape).pos or GetCameraTransform().pos
 					sparks(VecAdd(pos, Vec(0, 1.2, 0)))
 					PlaySound(snd.breaker, pos, 1.0)
-					applyFloor(k)
+					powerApply(k)
 					powerMsg, powerMsgT = circuitName(k) .. ": power failure", 3
 					break
 				end

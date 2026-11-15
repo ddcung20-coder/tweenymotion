@@ -96,7 +96,7 @@ PARQUET    = P(70, (140, 98, 62), "metal", rough=0.35, metal=0.04); PARQUET2 = P
 LOUNGER    = P(72, (234, 230, 222))
 # concrete (73-88)
 SLAB       = P(73, (128, 126, 122))
-FLOOR_STN  = P(74, (150, 124, 96), "metal", rough=0.25, metal=0.04); FLOOR_STN2 = P(75, (142, 117, 90), "metal", rough=0.25, metal=0.04); FLOOR_STN3 = P(76, (158, 132, 103), "metal", rough=0.25, metal=0.04)
+FLOOR_STN  = P(74, (150, 124, 96), "metal", rough=0.25, metal=0.04); FLOOR_STN2 = FLOOR_STN3 = FLOOR_STN   # (v3.58: their slots hold the stone)
 FLOOR_MED  = P(77, (196, 180, 152), "metal", rough=0.25, metal=0.04)
 FLOOR_BRD  = P(78, (112, 92, 72), "metal", rough=0.25, metal=0.04)
 ASPHALT    = P(79, (52, 52, 56)); ASPHALT2 = P(80, (58, 58, 62))
@@ -106,7 +106,7 @@ STAIR_CONC = P(84, (150, 148, 142), "metal", rough=0.45, metal=0.03)
 TILE       = P(85, (228, 231, 231), "metal", rough=0.18, metal=0.05)
 TILE_DARK  = P(86, (150, 158, 160))
 CURB       = P(87, (150, 150, 145))
-GROUT      = P(88, (118, 100, 80))
+GROUT      = STAIR_CONC                                              # (v3.58: its slot holds the pillars)
 # brick (89-104): exterior
 BRICK      = P(89, (128, 72, 58)); BRICK2 = P(90, (116, 64, 52)); BRICK3 = P(91, (138, 82, 66))
 EXT_TRIM   = P(93, (176, 166, 150)); EXT_TRIM2 = P(94, (165, 156, 141))
@@ -160,15 +160,15 @@ LAMPSHADE  = P(165, (250, 226, 172), "emit", flux=2, weight=0.6)
 TOWEL      = P(166, (240, 240, 236))
 ART1       = P(167, (60, 92, 122)); ART2 = P(168, (172, 112, 70))
 # hard metal / hard masonry
-RED        = P(169, (176, 30, 30), "metal", rough=0.4, metal=0.3)
-TIRE       = P(170, (24, 24, 24), "metal", rough=0.9, metal=0.0)
-DUMPSTER   = P(171, (40, 82, 52), "metal", rough=0.6, metal=0.4)
+RED        = P(140, (176, 30, 30), "metal", rough=0.4, metal=0.3)        # (v3.58) heavy metal: breakable
+TIRE       = P(141, (24, 24, 24), "metal", rough=0.9, metal=0.0)
+DUMPSTER   = P(142, (40, 82, 52), "metal", rough=0.6, metal=0.4)
 POOL_LAMP  = P(172, (150, 232, 255), "emit", flux=2, weight=0.8)
 BALL_R     = P(138, (150, 24, 48), "metal", rough=0.08, metal=0.25)     # bowling balls (heavy)
 BALL_B     = P(139, (30, 52, 140), "metal", rough=0.08, metal=0.25)
 FROST      = P(173, (214, 222, 232), "metal", rough=0.35, metal=0.0)   # smart glass, frosted
-BASE_STONE = P(177, (122, 118, 112)); BASE_STONE2 = P(178, (110, 106, 100))
-PILLAR     = P(179, (196, 188, 172))
+BASE_STONE = P(75, (122, 118, 112)); BASE_STONE2 = P(76, (110, 106, 100))   # (v3.58) concrete: breakable
+PILLAR     = P(88, (196, 188, 172))
 
 # ----------------------------------------------------------------------------
 # Dimensions (voxels)
@@ -5130,6 +5130,18 @@ def build_halcyon():
         tree(x, HZ1 + SW // 2 + 2)
     globals()["rng"] = old_rng
     _swap_globals(**old)
+    # (v3.58) no grooves: every bit of bare asphalt left between the lawns, the sidewalk curbs, the main hotel's
+    #      ramp walls and the old map edge (north of the ramp) becomes lawn, flush against its neighbours
+    ring_ = (HX0 - SW - 2, HX1 + SW + 2, HZ0 - SW - 2, HZ1 + SW + 2)
+    for (x0, x1, z0, z1) in ((0, RX0 - 2, 96, D), (RX0 - 2, bx0 - SW - 2, RZ_END + 2, D)):
+        sub_ = G[x0:x1, G0:G0 + 3, z0:z1]
+        bare = (sub_ == 0).all(1)
+        X_, Z_ = np.meshgrid(np.arange(x0, x1), np.arange(z0, z1), indexing="ij")
+        bare &= ~((X_ >= ring_[0]) & (X_ < ring_[1]) & (Z_ >= ring_[2]) & (Z_ < ring_[3]))
+        for yy in (G0, G0 + 1):
+            G[X_[bare], yy, Z_[bare]] = LAWN
+    for (x0, x1) in ((0, ring_[0]), (ring_[1], RX0 - 2)):                         # kerb along the parking strip
+        box(x0, x1, G0, G0 + 2, 95, 96, CURB)
     # street lamps at the corners
     for (sx, sz) in [(HX0 - 14, HZ0 - 14), (HX1 + 12, HZ0 - 14), (HX0 - 14, HZ1 + 12), (HX1 + 12, HZ1 + 12)]:
         box(sx - 1, sx + 3, G0, G0 + 3, sz - 1, sz + 3, DARK_METAL)
@@ -5614,30 +5626,218 @@ if WEST:
     build_halcyon()
 
 
+# ============================================================================
+# 10h. Power (v3.58): basement electrical rooms (main B1 / B2, HALCYON B1) dug in beside the car parks, and the
+#      MASTER substation on the west lot's north lawn: its switchboard is the main breaker of the whole site
+#      (every circuit, and the outside lights -- street lamps, signs, yard lamps -- hang on it directly)
+# ============================================================================
+POWER_LAMPS = []        # mimic-board lamps: (arr, gmin, circuit)
+SITE_CIRCUIT = 100      # the master switchboard's own circuit: everything outside the buildings
+POWER_ZONES = []        # (x0, x1, y0, y1, z0, z1, circuit): explicit rooms (basement electrical rooms, ...)
+
+def basement_elec_room(x0, z_out, y, k, key):
+    """a 4 x 2.6 m electrical room dug into the earth south of a car park's south wall (outer face at z_out + 1):
+    steel door through the wall, switchgear on the far wall, transformer, cable tray, lamp, signs."""
+    fr = Frame(x0, z_out, 1, 0, 0, -1)                 # u = +x, v = into the room (-z); the wall is v -T_EXT..0
+    xa, xb, za, zb = fr._rect(-3, 43, 0, 29)
+    if y < BED_Y:                                      # (B2 depth: earth under the parking lot first)
+        box(xa, xb, 0, 1, za - 2, zb, BEDROCK); box(xa, xb, 1, BED_Y + 1, za - 2, zb, SOIL)
+    fr.box(-3, 43, y - 3, y + 33, 0, 29, SLAB)
+    fr.box(0, 40, y, y + 30, 0, 26, 0)
+    fr.box(0, 40, y - 1, y, 0, 26, STAIR_CONC)
+    fr.box(0, 40, y - 1, y, 6, 7, YELLOW_PAINT)                                   # keep-clear line
+    fr.box(14, 23, y, y + 21, -T_EXT, 0, 0)                                       # door through the wall
+    fr.box(13, 24, y + 21, y + 22, -T_EXT, 0, DARK_METAL)
+    add_door(fr, 14, 23, y, y + 21, -1, 0, lambda a, b, c, A, B, C: steel_door(A - 1 - a, b, c, A, B, C),
+             hinge=(23, 0), open_dir=(0, 1), stop=DARK_METAL)
+    garr, gmin = frame_shape(fr, 8, 27, y, y + 22, 20, 26, gear_style)
+    SWITCHGEAR.append(dict(arr=garr, gmin=gmin, floor=k, corner=key))
+    fr.box(30, 38, y, y + 14, 4, 18, HVAC)                                        # transformer + fins
+    for vv in range(5, 18, 3):
+        fr.box(29, 30, y + 2, y + 13, vv, vv + 1, DARK_METAL)
+    fr.box(8, 38, y + 26, y + 27, 18, 22, STEEL)                                  # cable tray on hangers
+    fr.box(9, 37, y + 25, y + 26, 19, 21, TIRE)
+    for uu in (8, 37):
+        fr.box(uu, uu + 1, y + 27, y + 30, 19, 21, STEEL)
+    fr.box(33, 34, y + 14, y + 26, 10, 12, DARK_METAL)
+    fr.box(18, 22, y + 29, y + 30, 8, 12, CEIL_LAMP)
+    fr.light(20, y + 27, 10, (0.85, 0.95, 1.0), 1.3, 0.2)
+    for uu in range(14, 23, 2):                                                   # hazard stripes on the threshold
+        fr.box(uu, uu + 1, y - 1, y, -T_EXT, 0, YELLOW_PAINT)
+    fr.box(25, 32, y + 12, y + 20, -T_EXT - 1, -T_EXT, YELLOW_PAINT)              # lightning plate (car park side)
+    for r_, row in enumerate(BOLT):
+        for c_, cc in enumerate(row):
+            if cc == "#":
+                fr.box(26 + c_, 27 + c_, y + 18 - r_, y + 19 - r_, -T_EXT - 2, -T_EXT - 1, TV_BODY)
+    ftext(fr, "ELEC", 20, y + 28, 25, YELLOW_PAINT)                               # inside, above the switchgear
+    rx0, rx1, rz0, rz1 = fr._rect(0, 40, 0, 26)
+    POWER_ZONES.append((rx0, rx1, y - 1, y + 31, rz0, rz1, k))
+    ELEC_ROOMS_B.append((key, k, fr.pt(20, 12), y))
+
+ELEC_ROOMS_B = []
+basement_elec_room(bx0 + 56, bz0 - 1, YB, -1, "B1")                 # under the parking lot, door in the B1 bowl's south wall
+basement_elec_room(bx0 + 56, bz0 - 1, YB2, -2, "B2")                # right below it, door at the end of the B2 aisle
+
+def build_master():
+    y = G0 + 2                                         # floor surface (flush with the lawn)
+    X0, X1, Z0, Z1 = 60, 200, 500, 600                 # the substation building
+    # walkway from HALCYON's north sidewalk to the door
+    box(118, 142, G0, G0 + 2, HZ1 + SW + 2, Z0, PAVER)
+    box(116, 118, G0, G0 + 2, HZ1 + SW + 2, Z0, CURB); box(142, 144, G0, G0 + 2, HZ1 + SW + 2, Z0, CURB)
+    # shell: concrete, hazard band at the foot, roof slab with a parapet
+    box(X0, X1, G0 - 3, y, Z0, Z1, SLAB)
+    box(X0, X1, y, y + 44, Z0, Z1, SLAB)
+    box(X0 + 4, X1 - 4, y, y + 44, Z0 + 4, Z1 - 4, 0)
+    box(X0 + 4, X1 - 4, y - 1, y, Z0 + 4, Z1 - 4, STAIR_CONC)
+    box(X0 - 1, X1 + 1, y + 44, y + 47, Z0 - 1, Z1 + 1, SLAB)
+    box(X0 + 1, X1 - 1, y + 46, y + 47, Z0 + 1, Z1 - 1, ROOF)
+    box(X0 - 1, X1 + 1, y + 47, y + 50, Z0 - 1, Z0 + 1, SLAB); box(X0 - 1, X1 + 1, y + 47, y + 50, Z1 - 1, Z1 + 1, SLAB)
+    box(X0 - 1, X0 + 1, y + 47, y + 50, Z0 - 1, Z1 + 1, SLAB); box(X1 - 1, X1 + 1, y + 47, y + 50, Z0 - 1, Z1 + 1, SLAB)
+    for x in range(X0, X1, 6):                                                    # yellow / black band at the foot
+        paint(x, x + 3, y, y + 4, Z0 - 1, Z1 + 1, YELLOW_PAINT, [SLAB]); paint(x + 3, x + 6, y, y + 4, Z0 - 1, Z1 + 1, TIRE, [SLAB])
+    for z in range(Z0, Z1, 6):
+        paint(X0 - 1, X1 + 1, y, y + 4, z, z + 3, YELLOW_PAINT, [SLAB]); paint(X0 - 1, X1 + 1, y, y + 4, z + 3, z + 6, TIRE, [SLAB])
+    for z in range(Z0 + 14, Z1 - 14, 16):                                         # high louvres, both long walls
+        for xf in (X0, X1 - 4):
+            box(xf, xf + 4, y + 30, y + 38, z, z + 10, 0)
+            for yy in range(y + 30, y + 38, 2):
+                box(xf + 1, xf + 3, yy, yy + 1, z, z + 10, STEEL)
+    # door (steel double door) with a lamp over it, the name, lightning plates
+    cx = (X0 + X1) // 2
+    box(cx - 11, cx + 11, y, y + 25, Z0, Z0 + 4, DARK_METAL)
+    box(cx - 10, cx + 10, y, y + 24, Z0, Z0 + 4, 0)
+    add_door(WORLD, cx - 10, cx, y, y + 24, Z0 + 1, Z0 + 2, steel_door, hinge=(cx - 10, Z0 + 2), open_dir=(0, 1), stop=DARK_METAL)
+    add_door(WORLD, cx, cx + 10, y, y + 24, Z0 + 1, Z0 + 2, lambda a, b, c, A, B, C: steel_door(A - 1 - a, b, c, A, B, C),
+             hinge=(cx + 10, Z0 + 2), open_dir=(0, 1), stop=DARK_METAL)
+    box(cx - 4, cx + 4, y + 27, y + 28, Z0 - 4, Z0, DARK_METAL)
+    box(cx - 3, cx + 3, y + 26, y + 27, Z0 - 4, Z0 - 1, CEIL_LAMP)
+    light(cx, y + 24.5, Z0 - 2.5, (1.0, 0.86, 0.6), 2.2, 0.3)
+    box(cx - 24, cx + 24, y + 30, y + 40, Z0 - 1, Z0, DARK_METAL)
+    ftext(Frame(0, Z0, -1, 0, 0, 1), "SUBSTATION", -cx, y + 38, -2, YELLOW_PAINT)
+    for px_ in (cx - 22, cx + 15):
+        box(px_, px_ + 7, y + 10, y + 18, Z0 - 1, Z0, YELLOW_PAINT)
+        for r_, row in enumerate(BOLT):
+            for c_, cc in enumerate(row):
+                if cc == "#":
+                    box(px_ + 1 + c_, px_ + 2 + c_, y + 16 - r_, y + 17 - r_, Z0 - 2, Z0 - 1, TV_BODY)
+    # inside: the master switchboard along the north wall (its front faces the door)
+    garr, gmin = frame_shape(WORLD, X0 + 20, X1 - 20, y, y + 28, Z1 - 12, Z1 - 4, gear_style)
+    SWITCHGEAR.append(dict(arr=garr, gmin=gmin, floor=SITE_CIRCUIT, corner="MASTER"))
+    box(X0 + 18, X1 - 18, y - 1, y, Z1 - 24, Z1 - 12, TIRE)                       # rubber mat in front of it
+    box(X0 + 18, X1 - 18, y - 1, y, Z1 - 25, Z1 - 24, YELLOW_PAINT)
+    box(X0 + 20, X1 - 20, y + 36, y + 37, Z1 - 12, Z1 - 4, STEEL)                 # cable trays up into the roof
+    for xx in range(X0 + 24, X1 - 20, 12):
+        box(xx, xx + 2, y + 28, y + 44, Z1 - 8, Z1 - 6, TIRE)
+    # mimic board on the west wall: one lamp per circuit, lit while that circuit has power
+    bx_ = X0 + 4
+    box(bx_, bx_ + 1, y + 6, y + 40, Z0 + 12, Z1 - 16, DARK_METAL)
+    mf = Frame(bx_ - 1, 0, 0, -1, -1, 0)                                          # read looking west: right = -z
+    rows = [("HOTEL", [-2, -1, 0, 1, 2, 3, 4, 5, FLOORS]), ("HALCYON", [H_CIRCUIT0 - 1 + i for i in range(H_FL + 1)]),
+            ("SITE", [SITE_CIRCUIT])]
+    for ri, (lbl, circ) in enumerate(rows):
+        yr = y + 34 - ri * 11
+        ftext(mf, lbl, -(Z1 - 30), yr, -2, CEIL)
+        for ci, kc in enumerate(circ):
+            zc = Z1 - 48 - ci * 4
+            box(bx_ + 1, bx_ + 2, yr - 4, yr - 1, zc - 1, zc + 2, CHROME)        # bezel
+            POWER_LAMPS.append((np.full((1, 2, 2), EXIT_SIGN, np.uint8), (bx_ + 2, yr - 4, zc - 1 + 0), kc))
+    # desk with a terminal, an extinguisher, ceiling tubes
+    box(X1 - 30, X1 - 8, y + 8, y + 9, Z0 + 10, Z0 + 22, WOOD_MED)
+    for (a_, b_) in ((X1 - 30, Z0 + 10), (X1 - 9, Z0 + 10), (X1 - 30, Z0 + 21), (X1 - 9, Z0 + 21)):
+        box(a_, a_ + 1, y, y + 8, b_, b_ + 1, DARK_METAL)
+    box(X1 - 24, X1 - 14, y + 9, y + 16, Z0 + 18, Z0 + 21, TV_BODY)
+    box(X1 - 23, X1 - 15, y + 10, y + 15, Z0 + 17, Z0 + 18, TV_SCREEN)
+    box(X0 + 6, X0 + 9, y, y + 8, Z0 + 6, Z0 + 9, RED)
+    for (tx_, tz_) in ((X0 + 40, Z0 + 30), (X0 + 100, Z0 + 30), (X0 + 40, Z0 + 66), (X0 + 100, Z0 + 66)):
+        box(tx_ - 1, tx_ + 3, y + 43, y + 44, tz_, tz_ + 12, STEEL)
+        box(tx_, tx_ + 2, y + 42, y + 43, tz_, tz_ + 12, CEIL_LAMP)
+        light(tx_ + 1, y + 40, tz_ + 6, (0.86, 0.96, 1.0), 2.0, 0.3)
+    # transformer yard (east): gravel, two transformers with insulators, bus bars into the wall, fence, DANGER
+    YX0, YX1, YZ0, YZ1 = X1 + 8, X1 + 100, Z0 + 4, Z1 - 4
+    box(YX0, YX1, G0, G0 + 2, YZ0, YZ1, ROOF2)
+    for (tz0_, tz1_) in ((YZ0 + 12, YZ0 + 36), (YZ1 - 36, YZ1 - 12)):
+        box(YX0 + 14, YX0 + 40, y, y + 22, tz0_, tz1_, HVAC)
+        for zz in range(tz0_ + 1, tz1_, 3):
+            box(YX0 + 12, YX0 + 14, y + 3, y + 19, zz, zz + 1, DARK_METAL); box(YX0 + 40, YX0 + 42, y + 3, y + 19, zz, zz + 1, DARK_METAL)
+        for (ix_, iz_) in ((YX0 + 20, (tz0_ + tz1_) // 2 - 6), (YX0 + 27, (tz0_ + tz1_) // 2), (YX0 + 34, (tz0_ + tz1_) // 2 + 6)):
+            box(ix_, ix_ + 2, y + 22, y + 30, iz_, iz_ + 2, CERAMIC)
+            box(ix_, ix_ + 2, y + 30, y + 31, iz_, iz_ + 2, STEEL)
+            box(X1, ix_ + 2, y + 31, y + 32, iz_, iz_ + 2, STEEL)                     # bus bar into the building
+    for x in range(YX0, YX1 + 1, 10):                                             # fence: posts, rails, bars
+        for z in (YZ0, YZ1 - 1):
+            box(x, x + 1, y, y + 24, z, z + 1, DARK_METAL)
+    for z in range(YZ0, YZ1, 10):
+        box(YX1, YX1 + 1, y, y + 24, z, z + 1, DARK_METAL)
+    for (zf_) in (YZ0, YZ1 - 1):
+        box(YX0, YX1 + 1, y + 10, y + 11, zf_, zf_ + 1, STEEL); box(YX0, YX1 + 1, y + 23, y + 24, zf_, zf_ + 1, STEEL)
+        for x in range(YX0, YX1, 3):
+            box(x, x + 1, y + 1, y + 23, zf_, zf_ + 1, STEEL)
+    box(YX1, YX1 + 1, y + 10, y + 11, YZ0, YZ1, STEEL); box(YX1, YX1 + 1, y + 23, y + 24, YZ0, YZ1, STEEL)
+    for z in range(YZ0, YZ1, 3):
+        box(YX1, YX1 + 1, y + 1, y + 23, z, z + 1, STEEL)
+    box(YX0 + 30, YX0 + 60, y + 12, y + 20, YZ0 - 1, YZ0, YELLOW_PAINT)          # DANGER plate on the south fence
+    ftext(Frame(0, YZ0 - 1, -1, 0, 0, 1), "DANGER", -(YX0 + 45), y + 18, -1, RED)
+    for (lx_, lz_) in ((YX1 - 4, YZ0 + 4), (YX1 - 4, YZ1 - 6)):                    # yard lamps
+        box(lx_, lx_ + 2, y, y + 36, lz_, lz_ + 2, DARK_METAL)
+        box(lx_ - 6, lx_ + 2, y + 36, y + 37, lz_ - 1, lz_ + 3, DARK_METAL)
+        box(lx_ - 6, lx_ - 2, y + 35, y + 36, lz_, lz_ + 2, STREET_LMP)
+        light(lx_ - 4, y + 33.5, lz_ + 1, (1.0, 0.75, 0.45), 3.5, 0.3)
+    MASTER.update(x=(X0, X1), z=(Z0, Z1), door=(cx, Z0), yard=(YX0, YX1, YZ0, YZ1))
+
+MASTER = {}
+if WEST:
+    basement_elec_room(H_CX + 28, HZ0 - 1, YB, H_CIRCUIT0 - 1, "HB1")   # HALCYON B1: door between the south bays and the east row
+    build_master()
+
+
+# (v3.58) every lift shaft is clear over the whole travel of its cab (B2's food-street paving used to run through
+#      the SE shafts: the cab hit it on arrival at B2 and shook)
+for e_ in ELEVATORS:
+    gx_, gy_, gz_ = e_["gmin"]; sx_, sy_, sz_ = e_["arr"].shape
+    lo_ = lvl_y(min(e_["levels"])) - 2; hi_ = lvl_y(max(e_["levels"])) - 2 + sy_
+    G[gx_:gx_ + sx_, lo_ - 1:hi_ + 1, gz_:gz_ + sz_] = 0
+
 def power_floor(gx, gy, gz):
-    if WEST and HX0 <= gx < HX1 and HZ0 <= gz < HZ1 and not (HAX0 <= gx < HAX1 and HAZ0 <= gz < HAZ1):
-        for k in range(H_FL):                         # (v3.56) HALCYON: its own circuits 10..13
-            if fy(k) - SLAB_T <= gy < fy(k) + FH - SLAB_T:
+    """the circuit (electrical room) a light / glowing fitting hangs on. Every light has one (v3.58):
+    -2 B2, -1 B1, 0..5 floors 1-6, 6 roof (main hotel; pool annex, banquet hall, bowling on 0),
+    9 HALCYON B1, 10..13 HALCYON 1F-4F (its roof on 13), 100 outside (master switchboard)."""
+    for (x0_, x1_, y0_, y1_, z0_, z1_, k_) in POWER_ZONES:
+        if x0_ <= gx < x1_ and y0_ <= gy < y1_ and z0_ <= gz < z1_:
+            return k_
+    if WEST and HX0 <= gx < HX1 and HZ0 <= gz < HZ1:
+        if gy < G0 - SLAB_T:
+            return H_CIRCUIT0 - 1
+        if gy >= H_ROOF - 1:
+            return H_CIRCUIT0 + H_FL - 1
+        for k in range(H_FL):
+            if gy < fy(k) + FH - SLAB_T:
                 return H_CIRCUIT0 + k
-        return None
-    if gy >= ROOF_Y - 1:
-        for (x0_, x1_, z0_, z1_) in ROOF_POWER_ZONES:
-            if x0_ <= gx < x1_ and z0_ <= gz < z1_:
-                return FLOORS                         # the roof circuit (glasshouse, penthouse, roof electrical room)
-        return None
-    if not (bx0 <= gx < bx1 and bz0 <= gz < bz1) or (ax0 <= gx < ax1 and az0 <= gz < az1):
-        return None                                   # outside the hotel ring, or in the atrium (own supply)
-    for k in range(FLOORS):
-        if fy(k) - SLAB_T <= gy < fy(k) + FH - SLAB_T:
-            return k
-    return None
+        return H_CIRCUIT0 + H_FL - 1
+    if gy >= ROOF_Y - 1 and bx0 - 4 <= gx < bx1 + 4 and bz0 - 4 <= gz < bz1 + 4:
+        return FLOORS                                 # the roof circuit (glasshouse, penthouse, sign, helipad)
+    if bx0 <= gx < bx1 and bz0 <= gz < bz1:
+        if gy < YB - SLAB_T:
+            return -2
+        if gy < G0 - SLAB_T:
+            return -1
+        for k in range(FLOORS):
+            if gy < fy(k) + FH - SLAB_T:
+                return k
+        return FLOORS - 1
+    for (x0_, x1_, z0_, z1_) in ((ix0 - 2, ix1 + 2, iz0 - 2, iz1 + 2), (cxN - CW - 2, cxN + CW + 2, bz1 - 2, AZ0 + 6),
+                                 (CH_X0 - 2, CH_X1 + 2, CH_Z0 - 2, AZ0 + 2),
+                                 (BANQUET["x"][0] - 2, BANQUET["x"][1] + 2, BANQUET["z"][0] - 2, BANQUET["z"][1] + 2),
+                                 (BANQUET["link"][0] - 2, BANQUET["link"][1] + 2, bz1 - 6, BANQUET["z"][0] + 2)):
+        if x0_ <= gx < x1_ and z0_ <= gz < z1_ and gy >= YB:
+            return 0                                  # pool annex + connector + changing rooms, banquet hall + link
+    return SITE_CIRCUIT
 _lt = []
 for (gx, gy, gz, rgb, scale, size, tags) in LIGHTS:
     k = power_floor(gx, gy, gz)
     if k == FLOORS and "room=" not in tags and PH_INTERIOR[0] <= gx < PH_INTERIOR[1] and PH_INTERIOR[2] <= gy < PH_INTERIOR[3] \
             and PH_INTERIOR[4] <= gz < PH_INTERIOR[5]:
         tags = (tags + " room=ph rl=ceil").strip()     # the suite's lights hang on its switch by the entrance
-    _lt.append((gx, gy, gz, rgb, scale, size, (tags + f" pw={k}").strip() if k is not None else tags))
+    _lt.append((gx, gy, gz, rgb, scale, size, (tags + f" pw={k}").strip()))
 LIGHTS[:] = _lt
 
 # ============================================================================
@@ -5671,6 +5871,15 @@ def write_vox(path, sub, west=False):
     """sub: array indexed [x, y(up), z] in Teardown axes. Writes MV axes (x, -z, y).
     west: the shape belongs to the HALCYON lot -> palette colours from H_PAL (the material stays the index's)."""
     sx, sy, sz = sub.shape
+    # (v3.58) the two hard-metal colours left (POOL_LAMP, FROST) only ever sit in small separate shapes: in each
+    #      such file they move to a free glass slot (so they shatter), with their own colour + finish there
+    over_ = {}
+    present = set(np.unique(sub).tolist())
+    for hard_ in (POOL_LAMP, FROST):
+        if hard_ in present:
+            slot_ = next(g_ for g_ in (3, 2, 1, 8, 7, 6, 5, 4) if g_ not in present and g_ not in over_)
+            sub = np.where(sub == hard_, slot_, sub).astype(np.uint8)
+            over_[slot_] = hard_
     xs, ys, zs = np.nonzero(sub)
     cols = sub[xs, ys, zs]
     xyzi = np.stack([xs.astype(np.uint8), (sz - 1 - zs).astype(np.uint8), ys.astype(np.uint8),
@@ -5684,10 +5893,18 @@ def write_vox(path, sub, west=False):
     nshp = chunk(b"nSHP", struct.pack("<i", 3) + vox_dict({}) + struct.pack("<ii", 1, 0) + vox_dict({}))
     rgba = bytearray()
     for i in range(1, 257):
-        r, g, b_ = (H_PAL[i] if west and i in H_PAL else PAL[i][0]) if i in PAL else (128, 128, 128)
+        src_ = over_.get(i, i)
+        r, g, b_ = (H_PAL[src_] if west and src_ in H_PAL else PAL[src_][0]) if src_ in PAL else (128, 128, 128)
         rgba += bytes((r, g, b_, 255))
     rgba_c = chunk(b"RGBA", bytes(rgba))
-    matls = b"".join(chunk(b"MATL", struct.pack("<i", i) + vox_dict(matl_dict(i))) for i in range(1, 256) if i in PAL)
+    def matl_(i):
+        if i in over_:
+            d_ = matl_dict(over_[i])
+            if d_["_type"] != "_emit":
+                d_.update({"_type": "_glass", "_weight": "0.25", "_rough": "0.6"})   # frosted glass
+            return d_
+        return matl_dict(i)
+    matls = b"".join(chunk(b"MATL", struct.pack("<i", i) + vox_dict(matl_(i))) for i in range(1, 256) if i in PAL)
     main = chunk(b"MAIN", b"", size_c + xyzi_c + ntrn0 + ngrp + ntrn2 + nshp + rgba_c + matls)
     with open(path, "wb") as f:
         f.write(b"VOX " + struct.pack("<i", 150) + main)
@@ -5993,6 +6210,11 @@ def export():
         xml.append(f'\t\t<vox tags="switchgear floor={g["floor"]} corner={g["corner"]}" pos="{f3(body_origin(g["arr"], g["gmin"]))}" '
                    f'file="MOD/vox/{shape_file("switchgear", g["arr"])}.vox" object="shape"/>\n')
     xml.append('\t</group>\n')
+    xml.append('\t<group name="powerlamps" pos="0 0 0">\n')                    # (v3.58) master mimic board
+    for (parr, pmin, pk) in POWER_LAMPS:
+        xml.append(f'\t\t<vox tags="powerlamp circuit={pk}" pos="{f3(body_origin(parr, pmin))}" '
+                   f'file="MOD/vox/{shape_file("plamp", parr, pmin[0] < WEST)}.vox" object="shape"/>\n')
+    xml.append('\t</group>\n')
     xml.append('\t<group name="roomswitches" pos="0 0 0">\n')
     for (sarr, smin, rid, on, tv) in ROOM_SWITCHES:
         xml.append(f'\t\t<vox tags="roomswitch room={rid} on={int(on)} tv={int(tv)}" pos="{f3(body_origin(sarr, smin))}" '
@@ -6007,7 +6229,7 @@ def export():
         o = body_origin(kc["arr"], kc["gmin"])
         xml.append(f'\t\t<body name="keycard{i}" tags="keycard floor={kc["floor"] + 1}" pos="{f3(o)}">'
                    f'<vox pos="0 0 0" file="MOD/vox/{shape_file("keycard", kc["arr"])}.vox" object="shape">'
-                   f'<light pos="0 0.15 -0.05" type="sphere" color="1 0.62 0.9" scale="0.8" size="0.05"/></vox></body>\n')
+                   f'<light tags="pw={power_floor(*kc["gmin"])}" pos="0 0.15 -0.05" type="sphere" color="1 0.62 0.9" scale="0.8" size="0.05"/></vox></body>\n')
     for i, m in enumerate(DECOR_MQ):
         o = body_origin(m["arr"], m["gmin"])
         xml.append(f'\t\t<body name="dreamdecor{i}" tags="dreamdecor" pos="{f3(o)}">'
@@ -6018,7 +6240,7 @@ def export():
         seg = f"{ax_ * 0.1 - CX:.2f},{az_ * 0.1 - CZ:.2f},{bx_ * 0.1 - CX:.2f},{bz_ * 0.1 - CZ:.2f}"
         xml.append(f'\t\t<body name="mannequin{i}" tags="mannequin seg={seg} fx={m["front"][0]} fz={m["front"][1]}" pos="{f3(o)}">'
                    f'<vox pos="0 0 0" file="MOD/vox/{shape_file("mannequin", m["arr"])}.vox" object="shape">'
-                   f'<light pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>\n')
+                   f'<light tags="pw={power_floor(m["gmin"][0], m["gmin"][1] + 2, m["gmin"][2])}" pos="0 2.0 0" type="sphere" color="1 0.78 0.95" scale="0.5" size="0.3"/></vox></body>\n')
     xml.append('\t</group>\n')
     xml.append('\t<group name="lamps" pos="0 0 0">\n')
     for i, L in enumerate(lamps):
@@ -6031,9 +6253,10 @@ def export():
     for i, L in enumerate(GLOWS):
         xml.append(f'\t\t<vox name="glow{i}" tags="glow pw={L["floor"]}{' room=' + L['room'] if L.get('room') else ''}" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
     for i, L in enumerate(NEONS):
-        xml.append(f'\t\t<vox name="neon{i}" tags="neon" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
+        cg_ = [L["gmin"][a_] + L["arr"].shape[a_] // 2 for a_ in range(3)]
+        xml.append(f'\t\t<vox name="neon{i}" tags="neon pw={power_floor(*cg_)}" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
     for i, L in enumerate(BANQUET_GLOWS):
-        xml.append(f'\t\t<vox name="bqglow{i}" tags="glow room=banquet" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
+        xml.append(f'\t\t<vox name="bqglow{i}" tags="glow room=banquet pw=0" pos="{f3(L["pos"])}" file="MOD/vox/{L["file"]}.vox" object="shape"/>\n')
     xml.append('\t</group>\n')
     for pool_ in POOLS:
         sy_, dep, pts = pool_[:3]
@@ -6108,7 +6331,7 @@ def export():
         lp = ((lx_ + sx // 2) * 0.1 - CX, ly_ * 0.1, (lz_ + sz - sz // 2) * 0.1 - CZ)
         rel = ((qx + 0.5) * 0.1 - CX - lp[0], qy * 0.1 - lp[1], (qz + 0.5) * 0.1 - CZ - lp[2])
         xml.append(f'\t\t<vox name="streetlamp{i}" pos="{f3(lp)}" file="MOD/vox/road_lamp.vox" object="shape">\n')
-        xml.append(light_xml(rel, (1.0, 0.75, 0.45), 6.0, 0.3))
+        xml.append(light_xml(rel, (1.0, 0.75, 0.45), 6.0, 0.3, ltags=f"pw={SITE_CIRCUIT}"))
         xml.append('\t\t</vox>\n')
     for (kind_, fb_, cx_, cy_, cz_, ry_) in ROAD_CARS:
         xml.append(f'\t\t<location tags="carspawn kind={kind_} fallback={fb_}" pos="{cx_ * 0.1 - CX:.2f} {cy_ * 0.1 + 0.05:.2f} {cz_ * 0.1 - CZ:.2f}" rot="0 {ry_} 0"/>\n')
@@ -6146,6 +6369,10 @@ def export():
         sx, sy, sz = arr.shape
         gx, gy, gz = gmin
         return ((gx + sx // 2) * 0.1 - CX, gy * 0.1, (gz + sz - sz // 2) * 0.1 - CZ)
+    def lift_circuit(shaft, k):                    # (v3.58) a lift's lights / buttons hang on the circuit of their level
+        if shaft.startswith("H"):
+            return H_CIRCUIT0 - 1 if k < 0 else min(H_CIRCUIT0 + k, H_CIRCUIT0 + H_FL - 1)
+        return k
     xml.append('\t<group name="elevators" pos="0 0 0">\n')
     for e in ELEVATORS:
         bo = origin(e["arr"], e["gmin"])
@@ -6157,16 +6384,16 @@ def export():
         gx_, gy_, gz_ = e["gmin"]
         lrel = ((gx_ + LX[j] + 0.5) * 0.1 - CX - bo[0], (gy_ + LY[j] + 0.5) * 0.1 - bo[1], (gz_ + LZ[j] + 0.5) * 0.1 - CZ - bo[2])
         xml.append(f'\t\t\t<vox pos="0 0 0" file="MOD/vox/elev_car_{e["shaft"]}.vox" object="shape">\n'
-                   f'\t\t\t\t<light pos="{f3(lrel)}" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>\n'
+                   f'\t\t\t\t<light tags="pw={lift_circuit(e["shaft"], 0)}" pos="{f3(lrel)}" type="sphere" color="1 0.88 0.7" scale="1.6" size="0.25"/>\n'
                    f'\t\t\t</vox>\n')
         for (barr, bmin, f) in e["buttons"]:
             o = origin(barr, bmin)
             rel = (o[0] - bo[0], o[1] - bo[1], o[2] - bo[2])
             write_vox(os.path.join(VOXDIR, "elev_pad.vox"), barr)
-            xml.append(f'\t\t\t<vox tags="elevpad" pos="{f3(rel)}" file="MOD/vox/elev_pad.vox" object="shape"/>\n')
+            xml.append(f'\t\t\t<vox tags="elevpad pw={lift_circuit(e["shaft"], 0)}" pos="{f3(rel)}" file="MOD/vox/elev_pad.vox" object="shape"/>\n')
         xml.append('\t\t</body>\n')
     for (barr, bmin, shaft, k) in CALLS:
-        xml.append(f'\t\t<vox tags="elevcall shaft={shaft} floor={k}" pos="{f3(origin(barr, bmin))}" '
+        xml.append(f'\t\t<vox tags="elevcall shaft={shaft} floor={k} pw={lift_circuit(shaft, k)}" pos="{f3(origin(barr, bmin))}" '
                    f'file="MOD/vox/elev_btn.vox" object="shape"/>\n')
     xml.append('\t</group>\n')
     xml.append('\t<group name="doors" pos="0 0 0">\n')
@@ -6201,7 +6428,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.57\n"
+        f.write("name = Liminal Atrium v3.58\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "
