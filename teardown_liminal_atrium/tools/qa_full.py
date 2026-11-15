@@ -996,7 +996,7 @@ b_ = open("vox/snowref.vox", "rb").read(); j_ = b_.find(b"RGBA")
 idx_ = int(sa_.group(6)) if sa_ else 0
 rgb_ = tuple(b_[j_ + 12 + 4 * (idx_ - 1): j_ + 12 + 4 * (idx_ - 1) + 3]) if sa_ else None
 report("snow: snow base + white reference voxel + snow area (whole map and street) for main.lua", sa_ is not None and 'tags="snowbase"' in X3_
-       and rgb_ == (236, 240, 246) and float(sa_.group(2)) - float(sa_.group(1)) > 80 and float(sa_.group(5)) > 25, f"{rgb_} {sa_.groups() if sa_ else None}")
+       and rgb_ == (236, 240, 246) and 105 <= idx_ <= 120 and float(sa_.group(2)) - float(sa_.group(1)) > 80 and float(sa_.group(5)) > 25, f"{rgb_} {sa_.groups() if sa_ else None}")
 
 # v3.62: the exported power zones say the same circuit as the build for every light (music / PA / ambience follow them);
 #        automatic doors and sound spots carry the circuit of their floor

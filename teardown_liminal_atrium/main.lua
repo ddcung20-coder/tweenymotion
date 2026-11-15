@@ -1915,7 +1915,7 @@ end
 -- hits -- the map as it is right now, broken parts included. Moving things (cars, doors, props) get none.
 -- The snow lives in new shapes on the static "snowbase" body (palette of the "snowref" voxel); clear / rain deletes it.
 snow = { jobs = nil, tile = nil, shapes = {}, body = 0, ref = 0, area = nil, budget = 5000, active = false }
-local SNOW_TILE = 128
+local SNOW_TILE = 256                                          -- (v3.64: bigger pieces, fewer seams)
 local function snowArea()
 	if snow.area then return snow.area end
 	local l = FindLocation("snowarea", true)
@@ -1961,7 +1961,7 @@ local function snowTileFinish(t)
 	local x0w, z0w = a.x0 + t.tx * 0.1, a.z0 + t.tz * 0.1
 	local yb = t.ymin
 	while yb <= t.ymax do                                         -- (a shape stays under 256 voxels tall)
-		local yt = math.min(t.ymax, yb + 249)
+		local yt = math.min(t.ymax, yb + 255)
 		local sh = CreateShape(snow.body, Transform(Vec(x0w, yb * 0.1, z0w), Quat()), snow.ref)
 		if sh and sh ~= 0 then
 			ResizeShape(sh, 0, 0, 0, t.w - 1, yt - yb, t.d - 1)

@@ -5939,8 +5939,8 @@ def write_vox(path, sub, west=False, pal_extra=None):
 
 # (v3.63) settled snow is computed in game by main.lua (rays down over the "snowarea" when it starts to snow, the
 #      snow drawn into runtime shapes): it always matches the map as it is, broken bits included
-SNOW_IDX = SOIL         # dirt material (soft), drawn white through the snowref palette
-SNOW_RGB = {SOIL: (236, 240, 246)}
+SNOW_IDX = 105          # (v3.64) plaster: smooth, soft and breakable -- dirt's blotchy texture looked brown and grubby
+SNOW_RGB = {SNOW_IDX: (236, 240, 246)}
 
 def export():
     os.makedirs(VOXDIR, exist_ok=True)
@@ -6483,7 +6483,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.63\n"
+        f.write("name = Liminal Atrium v3.64\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

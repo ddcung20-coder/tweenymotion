@@ -535,7 +535,7 @@
 		<vox tags="switchgear floor=100 corner=MASTER" pos="-46.6 7.8 20.7" file="MOD/vox/switchgear_3.vox" object="shape"/>
 	</group>
 	<body name="snowbase" tags="snowbase" pos="0 0 0" dynamic="false"><vox tags="snowref" pos="0 -50 0" file="MOD/vox/snowref.vox" object="shape"/></body>
-	<location tags="snowarea x0=-59.60 x1=23.60 z0=-53.50 z1=38.50 ytop=32.50 idx=25" pos="0 0 0"/>
+	<location tags="snowarea x0=-59.60 x1=23.60 z0=-53.50 z1=38.50 ytop=32.50 idx=105" pos="0 0 0"/>
 	<location tags="powerzone k=-1 x0=-9.60 x1=-5.60 y0=3.90 y1=7.10 z0=-32.70 z1=-30.10" pos="-7.6 3.9 -31.4"/>
 	<location tags="powerzone k=-2 x0=-9.60 x1=-5.60 y0=0.30 y1=3.50 z0=-32.70 z1=-30.10" pos="-7.6 0.3 -31.4"/>
 	<location tags="powerzone k=9 x0=-39.60 x1=-35.60 y0=3.90 y1=7.10 z0=-29.30 z1=-26.70" pos="-37.6 3.9 -28"/>
