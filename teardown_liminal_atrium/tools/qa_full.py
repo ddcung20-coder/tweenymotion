@@ -238,12 +238,18 @@ for k_ in range(HQ["floors"]):
     checks[f"HALCYON: {k_ + 1}F corridor (east)"] = (HQx[1] - 13, ns["fy"](k_), (HQz[0] + HQz[1]) // 2)
     checks[f"HALCYON: {k_ + 1}F ice + vending alcove"] = (HQx[1] - 50, ns["fy"](k_), HQz[0] + 48)
 checks["HALCYON: roof (up the stairs)"] = (HQx[0] + 40, HQ["roof"], (HQz[0] + HQz[1]) // 2)
+checks["HALCYON: B1 car park (west aisle)"] = (143, YB, 300)
+checks["HALCYON: B1 car park (east aisle)"] = (201, YB, 200)
+checks["HALCYON: B1 lift lobby"] = (72, YB, 390)
+checks["HALCYON: B1 tunnel to the main car park"] = (320, YB, 285)
+for k_ in range(HQ["floors"]):
+    checks[f"HALCYON: {k_ + 1}F electrical room"] = (HQx[0] + 54, ns["fy"](k_), HQz[1] - 45)
 for (nm_, kind_, sx_, sz_) in ns["SHOPS"]:
     checks[f"B1 {kind_} '{nm_}' (inside)"] = (sx_, YB, sz_)
 for nm, (x, y, z) in checks.items():
     report(f"reachable: {nm}", reachable(int(x), int(y), int(z), r=8))
 # each stairwell on its own (nothing outside the core counts) joins the B1 landing to the ground floor
-for key in ("SW", "NE"):
+for key in ("NE",):                                  # (v3.56: the SW stair stops at the ground floor)
     fr = ns["corner"][key]
     xa, xb, za, zb = fr._rect(-ns["T_PART"] - 1, ns["CB"], -ns["T_PART"] - 1, ns["CB"])
     ya, yb_ = YB - 3, G0 + 20
@@ -256,7 +262,7 @@ for key in ("SW", "NE"):
         return set(np.unique(w[st & (w > 0)]).tolist())
     b1, g = comp(6, 30, YB), comp(6, 30, G0)
     report(f"{key} stairwell walks from B1 up to the ground floor", bool(b1 & g), f"B1 {b1} ground {g}")
-for key in ("SW", "NE"):                                  # ... and from B2 up to B1
+for key in ("NE",):                                       # ... and from B2 up to B1
     fr = ns["corner"][key]
     xa, xb, za, zb = fr._rect(-ns["T_PART"] - 1, ns["CB"], -ns["T_PART"] - 1, ns["CB"])
     ya, yb_ = ns["YB2"] - 3, YB + 20
@@ -405,7 +411,7 @@ report("every door handle is on the latch side (away from the hinge)", not wrong
 cab = 0
 for e in ns["ELEVATORS"]:
     arr = e["arr"]; gx, gy, gz = e["gmin"]; sx, sy, sz = arr.shape
-    lo = ns["YB"] - 2; hi = gy + (max(ns["LEVELS"]) - e["floor"]) * ns["FH"] + sy     # B1 .. roof
+    lo = ns["YB"] - 2; hi = gy + (max(e.get("levels", ns["LEVELS"])) - e["floor"]) * ns["FH"] + sy     # B1 .. roof
     cab += int((FULL[gx:gx + sx, lo:hi, gz:gz + sz] > 0).sum())
 report("elevator cabs travel B1 - roof without touching anything", cab == 0, f"{cab} voxels in the way")
 
@@ -486,8 +492,8 @@ for i, d in enumerate(ns["DOORS"]):
 n_ad = sum(1 for d in ns["DOORS"] if d["tag"].startswith("autodoor"))
 report(f"automatic doors: {n_ad} glass leaves slide fully open without hitting anything", n_ad == 4 and not ad_bad, str(ad_bad))
 calls_b1 = sorted(c[2] for c in ns["CALLS"] if c[3] == -1)
-report("all 4 elevators stop at B1 (landing door + call button)", len(calls_b1) == 4 and
-       sum(1 for d in ns["DOORS"] if "elevdoor" in d["tag"] and "floor=-1" in d["tag"]) == 4, str(calls_b1))
+report("all 6 elevators (4 main + 2 HALCYON) stop at B1 (landing door + call button)", len(calls_b1) == 6 and
+       sum(1 for d in ns["DOORS"] if "elevdoor" in d["tag"] and "floor=-1" in d["tag"]) == 6, str(calls_b1))
 mall = [sp for sp in ns["SOUND_SPOTS"] if sp[0] == "mall"]
 report(f"{len(mall)} arcade music speakers sit in open air in B1", len(mall) >= 5 and all(FULL[int(x), int(y), int(z)] == 0 and y < G0 for (_, x, y, z) in mall))
 sw_bad = []
@@ -543,7 +549,7 @@ for (bays_, xa_, xb_, wa_, wb_) in ((ns["WEST_BAYS"], ns["IX0"], ns["AISLE0"], 3
         if xa_ - 3 < cx0 < xb_ + 3 and any(z0_ - 3 < cz0 < z0_ + ns["BAY_W"] + 3 for z0_ in bays_) and xa_ + 3 <= cx0 < xb_ - 3:
             bay_bad.append(("col", cx0, cz0))
 for (kind_, fb_, gx_, gy_, gz_, ry_) in ns["CAR_SPOTS"]:
-    if gy_ == YB_:
+    if gy_ == YB_ and gx_ >= WEST_:                  # (the main B1 car park; HALCYON's has its own bays)
         czc = gz_ + 22
         if not any(z0_ + 6 <= czc <= z0_ + ns["BAY_W"] - 6 for z0_ in ns["WEST_BAYS"] + ns["EAST_BAYS"]) or abs(ry_) != 90:
             bay_bad.append(kind_)
@@ -816,6 +822,36 @@ for k_ in range(HQq["floors"]):
             cz_ = np.argwhere(lb_ == i_ + 1).mean(0)
             dark_h.append((k_ + 1, int(c), int(cz_[0] + x0q), int(cz_[1] + z0q)))
 report("HALCYON lighting: no dark patch (> 0.6 m², over 5.5 m from any light) on any floor", not dark_h, str(dark_h[:8]))
+tun_ = FULL[HQq["x"][1] - 4:ns["RX0"], YB:YB + 30, ns["TZ0"]:ns["TZ1"]]
+report("HALCYON B1 <-> main B1 tunnel: 3.0 m clear and 5 m wide all the way into the ramp bottom", int((tun_ > 0).sum()) == 0, f"{int((tun_ > 0).sum())} voxels")
+
+# v3.56: a car (2.0 x 4.4 m) drives B1 -> B2 without reversing: out of the tunnel, a 5 m teardrop into the ramp
+#        lane; at the foot a 5 m U-turn in the open north end, then an S into the B2 aisle
+def _car_hits(y_, x, z, h):
+    ca, sa = math.cos(h), math.sin(h)
+    for a in range(-23, 24):
+        for b in range(-11, 12):
+            px = x + a * ca - b * sa; pz = z + a * sa + b * ca
+            if (FULL[int(px), y_ + 1:y_ + 17, int(pz)] > 0).any():
+                return (int(px), int(pz))
+    return None
+def _arc(x, z, h, R, ang, left):
+    pts = []; n = max(4, int(abs(ang) * R / 3))
+    for i in range(1, n + 1):
+        t = ang * i / n
+        if left:
+            cx, cz = x - R * math.sin(h), z + R * math.cos(h); hh = h + t
+            pts.append((cx + R * math.sin(hh), cz - R * math.cos(hh), hh))
+        else:
+            cx, cz = x + R * math.sin(h), z - R * math.cos(h); hh = h - t
+            pts.append((cx - R * math.sin(hh), cz + R * math.cos(hh), hh))
+    return pts
+P1 = _arc(WEST_ + 90, 285, 0.0, 50, math.radians(130), False); P1 += _arc(*P1[-1], 50, math.radians(220), True)
+P1 += [(P1[-1][0], P1[-1][1] + t, P1[-1][2]) for t in range(3, 31, 3)]
+P2 = _arc(WEST_ + 210, 366, math.pi / 2, 50, math.pi, True); P2 += _arc(*P2[-1], 55, math.radians(50), True); P2 += _arc(*P2[-1], 55, math.radians(50), False)
+h1 = next((p for p in P1 if _car_hits(YB, *p)), None); h2 = next((p for p in P2 if _car_hits(ns["YB2"], *p)), None)
+report("cars: B1 tunnel -> ramp down to B2 in one go (5 m turns), and round at its foot into the B2 aisle", h1 is None and h2 is None
+       and abs(P1[-1][0] - (WEST_ + 217)) < 12 and WEST_ + 145 <= P2[-1][0] <= WEST_ + 177, f"{h1} {h2} end {P1[-1][:2]} {P2[-1][:2]}")
 # v3.47: HOTEL letters each their own lamp, penthouse TV, public-address announcement
 let_ = [r_ for r_ in ns["ROOF_SHAPES"] if r_[0].startswith("hotel_letter")]
 sign_left = int((FULL[bx0:bx1, RY + 10:RY + 30, bz0:bz0 + 8] == ns["STREET_LMP"]).sum())
@@ -864,9 +900,11 @@ for l in ns["LIGHTS"]:
         if kv.startswith("pw="):
             pw_[int(kv[3:])] += 1
 room_pw = all(("pw=" in l[6]) for l in ns["LIGHTS"] if "room=" in l[6] and "room=banquet" not in l[6] and "room=stage" not in l[6]
-              and not re.search(r"room=h\d", l[6]))                    # (HALCYON: its own building, always on)
+)
 report("every floor's lights are on its power circuit (rooms, corridors, electrical rooms)",
        all(pw_[k] > 40 for k in range(FLOORS)) and room_pw, str(dict(pw_)))
+h_sw = collections.Counter(g["floor"] for g in ns["SWITCHGEAR"] if g["floor"] >= 10)
+report("HALCYON: an electrical room (switchgear) on every floor, its lights on that circuit", sorted(h_sw) == [10, 11, 12, 13] and all(pw_[k] > 30 for k in (10, 11, 12, 13)), f"{dict(h_sw)} {[pw_[k] for k in (10, 11, 12, 13)]}")
 report("two dreamers per floor", sorted(collections.Counter(m["floor"] for m in ns["MANNEQUINS"]).values()) == [2] * FLOORS)
 
 # 7. sounds: decodable, not clipped, loops seamless

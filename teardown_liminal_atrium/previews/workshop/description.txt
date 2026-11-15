@@ -11,7 +11,7 @@ A deserted hotel at night. Six floors of fully furnished rooms around a purple-l
 [*]B2: food street with 12 neon-lit stalls, long tables, lanterns and neon gates + a second car park, down a ramp from B1
 [*]Bowling alley under the atrium lawn: 4 lanes, pins you can knock down, STRIKE counter, reset buttons
 [*]Poolroom annex: real water pool, spa, loungers, lifeguard chair
-[*]HALCYON - a smaller sister hotel next door: 4 floors, 54 pastel rooms around a skylit atrium with a dry fountain, coral corridors, flickering fluorescents, an ice machine humming to nobody, lifts that are out of order
+[*]HALCYON - a smaller sister hotel next door: 4 floors, 54 pastel rooms around a skylit atrium with a dry fountain, coral corridors, flickering fluorescents, an ice machine humming to nobody; its own car park, lifts and electrical rooms, a tunnel to the main car park
 [*]Rooftop glasshouse "FLORA": glass vault and cupola, lily pond, palms, flower beds, wisteria
 [*]Helipad with a drivable, breakable helicopter (W/S forward/back, A/D turn, Space/Ctrl up/down)
 [*]Base-game drivable cars in the parking lot, street and car park
@@ -38,7 +38,7 @@ M - stop the mission
 [*]지하 2층: 네온 노점 12곳·긴 테이블·홍등·네온 게이트의 푸드 스트리트 + B1에서 경사로로 내려가는 두 번째 주차장
 [*]아트리움 잔디 아래 볼링장: 레인 4개, 핀 쓰러뜨리기, STRIKE 표시, 리셋 버튼
 [*]수영장 별관: 진짜 물이 있는 수영장, 스파, 선베드, 안전요원 의자
-[*]옆 부지의 작은 자매 호텔 HALCYON: 4층, 유리 천장 아트리움(물 빠진 분수)을 둘러싼 파스텔 객실 54개, 산호색 복도, 깜빡이는 형광등, 아무도 없는데 돌아가는 제빙기, 고장 난 엘리베이터
+[*]옆 부지의 작은 자매 호텔 HALCYON: 4층, 유리 천장 아트리움(물 빠진 분수)을 둘러싼 파스텔 객실 54개, 산호색 복도, 깜빡이는 형광등, 아무도 없는데 돌아가는 제빙기, 전용 지하주차장·엘리베이터·전기실, 본관 주차장과 이어진 터널
 [*]옥상 유리 식물정원 "FLORA": 유리 지붕과 큐폴라, 연못, 야자수, 꽃밭, 등나무
 [*]헬리패드와 운전·파괴 가능한 헬기 (W/S 전진/후진, A/D 회전, Space/Ctrl 상승/하강)
 [*]주차장·도로·지하주차장에 기본 게임 운전 가능 차량

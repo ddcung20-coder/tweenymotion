@@ -555,7 +555,7 @@ box(IX0, QX, YB2 - 1, YB2, IZ0, IZ1, STAIR_CONC)
 box(QX, IX1, YB2 - 1, YB2, IZ0, IZ1, FLOOR_STN)
 box(QX - 2, QX + 2, YB2, YC2, IZ0, IZ1, SLAB)
 R3_X0, R3_X1 = PX1 - 50, PX1 - 2      # ramp B1 -> B2: along the x divider, in the B1 car park's east bay strip
-R3_TOP, R3_BOT = 180, 360            # B1 level at z <= R3_TOP (the wide south end: room to turn), B2 level at
+R3_TOP, R3_BOT = 180, 340            # B1 level at z <= R3_TOP (the wide south end: room to turn), B2 level at
 def ramp3_y(z):                      # z >= R3_BOT (cars come out heading north into the open north end of B2)
     if z <= R3_TOP:
         return YB
@@ -1848,6 +1848,8 @@ def gear_style(a_, b_, c_, A, B, C):
         return BLANKET_B                                                # main breaker lever
     return SHEET
 
+ELEV_PIT = 1          # bottom of the shaft pits (HALCYON: just under its B1)
+GEAR_FLOOR0 = 0       # switchgear circuit numbers start here (HALCYON: 10)
 def elevators(fr, key):
     for k in range(FLOORS):
         y = fy(k)
@@ -1856,17 +1858,17 @@ def elevators(fr, key):
     LIFT_TOP = ROOF_Y + 31                                                       # shafts reach the roof stop
     fr.box(0, 22, G0, ROOF_Y + 12, 0, CB - T_FAC, SLAB)
     fr.box(-T_PART, 22, ROOF_Y, LIFT_TOP + 3, -T_PART, CB - T_FAC, SLAB)         # lift penthouse on the roof
-    fr.box(-T_PART, 22, 1, G0, 0, CB - T_FAC, SLAB)                              # shaft core down to B1
+    fr.box(-T_PART, 22, ELEV_PIT, G0, 0, CB - T_FAC, SLAB)                       # shaft core down to B1
     for qi, q0 in enumerate((2, 24)):
         shaft = f"{key}{qi}"
-        fr.box(0, 20, 1, LIFT_TOP, q0, q0 + 18, 0)                                # hollow shaft + pit
+        fr.box(0, 20, ELEV_PIT, LIFT_TOP, q0, q0 + 18, 0)                         # hollow shaft + pit
         # guide rails + brackets on the back wall (behind the car, not touching it)
         for qq in (q0 + 3, q0 + 14):
-            fr.box(19, 20, 1, LIFT_TOP, qq, qq + 1, ELEV_RAIL)
+            fr.box(19, 20, ELEV_PIT, LIFT_TOP, qq, qq + 1, ELEV_RAIL)
             for yy in range(G0, LIFT_TOP, 15):
                 fr.box(19, 20, yy, yy + 1, qq - 1, qq + 2, ELEV_RAIL)
         for qq in (q0 + 2, q0 + 15):                                            # pit buffers (outside the car footprint)
-            fr.box(19, 20, 1, 3, qq, qq + 1, RED)
+            fr.box(19, 20, ELEV_PIT, ELEV_PIT + 2, qq, qq + 1, RED)
         # counterweight hint + hoist sheave at the top
         fr.box(6, 14, LIFT_TOP - 3, LIFT_TOP - 1, q0 + 7, q0 + 11, DARK_METAL)
         fr.box(9, 11, LIFT_TOP - 1, LIFT_TOP, q0 + 8, q0 + 10, ELEV_RAIL)
@@ -1882,7 +1884,7 @@ def elevators(fr, key):
         buttons = [(barr, bmin, None)]
         cxl, czl = cont(fr, (CAR_P0 + CAR_P1) / 2, q0 + 9)
         ELEVATORS.append(dict(arr=arr, gmin=gmin, shaft=shaft, floor=start, buttons=buttons,
-                              light=(cxl, yb + CAR_H - 5, czl)))
+                              light=(cxl, yb + CAR_H - 5, czl), levels=list(LEVELS), roof=max(LEVELS)))
         for k in LEVELS:
             y = lvl_y(k)
             fr.box(-T_PART, 0, y, y + 22, q0 + 4, q0 + 14, 0)
@@ -1928,7 +1930,7 @@ def elevators(fr, key):
         fr.paint(22, 44, y - 1, y, 0, 44, STAIR_CONC)
         fr.box(24, 44, y - 1, y, 33, 34, YELLOW_PAINT)                          # keep-clear line
         garr, gmin = frame_shape(fr, 24, 43, y, y + 22, 37, 43, gear_style)
-        SWITCHGEAR.append(dict(arr=garr, gmin=gmin, floor=k, corner=key))
+        SWITCHGEAR.append(dict(arr=garr, gmin=gmin, floor=GEAR_FLOOR0 + k, corner=key))
         fr.box(23, 28, y, y + 14, 8, 24, HVAC)                                  # transformer
         for vv in range(9, 24, 3):
             fr.box(28, 29, y + 2, y + 13, vv, vv + 1, DARK_METAL)               # cooling fins
@@ -2805,10 +2807,10 @@ ftext(Frame(WEST + 192 - 1, PZ1, -1, 0, 0, 1), "MALL", 8, YC - 1, -1, CEIL_LAMP)
 # bay ends (never inside a bay or on a bay line); no bays by the stair core, the ramp tunnel or the mall door.
 AISLE0, AISLE1 = IX0 + 50, PX1 - 2 - 50
 BAY_W = 25
-WEST_BAYS = [166 + i * BAY_W for i in range(3)] + [322 + i * BAY_W for i in range(3)]     # bay start z
+WEST_BAYS = [322 + i * BAY_W for i in range(3)]     # bay start z (v3.56: the south ones gave way to the turning bowl)
 EAST_BAYS = [365]                                         # (the south end is the turn into the ramp down to B2)
 STAIR_RECTS = []
-for key_ in ("SW", "NE"):
+for key_ in ("NE",):                                       # (v3.56: the SW stair no longer goes below the ground floor)
     xa_, xb_, za_, zb_ = corner[key_]._rect(-T_PART, CB, -T_PART, CB)
     STAIR_RECTS.append((xa_ - 1, xb_ + 1, za_ - 1, zb_ + 1))
 def in_stair(x, z, m=4):
@@ -2818,7 +2820,7 @@ for (bays_, xa_, xb_) in ((WEST_BAYS, IX0, AISLE0), (EAST_BAYS, AISLE1, PX1 - 2)
         for zl_ in (z0_, z0_ + BAY_W - 1):
             box(xa_, xb_, YB - 1, YB, zl_, zl_ + 1, PAINT_LINE)
 # no-parking hatching: walkway to the stair door, the mall door, the dumpster corner
-for (xa_, xb_, za_, zb_) in ((IX0, 105, IZ0, 166), (AISLE1, PX1 - 2, 383, PZ1)):
+for (xa_, xb_, za_, zb_) in ((AISLE1, PX1 - 2, 383, PZ1),):
     for x in range(xa_, xb_):
         for z in range(za_, zb_):
             if G[x, YB - 1, z] == STAIR_CONC and not (G[x, YB, z]) and (x + z) % 7 == 0:
@@ -2854,9 +2856,11 @@ for z in (130, 210, 350):
     for tx in (IX0 + 23, PX1 - 23):
         if not in_stair(tx, z + 5, 8):
             tube(tx, z)
+for (tx, z) in ((IX0 + 48, 110), (IX0 + 48, 150)):              # (v3.56) the turning bowl where the SW stair stood
+    tube(tx, z)
 box(IX0 + 10, IX0 + 12, YC - 2, YC, IZ0, PZ1, STEEL); box(PX1 - 12, PX1 - 10, YC - 2, YC, IZ0, PZ1, STEEL)
 ftext(Frame(IX0 - 1, TZ1 - 1, 0, -1, -1, 0), "EXIT", -12, YC - 2, -1, EXIT_SIGN)       # on the wall beside the tunnel mouth
-for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "W", 166), ("stationwagon", "car_c", "W", 216),
+for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "W", 322), ("stationwagon", "car_c", "W", 347),
                                 ("suv1", "car_b", "W", 372)):
     cxp_ = IX0 + 28 if side_ == "W" else PX1 - 2 - 28          # rear 0.2 m off the wall (5.2 m car)
     czp_ = z0_ + BAY_W / 2
@@ -2940,12 +2944,7 @@ box(IX0 + 1, IX0 + 2, YB + 6, YB + 12, 202, 206, CEIL)
 box(IX0 + 30, IX0 + 40, YB + 6, YB + 22, IZ0, IZ0 + 2, DARK_METAL)
 box(IX0 + 33, IX0 + 37, YB + 16, YB + 19, IZ0 + 2, IZ0 + 3, YELLOW_PAINT)
 box(IX0 + 3, IX0 + 7, YB, YB + 9, IZ0 + 2, IZ0 + 6, DUMPSTER)       # (the north-east corner is the turn into the ramp)
-for (cx_, cz_) in ((95, 128), (95, 140), (99, 152)):             # cones parked on the stair walkway, off the aisle
-    cx_ += WEST
-    box(cx_ - 2, cx_ + 3, YB, YB + 1, cz_ - 2, cz_ + 3, TIRE)
-    box(cx_ - 1, cx_ + 2, YB + 1, YB + 5, cz_ - 1, cz_ + 2, WALL_ORANGE)
-    box(cx_ - 1, cx_ + 2, YB + 3, YB + 4, cz_ - 1, cz_ + 2, CEIL)
-    box(cx_, cx_ + 1, YB + 5, YB + 7, cz_, cz_ + 1, WALL_ORANGE)
+# (v3.56: the cones on the old stair walkway are gone -- that is the turning bowl now)
 for (ccx, ccz) in ((IX0 + 2, IZ0 + 2), (PX1 - 6, IZ0 + 2), (IX0 + 2, PZ1 - 4), (PX1 - 6, PZ1 - 4)):
     if garage_ok(ccx, ccx + 3, ccz, ccz + 2, 0):
         box(ccx, ccx + 3, YC - 3, YC, ccz, ccz + 2, DARK_METAL)
@@ -3216,9 +3215,11 @@ def basement_stairs(fr, YB, digit):
             for c_, ch in enumerate(row):
                 if ch == "#":
                     fr.box(W4, W4 + 1, YB + 20 - r_ * 2, YB + 22 - r_ * 2, 4 + gi * 8 + c_ * 2, 6 + gi * 8 + c_ * 2, RED)
-basement_stairs(corner["SW"], YB, "1"); basement_stairs(corner["NE"], YB, "1")
+# (v3.56) only the NE stair continues below the ground floor: the SW one used to stand in the middle of the B1 car
+#      park's south end, where cars now swing round in one go into the ramp down to B2
+basement_stairs(corner["NE"], YB, "1")
 # (v3.46) and on down to B2: SW -> the food street, NE -> the B2 car park
-basement_stairs(corner["SW"], YB2, "2"); basement_stairs(corner["NE"], YB2, "2")
+basement_stairs(corner["NE"], YB2, "2")
 def paint_shell(x0, x1, z0, z1, y0, y1, col, only):
     paint(x0, x1, y0, y1, z0, z0 + 1, col, only); paint(x0, x1, y0, y1, z1 - 1, z1, col, only)
     paint(x0, x0 + 1, y0, y1, z0, z1, col, only); paint(x1 - 1, x1, y0, y1, z0, z1, col, only)
@@ -3496,7 +3497,7 @@ for z in range(R3_TOP, R3_BOT, 6):
 box(PX1 - 3, PX1 - 2, YB + 20, YB + 29, R3_TOP - 34, R3_TOP - 6, TIRE)
 ftext(Frame(PX1 - 3, 0, 0, 1, 1, 0), "TO B2", R3_TOP - 20, YB + 27, -1, POOL_LAMP)
 # B2 floor: bays, aisle, walkway from the food-street door to the NW lift lobby
-W2_BAYS = [166 + i * 25 for i in range(10)]                  # against the west wall (x 88..138), between the cores
+W2_BAYS = [166 + i * 25 for i in range(4)]     # (v3.56: the north ones are the turning bowl at the ramp's foot)                  # against the west wall (x 88..138), between the cores
 E2_BAYS = [IZ0 + 4 + i * 25 for i in range(3)]              # against the divider, south of the ramp (x 186..234)
 for (bays_, xa_, xb_) in ((W2_BAYS, CP_X0, CP_AISLE[0]), (E2_BAYS, CP_AISLE[1] + 2, CP_X1)):
     for z0_ in bays_:
@@ -3571,8 +3572,8 @@ for (lbl_, bays_, west_) in (("C", W2_BAYS, True), ("D", E2_BAYS, False)):
         else:
             ftext(Frame(CP_X1, zc - 6, 0, 1, 1, 0), lbl_ + str(i + 1), 6, Y2 + 22, -1, YELLOW_PAINT)
             box(CP_X1 - 9, CP_X1 - 7, Y2, Y2 + 1, zc - 5, zc + 5, CURB)
-for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "W", W2_BAYS[1]), ("suv1", "car_b", "W", W2_BAYS[7]),
-                                ("castanet-500l-gt", "car_b", "W", W2_BAYS[4]), ("stationwagon", "car_c", "E", E2_BAYS[2])):
+for (kind_, pn, side_, z0_) in (("salooncar", "car_a", "W", W2_BAYS[1]), ("suv1", "car_b", "W", W2_BAYS[3]),
+                                ("stationwagon", "car_c", "E", E2_BAYS[2])):
     cxp_ = CP_X0 + 28 if side_ == "W" else CP_X1 - 28
     CAR_SPOTS.append((kind_, pn, cxp_ - 10, Y2, z0_ + 12.5 - 22, -90 if side_ == "W" else 90))
 # FOOD STREET over the door on the car-park side (neon on a dark board)
@@ -5058,6 +5059,7 @@ HAX0, HAZ0 = HX0 + T, HZ0 + T
 HAX1, HAZ1 = HAX0 + H_SB * SHORT_BAY_W, HAZ0 + H_LB * LONG_BAY_W
 HX1, HZ1 = HAX1 + T, HAZ1 + T
 H_FL = 4                                            # 1F lobby + rooms, 2F-4F rooms
+H_CIRCUIT0 = 10                                     # (v3.56) its floors' power circuits: 10 (1F) .. 13 (4F)
 H_ROOF = fy(H_FL)
 H_ATOP = H_ROOF + 14                                # skylight over the atrium (clerestory below it)
 H_CX = (HAX0 + HAX1) // 2                           # 172: also the shape seam through the building
@@ -5154,6 +5156,15 @@ def build_halcyon():
 
     # ---- structure: foundation, floor slabs, outer walls, ornaments (same profile as the main hotel)
     box(HX0, HX1, G0 - 3, G0, HZ0, HZ1, SLAB)
+    # (v3.56) B1: a car park under the whole building (concrete box dug into the earth), and a tunnel east under
+    #      the lawn into the bottom of the main hotel's car-park ramp -> the main B1 car park
+    box(HX0, HX1, YB - 3, G0 - 3, HZ0, HZ1, SLAB)
+    box(HX0 + T_EXT, HX1 - T_EXT, YB, G0 - 3, HZ0 + T_EXT, HZ1 - T_EXT, 0)
+    box(HX0 + T_EXT, HX1 - T_EXT, YB - 1, YB, HZ0 + T_EXT, HZ1 - T_EXT, STAIR_CONC)
+    box(HX1 - T_EXT, RX0, YB - 1, YB + 33, TZ0 - 2, TZ1 + 2, SLAB)              # tunnel lining
+    box(HX1 - T_EXT, RX0, YB, YB + 32, TZ0, TZ1, 0)                            # 3.2 m clear (vans fit), through
+    box(HX1 - T_EXT, RX0, YB - 1, YB, TZ0, TZ1, STAIR_CONC)                    # the ramp's retaining wall too
+    box(HX1 - T_EXT, RX0, YB - 1, YB, (TZ0 + TZ1) // 2 - 1, (TZ0 + TZ1) // 2 + 1, YELLOW_PAINT)
     for k in range(1, H_FL + 1):
         box(HX0, HX1, fy(k) - SLAB_T, fy(k), HZ0, HZ1, SLAB)
     for (x0, x1, z0, z1) in [(HX0, HX1, HZ0, HZ0 + T_EXT), (HX0, HX1, HZ1 - T_EXT, HZ1),
@@ -5275,27 +5286,72 @@ def build_halcyon():
     _swap_globals(**old)
     for xp_ in (228, 240):                       # NE roof door: jambs under its lintel (that side of the z 360 seam)
         box(xp_, xp_ + 1, H_ROOF, H_ROOF + 21, 358, 360, LINTEL)
-    # NW: two lift doors per floor on the west corridor, a call panel, tape and a notice: OUT OF ORDER
-    xw = HX0 + T_EXT + COR_W                         # the block's corridor face (x of the wall's first layer)
-    zN = HZ1 - T_EXT - COR_W - T_PART                # the block's north edge (z, exclusive)
-    for k in range(H_FL):
-        y = fy(k)
-        for (dz0, dz1) in ((zN - 44, zN - 30), (zN - 22, zN - 8)):
-            box(xw, xw + 1, y, y + 24, dz0 - 1, dz1 + 1, CHROME)                   # frame
-            box(xw, xw + 1, y, y + 23, dz0, dz1, STEEL)                            # leaves
-            box(xw, xw + 1, y, y + 23, (dz0 + dz1) // 2, (dz0 + dz1) // 2 + 1, DARK_METAL)
-            box(xw, xw + 1, y + 24, y + 27, (dz0 + dz1) // 2 - 3, (dz0 + dz1) // 2 + 3, TV_BODY)   # dead indicator
-            for i_ in range(14):                                                    # yellow tape, crossed
-                yy = y + 3 + i_ * 17 // 13
-                box(xw - 1, xw, yy, yy + 2, dz0 + i_, dz0 + i_ + 1, YELLOW_PAINT)
-                box(xw - 1, xw, yy, yy + 2, dz1 - 1 - i_, dz1 - i_, YELLOW_PAINT)
-        zc = zN - 26
-        box(xw - 1, xw, y + 19, y + 23, zc - 1, zc + 1, CHROME)                     # call panel, its button dark
-        box(xw - 2, xw - 1, y + 21, y + 22, zc - 1, zc, TV_BODY)
-        box(xw - 1, xw, y + 5, y + 18, zc - 13, zc + 13, SWITCH)                    # notice taped across the doors
-        nf_ = Frame(xw, 0, 0, 1, 1, 0)
-        ftext(nf_, "OUT OF", zc, y + 16, -2, RED)
-        ftext(nf_, "ORDER", zc, y + 10, -2, RED)
+    # (v3.56) both stairs go on down to the car park under the building
+    old = _swap_globals(G0=G0)
+    basement_stairs(corner["SW"], YB, "1"); basement_stairs(corner["NE"], YB, "1")
+    _swap_globals(**old)
+    # NW: two working lifts (B1 - roof) and the floor's electrical room, built like the main hotel's
+    old = _swap_globals(FLOORS=H_FL, ROOF_Y=H_ROOF, LEVELS=[-1] + list(range(H_FL + 1)), ELEV_PIT=YB - 4,
+                        GEAR_FLOOR0=H_CIRCUIT0)
+    elevators(corner["NW"], "HNW")
+    _swap_globals(**old)
+    # ---- B1 car park: bays along both long walls, a column island down the middle, tube lights, signs, cars
+    YCq = G0 - SLAB_T
+    H_B1_WEST = list(range(200, 350, 25))                                       # bay starts (z), west row
+    H_B1_EAST = list(range(130, 255, 25)) + [320]                               # east row (tunnel gap 255..320)
+    for (zs_, xa_, xb_, nose) in ((H_B1_WEST, HX0 + T_EXT, 118, "W"), (H_B1_EAST, 226, HX1 - T_EXT, "E")):
+        for z0_ in zs_ + [zs_[-1] + 25] if nose == "W" else zs_:
+            box(xa_, xb_, YB - 1, YB, z0_, z0_ + 1, PAINT_LINE)
+        if nose == "E":
+            for z0_ in (255, 345):
+                box(xa_, xb_, YB - 1, YB, z0_, z0_ + 1, PAINT_LINE)
+        for z0_ in zs_:
+            wx_ = xa_ + 3 if nose == "W" else xb_ - 5
+            box(wx_, wx_ + 2, YB, YB + 1, z0_ + 6, z0_ + 19, YELLOW_PAINT)          # wheel stop
+    for z_ in range(205, 346):                                                    # island: kerb + painted hatching
+        box(168, 176, YB - 1, YB, z_, z_ + 1, YELLOW_PAINT if (z_ // 3) % 2 else STAIR_CONC)
+    for cz_ in (215, 265, 315):                                                   # columns (hazard-striped feet)
+        box(169, 175, YB, YCq, cz_, cz_ + 6, SLAB)
+        for yy in range(YB, YB + 8, 2):
+            box(169, 175, yy, yy + 1, cz_, cz_ + 6, YELLOW_PAINT if (yy // 2) % 2 else TIRE)
+    # aisle arrows (one-way loop: north on the west aisle, south on the east one)
+    for (ax_, zs2, d_) in ((143, range(220, 340, 60), 1), (201, range(340, 220, -60), -1)):
+        for z_ in zs2:
+            box(ax_ - 1, ax_ + 1, YB - 1, YB, z_, z_ + 10 * d_ if d_ > 0 else z_ + 1, PAINT_LINE) if d_ > 0 else \
+                box(ax_ - 1, ax_ + 1, YB - 1, YB, z_ - 10, z_, PAINT_LINE)
+            tip = z_ + 10 if d_ > 0 else z_ - 10
+            for w_ in range(4):
+                box(ax_ - 4 + w_, ax_ + 4 - w_, YB - 1, YB, tip + d_ * w_, tip + d_ * w_ + 1, PAINT_LINE)
+    n_t = 0
+    for (tx_, tz_) in [(141, z_) for z_ in range(150, 420, 45)] + [(201, z_) for z_ in range(150, 420, 45)] + \
+                      [(72, 150), (72, 380), (270, 380), (300, 280), (335, 280)]:
+        n_t += 1
+        yc_ = YCq if tx_ < HX1 else YB + 32
+        box(tx_ - 1, tx_ + 3, yc_ - 1, yc_, tz_, tz_ + 10, STEEL)
+        box(tx_, tx_ + 2, yc_ - 2, yc_ - 1, tz_, tz_ + 10, CEIL_LAMP)
+        light(tx_ + 1, yc_ - 4, tz_ + 5, (0.86, 0.95, 1.0), 1.8, 0.3, "flicker" if n_t % 5 == 2 else "")
+    for (sx_, sz_) in ((141, 180), (201, 330), (100, 390), (250, 200)):
+        SOUND_SPOTS.append(("garage", sx_, YB + 15, sz_))
+    # signs: B1 + the hotel name on the west wall, MAIN HOTEL beside the tunnel mouth, HALCYON at its far end
+    wf_ = Frame(HX0 + T_EXT - 1, 0, 0, -1, -1, 0)                                # west wall, read looking west
+    box(HX0 + T_EXT, HX0 + T_EXT + 1, YB + 21, YB + 33, 236, 314, BLANKET_C)   # (above a parked van's roof)
+    ftext(wf_, "B1", -300, YB + 32, -2, YELLOW_PAINT)
+    ftext(wf_, "HALCYON", -260, YB + 32, -2, CEIL)
+    ftext(wf_, "PARKING", -260, YB + 27, -2, CEIL)
+    ef_ = Frame(HX1 - T_EXT, 0, 0, 1, 1, 0)                                      # east wall, read looking east
+    box(HX1 - T_EXT - 1, HX1 - T_EXT, YB + 18, YB + 31, 316, 352, BLANKET_C)
+    ftext(ef_, "MAIN", 334, YB + 29, -2, CEIL)
+    ftext(ef_, "HOTEL", 334, YB + 23, -2, CEIL)
+    for i_ in range(5):                                                          # arrow pointing to the tunnel (-z)
+        box(HX1 - T_EXT - 2, HX1 - T_EXT - 1, YB + 25 - i_, YB + 26 + i_, 318 - i_, 319 - i_, YELLOW_PAINT)
+    for z_ in range(TZ0 - 2, TZ1 + 2, 10):                                        # hazard band over the mouth
+        paint(HX1 - T_EXT - 1, HX1 - T_EXT, YB + 32, YB + 33, z_, z_ + 5, YELLOW_PAINT, [SLAB])
+    rf_ = Frame(RX0 - 1, 0, 0, -1, -1, 0)                                         # on the main ramp, over the tunnel
+    ftext(rf_, "HALCYON", -(TZ0 + TZ1) // 2, YB + 38, -1, MEMORY)
+    light(RX0 + 4, YB + 35, (TZ0 + TZ1) // 2, (1.0, 0.5, 0.78), 1.6, 0.3)
+    CAR_SPOTS.append(("salooncar", "car_a", 91 - 10, YB, 262 - 22, -90))
+    CAR_SPOTS.append(("suv1", "car_c", 253 - 10, YB, 167 - 22, 90))
+
     # SE: ice + vending alcove open to the east corridor, a fluorescent tube that buzzes
     fe = corner["SE"]
     for k in range(H_FL):
@@ -5489,7 +5545,7 @@ def build_halcyon():
         light(gx_ + 0.5, gy_ - 4.5, gz_ + 0.5, (1.0, 0.86, 0.8), 3.2, 0.4)
 
     # ---- roof: plant, vents, and the pink HALCYON sign on the south parapet (own lamp shapes, like HOTEL)
-    for (x0, z0) in ((HX0 + 30, HZ1 - 70), (HX1 - 50, HZ0 + 60)):
+    for (x0, z0) in ((HX0 + 30, 250), (HX1 - 50, HZ0 + 60)):
         box(x0, x0 + 20, H_ROOF, H_ROOF + 12, z0, z0 + 14, HVAC)
         box(x0 + 2, x0 + 18, H_ROOF + 12, H_ROOF + 13, z0 + 2, z0 + 12, DARK_METAL)
         box(x0 + 4, x0 + 9, H_ROOF + 13, H_ROOF + 14, z0 + 4, z0 + 9, STEEL)
@@ -5543,6 +5599,11 @@ if WEST:
 
 
 def power_floor(gx, gy, gz):
+    if WEST and HX0 <= gx < HX1 and HZ0 <= gz < HZ1 and not (HAX0 <= gx < HAX1 and HAZ0 <= gz < HAZ1):
+        for k in range(H_FL):                         # (v3.56) HALCYON: its own circuits 10..13
+            if fy(k) - SLAB_T <= gy < fy(k) + FH - SLAB_T:
+                return H_CIRCUIT0 + k
+        return None
     if gy >= ROOF_Y - 1:
         for (x0_, x1_, z0_, z1_) in ROOF_POWER_ZONES:
             if x0_ <= gx < x1_ and z0_ <= gz < z1_:
@@ -5697,27 +5758,29 @@ def export():
         sx, sy, sz = arr.shape
         BANQUET_GLOWS.append(dict(file=lamp_files[key], arr=arr, gmin=tuple(int(v) for v in mn),
                                   pos=((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)))
-    gx0_, gx1_, gy0_, gy1_, gz0_, gz1_ = bx0, bx1, G0 - SLAB_T, min(H, 256), bz0, bz1
-    glab_, gn_ = _ndi.label(np.isin(G[gx0_:gx1_, gy0_:gy1_, gz0_:gz1_], GLOW_IDX))
     GLOWS.clear()
-    for i_, sl_ in enumerate(_ndi.find_objects(glab_)):
-        V = np.argwhere(glab_[sl_] == i_ + 1) + [sl_[0].start + gx0_, sl_[1].start + gy0_, sl_[2].start + gz0_]
-        c_ = V.mean(0)
-        k_ = power_floor(int(c_[0]), int(c_[1]), int(c_[2]))
-        if k_ is None or len(V) < 2:                  # (single dots: the elevator floor dials, own supply)
-            continue
-        mn = V.min(0); mx = V.max(0) + 1
-        arr = np.zeros(tuple(mx - mn), np.uint8)
-        arr[V[:, 0] - mn[0], V[:, 1] - mn[1], V[:, 2] - mn[2]] = G[V[:, 0], V[:, 1], V[:, 2]]
-        G[V[:, 0], V[:, 1], V[:, 2]] = 0
-        key = (arr.shape, arr.tobytes())
-        if key not in lamp_files:
-            lamp_files[key] = f"lamp_{len(lamp_files)}"
-            write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr)
-        sx, sy, sz = arr.shape
-        in_ph = all(PH_INTERIOR[2 * a] <= c_[a] < PH_INTERIOR[2 * a + 1] for a in range(3))
-        GLOWS.append(dict(file=lamp_files[key], floor=k_, arr=arr, gmin=tuple(int(v) for v in mn), room="ph" if in_ph else None,
-                          pos=((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)))
+    for (gx0_, gx1_, gz0_, gz1_) in [(bx0, bx1, bz0, bz1)] + ([(HX0, HX1, HZ0, HZ1)] if WEST else []):   # (+ HALCYON, v3.56)
+      gy0_, gy1_ = G0 - SLAB_T, min(H, 256)
+      west_ = gx1_ <= WEST
+      glab_, gn_ = _ndi.label(np.isin(G[gx0_:gx1_, gy0_:gy1_, gz0_:gz1_], GLOW_IDX))
+      for i_, sl_ in enumerate(_ndi.find_objects(glab_)):
+          V = np.argwhere(glab_[sl_] == i_ + 1) + [sl_[0].start + gx0_, sl_[1].start + gy0_, sl_[2].start + gz0_]
+          c_ = V.mean(0)
+          k_ = power_floor(int(c_[0]), int(c_[1]), int(c_[2]))
+          if k_ is None or len(V) < 2:                  # (single dots: the elevator floor dials, own supply)
+              continue
+          mn = V.min(0); mx = V.max(0) + 1
+          arr = np.zeros(tuple(mx - mn), np.uint8)
+          arr[V[:, 0] - mn[0], V[:, 1] - mn[1], V[:, 2] - mn[2]] = G[V[:, 0], V[:, 1], V[:, 2]]
+          G[V[:, 0], V[:, 1], V[:, 2]] = 0
+          key = (arr.shape, arr.tobytes(), west_)
+          if key not in lamp_files:
+              lamp_files[key] = f"lamp_{len(lamp_files)}"
+              write_vox(os.path.join(VOXDIR, lamp_files[key] + ".vox"), arr, west=west_)
+          sx, sy, sz = arr.shape
+          in_ph = all(PH_INTERIOR[2 * a] <= c_[a] < PH_INTERIOR[2 * a + 1] for a in range(3))
+          GLOWS.append(dict(file=lamp_files[key], floor=k_, arr=arr, gmin=tuple(int(v) for v in mn), room="ph" if in_ph else None,
+                            pos=((mn[0] + sx // 2) * 0.1 - CX, mn[1] * 0.1, (mn[2] + sz - sz // 2) * 0.1 - CZ)))
     # (v3.53) every glowing voxel still in the world (signs, neon, markers, screens, the atrium cove...)
     #      becomes its own small static shape: the game darkens a damaged shape's emissive voxels, so a
     #      shot anywhere in a big world shape used to switch off every sign embedded in it
@@ -6044,6 +6107,9 @@ def export():
     zone("hall", ix0, ix1, DY - 20, DY + HALL_H + 2, iz0, iz1)
     zone("connector", cxN - CW, cxN + CW, G0 - 2, DY + 30, bz1 - 20, AZ0 + 4)
     # the hotel's public-address announcement (main.lua plays it now and then, softly, anywhere inside)
+    if WEST:                                          # (v3.56) HALCYON too, B1 to its roof
+        xml.append(f'\t<location tags="pazone x0={HX0 * 0.1 - CX:.2f} x1={HX1 * 0.1 - CX:.2f} y0={(YB - 2) * 0.1:.2f} y1={(H_ROOF + 2) * 0.1:.2f} '
+                   f'z0={HZ0 * 0.1 - CZ:.2f} z1={HZ1 * 0.1 - CZ:.2f}" pos="{f3(((HX0 + HX1) * 0.05 - CX, G0 * 0.1, (HZ0 + HZ1) * 0.05 - CZ))}"/>\n')
     xml.append(f'\t<location tags="pazone x0={bx0 * 0.1 - CX:.2f} x1={bx1 * 0.1 - CX:.2f} y0={(YB2 - 2) * 0.1:.2f} y1={(ROOF_Y + 2) * 0.1:.2f} '
                f'z0={bz0 * 0.1 - CZ:.2f} z1={bz1 * 0.1 - CZ:.2f}" pos="{f3(((bx0 + bx1) * 0.05 - CX, G0 * 0.1, (bz0 + bz1) * 0.05 - CZ))}"/>\n')
     for (ln_, (hx_, hz_), spots_) in BOWL_LANES:                       # bowling: head pin + the lane's two ball spots
@@ -6067,7 +6133,7 @@ def export():
     xml.append('\t<group name="elevators" pos="0 0 0">\n')
     for e in ELEVATORS:
         bo = origin(e["arr"], e["gmin"])
-        xml.append(f'\t\t<body name="car_{e["shaft"]}" tags="elevcar shaft={e["shaft"]} floor={e["floor"]}" '
+        xml.append(f'\t\t<body name="car_{e["shaft"]}" tags="elevcar shaft={e["shaft"]} floor={e["floor"]} roof={e.get("roof", 6)}" '
                    f'pos="{f3(bo)}" dynamic="true">\n')
         LX, LY, LZ = np.nonzero(e["arr"] == CEIL_LAMP)
         mid = np.array(e["arr"].shape) / 2
@@ -6119,7 +6185,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.55\n"
+        f.write("name = Liminal Atrium v3.56\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

@@ -287,6 +287,7 @@ local function elevInit()
 			vox0 = count, broken = false, checkTimer = 0,
 			x = t.pos[1], z = t.pos[3], rot = t.rot, y = t.pos[2],
 			base = t.pos[2] - floorOff(f), state = "opening", hold = HOLD_TIME, doors = {},
+			roof = tagNum(b, "roof", 6),
 		}
 		cars[#cars + 1] = c
 		carByShaft[c.shaft] = c
@@ -348,17 +349,20 @@ end
 
 -- floor keypad in the cab: type the floor (1-6, B or 0 = B1, B2 = B2, R or 7 = roof), Enter to go
 elevPad = nil
-function floorName(f)
-	if f <= -2 then return "B2" elseif f < 0 then return "B1" elseif f >= 6 then return "R" end
+-- roof = the car's top stop (main hotel 6 = 7th level, HALCYON 4 = 5th level; tag "roof" on the cab)
+function floorName(f, roof)
+	roof = roof or 6
+	if f <= -2 then return "B2" elseif f < 0 then return "B1" elseif f >= roof then return "R" end
 	return tostring(f + 1)
 end
-function parseFloor(sx)
+function parseFloor(sx, roof)
+	roof = roof or 6
 	sx = string.upper(sx or "")
 	if sx == "B" or sx == "B1" or sx == "0" or sx == "-1" then return -1 end
 	if sx == "B2" or sx == "00" or sx == "-2" then return -2 end
-	if sx == "R" or sx == "7" then return 6 end
+	if sx == "R" or sx == tostring(roof + 1) then return roof end
 	local n = tonumber(sx)
-	if n and n >= 1 and n <= 6 and math.floor(n) == n then return n - 1 end
+	if n and n >= 1 and n <= roof and math.floor(n) == n then return n - 1 end
 	return nil
 end
 function padPress(k)
@@ -367,7 +371,7 @@ function padPress(k)
 	if k == "close" then elevPad = nil; return end
 	if k == "back" then p.entry = string.sub(p.entry, 1, -2); return end
 	if k == "go" then
-		local f = parseFloor(p.entry)
+		local f = parseFloor(p.entry, p.car.roof)
 		if f ~= nil and p.car.doors[f] ~= nil and not p.car.broken then
 			PlaySound(snd.click, cabCenter(p.car), 0.8)
 			request(p.car, f)
@@ -411,7 +415,7 @@ function drawPad()
 		UiFont("bold.ttf", 40); UiColor(0.75, 0.9, 1, 1)
 		UiText((p.msgT > 0 and p.msg) or (p.entry ~= "" and p.entry or "_"))
 		UiFont("regular.ttf", 17); UiColor(0.8, 0.8, 0.9, 1)
-		UiTranslate(0, 50); UiText("now at floor " .. floorName(p.car.floor) .. "    1-6,  B = B1,  B 2 = B2,  R = roof")
+		UiTranslate(0, 50); UiText("now at floor " .. floorName(p.car.floor, p.car.roof) .. "    1-" .. p.car.roof .. ",  B = B1" .. (p.car.doors[-2] and ",  B 2 = B2" or "") .. ",  R = roof")
 		UiFont("bold.ttf", 28)
 		local keys = { { "1", "2", "3" }, { "4", "5", "6" }, { "B", "R", "<" } }
 		UiTranslate(-kw - 8, 50)
@@ -882,6 +886,7 @@ end
 local roomsOfFloor = nil
 
 local function circuitName(k)
+	if k >= 10 then return "HALCYON floor " .. (k - 9) end     -- (v3.56) the sister hotel's circuits 10..13
 	if k >= ROOF_CIRCUIT then return "Roof (glasshouse + penthouse)" end
 	return "Floor " .. (k + 1)
 end
