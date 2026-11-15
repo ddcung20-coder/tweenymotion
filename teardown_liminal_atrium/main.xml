@@ -442,75 +442,76 @@
 		<body name="curtain383" tags="curtain cid=191 sx=0.60 sz=0.00 startopen" pos="-39.8 17.2 -1.9"><vox pos="0 0 0" file="MOD/vox/curtain_29.vox" object="shape"/></body>
 	</group>
 	<group name="smartglass" pos="0 0 0">
-		<body name="smartglass0" tags="smartglass pane=0" pos="14.7 25.7 -14.9"><vox pos="0 0 0" file="MOD/vox/smartglass_0.vox" object="shape"/></body>
-		<body name="smartglass1" tags="smartglass pane=0 frost" pos="14.7 25.7 -14.9"><vox pos="0 0 0" file="MOD/vox/smartglass_1.vox" object="shape"/></body>
-		<body name="smartglass2" tags="smartglass pane=1" pos="14.7 25.7 -13.5"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass3" tags="smartglass pane=1 frost" pos="14.7 25.7 -13.5"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass4" tags="smartglass pane=2" pos="14.7 25.7 -12.1"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass5" tags="smartglass pane=2 frost" pos="14.7 25.7 -12.1"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass6" tags="smartglass pane=3" pos="14.7 25.7 -10.7"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass7" tags="smartglass pane=3 frost" pos="14.7 25.7 -10.7"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass8" tags="smartglass pane=4" pos="14.7 25.7 -9.3"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass9" tags="smartglass pane=4 frost" pos="14.7 25.7 -9.3"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass10" tags="smartglass pane=5" pos="14.7 25.7 -7.9"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass11" tags="smartglass pane=5 frost" pos="14.7 25.7 -7.9"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass12" tags="smartglass pane=6" pos="14.7 25.7 -6.5"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass13" tags="smartglass pane=6 frost" pos="14.7 25.7 -6.5"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass14" tags="smartglass pane=7" pos="14.7 25.7 -5.1"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass15" tags="smartglass pane=7 frost" pos="14.7 25.7 -5.1"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass16" tags="smartglass pane=8" pos="14.7 25.7 -3.7"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass17" tags="smartglass pane=8 frost" pos="14.7 25.7 -3.7"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass18" tags="smartglass pane=9" pos="14.7 25.7 -2.3"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass19" tags="smartglass pane=9 frost" pos="14.7 25.7 -2.3"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass20" tags="smartglass pane=10" pos="14.7 25.7 -0.9"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass21" tags="smartglass pane=10 frost" pos="14.7 25.7 -0.9"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass22" tags="smartglass pane=11" pos="14.7 25.7 0.5"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
-		<body name="smartglass23" tags="smartglass pane=11 frost" pos="14.7 25.7 0.5"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
-		<body name="smartglass24" tags="smartglass pane=12" pos="14.7 25.7 1.6"><vox pos="0 0 0" file="MOD/vox/smartglass_4.vox" object="shape"/></body>
-		<body name="smartglass25" tags="smartglass pane=12 frost" pos="14.7 25.7 1.6"><vox pos="0 0 0" file="MOD/vox/smartglass_5.vox" object="shape"/></body>
-		<body name="smartglass26" tags="smartglass pane=13" pos="10.1 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_6.vox" object="shape"/></body>
-		<body name="smartglass27" tags="smartglass pane=13 frost" pos="10.1 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_7.vox" object="shape"/></body>
-		<body name="smartglass28" tags="smartglass pane=14" pos="11.3 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_8.vox" object="shape"/></body>
-		<body name="smartglass29" tags="smartglass pane=14 frost" pos="11.3 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_9.vox" object="shape"/></body>
-		<body name="smartglass30" tags="smartglass pane=15" pos="12.7 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_10.vox" object="shape"/></body>
-		<body name="smartglass31" tags="smartglass pane=15 frost" pos="12.7 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_11.vox" object="shape"/></body>
-		<body name="smartglass32" tags="smartglass pane=16" pos="14 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_12.vox" object="shape"/></body>
-		<body name="smartglass33" tags="smartglass pane=16 frost" pos="14 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_13.vox" object="shape"/></body>
+		<body name="smartglass0" tags="smartglass pane=0 oneway" pos="14.7 25.7 -14.9"><vox pos="0 0 0" file="MOD/vox/smartglass_0.vox" object="shape"/></body>
+		<body name="smartglass1" tags="smartglass pane=0 frost oneway" pos="14.7 25.7 -14.9"><vox pos="0 0 0" file="MOD/vox/smartglass_1.vox" object="shape"/></body>
+		<body name="smartglass2" tags="smartglass pane=1 oneway" pos="14.7 25.7 -13.5"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass3" tags="smartglass pane=1 frost oneway" pos="14.7 25.7 -13.5"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass4" tags="smartglass pane=2 oneway" pos="14.7 25.7 -12.1"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass5" tags="smartglass pane=2 frost oneway" pos="14.7 25.7 -12.1"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass6" tags="smartglass pane=3 oneway" pos="14.7 25.7 -10.7"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass7" tags="smartglass pane=3 frost oneway" pos="14.7 25.7 -10.7"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass8" tags="smartglass pane=4 oneway" pos="14.7 25.7 -9.3"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass9" tags="smartglass pane=4 frost oneway" pos="14.7 25.7 -9.3"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass10" tags="smartglass pane=5 oneway" pos="14.7 25.7 -7.9"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass11" tags="smartglass pane=5 frost oneway" pos="14.7 25.7 -7.9"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass12" tags="smartglass pane=6 oneway" pos="14.7 25.7 -6.5"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass13" tags="smartglass pane=6 frost oneway" pos="14.7 25.7 -6.5"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass14" tags="smartglass pane=7 oneway" pos="14.7 25.7 -5.1"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass15" tags="smartglass pane=7 frost oneway" pos="14.7 25.7 -5.1"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass16" tags="smartglass pane=8 oneway" pos="14.7 25.7 -3.7"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass17" tags="smartglass pane=8 frost oneway" pos="14.7 25.7 -3.7"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass18" tags="smartglass pane=9 oneway" pos="14.7 25.7 -2.3"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass19" tags="smartglass pane=9 frost oneway" pos="14.7 25.7 -2.3"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass20" tags="smartglass pane=10 oneway" pos="14.7 25.7 -0.9"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass21" tags="smartglass pane=10 frost oneway" pos="14.7 25.7 -0.9"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass22" tags="smartglass pane=11 oneway" pos="14.7 25.7 0.5"><vox pos="0 0 0" file="MOD/vox/smartglass_2.vox" object="shape"/></body>
+		<body name="smartglass23" tags="smartglass pane=11 frost oneway" pos="14.7 25.7 0.5"><vox pos="0 0 0" file="MOD/vox/smartglass_3.vox" object="shape"/></body>
+		<body name="smartglass24" tags="smartglass pane=12 oneway" pos="14.7 25.7 1.6"><vox pos="0 0 0" file="MOD/vox/smartglass_4.vox" object="shape"/></body>
+		<body name="smartglass25" tags="smartglass pane=12 frost oneway" pos="14.7 25.7 1.6"><vox pos="0 0 0" file="MOD/vox/smartglass_5.vox" object="shape"/></body>
+		<body name="smartglass26" tags="smartglass pane=13 oneway" pos="10.1 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_6.vox" object="shape"/></body>
+		<body name="smartglass27" tags="smartglass pane=13 frost oneway" pos="10.1 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_7.vox" object="shape"/></body>
+		<body name="smartglass28" tags="smartglass pane=14 oneway" pos="11.3 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_8.vox" object="shape"/></body>
+		<body name="smartglass29" tags="smartglass pane=14 frost oneway" pos="11.3 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_9.vox" object="shape"/></body>
+		<body name="smartglass30" tags="smartglass pane=15 oneway" pos="12.7 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_10.vox" object="shape"/></body>
+		<body name="smartglass31" tags="smartglass pane=15 frost oneway" pos="12.7 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_11.vox" object="shape"/></body>
+		<body name="smartglass32" tags="smartglass pane=16 oneway" pos="14 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_12.vox" object="shape"/></body>
+		<body name="smartglass33" tags="smartglass pane=16 frost oneway" pos="14 25.7 -15.5"><vox pos="0 0 0" file="MOD/vox/smartglass_13.vox" object="shape"/></body>
 		<body name="smartglass34" tags="smartglass pane=17" pos="11.8 25.6 -14.8"><vox pos="0 0 0" file="MOD/vox/smartglass_14.vox" object="shape"/></body>
 		<body name="smartglass35" tags="smartglass pane=17 frost" pos="11.8 25.6 -14.8"><vox pos="0 0 0" file="MOD/vox/smartglass_15.vox" object="shape"/></body>
-		<body name="smartglass36" tags="smartglass pane=18" pos="9.4 25.7 -21"><vox pos="0 0 0" file="MOD/vox/smartglass_16.vox" object="shape"/></body>
-		<body name="smartglass37" tags="smartglass pane=18 frost" pos="9.4 25.7 -21"><vox pos="0 0 0" file="MOD/vox/smartglass_17.vox" object="shape"/></body>
-		<body name="smartglass38" tags="smartglass pane=19" pos="9.4 25.7 -19.8"><vox pos="0 0 0" file="MOD/vox/smartglass_16.vox" object="shape"/></body>
-		<body name="smartglass39" tags="smartglass pane=19 frost" pos="9.4 25.7 -19.8"><vox pos="0 0 0" file="MOD/vox/smartglass_17.vox" object="shape"/></body>
-		<body name="smartglass40" tags="smartglass pane=20" pos="9.4 25.7 -18.6"><vox pos="0 0 0" file="MOD/vox/smartglass_16.vox" object="shape"/></body>
-		<body name="smartglass41" tags="smartglass pane=20 frost" pos="9.4 25.7 -18.6"><vox pos="0 0 0" file="MOD/vox/smartglass_17.vox" object="shape"/></body>
-		<body name="smartglass42" tags="smartglass pane=21" pos="9.4 25.7 -17.4"><vox pos="0 0 0" file="MOD/vox/smartglass_16.vox" object="shape"/></body>
-		<body name="smartglass43" tags="smartglass pane=21 frost" pos="9.4 25.7 -17.4"><vox pos="0 0 0" file="MOD/vox/smartglass_17.vox" object="shape"/></body>
-		<body name="smartglass44" tags="smartglass pane=22" pos="9.4 25.7 -16.2"><vox pos="0 0 0" file="MOD/vox/smartglass_16.vox" object="shape"/></body>
-		<body name="smartglass45" tags="smartglass pane=22 frost" pos="9.4 25.7 -16.2"><vox pos="0 0 0" file="MOD/vox/smartglass_17.vox" object="shape"/></body>
-		<body name="smartglass46" tags="smartglass pane=23" pos="10 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_18.vox" object="shape"/></body>
-		<body name="smartglass47" tags="smartglass pane=23 frost" pos="10 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_19.vox" object="shape"/></body>
-		<body name="smartglass48" tags="smartglass pane=24" pos="11.2 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_18.vox" object="shape"/></body>
-		<body name="smartglass49" tags="smartglass pane=24 frost" pos="11.2 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_19.vox" object="shape"/></body>
-		<body name="smartglass50" tags="smartglass pane=25" pos="12.4 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_20.vox" object="shape"/></body>
-		<body name="smartglass51" tags="smartglass pane=25 frost" pos="12.4 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_21.vox" object="shape"/></body>
-		<body name="smartglass52" tags="smartglass pane=26" pos="13.6 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_22.vox" object="shape"/></body>
-		<body name="smartglass53" tags="smartglass pane=26 frost" pos="13.6 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_23.vox" object="shape"/></body>
-		<body name="smartglass54" tags="smartglass pane=27" pos="14.5 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_24.vox" object="shape"/></body>
-		<body name="smartglass55" tags="smartglass pane=27 frost" pos="14.5 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_25.vox" object="shape"/></body>
-		<body name="smartglass56" tags="smartglass pane=28" pos="14.7 25.7 -21.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
-		<body name="smartglass57" tags="smartglass pane=28 frost" pos="14.7 25.7 -21.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
-		<body name="smartglass58" tags="smartglass pane=29" pos="14.7 25.7 -20.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
-		<body name="smartglass59" tags="smartglass pane=29 frost" pos="14.7 25.7 -20.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
-		<body name="smartglass60" tags="smartglass pane=30" pos="14.7 25.7 -19.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
-		<body name="smartglass61" tags="smartglass pane=30 frost" pos="14.7 25.7 -19.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
-		<body name="smartglass62" tags="smartglass pane=31" pos="14.7 25.7 -18.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
-		<body name="smartglass63" tags="smartglass pane=31 frost" pos="14.7 25.7 -18.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
-		<body name="smartglass64" tags="smartglass pane=32" pos="14.7 25.7 -17.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
-		<body name="smartglass65" tags="smartglass pane=32 frost" pos="14.7 25.7 -17.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
-		<body name="smartglass66" tags="smartglass pane=33" pos="14.7 25.7 -16.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
-		<body name="smartglass67" tags="smartglass pane=33 frost" pos="14.7 25.7 -16.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
+		<body name="smartglass36" tags="smartglass pane=18 oneway" pos="9.4 25.7 -21"><vox pos="0 0 0" file="MOD/vox/smartglass_16.vox" object="shape"/></body>
+		<body name="smartglass37" tags="smartglass pane=18 frost oneway" pos="9.4 25.7 -21"><vox pos="0 0 0" file="MOD/vox/smartglass_17.vox" object="shape"/></body>
+		<body name="smartglass38" tags="smartglass pane=19 oneway" pos="9.4 25.7 -19.8"><vox pos="0 0 0" file="MOD/vox/smartglass_16.vox" object="shape"/></body>
+		<body name="smartglass39" tags="smartglass pane=19 frost oneway" pos="9.4 25.7 -19.8"><vox pos="0 0 0" file="MOD/vox/smartglass_17.vox" object="shape"/></body>
+		<body name="smartglass40" tags="smartglass pane=20 oneway" pos="9.4 25.7 -18.6"><vox pos="0 0 0" file="MOD/vox/smartglass_16.vox" object="shape"/></body>
+		<body name="smartglass41" tags="smartglass pane=20 frost oneway" pos="9.4 25.7 -18.6"><vox pos="0 0 0" file="MOD/vox/smartglass_17.vox" object="shape"/></body>
+		<body name="smartglass42" tags="smartglass pane=21 oneway" pos="9.4 25.7 -17.4"><vox pos="0 0 0" file="MOD/vox/smartglass_16.vox" object="shape"/></body>
+		<body name="smartglass43" tags="smartglass pane=21 frost oneway" pos="9.4 25.7 -17.4"><vox pos="0 0 0" file="MOD/vox/smartglass_17.vox" object="shape"/></body>
+		<body name="smartglass44" tags="smartglass pane=22 oneway" pos="9.4 25.7 -16.2"><vox pos="0 0 0" file="MOD/vox/smartglass_16.vox" object="shape"/></body>
+		<body name="smartglass45" tags="smartglass pane=22 frost oneway" pos="9.4 25.7 -16.2"><vox pos="0 0 0" file="MOD/vox/smartglass_17.vox" object="shape"/></body>
+		<body name="smartglass46" tags="smartglass pane=23 oneway" pos="10 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_18.vox" object="shape"/></body>
+		<body name="smartglass47" tags="smartglass pane=23 frost oneway" pos="10 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_19.vox" object="shape"/></body>
+		<body name="smartglass48" tags="smartglass pane=24 oneway" pos="11.2 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_18.vox" object="shape"/></body>
+		<body name="smartglass49" tags="smartglass pane=24 frost oneway" pos="11.2 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_19.vox" object="shape"/></body>
+		<body name="smartglass50" tags="smartglass pane=25 oneway" pos="12.4 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_20.vox" object="shape"/></body>
+		<body name="smartglass51" tags="smartglass pane=25 frost oneway" pos="12.4 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_21.vox" object="shape"/></body>
+		<body name="smartglass52" tags="smartglass pane=26 oneway" pos="13.6 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_22.vox" object="shape"/></body>
+		<body name="smartglass53" tags="smartglass pane=26 frost oneway" pos="13.6 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_23.vox" object="shape"/></body>
+		<body name="smartglass54" tags="smartglass pane=27 oneway" pos="14.5 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_24.vox" object="shape"/></body>
+		<body name="smartglass55" tags="smartglass pane=27 frost oneway" pos="14.5 25.7 -21.6"><vox pos="0 0 0" file="MOD/vox/smartglass_25.vox" object="shape"/></body>
+		<body name="smartglass56" tags="smartglass pane=28 oneway" pos="14.7 25.7 -21.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
+		<body name="smartglass57" tags="smartglass pane=28 frost oneway" pos="14.7 25.7 -21.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
+		<body name="smartglass58" tags="smartglass pane=29 oneway" pos="14.7 25.7 -20.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
+		<body name="smartglass59" tags="smartglass pane=29 frost oneway" pos="14.7 25.7 -20.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
+		<body name="smartglass60" tags="smartglass pane=30 oneway" pos="14.7 25.7 -19.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
+		<body name="smartglass61" tags="smartglass pane=30 frost oneway" pos="14.7 25.7 -19.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
+		<body name="smartglass62" tags="smartglass pane=31 oneway" pos="14.7 25.7 -18.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
+		<body name="smartglass63" tags="smartglass pane=31 frost oneway" pos="14.7 25.7 -18.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
+		<body name="smartglass64" tags="smartglass pane=32 oneway" pos="14.7 25.7 -17.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
+		<body name="smartglass65" tags="smartglass pane=32 frost oneway" pos="14.7 25.7 -17.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
+		<body name="smartglass66" tags="smartglass pane=33 oneway" pos="14.7 25.7 -16.1"><vox pos="0 0 0" file="MOD/vox/smartglass_26.vox" object="shape"/></body>
+		<body name="smartglass67" tags="smartglass pane=33 frost oneway" pos="14.7 25.7 -16.1"><vox pos="0 0 0" file="MOD/vox/smartglass_27.vox" object="shape"/></body>
 	</group>
+	<location tags="phzone x0=9.40 x1=14.80 y0=25.40 y1=29.60 z0=-21.70 z1=1.90" pos="12.1 25.6 -9.9"/>
 	<group name="electrical" pos="0 0 0">
 		<vox tags="switchgear floor=0 corner=NW" pos="-9.5 7.6 5.1" file="MOD/vox/switchgear_0.vox" object="shape"/>
 		<vox tags="switchgear floor=1 corner=NW" pos="-9.5 10.6 5.1" file="MOD/vox/switchgear_0.vox" object="shape"/>

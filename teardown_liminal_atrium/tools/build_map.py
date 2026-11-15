@@ -4908,7 +4908,9 @@ PH_GLASS_ZONES = [(PH_X1 - 1, PH_X1, PY + 1, PCEIL - 1, PH_Z0, PH_Z1),          
                   (PH_X0, PH_X1, PY + 1, PY + 24, PT_Z0, PT_Z0 + 1),                 # terrace south
                   (PH_X1 - 1, PH_X1, PY + 1, PY + 10, PT_Z0, PH_Z0)]                 # terrace east (low)
 from scipy import ndimage as _ndi_sg
-for (x0_, x1_, y0_, y1_, z0_, z1_) in PH_GLASS_ZONES:
+PH_ONEWAY_RGB = {CHROME: (92, 106, 124)}     # (v3.66) the outside face of one-way privacy glass: smoky mirror, opaque
+for zi_, (x0_, x1_, y0_, y1_, z0_, z1_) in enumerate(PH_GLASS_ZONES):
+    oneway_ = zi_ != 2                         # (the shower screen stays frosted glass, both sides)
     reg_ = G[x0_:x1_, y0_:y1_, z0_:z1_]
     lab_, n_ = _ndi_sg.label(np.isin(reg_, [GLASS, GLASS_EXT]))
     for i_, sl_ in enumerate(_ndi_sg.find_objects(lab_)):
@@ -4916,8 +4918,9 @@ for (x0_, x1_, y0_, y1_, z0_, z1_) in PH_GLASS_ZONES:
         clear_ = np.where(m_, reg_[sl_], 0).astype(np.uint8)
         gm_ = (x0_ + sl_[0].start, y0_ + sl_[1].start, z0_ + sl_[2].start)
         pane_ = len(SMART_GLASS) // 2
-        SMART_GLASS.append(dict(arr=clear_, gmin=gm_, frost=False, pane=pane_))
-        SMART_GLASS.append(dict(arr=np.where(m_, FROST, 0).astype(np.uint8), gmin=gm_, frost=True, pane=pane_))
+        SMART_GLASS.append(dict(arr=clear_, gmin=gm_, frost=False, pane=pane_, oneway=oneway_))
+        SMART_GLASS.append(dict(arr=np.where(m_, CHROME if oneway_ else FROST, 0).astype(np.uint8), gmin=gm_, frost=True,
+                                pane=pane_, oneway=oneway_))
         reg_[sl_][m_] = 0
 PH_INTERIOR = (ix0p, ix1p, PY, PCEIL, iz0p, iz1p)
 PENTHOUSE = dict(x0=PH_X0, x1=PH_X1, z0=PH_Z0, z1=PH_Z1, terrace_z0=PT_Z0, entrance_x=ENT_X, ceil=PCEIL,
@@ -5948,18 +5951,20 @@ HG_BODY, HG_GRIP, HG_TRIM, HG_NOZ, HG_HOT, HG_VENT = 153, 154, 155, 121, 156, 15
 HEATGUN_RGB = {HG_BODY: (232, 112, 32), HG_GRIP: (34, 34, 38), HG_TRIM: (70, 70, 76), HG_NOZ: (176, 180, 186),
                HG_HOT: (255, 96, 24), HG_VENT: (20, 20, 22)}
 def heat_gun_model():
-    m = np.zeros((6, 13, 20), np.uint8)              # [x, y(up), z]: barrel along z, the nozzle at z = 0
-    m[0:6, 6:12, 5:19] = HG_BODY                      # main barrel housing
-    m[0, 6, 5:19] = 0; m[5, 6, 5:19] = 0; m[0, 11, 5:19] = 0; m[5, 11, 5:19] = 0     # (rounded edges)
-    m[1:5, 7:11, 19] = HG_TRIM                        # back cap
-    m[2:4, 8:10, 19] = HG_VENT                        # air intake
-    m[0:6, 6:12, 12] = HG_TRIM                        # seam band
-    m[1:5, 7:11, 0:5] = HG_NOZ                        # steel nozzle
-    m[2:4, 8:10, 0:5] = 0                             # (hollow mouth)
-    m[2:4, 8:10, 3] = HG_HOT                          # glowing coil seen inside the mouth
-    m[2:4, 0:6, 13:17] = HG_GRIP                      # pistol grip
-    m[2:4, 0:2, 12:18] = HG_GRIP                      # grip foot
-    m[2:4, 4:6, 11:12] = HG_TRIM                      # trigger
+    m = np.zeros((5, 10, 15), np.uint8)              # [x, y(up), z]: barrel along z, the nozzle at z = 0
+    m[0:5, 5:10, 4:14] = HG_BODY                      # main barrel housing
+    for (x_, y_) in ((0, 5), (4, 5), (0, 9), (4, 9)):
+        m[x_, y_, 4:14] = 0                           # (rounded edges)
+    m[1:4, 6:9, 14] = HG_TRIM                         # back cap
+    m[2, 7, 14] = HG_VENT                             # air intake
+    m[0:5, 5:10, 9] = HG_TRIM                         # seam band
+    m[0, 5, 9] = m[4, 5, 9] = m[0, 9, 9] = m[4, 9, 9] = 0
+    m[1:4, 6:9, 0:4] = HG_NOZ                         # steel nozzle
+    m[2, 7, 0:4] = 0                                  # (hollow mouth)
+    m[2, 7, 2] = HG_HOT                               # glowing coil seen inside the mouth
+    m[2, 0:5, 10:13] = HG_GRIP                        # pistol grip
+    m[1:4, 0:1, 9:14] = HG_GRIP                       # grip foot
+    m[2, 3:5, 8:9] = HG_TRIM                          # trigger
     return m
 
 def export():
@@ -6240,11 +6245,11 @@ def export():
         gx, gy, gz = gmin
         return ((gx + sx // 2) * 0.1 - CX, gy * 0.1, (gz + sz - sz // 2) * 0.1 - CZ)
     shape_files = {}
-    def shape_file(prefix, arr, west=False):
-        key = (prefix, arr.shape, arr.tobytes(), bool(west))
+    def shape_file(prefix, arr, west=False, pal_extra=None):
+        key = (prefix, arr.shape, arr.tobytes(), bool(west), tuple(sorted((pal_extra or {}).items())))
         if key not in shape_files:
             shape_files[key] = f"{prefix}_{sum(1 for k_ in shape_files if k_[0] == prefix)}"
-            write_vox(os.path.join(VOXDIR, shape_files[key] + ".vox"), arr, west=bool(west))
+            write_vox(os.path.join(VOXDIR, shape_files[key] + ".vox"), arr, west=bool(west), pal_extra=pal_extra)
         return shape_files[key]
     xml.append('\t<group name="curtains" pos="0 0 0">\n')
     for i, c in enumerate(CURTAINS):
@@ -6256,9 +6261,14 @@ def export():
     xml.append('\t<group name="smartglass" pos="0 0 0">\n')
     for i, sg in enumerate(SMART_GLASS):
         o = body_origin(sg["arr"], sg["gmin"])
+        pe_ = PH_ONEWAY_RGB if (sg["frost"] and sg["oneway"]) else None
         xml.append(f'\t\t<body name="smartglass{i}" tags="smartglass pane={sg["pane"]}' + (' frost' if sg["frost"] else '') +
-                   f'" pos="{f3(o)}"><vox pos="0 0 0" file="MOD/vox/{shape_file("smartglass", sg["arr"])}.vox" object="shape"/></body>\n')
+                   (' oneway' if sg["oneway"] else '') +
+                   f'" pos="{f3(o)}"><vox pos="0 0 0" file="MOD/vox/{shape_file("smartglass", sg["arr"], pal_extra=pe_)}.vox" object="shape"/></body>\n')
     xml.append('\t</group>\n')
+    # (v3.66) the private side of the one-way glass: suite + terrace (a camera in here sees the glass clear)
+    xml.append(f'\t<location tags="phzone x0={PH_X0 * 0.1 - CX:.2f} x1={PH_X1 * 0.1 - CX:.2f} y0={(PY - 2) * 0.1:.2f} y1={(PCEIL + 12) * 0.1:.2f} '
+               f'z0={PT_Z0 * 0.1 - CZ:.2f} z1={PH_Z1 * 0.1 - CZ:.2f}" pos="{f3(((PH_X0 + PH_X1) * 0.05 - CX, PY * 0.1, (PT_Z0 + PH_Z1) * 0.05 - CZ))}"/>\n')
     xml.append('\t<group name="electrical" pos="0 0 0">\n')
     for g in SWITCHGEAR:
         xml.append(f'\t\t<vox tags="switchgear floor={g["floor"]} corner={g["corner"]}" pos="{f3(body_origin(g["arr"], g["gmin"]))}" '
@@ -6504,7 +6514,7 @@ def export():
     with open(os.path.join(OUT, "main.xml"), "w") as f:
         f.write("".join(xml))
     with open(os.path.join(OUT, "info.txt"), "w") as f:
-        f.write("name = Liminal Atrium v3.65\n"
+        f.write("name = Liminal Atrium v3.66\n"
                 "author = Claude\n"
                 "description = A deserted hotel at night. 6 floors of fully furnished rooms around a purple-lit atrium, "
                 "themed corridors, stairwells, elevators, lobby, indoor pool, roof and parking lot, and a basement with an underground "

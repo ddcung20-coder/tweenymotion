@@ -715,6 +715,20 @@ pair_ok = all(len(v) == 2 and {p_["frost"] for p_ in v} == {False, True} and v[0
 left_ = sum(int(np.isin(ns["G"][x0_:x1_, y0_:y1_, z0_:z1_], [ns["GLASS"], ns["GLASS_EXT"]]).sum()) for (x0_, x1_, y0_, y1_, z0_, z1_) in ns["PH_GLASS_ZONES"])
 report("penthouse smart glass: every pane is a clear + frosted pair, none left in the world, clear of it",
        len(pairs_) >= 20 and pair_ok and left_ == 0 and sg_overlap == 0, f"{len(pairs_)} panes, left {left_}, overlap {sg_overlap}")
+# v3.66: one-way privacy -- the outer panes' privacy face is opaque (no glass), the shower screen stays frosted glass,
+#        and every outer pane lies on the edge of the "phzone" box (the private side main.lua tests the camera against)
+ow_ = [sg_ for sg_ in SG_ if sg_["frost"] and sg_["oneway"]]
+ow_opaque = all(set(np.unique(sg_["arr"][sg_["arr"] > 0]).tolist()) == {ns["CHROME"]} for sg_ in ow_)
+sh_frost = all(set(np.unique(sg_["arr"][sg_["arr"] > 0]).tolist()) == {ns["FROST"]} for sg_ in SG_ if sg_["frost"] and not sg_["oneway"])
+X4_ = open("main.xml").read()
+pz_ = re.search(r'tags="phzone x0=([-\d.]+) x1=([-\d.]+) y0=([-\d.]+) y1=([-\d.]+) z0=([-\d.]+) z1=([-\d.]+)"', X4_)
+CXq, CZq = ((ns["W"] - ns["WEST"]) / 2 + ns["WEST"]) * 0.1, ns["D"] / 2 * 0.1
+def in_pz(gx, gy, gz):
+    v = [float(t_) for t_ in pz_.groups()]
+    return v[0] <= gx * 0.1 - CXq <= v[1] and v[2] <= gy * 0.1 <= v[3] and v[4] <= gz * 0.1 - CZq <= v[5]
+edge_ok = pz_ is not None and all(in_pz(sg_["gmin"][0] + 0.5, sg_["gmin"][1] + 0.5, sg_["gmin"][2] + 0.5) for sg_ in ow_)
+report("penthouse one-way glass: outer panes opaque smoky mirror outside, clear inside (phzone covers them); shower frosted",
+       len(ow_) >= 20 and ow_opaque and sh_frost and edge_ok and 'oneway' in X4_, f"{len(ow_)} one-way panes, zone {pz_.groups() if pz_ else None}")
 PX0, PX1, PZ0, PZ1, PTZ = PHq["x0"], PHq["x1"], PHq["z0"], PHq["z1"], PHq["terrace_z0"]
 RY = ns["ROOF_Y"]
 west_ = (FULL[PX0, RY + 1:RY + 24, PTZ:PZ0] > 0).all()

@@ -883,32 +883,59 @@ local function smartFrosted()
 	return smart.frost or not floorPowered(ROOF_CIRCUIT)
 end
 
+-- (v3.66) one-way privacy: with privacy on, the outer panes are clear for a camera inside the suite / terrace
+-- and an opaque smoky mirror for a camera anywhere else (each pane's two bodies swap as the camera crosses).
+-- The shower screen frosts both ways; with the roof power off every pane goes opaque / frosted.
+local function camInPenthouse()
+	local z = smart.zone
+	if not z then return false end
+	local p = GetCameraTransform().pos
+	return p[1] > z.x0 and p[1] < z.x1 and p[2] > z.y0 and p[2] < z.y1 and p[3] > z.z0 and p[3] < z.z1
+end
+
 local function smartApply()
-	local fr = smartFrosted()
-	if smart.shown ~= fr then
-		smart.shown = fr
+	local powered = floorPowered(ROOF_CIRCUIT)
+	local inner = smart.frost or not powered
+	local outer = (not powered) or (smart.frost and not camInPenthouse())
+	if smart.shownIn ~= inner or smart.shownOut ~= outer then
+		smart.shownIn, smart.shownOut = inner, outer
 		for i = 1, #smart.panes do
 			local p = smart.panes[i]
 			if IsHandleValid(p.body) then
+				local fr = inner
+				if p.oneway then fr = outer end
 				local t = p.t
 				if p.frost ~= fr then t = Transform(VecAdd(p.t.pos, Vec(0, -60, 0)), p.t.rot) end
 				SetBodyTransform(p.body, t)
 			end
 		end
 	end
-	for i = 1, #smart.switches do
-		if IsHandleValid(smart.switches[i]) then
-			SetTag(smart.switches[i], "interact", smart.frost and "Privacy glass: clear" or "Privacy glass: frost")
+	if smart.label ~= smart.frost then
+		smart.label = smart.frost
+		for i = 1, #smart.switches do
+			if IsHandleValid(smart.switches[i]) then
+				SetTag(smart.switches[i], "interact", smart.frost and "Privacy glass: OFF" or "Privacy glass: ON (one-way)")
+			end
 		end
 	end
+end
+
+function smartTick()
+	if smart.frost then smartApply() end                             -- (follows the camera in and out)
 end
 
 local function smartInit()
 	local bs = FindBodies("smartglass", true)
 	for i = 1, #bs do
-		smart.panes[#smart.panes + 1] = { body = bs[i], t = GetBodyTransform(bs[i]), frost = HasTag(bs[i], "frost") }
+		smart.panes[#smart.panes + 1] = { body = bs[i], t = GetBodyTransform(bs[i]), frost = HasTag(bs[i], "frost"),
+			oneway = HasTag(bs[i], "oneway") }
 	end
 	smart.switches = FindShapes("phprivacy", true)
+	local l = FindLocation("phzone", true)
+	if l and l ~= 0 then
+		smart.zone = {}
+		for _, k in ipairs({ "x0", "x1", "y0", "y1", "z0", "z1" }) do smart.zone[k] = tonumber(GetTagValue(l, k)) or 0 end
+	end
 	smartApply()
 end
 
@@ -2107,7 +2134,11 @@ local function heatParticles(from, dir, hitp, melted)
 end
 function heatTick(dt)
 	snowRedrawTick(dt)
-	local using = currentTool() == "heatgun" and InputDown("usetool") and (GetPlayerVehicle == nil or GetPlayerVehicle() == 0)
+	local holding = currentTool() == "heatgun"
+	if holding and SetToolTransform then                              -- (v3.66) held low on the right, nozzle forward
+		pcall(SetToolTransform, Transform(Vec(0.32, -0.58, -0.55), QuatEuler(0, 0, 0)), 0.6)
+	end
+	local using = holding and InputDown("usetool") and (GetPlayerVehicle == nil or GetPlayerVehicle() == 0)
 	heat.on = toward(heat.on, using and 1 or 0, dt * 4)
 	if heat.on <= 0.01 and not using then return end                -- (idle: nothing to do)
 	local cam = GetCameraTransform()
@@ -2520,6 +2551,7 @@ function tick(dt)
 	weatherTick(dt, cam)
 	snowTick()
 	heatTick(dt)
+	smartTick()
 end
 
 function update(dt)
