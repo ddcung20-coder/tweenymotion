@@ -18,4 +18,10 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://tweenymotion.com/en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://tweenymotion.com/"/>
   </url>
+  <url>
+    <loc>https://tweenymotion.com/physics</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>

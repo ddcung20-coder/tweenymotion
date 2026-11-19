@@ -1,0 +1,1271 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>tweeny physics · 물리 시뮬레이터</title>
+<meta name="description" content="브라우저에서 바로 쓰는 정밀 3D 강체 물리 시뮬레이터. Rapier 물리 엔진, 물리 기반 재질과 스튜디오 조명, 패스 트레이싱 렌더, 해석해와 비교하는 정확도 검증 장면을 제공합니다.">
+<link rel="canonical" href="https://tweenymotion.com/physics">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+<meta property="og:title" content="tweeny physics · 물리 시뮬레이터">
+<meta property="og:description" content="정밀 강체 물리 + 패스 트레이싱 렌더를 브라우저에서.">
+<meta property="og:image" content="https://tweenymotion.com/og-image.png">
+<style>
+:root{
+  --bg0:#141414;--bg1:#1d1d1d;--bg2:#262626;--bg3:#303030;--bg4:#3b3b3b;
+  --fg:#e2e2e2;--fg2:#a3a3a3;--fg3:#767676;--line:#333;
+  --acc:#ffbf47;--accfg:#1a1a1a;--ok:#3cbf7f;--warn:#e6a23c;--bad:#e5534b;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg0);color:var(--fg);
+  font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  -webkit-font-smoothing:antialiased;touch-action:none}
+#app{position:fixed;inset:0;display:grid;grid-template-columns:1fr 300px;grid-template-rows:44px 1fr}
+header{grid-column:1/3;display:flex;align-items:center;gap:10px;padding:0 12px;background:var(--bg1);border-bottom:1px solid #0a0a0a;min-width:0}
+header .logo{font-weight:700;letter-spacing:-.2px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+header .logo i{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3cf,var(--acc) 45%,#b07a10);display:inline-block;box-shadow:0 0 10px #ffbf4766}
+header .logo a{color:inherit;text-decoration:none}
+header .logo small{color:var(--fg3);font-weight:500}
+#scenes{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:6px 0}
+#scenes::-webkit-scrollbar{display:none}
+.tab{appearance:none;border:0;background:var(--bg2);color:var(--fg2);padding:6px 11px;border-radius:6px;cursor:pointer;white-space:nowrap;font:inherit}
+.tab:hover{background:var(--bg3);color:var(--fg)}
+.tab.on{background:var(--acc);color:var(--accfg);font-weight:600}
+#panelToggle{display:none}
+#view{position:relative;overflow:hidden;background:#0d0d0d;min-width:0;min-height:0}
+#view canvas{display:block;width:100%;height:100%;outline:none}
+aside{background:var(--bg1);border-left:1px solid #0a0a0a;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--bg4) transparent}
+details{border-bottom:1px solid #0d0d0d}
+summary{list-style:none;cursor:pointer;padding:9px 12px;font-weight:600;background:var(--bg2);display:flex;align-items:center;gap:6px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:0;height:0;border:4px solid transparent;border-left:6px solid var(--fg3);transform-origin:3px 4px;transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+.sec{padding:8px 12px 12px;display:grid;gap:8px}
+.row{display:grid;grid-template-columns:96px 1fr 52px;align-items:center;gap:8px}
+.row label{color:var(--fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row output{color:var(--fg);text-align:right;font-variant-numeric:tabular-nums;font-size:12px}
+.row2{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:8px}
+.row2 label{color:var(--fg2)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--bg4)}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--bg4)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--acc);margin-top:-5px;border:0}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--acc);border:0}
+select{width:100%;background:var(--bg3);color:var(--fg);border:1px solid var(--bg4);border-radius:5px;padding:5px 6px;font:inherit}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.btn{appearance:none;border:1px solid var(--bg4);background:var(--bg3);color:var(--fg);padding:6px 10px;border-radius:6px;cursor:pointer;font:inherit;white-space:nowrap}
+.btn:hover{background:var(--bg4)}
+.btn.pri{background:var(--acc);color:var(--accfg);border-color:var(--acc);font-weight:600}
+.btn.pri:hover{filter:brightness(1.07)}
+.btn.on{outline:2px solid var(--acc);outline-offset:-1px}
+.btn:disabled{opacity:.45;cursor:default}
+.chk{display:flex;align-items:center;gap:8px;color:var(--fg2);cursor:pointer}
+.chk input{accent-color:var(--acc);width:15px;height:15px;margin:0}
+.note{color:var(--fg3);font-size:12px}
+#hud{position:absolute;left:10px;top:10px;padding:8px 10px;border-radius:8px;background:#000a;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  font:11.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#cfcfcf;pointer-events:none;white-space:pre;min-width:200px}
+#hud b{color:var(--acc);font-weight:600}
+#valid{position:absolute;right:10px;top:10px;max-width:min(360px,calc(100% - 20px));padding:10px 12px;border-radius:8px;background:#000b;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#d8d8d8;pointer-events:none;display:none}
+#valid h4{margin:0 0 4px;font:600 12.5px/1.4 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;color:var(--acc)}
+#valid .g{color:var(--ok)}#valid .w{color:var(--warn)}
+#transport{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:5px;border-radius:10px;background:#000b;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#transport .btn{border:0;background:transparent;min-width:36px;height:34px;display:grid;place-items:center;padding:0 8px}
+#transport .btn:hover{background:#ffffff1a}
+#transport .btn.pri{background:var(--acc);color:var(--accfg)}
+#transport svg{width:16px;height:16px;fill:currentColor}
+#transport .sep{width:1px;height:20px;background:#ffffff22;margin:0 3px}
+#speedLbl{font:12px ui-monospace,Menlo,monospace;color:var(--fg2);min-width:40px;text-align:center}
+#ptbar{position:absolute;left:50%;top:12px;transform:translateX(-50%);padding:6px 12px;border-radius:999px;background:#000c;color:#eee;font-size:12px;display:none;align-items:center;gap:10px;white-space:nowrap}
+#ptbar .dot{width:8px;height:8px;border-radius:50%;background:var(--acc);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.3}}
+#loading{position:absolute;inset:0;display:grid;place-items:center;background:var(--bg0);z-index:5;color:var(--fg2);font-size:14px}
+#loading .spin{width:28px;height:28px;border-radius:50%;border:3px solid var(--bg3);border-top-color:var(--acc);animation:sp 0.8s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+#help{position:absolute;left:10px;bottom:14px;color:#ffffff88;font-size:11.5px;line-height:1.5;pointer-events:none;text-shadow:0 1px 2px #000}
+kbd{font:11px ui-monospace,Menlo,monospace;background:#ffffff1c;border-radius:3px;padding:0 4px}
+@media (max-width:1640px){#help{display:none}}
+@media (max-width:820px){
+  #app{grid-template-columns:1fr;grid-template-rows:44px 1fr}
+  header{grid-column:1}
+  #panelToggle{display:inline-flex}
+  aside{position:fixed;left:0;right:0;bottom:0;max-height:62vh;z-index:10;border-left:0;border-top:1px solid #000;border-radius:14px 14px 0 0;transform:translateY(105%);transition:transform .25s ease;box-shadow:0 -10px 30px #0008;padding-bottom:env(safe-area-inset-bottom,0)}
+  aside.open{transform:none}
+  #help{display:none}
+  #hud{font-size:10.5px;min-width:0}
+  #transport{bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+  #valid{top:auto;bottom:70px;right:10px;left:10px;max-width:none}
+}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+    "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+    "three-mesh-bvh": "https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.8.3/build/index.module.js",
+    "three-gpu-pathtracer": "https://cdn.jsdelivr.net/npm/three-gpu-pathtracer@0.0.23/build/index.module.js",
+    "@dimforge/rapier3d-compat": "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.14.0/rapier.es.js"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo"><i></i><a href="./">tweeny</a>&nbsp;physics <small>β</small></div>
+    <nav id="scenes"></nav>
+    <button class="btn" id="panelToggle" aria-label="설정 열기">설정</button>
+  </header>
+  <main id="view">
+    <div id="loading"><div><div class="spin"></div>물리 엔진과 렌더러를 준비하는 중…</div></div>
+    <div id="hud"></div>
+    <div id="valid"></div>
+    <div id="ptbar"><span class="dot"></span><span id="ptText">패스 트레이싱</span><button class="btn" id="ptExit" style="padding:2px 8px;pointer-events:auto">닫기</button></div>
+    <div id="help">드래그: 물체 잡기 · 빈 곳 드래그: 회전 · 우클릭/두 손가락: 이동 · 휠: 확대<br><kbd>Space</kbd> 재생/정지 · <kbd>F</kbd> 공 발사 · <kbd>R</kbd> 리셋 · <kbd>.</kbd> 한 스텝 · <kbd>P</kbd> 패스 트레이싱</div>
+    <div id="transport">
+      <button class="btn" id="bReset" title="리셋 (R)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg></button>
+      <button class="btn pri" id="bPlay" title="재생/정지 (Space)"><svg viewBox="0 0 24 24" id="playIcon"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg></button>
+      <button class="btn" id="bStep" title="한 스텝 (.)"><svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8zM17 4h3v16h-3z"/></svg></button>
+      <span class="sep"></span>
+      <button class="btn" id="bSlower" title="느리게">−</button>
+      <span id="speedLbl">1.00×</span>
+      <button class="btn" id="bFaster" title="빠르게">+</button>
+      <span class="sep"></span>
+      <button class="btn" id="bShoot" title="공 발사 (F)"><svg viewBox="0 0 24 24"><circle cx="15" cy="12" r="5"/><path d="M2 11h7v2H2zM4 7h6v2H4zM4 15h6v2H4z"/></svg></button>
+      <button class="btn" id="bPT" title="패스 트레이싱 렌더 (P)"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.9H22l-6 4.6 2.3 7.1L12 16.3 5.7 20.6 8 13.5 2 8.9h7.6z"/></svg></button>
+    </div>
+  </main>
+  <aside id="panel">
+    <details open><summary>물리 엔진</summary><div class="sec">
+      <div class="row"><label for="gGrav">중력 (m/s²)</label><input type="range" id="gGrav" min="0" max="25" step="0.01" value="9.81"><output id="oGrav">9.81</output></div>
+      <div class="row2"><label for="gHz">시간 간격</label><select id="gHz"><option value="60">60 Hz (Δt 16.7 ms)</option><option value="120">120 Hz (Δt 8.33 ms)</option><option value="240" selected>240 Hz (Δt 4.17 ms)</option><option value="480">480 Hz (Δt 2.08 ms)</option><option value="1000">1000 Hz (Δt 1.00 ms)</option></select></div>
+      <div class="row"><label for="gIter">솔버 반복</label><input type="range" id="gIter" min="1" max="32" step="1" value="8"><output id="oIter">8</output></div>
+      <div class="row"><label for="gFric">마찰 배율</label><input type="range" id="gFric" min="0" max="2" step="0.01" value="1"><output id="oFric">1.00</output></div>
+      <div class="row"><label for="gRest">반발 배율</label><input type="range" id="gRest" min="0" max="1.5" step="0.01" value="1"><output id="oRest">1.00</output></div>
+      <div class="row"><label for="gDrag">공기 저항</label><input type="range" id="gDrag" min="0" max="1" step="0.01" value="0"><output id="oDrag">0.00</output></div>
+      <label class="chk"><input type="checkbox" id="gCcd" checked>연속 충돌 감지 (CCD, 빠른 물체 관통 방지)</label>
+      <label class="chk"><input type="checkbox" id="gSleep" checked>정지한 물체 재우기 (성능)</label>
+      <p class="note">마찰·반발 배율은 다음 리셋부터 적용됩니다. 작은 Δt와 많은 반복일수록 정확하지만 느려집니다.</p>
+    </div></details>
+    <details open><summary>물체 추가</summary><div class="sec">
+      <div class="row2"><label for="sShape">모양</label><select id="sShape">
+        <option value="sphere">구</option><option value="box">상자</option><option value="cylinder">원기둥</option><option value="capsule">캡슐</option><option value="cone">원뿔</option><option value="ico">다면체 (볼록 껍질)</option></select></div>
+      <div class="row2"><label for="sMat">재질</label><select id="sMat"></select></div>
+      <div class="row"><label for="sSize">크기</label><input type="range" id="sSize" min="0.1" max="1.5" step="0.01" value="0.4"><output id="oSize">0.40</output></div>
+      <div class="row"><label for="sSpeed">발사 속도</label><input type="range" id="sSpeed" min="2" max="80" step="1" value="28"><output id="oSpeed">28 m/s</output></div>
+      <div class="btns"><button class="btn pri" id="bDrop">위에서 떨어뜨리기</button><button class="btn" id="bShoot2">카메라에서 발사 (F)</button></div>
+      <p class="note">밀도는 실제 재질 값(강철 7.8, 유리 2.5, 나무 0.6 g/cm³ …)으로 질량이 계산됩니다.</p>
+    </div></details>
+    <details open><summary>렌더</summary><div class="sec">
+      <div class="row2"><label for="rQual">품질</label><select id="rQual"><option value="high">높음 (AO·블룸·4K 그림자)</option><option value="med">보통</option><option value="low">낮음 (빠름)</option></select></div>
+      <div class="row2"><label for="rTone">톤 매핑</label><select id="rTone"><option value="agx">AgX (Blender 기본)</option><option value="aces">ACES Filmic</option><option value="neutral">Khronos Neutral</option></select></div>
+      <div class="row"><label for="rExp">노출</label><input type="range" id="rExp" min="-3" max="3" step="0.05" value="0"><output id="oExp">0.00</output></div>
+      <div class="row"><label for="rEnv">환경광</label><input type="range" id="rEnv" min="0" max="3" step="0.01" value="1"><output id="oEnv">1.00</output></div>
+      <div class="row"><label for="rSun">키 라이트</label><input type="range" id="rSun" min="0" max="8" step="0.05" value="3"><output id="oSun">3.00</output></div>
+      <div class="row"><label for="rAz">라이트 방향</label><input type="range" id="rAz" min="-180" max="180" step="1" value="35"><output id="oAz">35°</output></div>
+      <div class="row"><label for="rSoft">그림자 부드러움</label><input type="range" id="rSoft" min="0" max="12" step="0.5" value="4"><output id="oSoft">4.0</output></div>
+    </div></details>
+    <details open><summary>패스 트레이싱 (Cycles 방식)</summary><div class="sec">
+      <p class="note" style="margin:0">시뮬레이션을 멈추고 빛의 경로를 직접 추적해 반사·굴절·간접광·부드러운 그림자를 물리적으로 계산합니다. 샘플이 쌓일수록 노이즈가 사라집니다.</p>
+      <div class="row"><label for="pBounce">빛 반사 횟수</label><input type="range" id="pBounce" min="2" max="24" step="1" value="10"><output id="oBounce">10</output></div>
+      <div class="row"><label for="pScale">해상도</label><input type="range" id="pScale" min="0.25" max="1" step="0.05" value="1"><output id="oScale">100%</output></div>
+      <div class="btns"><button class="btn pri" id="bPT2">렌더 시작 (P)</button><button class="btn" id="bSave">PNG 저장</button></div>
+    </div></details>
+    <details><summary>도움말</summary><div class="sec note" style="color:var(--fg2);font-size:12.5px;line-height:1.6">
+      <div><b>물리</b>: Rapier (Rust/WASM) 강체 엔진, 고정 시간 간격 + 렌더 보간. 충돌 형상은 화면에 보이는 모양(둥근 상자, 원기둥, 원뿔, 캡슐, 볼록 껍질, 삼각형 메시)과 같습니다.</div>
+      <div><b>렌더</b>: 물리 기반 재질(금속도·거칠기·클리어코트·투과), 절차적 HDR 스튜디오 환경광, AgX 톤 매핑, GTAO 앰비언트 오클루전, 블룸, 4× MSAA.</div>
+      <div><b>조작</b>: 물체를 드래그해 잡기(잡은 채 휠로 앞뒤 이동) · 빈 곳 드래그로 회전 · 우클릭/두 손가락으로 이동 · <kbd>Space</kbd> 재생/정지 · <kbd>F</kbd> 발사 · <kbd>R</kbd> 리셋 · <kbd>.</kbd> 한 스텝 · <kbd>[</kbd> <kbd>]</kbd> 속도 · <kbd>P</kbd> 패스 트레이싱</div>
+      <div><b>정확도 검증</b> 장면에서 포물선 운동과 진자 주기를 해석해(완전 타원 적분)와 실시간으로 비교합니다.</div>
+    </div></details>
+  </aside>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import RAPIER from '@dimforge/rapier3d-compat';
+
+const $ = id => document.getElementById(id);
+const DEG = Math.PI / 180;
+const isCoarse = matchMedia('(pointer:coarse)').matches;
+
+/* ======================================================================
+   Renderer, camera, controls
+   ====================================================================== */
+const view = $('view');
+const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: false });
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.AgXToneMapping;
+renderer.toneMappingExposure = 1;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+view.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 400);
+camera.position.set(9, 6, 12);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.maxDistance = 30;
+controls.minDistance = 0.6;
+controls.maxPolarAngle = 89 * DEG;
+controls.target.set(0, 1, 0);
+
+/* ======================================================================
+   Procedural HDR studio environment (equirectangular, half-float)
+   — the same texture lights the rasteriser (via PMREM) and the path tracer
+   ====================================================================== */
+const softboxes = [
+  // az/el in degrees, angular w/h, radiance, colour
+  { az: 35,  el: 42, w: 26, h: 16, I: 11.0, c: [1.00, 0.95, 0.88], key: true },
+  { az: -75, el: 28, w: 44, h: 26, I: 1.5, c: [0.80, 0.89, 1.00] },
+  { az: 170, el: 36, w: 14, h: 42, I: 6.0, c: [1.00, 1.00, 1.00] },
+  { az: 95,  el: 24, w: 10, h: 30, I: 3.0, c: [1.00, 0.97, 0.94] },
+  { az: 0,   el: 89, w: 70, h: 30, I: 0.5, c: [1.00, 1.00, 1.00] },
+];
+function dirFromAzEl(az, el) {
+  const a = az * DEG, e = el * DEG;
+  return new THREE.Vector3(Math.cos(e) * Math.cos(a), Math.sin(e), Math.cos(e) * Math.sin(a));
+}
+function smoothEdge(t, soft) { // t = |offset| / halfSize
+  const x = THREE.MathUtils.clamp((1 - t) / soft, 0, 1);
+  return x * x * (3 - 2 * x);
+}
+function buildEquirect(W, H, fn) {
+  const data = new Uint16Array(W * H * 4);
+  const toH = THREE.DataUtils.toHalfFloat;
+  for (let y = 0; y < H; y++) {
+    const el = ((y + 0.5) / H - 0.5) * 180;
+    for (let x = 0; x < W; x++) {
+      const az = ((x + 0.5) / W - 0.5) * 360;
+      const c = fn(az, el);
+      const i = (y * W + x) * 4;
+      data[i] = toH(c[0]); data[i + 1] = toH(c[1]); data[i + 2] = toH(c[2]); data[i + 3] = toH(1);
+    }
+  }
+  const tex = new THREE.DataTexture(data, W, H, THREE.RGBAFormat, THREE.HalfFloatType);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.colorSpace = THREE.LinearSRGBColorSpace;
+  tex.magFilter = THREE.LinearFilter; tex.minFilter = THREE.LinearFilter;
+  tex.generateMipmaps = false;
+  tex.needsUpdate = true;
+  return tex;
+}
+function wrapDeg(a) { a = (a + 180) % 360; if (a < 0) a += 360; return a - 180; }
+let keyAz = 35;
+function envRadiance(az, el, withBoxes) {
+  // base: warm-grey studio dome, darker towards the horizon, very dark floor
+  const s = Math.max(0, Math.sin(el * DEG));
+  let r, g, b;
+  if (el >= 0) { const k = 0.025 + 0.06 * Math.pow(s, 0.6); r = k * 1.0; g = k * 0.985; b = k * 0.97; }
+  else { // below the horizon: approximates the lit studio floor (bounce light / reflections of the floor)
+    const k = 0.085 + 0.02 * Math.min(1, -el / 30); r = k * 1.0; g = k * 0.985; b = k * 0.96; }
+  if (withBoxes) for (const L of softboxes) {
+    const laz = L.key ? keyAz : L.az;
+    const dAz = Math.abs(wrapDeg(az - laz)) * Math.cos(el * DEG);
+    const dEl = Math.abs(el - L.el);
+    const m = smoothEdge(dAz / (L.w / 2), 0.18) * smoothEdge(dEl / (L.h / 2), 0.18);
+    // faint glow halo around each softbox (light spill on the cyclorama)
+    const d2 = (dAz * dAz) / (L.w * L.w) + (dEl * dEl) / (L.h * L.h);
+    const glow = 0.012 * Math.exp(-d2 * 1.4);
+    const v = L.I * (m + glow);
+    r += v * L.c[0]; g += v * L.c[1]; b += v * L.c[2];
+  }
+  return [r, g, b];
+}
+let envTex = buildEquirect(1024, 512, (az, el) => envRadiance(az, el, true));
+const bgTex = buildEquirect(512, 256, (az, el) => {
+  const s = Math.max(0, Math.sin(el * DEG));
+  // matches the brightness of the top of the cyclorama wall, then fades darker towards the zenith
+  const k = el >= 0 ? 0.085 - 0.045 * Math.pow(s, 0.7) : 0.085;
+  return [k, k * 0.99, k * 0.985];
+});
+scene.environment = envTex;
+scene.background = bgTex;
+scene.environmentIntensity = 1;
+
+function rebuildEnv() {
+  const old = envTex;
+  envTex = buildEquirect(1024, 512, (az, el) => envRadiance(az, el, true));
+  scene.environment = envTex;
+  old.dispose();
+}
+
+/* Key light (matches the key softbox direction) — gives crisp, shaped shadows */
+const sun = new THREE.DirectionalLight(0xfff1e0, 3.0);
+sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096);
+sun.shadow.bias = -0.00015;
+sun.shadow.normalBias = 0.025;
+sun.shadow.radius = 4;
+sun.shadow.blurSamples = 16;
+scene.add(sun, sun.target);
+function placeSun(center = new THREE.Vector3(), extent = 10) {
+  const d = dirFromAzEl(keyAz, 42);
+  sun.position.copy(center).addScaledVector(d, 40);
+  sun.target.position.copy(center);
+  const c = sun.shadow.camera;
+  c.left = -extent; c.right = extent; c.top = extent; c.bottom = -extent;
+  c.near = 5; c.far = 80;
+  c.updateProjectionMatrix();
+}
+
+/* ======================================================================
+   Cyclorama (studio sweep, revolved) — also a static collider
+   ====================================================================== */
+const STUDIO_R = 22, STUDIO_RC = 8;
+function makeStudio() {
+  const pts = [];
+  // build from outer rim inward so lathe normals face up/in
+  const arcN = 28;
+  for (let i = arcN; i >= 0; i--) {
+    const a = (i / arcN) * Math.PI / 2;
+    pts.push(new THREE.Vector2(STUDIO_R + STUDIO_RC * Math.sin(a), STUDIO_RC - STUDIO_RC * Math.cos(a)));
+  }
+  const floorN = 22;
+  for (let i = floorN - 1; i >= 0; i--) pts.push(new THREE.Vector2(Math.max(0.0001, STUDIO_R * (i / floorN)), 0));
+  const geo = new THREE.LatheGeometry(pts, 128);
+  const n = geo.attributes.normal;
+  if (n.getY(n.count - 1) < 0) { // safety: make sure the floor faces up
+    for (let i = 0; i < n.count; i++) n.setXYZ(i, -n.getX(i), -n.getY(i), -n.getZ(i));
+    const idx = geo.index.array; for (let i = 0; i < idx.length; i += 3) { const t = idx[i]; idx[i] = idx[i + 2]; idx[i + 2] = t; }
+  }
+  const mat = new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color(0.24, 0.24, 0.235), roughness: 0.55, metalness: 0,
+    clearcoat: 0.18, clearcoatRoughness: 0.35, envMapIntensity: 1,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.receiveShadow = true;
+  mesh.name = 'studio';
+  return mesh;
+}
+const studio = makeStudio();
+scene.add(studio);
+
+/* ======================================================================
+   Materials (physically based, real densities in g/cm³)
+   ====================================================================== */
+function lin(r, g, b) { return new THREE.Color().setRGB(r, g, b, THREE.LinearSRGBColorSpace); }
+function srgb(hex) { return new THREE.Color(hex); }
+
+function woodTexture() {
+  const S = 512, cv = document.createElement('canvas'); cv.width = cv.height = S;
+  const ctx = cv.getContext('2d'), img = ctx.createImageData(S, S);
+  // value noise
+  const P = 64, grid = new Float32Array(P * P).map(() => Math.random());
+  const vn = (x, y) => {
+    const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
+    const g = (i, j) => grid[((j % P + P) % P) * P + ((i % P + P) % P)];
+    const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+    return THREE.MathUtils.lerp(THREE.MathUtils.lerp(g(xi, yi), g(xi + 1, yi), u), THREE.MathUtils.lerp(g(xi, yi + 1), g(xi + 1, yi + 1), u), v);
+  };
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+    const nx = x / S, ny = y / S;
+    const warp = vn(nx * 6, ny * 40) * 0.6 + vn(nx * 20, ny * 120) * 0.15;
+    const ring = Math.sin((nx * 7 + warp * 2.2) * Math.PI);
+    const t = 0.5 + 0.5 * ring;
+    const fine = vn(nx * 180, ny * 6) * 0.12;
+    const k = 0.72 + 0.28 * Math.pow(t, 3) - fine;
+    const i = (y * S + x) * 4;
+    img.data[i] = 200 * k; img.data[i + 1] = 142 * k; img.data[i + 2] = 88 * k; img.data[i + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = 8;
+  return tex;
+}
+const woodMap = woodTexture();
+
+const MAT_DEFS = {
+  chrome:   { name: '크롬',        density: 7.8, friction: 0.35, restitution: 0.55, m: () => new THREE.MeshPhysicalMaterial({ color: lin(0.96, 0.96, 0.97), metalness: 1, roughness: 0.05 }) },
+  steel:    { name: '브러시드 강철', density: 7.8, friction: 0.45, restitution: 0.5,  m: () => new THREE.MeshPhysicalMaterial({ color: lin(0.62, 0.64, 0.66), metalness: 1, roughness: 0.3 }) },
+  gold:     { name: '금',          density: 19.3, friction: 0.4, restitution: 0.35, m: () => new THREE.MeshPhysicalMaterial({ color: lin(1.0, 0.766, 0.336), metalness: 1, roughness: 0.14 }) },
+  copper:   { name: '구리',        density: 8.96, friction: 0.45, restitution: 0.4, m: () => new THREE.MeshPhysicalMaterial({ color: lin(0.955, 0.638, 0.538), metalness: 1, roughness: 0.22 }) },
+  glass:    { name: '유리',        density: 2.5, friction: 0.4, restitution: 0.45, m: () => new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0, roughness: 0.0, transmission: 1, ior: 1.52, thickness: 0.6, attenuationColor: srgb(0xd9f2e6), attenuationDistance: 2.5, specularIntensity: 1, envMapIntensity: 1.2 }) },
+  ceramicR: { name: '세라믹 빨강',  density: 2.4, friction: 0.45, restitution: 0.4, m: () => new THREE.MeshPhysicalMaterial({ color: srgb(0xd8382c), roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.04 }) },
+  ceramicY: { name: '세라믹 노랑',  density: 2.4, friction: 0.45, restitution: 0.4, m: () => new THREE.MeshPhysicalMaterial({ color: srgb(0xffbf47), roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.04 }) },
+  ceramicB: { name: '세라믹 파랑',  density: 2.4, friction: 0.45, restitution: 0.4, m: () => new THREE.MeshPhysicalMaterial({ color: srgb(0x2f6fd8), roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.04 }) },
+  ceramicW: { name: '세라믹 흰색',  density: 2.4, friction: 0.45, restitution: 0.4, m: () => new THREE.MeshPhysicalMaterial({ color: srgb(0xeeeeea), roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.05 }) },
+  ceramicK: { name: '세라믹 검정',  density: 2.4, friction: 0.45, restitution: 0.4, m: () => new THREE.MeshPhysicalMaterial({ color: srgb(0x161616), roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.03 }) },
+  rubber:   { name: '고무',        density: 1.1, friction: 1.0, restitution: 0.82, m: () => new THREE.MeshPhysicalMaterial({ color: srgb(0x232323), roughness: 0.82, sheen: 0.4, sheenRoughness: 0.6, sheenColor: srgb(0x555555) }) },
+  plasticG: { name: '플라스틱 초록', density: 1.05, friction: 0.5, restitution: 0.5, m: () => new THREE.MeshPhysicalMaterial({ color: srgb(0x2fae66), roughness: 0.45, specularIntensity: 0.6 }) },
+  wood:     { name: '나무',        density: 0.6, friction: 0.55, restitution: 0.25, m: () => new THREE.MeshPhysicalMaterial({ map: woodMap, roughness: 0.55, clearcoat: 0.35, clearcoatRoughness: 0.25 }) },
+};
+const matCache = new Map();
+function getMat(key) {
+  if (!matCache.has(key)) matCache.set(key, MAT_DEFS[key].m());
+  return matCache.get(key);
+}
+const hueMatCache = new Map();
+function hueMat(h) {
+  const k = Math.round(h * 24) % 24;
+  if (!hueMatCache.has(k)) {
+    const c = new THREE.Color().setHSL(k / 24, 0.72, 0.5, THREE.SRGBColorSpace);
+    hueMatCache.set(k, new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.04 }));
+  }
+  return hueMatCache.get(k);
+}
+const sMat = $('sMat');
+for (const [k, v] of Object.entries(MAT_DEFS)) sMat.add(new Option(v.name, k));
+sMat.value = 'chrome';
+
+/* ======================================================================
+   Physics world
+   ====================================================================== */
+await RAPIER.init();
+const P = {
+  g: 9.81, hz: isCoarse ? 120 : 240, iters: 8, fric: 1, rest: 1, drag: 0, ccd: true, sleep: true,
+  timeScale: 1, paused: false,
+};
+$('gHz').value = String(P.hz);
+let world = null;
+let objs = [];          // { body, mesh, p0,q0,p1,q1, dynamic }
+let helpers = [];       // meshes that are not physical (strings, trails …) — hidden while path tracing
+let updaters = [];      // per-render-frame callbacks (after interpolation)
+let stepHooks = [];     // per-physics-step callbacks
+let simTime = 0;
+let sceneDef = null;
+const geoCache = new Map();
+
+function newWorld() {
+  if (world) world.free();
+  world = new RAPIER.World({ x: 0, y: -P.g, z: 0 });
+  world.timestep = 1 / P.hz;
+  world.integrationParameters.numSolverIterations = P.iters;
+  world.integrationParameters.numAdditionalFrictionIterations = 4;
+  // studio colliders: thick floor slab + the curved sweep as a triangle mesh
+  const floor = world.createRigidBody(RAPIER.RigidBodyDesc.fixed().setTranslation(0, -1, 0));
+  world.createCollider(RAPIER.ColliderDesc.cuboid(40, 1, 40).setFriction(0.6 * P.fric).setRestitution(0.3 * P.rest), floor);
+  const g = studio.geometry;
+  const verts = new Float32Array(g.attributes.position.array);
+  const idx = new Uint32Array(g.index.array);
+  const sb = world.createRigidBody(RAPIER.RigidBodyDesc.fixed());
+  world.createCollider(RAPIER.ColliderDesc.trimesh(verts, idx).setFriction(0.6 * P.fric).setRestitution(0.3 * P.rest), sb);
+}
+
+function shapeGeo(s) {
+  const key = JSON.stringify(s);
+  if (geoCache.has(key)) return geoCache.get(key);
+  let g;
+  switch (s.type) {
+    case 'box': g = new RoundedBoxGeometry(s.hx * 2, s.hy * 2, s.hz * 2, 3, s.r ?? Math.min(s.hx, s.hy, s.hz) * 0.12); break;
+    case 'sphere': g = new THREE.SphereGeometry(s.r, 64, 32); break;
+    case 'cylinder': g = new THREE.CylinderGeometry(s.r, s.r, s.h * 2, 64, 1); break;
+    case 'cone': g = new THREE.ConeGeometry(s.r, s.h * 2, 64, 1); break;
+    case 'capsule': g = new THREE.CapsuleGeometry(s.r, s.h * 2, 12, 48); break;
+    case 'ico': { g = new THREE.IcosahedronGeometry(s.r, 0); g.computeVertexNormals(); break; }
+    case 'dodeca': { g = new THREE.DodecahedronGeometry(s.r, 0); g.computeVertexNormals(); break; }
+  }
+  geoCache.set(key, g);
+  return g;
+}
+function colliderFor(s) {
+  switch (s.type) {
+    case 'box': { const r = s.r ?? Math.min(s.hx, s.hy, s.hz) * 0.12; return RAPIER.ColliderDesc.roundCuboid(s.hx - r, s.hy - r, s.hz - r, r); }
+    case 'sphere': return RAPIER.ColliderDesc.ball(s.r);
+    case 'cylinder': return RAPIER.ColliderDesc.cylinder(s.h, s.r);
+    case 'cone': return RAPIER.ColliderDesc.cone(s.h, s.r);
+    case 'capsule': return RAPIER.ColliderDesc.capsule(s.h, s.r);
+    case 'ico': case 'dodeca': {
+      const g = shapeGeo(s);
+      return RAPIER.ColliderDesc.convexHull(new Float32Array(g.attributes.position.array));
+    }
+  }
+}
+
+/**
+ * Add a rigid body + its mesh.
+ * o: { shape, mat (key) | material (THREE.Material), pos:[x,y,z], quat:THREE.Quaternion, vel, angvel, fixed, kinematic, density, friction, restitution, ccd, damping }
+ */
+function addBody(o) {
+  const def = MAT_DEFS[o.mat] || {};
+  const desc = o.fixed ? RAPIER.RigidBodyDesc.fixed() : (o.kinematic ? RAPIER.RigidBodyDesc.kinematicPositionBased() : RAPIER.RigidBodyDesc.dynamic());
+  desc.setTranslation(o.pos[0], o.pos[1], o.pos[2]);
+  if (o.quat) desc.setRotation({ x: o.quat.x, y: o.quat.y, z: o.quat.z, w: o.quat.w });
+  if (o.vel) desc.setLinvel(o.vel[0], o.vel[1], o.vel[2]);
+  if (o.angvel) desc.setAngvel({ x: o.angvel[0], y: o.angvel[1], z: o.angvel[2] });
+  desc.setLinearDamping(o.linDamp ?? P.drag * 0.2).setAngularDamping(o.angDamp ?? (0.02 + P.drag * 0.2));
+  if (!o.fixed && (o.ccd ?? P.ccd)) desc.setCcdEnabled(true);
+  if (!P.sleep || o.noSleep) desc.setCanSleep(false);
+  const body = world.createRigidBody(desc);
+  const cd = colliderFor(o.shape);
+  cd.setDensity((o.density ?? def.density ?? 1) * 1000) // g/cm³ → kg/m³, masses in real kg
+    .setFriction((o.friction ?? def.friction ?? 0.5) * P.fric)
+    .setRestitution(Math.min(1, (o.restitution ?? def.restitution ?? 0.3) * P.rest));
+  if (o.restCombine) cd.setRestitutionCombineRule(o.restCombine);
+  if (o.fricCombine) cd.setFrictionCombineRule(o.fricCombine);
+  world.createCollider(cd, body);
+  const mesh = new THREE.Mesh(shapeGeo(o.shape), o.material || getMat(o.mat || 'ceramicW'));
+  mesh.castShadow = true; mesh.receiveShadow = true;
+  scene.add(mesh);
+  const ob = {
+    body, mesh, dynamic: !o.fixed, spawned: !!o.spawned,
+    p0: new THREE.Vector3(...o.pos), p1: new THREE.Vector3(...o.pos),
+    q0: (o.quat || new THREE.Quaternion()).clone(), q1: (o.quat || new THREE.Quaternion()).clone(),
+  };
+  mesh.position.copy(ob.p1); mesh.quaternion.copy(ob.q1);
+  mesh.userData.ob = ob;
+  objs.push(ob);
+  return ob;
+}
+function addHelper(m) { scene.add(m); helpers.push(m); return m; }
+function addStatic(m) { m.castShadow = m.receiveShadow = true; scene.add(m); helpers.push(m); m.userData.keepInPT = true; return m; }
+
+function clearScene() {
+  endGrab();
+  for (const o of objs) scene.remove(o.mesh);
+  for (const h of helpers) { scene.remove(h); h.traverse?.(c => { if (c.geometry && !geoCache.has(c.geometry)) c.geometry.dispose?.(); }); }
+  objs = []; helpers = []; updaters = []; stepHooks = [];
+  simTime = 0;
+}
+
+/* String / rod helper: thin cylinder between two world points */
+const stringMat = new THREE.MeshPhysicalMaterial({ color: srgb(0xdedad2), roughness: 0.55 });
+const stringGeo = new THREE.CylinderGeometry(1, 1, 1, 10, 1, true);
+function makeString(radius = 0.006, mat = stringMat) {
+  const m = new THREE.Mesh(stringGeo, mat);
+  m.castShadow = true; m.userData.keepInPT = true; m.userData.r = radius;
+  return addHelper(m);
+}
+const _up = new THREE.Vector3(0, 1, 0), _tv = new THREE.Vector3();
+function setString(m, a, b) {
+  _tv.subVectors(b, a);
+  const len = _tv.length();
+  m.position.addVectors(a, b).multiplyScalar(0.5);
+  m.quaternion.setFromUnitVectors(_up, _tv.normalize());
+  m.scale.set(m.userData.r, len, m.userData.r);
+}
+
+/* ======================================================================
+   Scenes
+   ====================================================================== */
+const rand = (a, b) => a + Math.random() * (b - a);
+const qFromEuler = (x, y, z) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z));
+
+const SCENES = [
+  {
+    id: 'domino', name: '도미노 나선',
+    cam: [10.5, 9, 13], target: [0, 0.5, 0], shadow: 11, hz: 240,
+    build() {
+      const s = { type: 'box', hx: 0.06, hy: 0.42, hz: 0.21, r: 0.018 };
+      const spacing = 0.38;            // centre-to-centre along the path
+      const pitch = 1.3;               // distance between spiral arms
+      const b = pitch / (2 * Math.PI);
+      let theta = 3.2 * Math.PI;       // start at r ≈ 2
+      const rMax = isCoarse ? 5.2 : 6.3;
+      const list = [];
+      while (true) {
+        const r = b * theta;
+        if (r > rMax) break;
+        list.push(theta);
+        theta += spacing / Math.sqrt(r * r + b * b); // arc-length step
+      }
+      list.reverse(); // topple from the outside inwards
+      const n = list.length;
+      list.forEach((th, i) => {
+        const r = b * th;
+        const x = r * Math.cos(th), z = r * Math.sin(th);
+        // tangent direction (d/dθ of the spiral) — dominoes face along it
+        const tx = b * Math.cos(th) - r * Math.sin(th), tz = b * Math.sin(th) + r * Math.cos(th);
+        const yaw = Math.atan2(-tz, tx);
+        const q = qFromEuler(0, yaw, 0);
+        const first = i === 0;
+        addBody({
+          shape: s, material: hueMat(i / n * 1.6), mat: 'ceramicW', density: 2.4, friction: 0.45, restitution: 0.1,
+          pos: [x, 0.42 + 0.0005, z], quat: q, ccd: false,
+          angvel: first ? (() => { const ax = new THREE.Vector3(0, 0, -1).applyQuaternion(q).multiplyScalar(-3.2); return [ax.x, ax.y, ax.z]; })() : null,
+        });
+      });
+      // the last domino pushes a chrome ball into the centre
+      { const th = list[n - 1], r = b * th;
+        const tx = b * Math.cos(th) - r * Math.sin(th), tz = b * Math.sin(th) + r * Math.cos(th), l = Math.hypot(tx, tz);
+        addBody({ shape: { type: 'sphere', r: 0.3 }, mat: 'chrome', pos: [r * Math.cos(th) - tx / l * 0.75, 0.3, r * Math.sin(th) - tz / l * 0.75] }); }
+      addBody({ shape: { type: 'cylinder', r: 0.9, h: 0.04 }, mat: 'gold', pos: [0, 0.04, 0], fixed: true });
+      this.info = `${n}개 도미노 · 바깥에서 안쪽으로`;
+    },
+  },
+  {
+    id: 'jenga', name: '나무 탑 + 철구',
+    cam: [12.5, 7.5, 13.5], target: [-0.6, 4.2, 0], shadow: 10, hz: 240,
+    build() {
+      const blk = { type: 'box', hx: 0.75, hy: 0.15, hz: 0.25, r: 0.025 };
+      const layers = 20;
+      for (let L = 0; L < layers; L++) {
+        const y = 0.15 + L * 0.3005;
+        const rot = L % 2 === 1;
+        for (let k = -1; k <= 1; k++) {
+          const off = k * 0.5025;
+          const pos = rot ? [off, y, 0] : [0, y, off];
+          addBody({ shape: blk, mat: 'wood', pos, quat: qFromEuler(0, rot ? Math.PI / 2 : 0, 0), ccd: false });
+        }
+      }
+      // wrecking ball on a rope joint from a fixed boom
+      const pivot = new THREE.Vector3(-1.2, 11.5, 0);
+      const L = 8.2, ang = 62 * DEG;
+      const ballPos = [pivot.x - L * Math.sin(ang), pivot.y - L * Math.cos(ang), 0];
+      const anchor = addBody({ shape: { type: 'sphere', r: 0.12 }, mat: 'steel', pos: pivot.toArray(), fixed: true });
+      const ball = addBody({ shape: { type: 'sphere', r: 0.75 }, mat: 'chrome', density: 7.8, pos: ballPos, noSleep: true });
+      world.createImpulseJoint(RAPIER.JointData.rope(L, { x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }), anchor.body, ball.body, true);
+      const rope = makeString(0.03, getMat('steel'));
+      updaters.push(() => setString(rope, pivot, ball.mesh.position));
+      // boom (visual + static)
+      const boom = addStatic(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 6.5, 32), getMat('ceramicK')));
+      boom.position.set(-1.2, 11.5, -3.25); boom.rotation.x = Math.PI / 2;
+      const post = addStatic(new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 11.6, 32), getMat('ceramicK')));
+      post.position.set(-1.2, 5.8, -6.5);
+      this.info = `${layers * 3}개 나무 블록 · 강철 공 ${(4 / 3 * Math.PI * 0.75 ** 3 * 7800).toFixed(0)} kg`;
+    },
+  },
+  {
+    id: 'cradle', name: '뉴턴의 요람',
+    cam: [3.2, 2.1, 4.2], target: [0, 1.15, 0], shadow: 3.5, hz: 1000,
+    build() {
+      const N = 5, R = 0.22, Lh = 1.35, H = 2.25, gap = 0.0006, half = 0.55;
+      // Tiny contact-prediction distance: each collision is then resolved as its own event, so the impulse
+      // travels through the row (ball 1 → ball 5) instead of being shared by all balls at once.
+      world.integrationParameters.normalizedPredictionDistance = 0.0001;
+      const bar = getMat('chrome');
+      // frame (visual) — two rails and four legs
+      const rail = new THREE.CylinderGeometry(0.03, 0.03, (N + 1.6) * 2 * R, 32);
+      for (const z of [-half, half]) {
+        const m = addStatic(new THREE.Mesh(rail, bar)); m.rotation.z = Math.PI / 2; m.position.set(0, H, z);
+        for (const x of [-(N + 1.6) * R, (N + 1.6) * R]) {
+          const leg = addStatic(new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, H, 32), bar)); leg.position.set(x, H / 2 + 0.06, z);
+        }
+      }
+      const base = addStatic(new THREE.Mesh(new RoundedBoxGeometry((N + 2.2) * 2 * R, 0.12, half * 2 + 0.4, 4, 0.04), getMat('ceramicK')));
+      base.position.set(0, 0.06, 0);
+      const balls = [];
+      for (let i = 0; i < N; i++) {
+        const x = (i - (N - 1) / 2) * (2 * R + gap);
+        const pivot = new THREE.Vector3(x, H, 0);
+        const lift = i === 0 ? -40 * DEG : 0;
+        const q = qFromEuler(0, 0, lift);
+        const off = new THREE.Vector3(0, -Lh, 0).applyQuaternion(q);
+        const pos = pivot.clone().add(off);
+        const ball = addBody({
+          shape: { type: 'sphere', r: R }, mat: 'chrome', pos: pos.toArray(), quat: q,
+          friction: 0, restitution: 1, restCombine: RAPIER.CoefficientCombineRule.Max, fricCombine: RAPIER.CoefficientCombineRule.Min,
+          linDamp: 0, angDamp: 0, noSleep: true, ccd: true,
+        });
+        const anchor = world.createRigidBody(RAPIER.RigidBodyDesc.fixed().setTranslation(pivot.x, pivot.y, pivot.z));
+        world.createImpulseJoint(RAPIER.JointData.revolute({ x: 0, y: 0, z: 0 }, { x: 0, y: Lh, z: 0 }, { x: 0, y: 0, z: 1 }), anchor, ball.body, true);
+        const s1 = makeString(0.004), s2 = makeString(0.004);
+        const top = new THREE.Vector3(0, R * 0.92, 0);
+        updaters.push(() => {
+          const t = top.clone().applyQuaternion(ball.mesh.quaternion).add(ball.mesh.position);
+          setString(s1, new THREE.Vector3(pivot.x, H, -half), t);
+          setString(s2, new THREE.Vector3(pivot.x, H, half), t);
+        });
+        balls.push(ball);
+      }
+      this.info = `강철 공 ${N}개 · 반발 계수 1 · Δt 1 ms`;
+    },
+  },
+  {
+    id: 'rain', name: '재질 쏟아내기',
+    cam: [13.5, 9, 14.5], target: [0, 3.4, 0], shadow: 11, hz: 240,
+    build() {
+      // three zig-zag ramps with rails
+      const ramps = [
+        { c: [-1.5, 7.0, 0], tilt: -16 }, { c: [1.5, 4.5, 0], tilt: 16 }, { c: [-1.0, 2.0, 0], tilt: -14 },
+      ];
+      const len = 7, wid = 2.4, th = 0.16;
+      for (const rp of ramps) {
+        const q = qFromEuler(0, 0, rp.tilt * DEG);
+        addBody({ shape: { type: 'box', hx: len / 2, hy: th / 2, hz: wid / 2, r: 0.03 }, mat: 'ceramicW', pos: rp.c, quat: q, fixed: true, friction: 0.35 });
+        for (const s of [-1, 1]) {
+          const off = new THREE.Vector3(0, 0.2, s * (wid / 2 + 0.05)).applyQuaternion(q);
+          addBody({ shape: { type: 'box', hx: len / 2, hy: 0.28, hz: 0.05, r: 0.02 }, mat: 'glass', pos: [rp.c[0] + off.x, rp.c[1] + off.y, rp.c[2] + off.z], quat: q, fixed: true, friction: 0.2 });
+        }
+      }
+      const shapes = ['sphere', 'box', 'cylinder', 'capsule', 'cone', 'ico', 'dodeca'];
+      const mats = ['chrome', 'gold', 'glass', 'glass', 'ceramicR', 'ceramicY', 'ceramicB', 'ceramicW', 'rubber', 'copper', 'wood', 'plasticG', 'steel'];
+      let acc = 0, count = 0; const max = isCoarse ? 90 : 170;
+      stepHooks.push(dt => {
+        acc += dt;
+        if (count >= max || acc < 0.09) return;
+        acc = 0; count++;
+        const t = shapes[Math.floor(Math.random() * shapes.length)];
+        const sz = rand(0.16, 0.3);
+        const shape = randomShape(t, sz);
+        addBody({ shape, mat: mats[Math.floor(Math.random() * mats.length)], pos: [rand(-4.6, -3.6), rand(9.2, 10.2), rand(-0.7, 0.7)], quat: qFromEuler(rand(0, 6), rand(0, 6), rand(0, 6)), vel: [rand(0.5, 1.5), 0, 0] });
+      });
+      this.info = `${max}개 물체 · 13가지 재질 · 7가지 모양`;
+    },
+  },
+  {
+    id: 'valid', name: '정확도 검증',
+    cam: [1.5, 5.5, 21], target: [0, 2.8, 0], shadow: 12, hz: 240,
+    build() {
+      const panel = $('valid');
+      /* ---- 1. projectile vs analytic parabola ---- */
+      const r = 0.12, v0 = 12.5, ang = 55 * DEG;
+      const start = new THREE.Vector3(-8, 0.78, 3.5);
+      const pad = addBody({ shape: { type: 'cylinder', r: 0.35, h: 0.3 }, mat: 'ceramicK', pos: [start.x, 0.3, start.z], fixed: true });
+      let ball = null, t0 = 0, flying = false, maxErr = 0, landT = 0, launches = 0, restWait = 0;
+      const trailMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const trailGeo = new THREE.SphereGeometry(0.035, 12, 8);
+      const trail = new THREE.Group(); addHelper(trail);
+      let curve = null;
+      const anaMat = new THREE.MeshBasicMaterial({ color: srgb(0xffbf47), toneMapped: false });
+      const launch = () => {
+        if (ball) { world.removeRigidBody(ball.body); scene.remove(ball.mesh); objs = objs.filter(o => o !== ball); }
+        trail.clear();
+        const vx = v0 * Math.cos(ang), vy = v0 * Math.sin(ang);
+        ball = addBody({ shape: { type: 'sphere', r }, mat: 'ceramicY', pos: start.toArray(), vel: [vx, vy, 0], linDamp: 0, angDamp: 0, noSleep: true, ccd: true });
+        t0 = simTime; flying = true; maxErr = 0; launches++;
+        // analytic curve until it returns to launch height
+        if (curve) { scene.remove(curve); helpers = helpers.filter(h => h !== curve); curve.geometry.dispose(); }
+        const T = 2 * vy / P.g || 2;
+        const pts = [];
+        for (let i = 0; i <= 120; i++) { const t = T * i / 120; pts.push(new THREE.Vector3(start.x + vx * t, start.y + vy * t - 0.5 * P.g * t * t, start.z)); }
+        curve = addHelper(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 240, 0.014, 8, false), anaMat));
+      };
+      launch();
+      let lastMark = 0;
+      stepHooks.push(dt => {
+        if (!ball) return;
+        const t = simTime - t0;
+        const p = ball.body.translation();
+        const vx = v0 * Math.cos(ang), vy = v0 * Math.sin(ang);
+        if (flying) {
+          const ax = start.x + vx * t, ay = start.y + vy * t - 0.5 * P.g * t * t;
+          const err = Math.hypot(p.x - ax, p.y - ay, p.z - start.z);
+          if (ay >= start.y - 1e-9 || t < 0.05) { maxErr = Math.max(maxErr, err); landT = t; }
+          if (t - lastMark >= 0.04) { lastMark = t; const m = new THREE.Mesh(trailGeo, trailMat); m.position.set(p.x, p.y, p.z); trail.add(m); }
+          if (ay < start.y - 0.02 && t > 0.1) { flying = false; restWait = 0; }
+        } else {
+          restWait += dt;
+          if (restWait > 1.2) { lastMark = 0; launch(); }
+        }
+      });
+      /* ---- 2. physical pendulum vs exact (elliptic integral) period ---- */
+      const pv = new THREE.Vector3(3.5, 4.6, -2.5), Lp = 2.6, rb = 0.16, th0 = 35 * DEG;
+      const barM = addStatic(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.2, 24), getMat('chrome'))); barM.position.copy(pv); barM.rotation.x = Math.PI / 2;
+      const postM = addStatic(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, pv.y, 24), getMat('ceramicK'))); postM.position.set(pv.x, pv.y / 2, pv.z - 0.6);
+      const q = qFromEuler(0, 0, th0);
+      const bpos = pv.clone().add(new THREE.Vector3(0, -Lp, 0).applyQuaternion(q));
+      const bob = addBody({ shape: { type: 'sphere', r: rb }, mat: 'gold', pos: bpos.toArray(), quat: q, linDamp: 0, angDamp: 0, noSleep: true, ccd: false });
+      const anc = world.createRigidBody(RAPIER.RigidBodyDesc.fixed().setTranslation(pv.x, pv.y, pv.z));
+      world.createImpulseJoint(RAPIER.JointData.revolute({ x: 0, y: 0, z: 0 }, { x: 0, y: Lp, z: 0 }, { x: 0, y: 0, z: 1 }), anc, bob.body, true);
+      const rod = makeString(0.012, getMat('steel'));
+      updaters.push(() => setString(rod, pv, bob.mesh.position));
+      let prevPhi = null, prevDphi = 0, lastCross = null, periods = [], amp = th0;
+      stepHooks.push(() => {
+        const p = bob.body.translation();
+        const phi = Math.atan2(p.x - pv.x, pv.y - p.y);
+        if (prevPhi !== null) { const d = phi - prevPhi; if (d * prevDphi < 0) amp = Math.abs(prevPhi); prevDphi = d; }
+        if (prevPhi !== null && prevPhi < 0 && phi >= 0) {
+          const f = -prevPhi / (phi - prevPhi);
+          const tc = simTime - world.timestep + f * world.timestep;
+          if (lastCross !== null) { periods.push(tc - lastCross); if (periods.length > 6) periods.shift(); }
+          lastCross = tc;
+        }
+        prevPhi = phi;
+      });
+      const agm = (a, b) => { for (let i = 0; i < 30; i++) { const an = (a + b) / 2, bn = Math.sqrt(a * b); a = an; b = bn; } return a; };
+      updaters.push(() => {
+        // theory: physical pendulum, I = mL² + 2/5 m r², exact large-amplitude period T = T₀ / AGM(1, cos(θ₀/2))
+        const T0 = 2 * Math.PI * Math.sqrt((Lp * Lp + 0.4 * rb * rb) / (P.g * Lp));
+        const Tex = T0 / agm(1, Math.cos(th0 / 2));
+        const Tsm = 2 * Math.PI * Math.sqrt(Lp / P.g);
+        const Tm = periods.length ? periods[periods.length - 1] : NaN;
+        const pe = Math.abs(Tm - Tex) / Tex * 100;
+        const dt = 1 / P.hz;
+        const vy = v0 * Math.sin(ang);
+        panel.innerHTML =
+          `<h4>① 포물선 운동 (공기 저항 0)</h4>` +
+          `v₀ ${v0} m/s · ${(ang / DEG).toFixed(0)}° · g ${P.g.toFixed(2)} · Δt ${(dt * 1000).toFixed(2)} ms<br>` +
+          `최대 위치 오차 <b class="${maxErr < 0.01 ? 'g' : 'w'}">${(maxErr * 1000).toFixed(2)} mm</b> (비행 ${landT.toFixed(2)} s)<br>` +
+          `<span style="color:#999">상대 오차 ${(maxErr / Math.max(1e-6, v0 * Math.cos(ang) * landT) * 100).toFixed(4)} % · 1차 적분기: Δt를 절반으로 하면 오차도 약 절반</span><br>` +
+          `<span style="color:#999">노란 선: 해석해 · 흰 점: 시뮬레이션</span>` +
+          `<h4 style="margin-top:8px">② 물리 진자 (θ₀ ${(th0 / DEG).toFixed(0)}°, L ${Lp} m)</h4>` +
+          `측정 주기 <b>${isNaN(Tm) ? '측정 중…' : Tm.toFixed(5) + ' s'}</b><br>` +
+          `정확해 (타원 적분) ${Tex.toFixed(5)} s<br>` +
+          (isNaN(pe) ? '' : `상대 오차 <b class="${pe < 0.1 ? 'g' : 'w'}">${pe.toFixed(4)} %</b><br>`) +
+          `<span style="color:#999">소진폭 근사 2π√(L/g) = ${Tsm.toFixed(5)} s (${(((Tsm - Tex) / Tex) * 100).toFixed(2)} % 틀림)</span><br>` +
+          `<span style="color:#999">최근 진폭 ${(amp / DEG).toFixed(3)}° (시작 ${(th0 / DEG).toFixed(0)}°, 에너지 보존 확인)</span>`;
+      });
+      this.info = `해석해와 실시간 비교 · 시간 간격을 바꿔 보세요`;
+      this.onEnter = () => { panel.style.display = 'block'; };
+      this.onLeave = () => { panel.style.display = 'none'; };
+    },
+  },
+  {
+    id: 'sandbox', name: '빈 스튜디오',
+    cam: [5.2, 3.4, 6.8], target: [0, 0.5, 0], shadow: 8, hz: 240,
+    build() {
+      // a few hero objects to play with
+      addBody({ shape: { type: 'sphere', r: 0.6 }, mat: 'glass', pos: [-1.6, 0.6, 0] });
+      addBody({ shape: { type: 'box', hx: 0.5, hy: 0.5, hz: 0.5, r: 0.06 }, mat: 'gold', pos: [0, 0.5, -0.8], quat: qFromEuler(0, 0.5, 0) });
+      addBody({ shape: { type: 'capsule', r: 0.3, h: 0.4 }, mat: 'ceramicR', pos: [1.5, 0.3, 0.4], quat: qFromEuler(Math.PI / 2, 0, 0.3) });
+      addBody({ shape: { type: 'cone', r: 0.45, h: 0.5 }, mat: 'ceramicB', pos: [0.4, 0.5, 1.4] });
+      addBody({ shape: { type: 'sphere', r: 0.35 }, mat: 'chrome', pos: [2.6, 0.35, -1.2] });
+      addBody({ shape: { type: 'ico', r: 0.5 }, mat: 'copper', pos: [-2.8, 0.5, -1.5] });
+      this.info = '드래그로 잡고 던지기 · 오른쪽 패널에서 물체 추가';
+    },
+  },
+];
+
+function randomShape(t, sz) {
+  switch (t) {
+    case 'sphere': return { type: 'sphere', r: qz(sz) };
+    case 'box': return { type: 'box', hx: qz(sz), hy: qz(sz * rand(0.5, 1)), hz: qz(sz * rand(0.6, 1)), r: qz(sz * 0.12) };
+    case 'cylinder': return { type: 'cylinder', r: qz(sz * 0.8), h: qz(sz) };
+    case 'capsule': return { type: 'capsule', r: qz(sz * 0.65), h: qz(sz * 0.7) };
+    case 'cone': return { type: 'cone', r: qz(sz), h: qz(sz) };
+    case 'ico': return { type: 'ico', r: qz(sz * 1.15) };
+    case 'dodeca': return { type: 'dodeca', r: qz(sz * 1.15) };
+  }
+}
+// quantise random sizes a little so geometry caching stays effective
+function qz(v) { return Math.round(v * 40) / 40; }
+
+/* ======================================================================
+   Scene management
+   ====================================================================== */
+const tabs = $('scenes');
+for (const s of SCENES) {
+  const b = document.createElement('button');
+  b.className = 'tab'; b.textContent = s.name; b.dataset.id = s.id;
+  b.onclick = () => loadScene(s.id, true);
+  tabs.appendChild(b);
+}
+function loadScene(id, moveCam) {
+  exitPT();
+  const def = SCENES.find(s => s.id === id) || SCENES[0];
+  if (sceneDef && sceneDef.onLeave) sceneDef.onLeave();
+  clearScene();
+  if (sceneDef !== def && def.hz) { P.hz = isCoarse ? Math.min(def.hz, 480) : def.hz; $('gHz').value = String(P.hz); }
+  sceneDef = def;
+  newWorld();
+  def.build();
+  if (def.onEnter) def.onEnter();
+  for (const t of tabs.children) t.classList.toggle('on', t.dataset.id === def.id);
+  placeSun(new THREE.Vector3(...def.target), def.shadow);
+  if (moveCam) { camera.position.set(...def.cam); controls.target.set(...def.target); controls.update(); }
+  acc = 0;
+  try { history.replaceState(null, '', '#' + def.id); } catch (e) {}
+}
+function reset() { loadScene(sceneDef.id, false); }
+
+/* ======================================================================
+   Spawning & shooting
+   ====================================================================== */
+function spawnShape(kind, size) {
+  switch (kind) {
+    case 'sphere': return { type: 'sphere', r: size };
+    case 'box': return { type: 'box', hx: size, hy: size, hz: size, r: size * 0.1 };
+    case 'cylinder': return { type: 'cylinder', r: size * 0.8, h: size };
+    case 'capsule': return { type: 'capsule', r: size * 0.6, h: size * 0.7 };
+    case 'cone': return { type: 'cone', r: size, h: size };
+    case 'ico': return { type: 'ico', r: size * 1.2 };
+  }
+}
+function limitSpawned() {
+  const spawned = objs.filter(o => o.spawned);
+  if (spawned.length > 120) {
+    const o = spawned[0];
+    world.removeRigidBody(o.body); scene.remove(o.mesh);
+    objs = objs.filter(x => x !== o);
+  }
+}
+function dropObject() {
+  exitPT();
+  const size = qz(+$('sSize').value);
+  const t = controls.target;
+  addBody({ shape: spawnShape($('sShape').value, size), mat: sMat.value, pos: [t.x + rand(-0.4, 0.4), t.y + 5 + size, t.z + rand(-0.4, 0.4)], quat: qFromEuler(rand(0, 6), rand(0, 6), rand(0, 6)), spawned: true });
+  limitSpawned();
+}
+const pointer = new THREE.Vector2(0, 0);
+let pointerInside = false;
+function shoot() {
+  exitPT();
+  const ray = new THREE.Raycaster();
+  ray.setFromCamera(pointerInside ? pointer : new THREE.Vector2(0, 0), camera);
+  const dir = ray.ray.direction.clone();
+  const size = qz(+$('sSize').value) * 0.7;
+  const pos = camera.position.clone().addScaledVector(dir, 0.8 + size);
+  const v = dir.multiplyScalar(+$('sSpeed').value);
+  addBody({ shape: spawnShape($('sShape').value, size), mat: sMat.value, pos: pos.toArray(), vel: v.toArray(), angvel: [rand(-3, 3), rand(-3, 3), rand(-3, 3)], ccd: true, spawned: true });
+  limitSpawned();
+  if (P.paused) setPaused(false);
+}
+
+/* ======================================================================
+   Grabbing (critically damped spring at the picked point)
+   ====================================================================== */
+const raycaster = new THREE.Raycaster();
+let grab = null; // { ob, local: Vector3, target: Vector3, plane: Plane }
+const grabLineMat = new THREE.MeshBasicMaterial({ color: srgb(0xffbf47), toneMapped: false, depthTest: false, transparent: true, opacity: 0.9 });
+const grabDot = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 12), grabLineMat); grabDot.renderOrder = 10; grabDot.visible = false; scene.add(grabDot);
+const grabLine = new THREE.Mesh(stringGeo, grabLineMat); grabLine.userData.r = 0.008; grabLine.renderOrder = 10; grabLine.visible = false; scene.add(grabLine);
+function updatePointer(e) {
+  const r = renderer.domElement.getBoundingClientRect();
+  pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+}
+const _q = new THREE.Quaternion(), _v = new THREE.Vector3();
+renderer.domElement.addEventListener('pointerdown', e => {
+  updatePointer(e);
+  if (e.button !== 0) return;
+  raycaster.setFromCamera(pointer, camera);
+  const hits = raycaster.intersectObjects(objs.filter(o => o.dynamic).map(o => o.mesh), false);
+  if (!hits.length) return;
+  exitPT();
+  const h = hits[0], ob = h.object.userData.ob;
+  const t = ob.body.translation(), r = ob.body.rotation();
+  _q.set(r.x, r.y, r.z, r.w).invert();
+  const local = h.point.clone().sub(_v.set(t.x, t.y, t.z)).applyQuaternion(_q);
+  const n = camera.getWorldDirection(new THREE.Vector3());
+  grab = { ob, local, target: h.point.clone(), plane: new THREE.Plane().setFromNormalAndCoplanarPoint(n, h.point) };
+  ob.body.wakeUp();
+  controls.enabled = false;
+  renderer.domElement.setPointerCapture(e.pointerId);
+  grabDot.visible = grabLine.visible = true;
+}, { capture: true });
+renderer.domElement.addEventListener('pointermove', e => {
+  updatePointer(e); pointerInside = true;
+  if (!grab) return;
+  raycaster.setFromCamera(pointer, camera);
+  const p = new THREE.Vector3();
+  if (raycaster.ray.intersectPlane(grab.plane, p)) { p.y = Math.max(p.y, 0.05); grab.target.copy(p); }
+});
+renderer.domElement.addEventListener('pointerleave', () => { pointerInside = false; });
+function endGrab() { if (!grab) return; grab = null; controls.enabled = true; grabDot.visible = grabLine.visible = false; }
+renderer.domElement.addEventListener('pointerup', endGrab);
+renderer.domElement.addEventListener('pointercancel', endGrab);
+renderer.domElement.addEventListener('wheel', e => {
+  if (!grab) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  // wheel while grabbing: push/pull the object along the view ray
+  const n = grab.plane.normal;
+  grab.plane.constant += e.deltaY * 0.004;
+  grab.target.addScaledVector(n, -e.deltaY * 0.004);
+}, { capture: true, passive: false });
+
+function applyGrab(dt) {
+  if (!grab) return;
+  const b = grab.ob.body;
+  const t = b.translation(), r = b.rotation(), lv = b.linvel(), av = b.angvel();
+  _q.set(r.x, r.y, r.z, r.w);
+  const arm = grab.local.clone().applyQuaternion(_q);
+  const wp = arm.clone().add(_v.set(t.x, t.y, t.z));
+  // velocity of the grabbed point: v + ω × r
+  const w = new THREE.Vector3(av.x, av.y, av.z);
+  const vp = new THREE.Vector3(lv.x, lv.y, lv.z).add(w.clone().cross(arm));
+  const m = b.mass();
+  const wn = 2 * Math.PI * 3.0, zeta = 1.0;
+  const f = grab.target.clone().sub(wp).multiplyScalar(wn * wn).addScaledVector(vp, -2 * zeta * wn);
+  f.y += P.g; // gravity compensation
+  const maxA = 400; if (f.length() > maxA) f.setLength(maxA);
+  f.multiplyScalar(m * dt);
+  b.applyImpulseAtPoint({ x: f.x, y: f.y, z: f.z }, { x: wp.x, y: wp.y, z: wp.z }, true);
+  // a little angular damping so it doesn't spin wildly on the string
+  b.setAngvel({ x: av.x * 0.995, y: av.y * 0.995, z: av.z * 0.995 }, true);
+}
+
+/* ======================================================================
+   Simulation loop (fixed step + interpolation)
+   ====================================================================== */
+let acc = 0, stepMs = 0, stepsLast = 0;
+function stepOnce() {
+  const dt = world.timestep;
+  applyGrab(dt);
+  for (const o of objs) { if (!o.dynamic) continue; o.p0.copy(o.p1); o.q0.copy(o.q1); }
+  world.step();
+  simTime += dt;
+  for (const o of objs) {
+    if (!o.dynamic) continue;
+    const t = o.body.translation(), r = o.body.rotation();
+    o.p1.set(t.x, t.y, t.z); o.q1.set(r.x, r.y, r.z, r.w);
+  }
+  for (const h of stepHooks) h(dt);
+  // remove anything that escaped the studio
+  for (let i = objs.length - 1; i >= 0; i--) {
+    const o = objs[i];
+    if (o.dynamic && (o.p1.y < -5 || o.p1.lengthSq() > 4000)) { world.removeRigidBody(o.body); scene.remove(o.mesh); objs.splice(i, 1); if (grab && grab.ob === o) endGrab(); }
+  }
+}
+function simulate(realDt) {
+  if (P.paused) return;
+  const dt = world.timestep;
+  acc += Math.min(realDt, 0.1) * P.timeScale;
+  const t0 = performance.now();
+  let n = 0;
+  const maxSteps = Math.max(4, Math.ceil(0.1 / dt));
+  while (acc >= dt && n < maxSteps) { stepOnce(); acc -= dt; n++; if (performance.now() - t0 > 40) { acc = 0; break; } }
+  stepsLast = n;
+  if (n) stepMs = stepMs * 0.85 + ((performance.now() - t0) / n) * 0.15;
+}
+function syncMeshes() {
+  const a = P.paused ? 1 : THREE.MathUtils.clamp(acc / world.timestep, 0, 1);
+  for (const o of objs) {
+    if (!o.dynamic) continue;
+    o.mesh.position.lerpVectors(o.p0, o.p1, a);
+    o.mesh.quaternion.slerpQuaternions(o.q0, o.q1, a);
+  }
+  for (const u of updaters) u();
+  if (grab) {
+    const arm = grab.local.clone().applyQuaternion(grab.ob.mesh.quaternion).add(grab.ob.mesh.position);
+    grabDot.position.copy(grab.target);
+    setString(grabLine, arm, grab.target);
+  }
+}
+
+/* ======================================================================
+   Post-processing
+   ====================================================================== */
+let composer = null, gtao = null, bloom = null, quality = isCoarse ? 'med' : 'high';
+$('rQual').value = quality;
+function buildComposer() {
+  composer?.dispose();
+  composer = null; gtao = null; bloom = null;
+  const w = view.clientWidth, h = view.clientHeight;
+  const dpr = renderer.getPixelRatio();
+  if (quality === 'low') return;
+  const rt = new THREE.WebGLRenderTarget(w * dpr, h * dpr, { type: THREE.HalfFloatType, samples: 4 });
+  composer = new EffectComposer(renderer, rt);
+  composer.addPass(new RenderPass(scene, camera));
+  if (quality === 'high') {
+    gtao = new GTAOPass(scene, camera, w, h);
+    gtao.output = GTAOPass.OUTPUT.Default;
+    gtao.blendIntensity = 0.9;
+    gtao.updateGtaoMaterial({ radius: 0.45, distanceExponent: 1.5, thickness: 1.2, scale: 1, samples: 16, distanceFallOff: 1, screenSpaceRadius: false });
+    gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 16 });
+    composer.addPass(gtao);
+  }
+  bloom = new UnrealBloomPass(new THREE.Vector2(w, h), 0.16, 0.5, 1.6);
+  composer.addPass(bloom);
+  composer.addPass(new OutputPass());
+}
+function applyQuality() {
+  const dpr = window.devicePixelRatio || 1;
+  renderer.setPixelRatio(quality === 'high' ? Math.min(dpr, 2) : quality === 'med' ? Math.min(dpr, 1.5) : 1);
+  const sm = quality === 'high' ? 4096 : quality === 'med' ? 2048 : 1024;
+  if (sun.shadow.mapSize.x !== sm) { sun.shadow.mapSize.set(sm, sm); sun.shadow.map?.dispose(); sun.shadow.map = null; }
+  resize();
+}
+function resize() {
+  const w = view.clientWidth, h = view.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  // keep at least ~46° of horizontal view on tall (portrait) screens
+  camera.fov = Math.max(38, 2 * Math.atan(Math.tan(23 * DEG) / camera.aspect) / DEG);
+  camera.updateProjectionMatrix();
+  if (ptActive) pt.updateCamera();
+  buildComposer();
+}
+new ResizeObserver(() => resize()).observe(view);
+
+/* ======================================================================
+   Path tracing (three-gpu-pathtracer, loaded on demand)
+   ====================================================================== */
+let pt = null, ptActive = false, ptStart = 0, ptLib = null;
+const ptbar = $('ptbar'), ptText = $('ptText');
+async function enterPT() {
+  if (ptActive) return;
+  setPaused(true);
+  endGrab();
+  ptbar.style.display = 'flex';
+  ptText.textContent = '패스 트레이서 불러오는 중…';
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  try {
+    if (!ptLib) ptLib = await import('three-gpu-pathtracer');
+    if (!pt) {
+      pt = new ptLib.WebGLPathTracer(renderer);
+      pt.tiles.set(2, 2);
+      pt.minSamples = 1;
+      pt.fadeDuration = 250;
+      pt.renderDelay = 0;
+      pt.filterGlossyFactor = 0.35;
+      pt.multipleImportanceSampling = true;
+    }
+    pt.bounces = +$('pBounce').value;
+    pt.transmissiveBounces = 12;
+    pt.renderScale = +$('pScale').value;
+    syncMeshes();
+    for (const h of helpers) if (!h.userData.keepInPT) h.visible = false;
+    grabDot.visible = grabLine.visible = false;
+    ptText.textContent = '장면 BVH 구축 중…';
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    pt.setScene(scene, camera);
+    ptActive = true; ptStart = performance.now();
+    $('bPT').classList.add('on');
+  } catch (err) {
+    console.error(err);
+    ptText.textContent = '패스 트레이싱을 시작하지 못했습니다';
+    setTimeout(() => { ptbar.style.display = 'none'; }, 2500);
+  }
+}
+function exitPT() {
+  if (!ptActive) return;
+  ptActive = false;
+  ptbar.style.display = 'none';
+  for (const h of helpers) h.visible = true;
+  $('bPT').classList.remove('on');
+}
+controls.addEventListener('change', () => { if (ptActive) pt.updateCamera(); });
+$('ptExit').onclick = () => exitPT();
+
+/* ======================================================================
+   Energy / momentum diagnostics
+   ====================================================================== */
+const _iq = new THREE.Quaternion(), _w = new THREE.Vector3();
+function diagnostics() {
+  let ke = 0, pe = 0, px = 0, py = 0, pz = 0, awake = 0, n = 0;
+  for (const o of objs) {
+    if (!o.dynamic) continue;
+    const b = o.body; n++;
+    if (!b.isSleeping()) awake++;
+    const m = b.mass(), v = b.linvel(), c = b.worldCom();
+    ke += 0.5 * m * (v.x * v.x + v.y * v.y + v.z * v.z);
+    pe += m * P.g * c.y;
+    px += m * v.x; py += m * v.y; pz += m * v.z;
+    // rotational: ½ Σ Iᵢ ωᵢ² in the principal frame
+    const I = b.principalInertia(), f = b.principalInertiaLocalFrame(), r = b.rotation(), av = b.angvel();
+    _iq.set(r.x, r.y, r.z, r.w).multiply(new THREE.Quaternion(f.x, f.y, f.z, f.w)).invert();
+    _w.set(av.x, av.y, av.z).applyQuaternion(_iq);
+    ke += 0.5 * (I.x * _w.x * _w.x + I.y * _w.y * _w.y + I.z * _w.z * _w.z);
+  }
+  return { ke, pe, p: Math.hypot(px, py, pz), awake, n };
+}
+const fmtE = j => Math.abs(j) >= 1e4 ? (j / 1000).toFixed(2) + ' kJ' : j.toFixed(1) + ' J';
+
+/* ======================================================================
+   UI wiring
+   ====================================================================== */
+function bindRange(id, oid, fmt, fn) {
+  const el = $(id), o = $(oid);
+  const upd = () => { o.textContent = fmt(+el.value); fn(+el.value); };
+  el.addEventListener('input', upd); upd();
+}
+bindRange('gGrav', 'oGrav', v => v.toFixed(2), v => { P.g = v; world?.gravity && (world.gravity = { x: 0, y: -v, z: 0 }); objs.forEach(o => o.dynamic && o.body.wakeUp()); });
+bindRange('gIter', 'oIter', v => v.toFixed(0), v => { P.iters = v; if (world) world.integrationParameters.numSolverIterations = v; });
+bindRange('gFric', 'oFric', v => v.toFixed(2), v => { P.fric = v; });
+bindRange('gRest', 'oRest', v => v.toFixed(2), v => { P.rest = v; });
+bindRange('gDrag', 'oDrag', v => v.toFixed(2), v => {
+  P.drag = v;
+  objs.forEach(o => { if (o.dynamic) { o.body.setLinearDamping(v * 0.2); o.body.setAngularDamping(0.02 + v * 0.2); } });
+});
+$('gHz').onchange = e => { P.hz = +e.target.value; if (world) world.timestep = 1 / P.hz; acc = 0; };
+$('gCcd').onchange = e => { P.ccd = e.target.checked; objs.forEach(o => o.dynamic && o.body.enableCcd(P.ccd)); };
+$('gSleep').onchange = e => { P.sleep = e.target.checked; };
+bindRange('sSize', 'oSize', v => v.toFixed(2), () => {});
+bindRange('sSpeed', 'oSpeed', v => v.toFixed(0) + ' m/s', () => {});
+bindRange('rExp', 'oExp', v => (v > 0 ? '+' : '') + v.toFixed(2), v => { renderer.toneMappingExposure = Math.pow(2, v); if (ptActive) pt.reset(); });
+bindRange('rEnv', 'oEnv', v => v.toFixed(2), v => { scene.environmentIntensity = v; if (ptActive) pt.updateEnvironment(); });
+bindRange('rSun', 'oSun', v => v.toFixed(2), v => { sun.intensity = v; if (ptActive) pt.updateLights(); });
+let envTimer = 0;
+bindRange('rAz', 'oAz', v => v.toFixed(0) + '°', v => {
+  keyAz = v;
+  if (sceneDef) placeSun(new THREE.Vector3(...sceneDef.target), sceneDef.shadow);
+  clearTimeout(envTimer);
+  envTimer = setTimeout(() => { rebuildEnv(); if (ptActive) { pt.updateEnvironment(); pt.updateLights(); } }, 120);
+  if (ptActive) pt.updateLights();
+});
+bindRange('rSoft', 'oSoft', v => v.toFixed(1), v => { sun.shadow.radius = v; });
+bindRange('pBounce', 'oBounce', v => v.toFixed(0), v => { if (pt) { pt.bounces = v; pt.reset(); } });
+bindRange('pScale', 'oScale', v => Math.round(v * 100) + '%', v => { if (pt) { pt.renderScale = v; pt.reset(); } });
+$('rQual').onchange = e => { quality = e.target.value; applyQuality(); };
+$('rTone').onchange = e => {
+  renderer.toneMapping = { agx: THREE.AgXToneMapping, aces: THREE.ACESFilmicToneMapping, neutral: THREE.NeutralToneMapping }[e.target.value];
+  scene.traverse(o => { if (o.material) o.material.needsUpdate = true; });
+  buildComposer();
+  if (ptActive) pt.reset();
+};
+
+const speeds = [0.02, 0.05, 0.1, 0.25, 0.5, 1, 2];
+let speedIdx = 5;
+function setSpeed(i) { speedIdx = THREE.MathUtils.clamp(i, 0, speeds.length - 1); P.timeScale = speeds[speedIdx]; $('speedLbl').textContent = P.timeScale.toFixed(2) + '×'; }
+$('bSlower').onclick = () => setSpeed(speedIdx - 1);
+$('bFaster').onclick = () => setSpeed(speedIdx + 1);
+const ICON_PAUSE = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>', ICON_PLAY = '<path d="M7 4l13 8-13 8z"/>';
+function setPaused(p) { P.paused = p; $('playIcon').innerHTML = p ? ICON_PLAY : ICON_PAUSE; if (!p) exitPT(); }
+$('bPlay').onclick = () => setPaused(!P.paused);
+$('bStep').onclick = () => { exitPT(); setPaused(true); stepOnce(); syncMeshes(); };
+$('bReset').onclick = () => reset();
+$('bShoot').onclick = $('bShoot2').onclick = () => shoot();
+$('bDrop').onclick = () => dropObject();
+$('bPT').onclick = $('bPT2').onclick = () => ptActive ? exitPT() : enterPT();
+let saveNext = false;
+$('bSave').onclick = () => { saveNext = true; };
+$('panelToggle').onclick = () => $('panel').classList.toggle('open');
+addEventListener('keydown', e => {
+  if (e.target.closest('input,select,textarea')) return;
+  if (e.code === 'Space') { e.preventDefault(); setPaused(!P.paused); }
+  else if (e.key === 'f' || e.key === 'F') shoot();
+  else if (e.key === 'r' || e.key === 'R') reset();
+  else if (e.key === '.') { exitPT(); setPaused(true); stepOnce(); syncMeshes(); }
+  else if (e.key === 'p' || e.key === 'P') ptActive ? exitPT() : enterPT();
+  else if (e.key === '[') setSpeed(speedIdx - 1);
+  else if (e.key === ']') setSpeed(speedIdx + 1);
+});
+
+/* ======================================================================
+   Main loop
+   ====================================================================== */
+const hud = $('hud');
+let last = performance.now(), fps = 60, hudT = 0;
+function frame(now) {
+  const dt = (now - last) / 1000; last = now;
+  fps = fps * 0.92 + (1 / Math.max(dt, 1e-4)) * 0.08;
+  controls.update();
+  if (!ptActive) {
+    simulate(dt);
+    syncMeshes();
+    if (composer) composer.render(); else renderer.render(scene, camera);
+  } else {
+    pt.renderSample();
+    if ((hudT += dt) > 0.25) {
+      const s = ((performance.now() - ptStart) / 1000).toFixed(1);
+      ptText.textContent = pt.isCompiling ? '셰이더 컴파일 중…' : `패스 트레이싱 · 샘플 ${pt.samples.toFixed(0)} · ${s}s`;
+    }
+  }
+  if (saveNext) {
+    saveNext = false;
+    renderer.domElement.toBlob(b => {
+      if (!b) return;
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(b); a.download = `tweeny-physics-${sceneDef.id}${ptActive ? '-pt' + pt.samples.toFixed(0) : ''}.png`;
+      a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    }, 'image/png');
+  }
+  if (!ptActive && (hudT += dt) > 0.2) {
+    hudT = 0;
+    const d = diagnostics();
+    hud.innerHTML =
+      `<b>${sceneDef.name}</b>  ${sceneDef.info || ''}\n` +
+      `FPS ${fps.toFixed(0).padStart(3)}   물리 ${stepMs.toFixed(2)} ms/스텝 × ${stepsLast}\n` +
+      `t ${simTime.toFixed(3)} s   Δt ${(1000 / P.hz).toFixed(2)} ms   ${P.paused ? '⏸ 정지' : '▶ ' + P.timeScale.toFixed(2) + '×'}\n` +
+      `강체 ${d.n} (활성 ${d.awake})\n` +
+      `운동 E ${fmtE(d.ke)}   위치 E ${fmtE(d.pe)}\n` +
+      `총 E ${fmtE(d.ke + d.pe)}   |p| ${d.p.toFixed(2)} kg·m/s`;
+  }
+  requestAnimationFrame(frame);
+}
+
+applyQuality();
+const startId = (location.hash || '').slice(1);
+loadScene(SCENES.some(s => s.id === startId) ? startId : 'domino', true);
+$('loading').remove();
+requestAnimationFrame(t => { last = t; frame(t); });
+// for automated checks
+window.__proj = () => { const o = objs.filter(o => o.dynamic)[1]; const v = o.mesh.position.clone().project(camera); const r = renderer.domElement.getBoundingClientRect(); return [r.left + (v.x+1)/2*r.width, r.top + (1-v.y)/2*r.height]; };
+window.__phys = { get world() { return world; }, get objs() { return objs; }, stepOnce, loadScene, enterPT, exitPT, P, get pt() { return pt; }, get simTime() { return simTime; } };
+</script>
+</body>
+</html>
