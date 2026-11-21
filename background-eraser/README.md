@@ -23,6 +23,12 @@ HTTPS로 서비스되는 정적 호스팅(GitHub Pages, Netlify, Cloudflare Page
 - 완전한 오프라인 환경이라면, 미리 받아 둔 모델 파일을 모델 카드의 ".onnx 파일로 불러오기" 버튼으로 넣으면 됩니다.
 - `file://`로 직접 열면 작동하지 않습니다. HTTPS나 `localhost`로 열어 주세요.
 
+## 단일 HTML 파일
+`background-eraser.html` 하나만 받아서 더블클릭으로 열어도 됩니다 (서버 불필요).
+- 처음 한 번은 인터넷이 필요합니다: AI 엔진(27MB)은 jsDelivr(실패 시 unpkg)에서, 배경 제거 모델은 Hugging Face에서 받습니다.
+- 받은 파일은 브라우저 저장소에 보관되어, 그다음부터는 인터넷 없이 작동합니다.
+- 이 파일은 `python3 tools/build-standalone.py`로 다시 만듭니다. `index.html`이나 `engine.worker.js`를 고친 뒤에는 꼭 다시 빌드하세요.
+
 ## 구성
 | 파일 | 역할 |
 | --- | --- |
@@ -31,4 +37,5 @@ HTTPS로 서비스되는 정적 호스팅(GitHub Pages, Netlify, Cloudflare Page
 | `sw.js` | 오프라인 캐시, CPU 멀티스레드 추론용 cross-origin isolation |
 | `ort/` | ONNX Runtime Web 1.31.1 (MIT) |
 | `models/` | MobileSAM 이미지 인코더 + SAM 마스크 디코더 (Apache-2.0, `@geti-ui/smart-tools` 1.7.1에서 가져옴) |
+| `tools/build-standalone.py` | 단일 HTML 파일(`background-eraser.html`) 빌드 |
 | `tools/build-artifact.py` | claude.ai 아티팩트용 빌드 (외부 다운로드가 막힌 환경이라 런타임·모델을 조각 파일로 함께 올림) |

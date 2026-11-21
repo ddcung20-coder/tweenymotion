@@ -360,6 +360,13 @@ const APP_MODE = 'site';
 const PARTS = {};
 const ORT_PARTS = null;
 const isArtifact = APP_MODE === 'artifact';
+const isStandalone = APP_MODE === 'standalone';
+// 단일 HTML: 런타임과 AI 선택 모델을 CDN에서 처음 한 번 받아 기기에 저장
+const ORT_CDN = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/';
+const SAM_CDN = 'https://cdn.jsdelivr.net/npm/@geti-ui/smart-tools@1.7.1/dist/esm/static/assets/';
+const SAM_MIRROR = 'https://unpkg.com/@geti-ui/smart-tools@1.7.1/dist/esm/static/assets/';
+const STANDALONE_CFG = { ortCdn: ORT_CDN, sam: { enc: SAM_CDN + 'mobile_sam.encoder.onnx', dec: SAM_CDN + 'sam_vit_h_4b8939.decoder.onnx' },
+  mirrors: { [ORT_CDN + 'ort.webgpu.bundle.min.mjs']: ['https://unpkg.com/onnxruntime-web@1.31.1/dist/ort.webgpu.bundle.min.mjs'], [ORT_CDN + 'ort-wasm-simd-threaded.asyncify.mjs']: ['https://unpkg.com/onnxruntime-web@1.31.1/dist/ort-wasm-simd-threaded.asyncify.mjs'], [ORT_CDN + 'ort-wasm-simd-threaded.asyncify.wasm']: ['https://unpkg.com/onnxruntime-web@1.31.1/dist/ort-wasm-simd-threaded.asyncify.wasm'], [SAM_CDN + 'mobile_sam.encoder.onnx']: [SAM_MIRROR + 'mobile_sam.encoder.onnx'], [SAM_CDN + 'sam_vit_h_4b8939.decoder.onnx']: [SAM_MIRROR + 'sam_vit_h_4b8939.decoder.onnx'] } };
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -403,7 +410,7 @@ function chip(el, state, txt, txtEl) { el.className = 'chip ' + (state || ''); $
 // ======================================================================
 //  서비스 워커 (오프라인 + 멀티스레드용 cross-origin isolation)
 // ======================================================================
-const swOK = !isArtifact && 'serviceWorker' in navigator && location.protocol !== 'file:';
+const swOK = !isArtifact && !isStandalone && 'serviceWorker' in navigator && location.protocol !== 'file:';
 if (swOK) {
   navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('SW', e));
   if (!self.crossOriginIsolated) {
@@ -425,8 +432,9 @@ const pending = new Map();
 let loaded = null; // { key, device, variant }
 function getWorker() {
   if (worker) return workerReady;
-  worker = new Worker('./engine.worker.js', { type: 'module' });
-  worker.postMessage({ type: 'config', parts: PARTS, ortParts: ORT_PARTS });
+  const src = isStandalone ? URL.createObjectURL(new Blob([$('#engine-src').textContent], { type: 'text/javascript' })) : './engine.worker.js';
+  worker = new Worker(src, isStandalone ? undefined : { type: 'module' }); // file://에서는 클래식 워커만 허용됨
+  worker.postMessage(isStandalone ? Object.assign({ type: 'config' }, STANDALONE_CFG) : { type: 'config', parts: PARTS, ortParts: ORT_PARTS });
   workerReady = new Promise((res, rej) => {
     const to = setTimeout(() => rej(new Error('엔진을 시작하지 못했습니다')), 30000);
     worker.addEventListener('message', function first(e) { if (e.data.type === 'ready') { clearTimeout(to); S.caps.threads = e.data.threads; S.caps.isolated = e.data.isolated; worker.removeEventListener('message', first); res(); updateDevInfo(); } });
@@ -434,6 +442,7 @@ function getWorker() {
   });
   worker.onmessage = (e) => {
     const m = e.data; const p = pending.get(m.id);
+    if (m.id === 'rt' && m.type === 'download') { const t = m.total || 28747738; if (m.got < t) setBusy(`AI 엔진 받는 중… ${fmtMB(m.got)} / ${fmtMB(t)} (최초 1회)`, m.got / t); else { setBusy(null); S.cached[ORT_CDN + 'ort-wasm-simd-threaded.asyncify.wasm'] = true; updateOffline(); } return; }
     if (m.type === 'warn') return toast(m.message, true);
     if (!p) return;
     if (m.type === 'progress' || m.type === 'download') { p.onProgress && p.onProgress(m); return; }
@@ -1055,7 +1064,7 @@ window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spaceDown = 
 // ======================================================================
 //  AI 선택 브러시 (MobileSAM + 누끼 결과 융합)
 // ======================================================================
-const SAM_URLS = [new URL('./models/mobile_sam.encoder.onnx', location.href).href, new URL('./models/sam_decoder.onnx', location.href).href];
+const SAM_URLS = isStandalone ? [STANDALONE_CFG.sam.enc, STANDALONE_CFG.sam.dec] : [new URL('./models/mobile_sam.encoder.onnx', location.href).href, new URL('./models/sam_decoder.onnx', location.href).href];
 function startSmart(p) {
   const it = S.cur; if (!it.sel) it.sel = { pos: [], neg: [] };
   const q = toImg(p.x, p.y);
@@ -1344,7 +1353,7 @@ $('#zipBtn').onclick = async () => {
 // ======================================================================
 async function refreshCached() {
   S.cached = {};
-  try { const c = await caches.open(MODEL_CACHE); for (const r of await c.keys()) S.cached[r.url] = true; } catch (e) {}
+  try { const r = await call({ type: 'cacheKeys' }); for (const k of r.keys) S.cached[k] = true; } catch (e) {}
   S.samCached = isArtifact || SAM_URLS.every((u) => S.cached[u]);
 }
 function renderModels() {
@@ -1361,7 +1370,7 @@ function renderModels() {
       <div class="acts"></div>`;
     const acts = $('.acts', lab);
     if (needsFile(key)) { const a = document.createElement('a'); a.className = 'btn sm'; a.href = f.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = '모델 파일 받기 (' + fmtMB(f.bytes) + ')'; a.onclick = (e) => e.stopPropagation(); acts.appendChild(a); }
-    if (saved.length) { const del = document.createElement('button'); del.type = 'button'; del.className = 'btn sm danger'; del.textContent = '저장된 모델 삭제'; del.onclick = async (e) => { e.preventDefault(); const c = await caches.open(MODEL_CACHE); for (const x of saved) await c.delete(x.url); if (loaded && loaded.key === key) { loaded = null; call({ type: 'unload' }).catch(() => {}); } await refreshCached(); renderModels(); updateOffline(); updateEngineChip(); }; acts.appendChild(del); }
+    if (saved.length) { const del = document.createElement('button'); del.type = 'button'; del.className = 'btn sm danger'; del.textContent = '저장된 모델 삭제'; del.onclick = async (e) => { e.preventDefault(); await call({ type: 'cacheDelete', urls: saved.map((x) => x.url) }); if (loaded && loaded.key === key) { loaded = null; call({ type: 'unload' }).catch(() => {}); } await refreshCached(); renderModels(); updateOffline(); updateEngineChip(); }; acts.appendChild(del); }
     const imp = document.createElement('button'); imp.type = 'button'; imp.className = 'btn sm'; imp.textContent = '.onnx 파일로 불러오기';
     imp.title = `인터넷 없이 설치: ${f.url.split('/resolve/')[0].replace(HF, '')} 의 ${f.url.split('/').pop()} 파일`;
     imp.onclick = (e) => { e.preventDefault(); importTarget = { key, v }; $('#modelFile').click(); };
@@ -1380,8 +1389,7 @@ $('#modelFile').onchange = async (e) => {
   try {
     setBusy('모델 파일 확인 중…', null);
     const buf = await file.arrayBuffer();
-    const c = await caches.open(MODEL_CACHE);
-    await c.put(f.url, new Response(buf, { headers: { 'content-type': 'application/octet-stream' } }));
+    await call({ type: 'cachePut', url: f.url, buffer: buf }, [buf]);
     S.ai.model = key; saveAi(); await refreshCached(); loaded = null; await ensureModel(true);
     toast(m.name + ' 모델을 설치했습니다'); renderModels();
   } catch (er) { toast('모델 파일을 열지 못했습니다: ' + er.message, true); } finally { setBusy(null); }
@@ -1412,6 +1420,15 @@ async function updateOffline() {
   try { const est = await navigator.storage.estimate(); usage = `저장 공간 사용 ${fmtMB(est.usage || 0)}`; } catch (e) {}
   let persisted = false; try { persisted = await navigator.storage.persisted(); } catch (e) {}
   $('#offInfo').innerHTML = `앱 파일: <b>${shell ? '저장됨 ✓' : swOK ? '저장 중…' : '이 방식으로 열면 저장 불가'}</b><br>${m.name} 모델: <b>${model ? '저장됨 ✓' : '아직 없음 (' + fmtMB(f.bytes) + ')'}</b><br>AI 선택 브러시 모델: <b>${S.samCached ? '저장됨 ✓' : '처음 쓸 때 저장 (43MB)'}</b><br>${usage}${persisted ? ' · 자동 삭제 방지 켜짐' : ''}`;
+  if (isStandalone) {
+    const rt = !!S.cached[ORT_CDN + 'ort-wasm-simd-threaded.asyncify.wasm'];
+    $('#offInfo').innerHTML = `앱: <b>이 HTML 파일 하나 ✓</b><br>AI 엔진: <b>${rt ? '저장됨 ✓' : '처음 쓸 때 저장 (27MB)'}</b><br>${m.name} 모델: <b>${model ? '저장됨 ✓' : '아직 없음 (' + fmtMB(f.bytes) + ')'}</b><br>AI 선택 브러시 모델: <b>${S.samCached ? '저장됨 ✓' : '처음 쓸 때 저장 (43MB)'}</b><br>${usage}`;
+    const ready = rt && model;
+    chip($('#chipOffline'), ready ? 'ok' : 'warn', ready ? '오프라인 준비 완료' : '처음 한 번 인터넷 필요', '#offTxt');
+    $('#prefetchBtn').disabled = ready && S.samCached;
+    $('#firstNote').textContent = model ? `${m.name} 모델이 기기에 저장되어 있어 인터넷 없이도 바로 처리됩니다.` : `처음 한 번 AI 엔진과 ${m.name} 모델(${fmtMB(f.bytes)})을 받고 나면, 그다음부터는 인터넷 없이도 작동합니다. 사진은 어디에도 업로드되지 않습니다.`;
+    return;
+  }
   if (isArtifact) {
     $('#offInfo').innerHTML = `사진은 이 기기 안에서만 처리됩니다.<br>${m.name} 모델: <b>${PARTS[f.url] || model ? '포함됨 ✓' : '.onnx 파일을 불러와야 함'}</b><br>AI 선택 브러시 모델: <b>포함됨 ✓</b>`;
     chip($('#chipOffline'), 'ok', '기기 안에서 처리', '#offTxt');

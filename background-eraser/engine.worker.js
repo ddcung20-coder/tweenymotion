@@ -3,12 +3,10 @@
 // 2) 좌우 반전 TTA 평균
 // 3) 고속 가이디드 필터로 원본 해상도까지 경계 업샘플링
 // 4) Blur-Fusion 전경색 추정(Forte & Pitié 2021)으로 배경색 번짐 제거
-import * as ort from './ort/ort.webgpu.bundle.min.mjs';
-
-const ORT_DIR = new URL('./ort/', import.meta.url).href;
-ort.env.wasm.wasmPaths = ORT_DIR;
-ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.max(1, Math.min(8, (navigator.hardwareConcurrency || 4) - 1)) : 1;
-ort.env.logLevel = 'error';
+// ONNX Runtime은 설정을 받은 뒤 불러온다 (사이트·아티팩트: 옆 파일 / 단일 HTML: CDN에서 받아 기기에 저장)
+let ort = null;
+const THREADS = self.crossOriginIsolated ? Math.max(1, Math.min(8, (navigator.hardwareConcurrency || 4) - 1)) : 1;
+const here = (rel) => { try { return new URL(rel, import.meta.url).href; } catch (e) { return null; } };
 
 const MODEL_CACHE = 'bgeraser-models-v1';
 // 실행 환경 설정 (사이트: 비어 있음 / 아티팩트: 모델·런타임을 조각 파일로 받음)
@@ -26,13 +24,56 @@ async function fetchParts(list, id, total) {
   const out = new Uint8Array(got); let o = 0; for (const b of bufs) { out.set(b, o); o += b.length; }
   return out;
 }
+const blobUrl = (bytes, type) => URL.createObjectURL(new Blob([bytes], { type }));
 async function applyConfig(c) {
-  CFG = c || { parts: {} };
-  if (CFG.ortParts && CFG.ortParts.length) {
-    const wasm = await fetchParts(CFG.ortParts);
-    ort.env.wasm.wasmPaths = { mjs: new URL('./ort/ort-wasm-simd-threaded.asyncify.mjs', import.meta.url).href, wasm: URL.createObjectURL(new Blob([wasm], { type: 'application/wasm' })) };
+  CFG = Object.assign({ parts: {}, mirrors: {} }, c || {});
+  if (CFG.ortCdn) {
+    // 단일 HTML: 런타임 3개 파일을 CDN에서 한 번 받아 기기에 저장하고 blob URL로 띄움
+    const base = CFG.ortCdn;
+    const bundle = await fetchModel(base + 'ort.webgpu.bundle.min.mjs', 0, null, true);
+    const glue = await fetchModel(base + 'ort-wasm-simd-threaded.asyncify.mjs', 0, null, true);
+    const wasm = await fetchModel(base + 'ort-wasm-simd-threaded.asyncify.wasm', 28747738, 'rt', true);
+    ort = await import(blobUrl(bundle, 'text/javascript'));
+    ort.env.wasm.wasmPaths = { mjs: blobUrl(glue, 'text/javascript'), wasm: blobUrl(wasm, 'application/wasm') };
+  } else {
+    ort = await import(here('./ort/ort.webgpu.bundle.min.mjs'));
+    ort.env.wasm.wasmPaths = here('./ort/');
+    if (CFG.ortParts && CFG.ortParts.length) {
+      const wasm = await fetchParts(CFG.ortParts);
+      ort.env.wasm.wasmPaths = { mjs: here('./ort/ort-wasm-simd-threaded.asyncify.mjs'), wasm: blobUrl(wasm, 'application/wasm') };
+    }
   }
+  ort.env.wasm.numThreads = THREADS;
+  ort.env.logLevel = 'error';
   setConfigured();
+}
+
+// ---------- 저장소: Cache API, 안 되면(file:// 등) IndexedDB ----------
+let idbP = null;
+function idb() {
+  if (!idbP) idbP = new Promise((res, rej) => { const r = indexedDB.open('bgeraser-files', 1); r.onupgradeneeded = () => r.result.createObjectStore('f'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+  return idbP;
+}
+const idbReq = (mode, fn) => idb().then((db) => new Promise((res, rej) => { const t = db.transaction('f', mode); const q = fn(t.objectStore('f')); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }));
+async function cacheGet(url) {
+  try { const c = await caches.open(MODEL_CACHE); const r = await c.match(url); if (r) return new Uint8Array(await r.arrayBuffer()); } catch (e) {}
+  try { const v = await idbReq('readonly', (st) => st.get(url)); if (v) return new Uint8Array(v); } catch (e) {}
+  return null;
+}
+async function cachePut(url, data) {
+  try { const c = await caches.open(MODEL_CACHE); await c.put(url, new Response(data, { headers: { 'content-type': 'application/octet-stream' } })); return true; } catch (e) {}
+  try { await idbReq('readwrite', (st) => st.put(data.buffer.byteLength === data.length ? data.buffer : data.slice().buffer, url)); return true; } catch (e) {}
+  return false;
+}
+async function cacheKeys() {
+  const out = new Set();
+  try { const c = await caches.open(MODEL_CACHE); for (const r of await c.keys()) out.add(r.url); } catch (e) {}
+  try { for (const k of (await idbReq('readonly', (st) => st.getAllKeys())) || []) out.add(String(k)); } catch (e) {}
+  return [...out];
+}
+async function cacheDelete(urls) {
+  try { const c = await caches.open(MODEL_CACHE); for (const u of urls) await c.delete(u); } catch (e) {}
+  try { await idbReq('readwrite', (st) => { for (const u of urls) st.delete(u); }); } catch (e) {}
 }
 let session = null;
 let sessionInfo = null; // { key, device, cfg }
@@ -65,18 +106,22 @@ function tensorToF32(t) {
 }
 
 // ---------- model loading ----------
-async function fetchModel(url, bytesHint, id) {
-  let cache = null;
-  try { cache = await caches.open(MODEL_CACHE); const hit = await cache.match(url); if (hit) { progress(id, 'cache', 1); return new Uint8Array(await hit.arrayBuffer()); } } catch (e) { cache = null; }
-  const parts = CFG.parts[url] || CFG.parts[url.replace(new URL('./', import.meta.url).href, '')];
+async function fetchModel(url, bytesHint, id, quiet) {
+  const hit = await cacheGet(url);
+  if (hit) { if (!quiet) progress(id, 'cache', 1); return hit; }
+  const base = here('./');
+  const parts = CFG.parts[url] || (base && CFG.parts[url.replace(base, '')]);
   if (parts) {
     const data = await fetchParts(parts, id, bytesHint);
-    if (cache) try { await cache.put(url, new Response(data, { headers: { 'content-type': 'application/octet-stream' } })); } catch (e) {}
+    await cachePut(url, data);
     return data;
   }
-  let res;
-  try { res = await fetch(url, { mode: 'cors' }); } catch (e) { throw Object.assign(new Error('모델을 내려받지 못했습니다. 인터넷 연결을 확인해 주세요 (최초 1회 필요)'), { code: 'FETCH' }); }
-  if (!res.ok) throw Object.assign(new Error('모델 다운로드 실패 (HTTP ' + res.status + ')'), { code: 'FETCH' });
+  let res = null;
+  for (const u of [url, ...(CFG.mirrors[url] || [])]) {
+    try { const r = await fetch(u, { mode: 'cors' }); if (r.ok) { res = r; break; } res = r; } catch (e) {}
+  }
+  if (!res) throw Object.assign(new Error('파일을 내려받지 못했습니다. 인터넷 연결을 확인해 주세요 (최초 1회 필요)'), { code: 'FETCH' });
+  if (!res.ok) throw Object.assign(new Error('다운로드 실패 (HTTP ' + res.status + ')'), { code: 'FETCH' });
   const total = +res.headers.get('content-length') || bytesHint || 0;
   const reader = res.body.getReader();
   let buf = new Uint8Array(total || 64 * 1024 * 1024), got = 0, last = 0;
@@ -86,11 +131,11 @@ async function fetchModel(url, bytesHint, id) {
     if (got + value.length > buf.length) { const nb = new Uint8Array(Math.max(buf.length * 1.5, got + value.length) | 0); nb.set(buf.subarray(0, got)); buf = nb; }
     buf.set(value, got); got += value.length;
     const now = performance.now();
-    if (now - last > 120) { last = now; post({ type: 'download', id, got, total }); }
+    if (now - last > 120 && id != null) { last = now; post({ type: 'download', id, got, total }); }
   }
-  post({ type: 'download', id, got, total: got });
+  if (id != null) post({ type: 'download', id, got, total: got });
   const data = got === buf.length ? buf : buf.slice(0, got);
-  if (cache) try { await cache.put(url, new Response(data, { headers: { 'content-type': 'application/octet-stream', 'content-length': String(got) } })); } catch (e) { post({ type: 'warn', message: '저장 공간이 부족해 모델을 캐시하지 못했습니다. 다음 실행 때 다시 받아야 합니다.' }); }
+  if (!(await cachePut(url, data))) post({ type: 'warn', message: '저장 공간이 부족해 파일을 저장하지 못했습니다. 다음 실행 때 다시 받아야 합니다.' });
   return data;
 }
 
@@ -397,11 +442,10 @@ async function run(msg) {
 
 // ---------- AI 선택 브러시 (MobileSAM, 앱에 포함된 모델) ----------
 const SAM = { enc: null, dec: null, emb: null, key: null, W: 0, H: 0, s: 1, nw: 0, nh: 0 };
-const SAM_FILES = {
-  enc: { url: new URL('./models/mobile_sam.encoder.onnx', import.meta.url).href, bytes: 28106856 },
-  dec: { url: new URL('./models/sam_decoder.onnx', import.meta.url).href, bytes: 16509322 },
-};
+const SAM_FILES = { enc: { bytes: 28106856 }, dec: { bytes: 16509322 } };
 async function samLoad(id) {
+  SAM_FILES.enc.url = (CFG.sam && CFG.sam.enc) || here('./models/mobile_sam.encoder.onnx');
+  SAM_FILES.dec.url = (CFG.sam && CFG.sam.dec) || here('./models/sam_decoder.onnx');
   if (SAM.enc && SAM.dec) return;
   const opts = { executionProviders: ['wasm'], graphOptimizationLevel: 'all' };
   if (!SAM.enc) SAM.enc = await ort.InferenceSession.create(await fetchModel(SAM_FILES.enc.url, SAM_FILES.enc.bytes, id), opts);
@@ -480,7 +524,11 @@ self.onmessage = async (e) => {
   const msg = e.data;
   if (msg.type === 'config') { applyConfig(msg).catch((err) => { post({ type: 'warn', message: 'AI 런타임을 불러오지 못했습니다: ' + err.message }); setConfigured(); }); return; }
   try {
+    if (msg.type === 'cacheKeys') { post({ type: 'cacheKeys', id: msg.id, keys: await cacheKeys() }); return; }
+    if (msg.type === 'cacheDelete') { await cacheDelete(msg.urls); post({ type: 'cacheDeleted', id: msg.id }); return; }
+    if (msg.type === 'cachePut') { await cachePut(msg.url, new Uint8Array(msg.buffer)); post({ type: 'cachePutDone', id: msg.id }); return; }
     await configured;
+    if (!ort) await applyConfig(CFG); // 처음 실패했으면(오프라인 등) 다시 시도
     if (msg.type === 'load') await loadModel(msg);
     else if (msg.type === 'run') await run(msg);
     else if (msg.type === 'samLoad') { await samLoad(msg.id); post({ type: 'samLoaded', id: msg.id }); }
@@ -491,4 +539,4 @@ self.onmessage = async (e) => {
     post({ type: 'error', id: msg.id, op: msg.type, code: err && err.code, message: String((err && err.message) || err) });
   }
 };
-post({ type: 'ready', threads: ort.env.wasm.numThreads, isolated: !!self.crossOriginIsolated });
+post({ type: 'ready', threads: THREADS, isolated: !!self.crossOriginIsolated });
