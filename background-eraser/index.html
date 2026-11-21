@@ -385,6 +385,7 @@ const S = {
   caps: { webgpu: false, f16: false, adapter: '' , threads: 1, isolated: false },
   cached: {}, // url -> true
   badF16: store.get('badF16', {}),
+  gpuBad: store.get('gpuBad', {}), // 이 기기 GPU에서 실행이 실패한 모델 → CPU로 처리
   view: { s: 1, ox: 0, oy: 0 },
   compare: false, split: 0.5,
 };
@@ -471,7 +472,7 @@ async function detectCaps() {
   S.caps.isolated = !!self.crossOriginIsolated;
 }
 function deviceFor() { const d = S.ai.device; if (d === 'webgpu' && S.caps.webgpu) return 'webgpu'; if (d === 'wasm') return 'wasm'; return S.caps.webgpu ? 'webgpu' : 'wasm'; }
-function devFor(key) { return MODELS[key].cpuOnly ? 'wasm' : deviceFor(); }
+function devFor(key) { return MODELS[key].cpuOnly || S.gpuBad[key] ? 'wasm' : deviceFor(); }
 function variantFor(key, device) {
   const m = MODELS[key];
   if (isArtifact) { const b = Object.keys(m.files).find((v) => PARTS[m.files[v].url]); if (b) return b; }
@@ -679,17 +680,23 @@ async function processItem(it) {
     const label = (s, p) => s === 'infer' ? `AI 분석 중 · ${name}${S.ai.tta ? ' · 정밀' : ''}` : '경계 다듬고 색 번짐 제거 중';
     if (S.cur === it) setBusy(label('infer'), null);
     const bmp = await createImageBitmap(it.bitmap);
+    const onProg = (pm) => { if (S.cur === it && pm.type === 'progress') setBusy(label(pm.stage), pm.stage === 'refine' ? pm.p : null); };
+    const runOnce = async (b) => call({ type: 'run', bitmap: b, opts: { tta: S.ai.tta, refine: S.ai.refine, decontam: S.ai.decontam } }, [b], onProg);
     let res;
-    try {
-      res = await call({ type: 'run', bitmap: bmp, opts: { tta: S.ai.tta, refine: S.ai.refine, decontam: S.ai.decontam } }, [bmp], (pm) => { if (S.cur === it && pm.type === 'progress') setBusy(label(pm.stage), pm.stage === 'refine' ? pm.p : null); });
-    } catch (e) {
+    try { res = await runOnce(bmp); }
+    catch (e) {
       if (e.code === 'NAN' && loaded.variant === 'fp16') {
         S.badF16[loaded.key] = true; store.set('badF16', S.badF16);
         toast('fp16 결과가 불안정해 fp32 모델로 다시 시도합니다');
-        await ensureModel(true);
-        const bmp2 = await createImageBitmap(it.bitmap);
-        res = await call({ type: 'run', bitmap: bmp2, opts: { tta: S.ai.tta, refine: S.ai.refine, decontam: S.ai.decontam } }, [bmp2]);
+      } else if (loaded.device === 'webgpu') {
+        // 그래픽카드 한계(저장 버퍼 수 등)로 GPU 실행이 실패하면 이 모델은 CPU로 처리
+        console.warn('GPU 실행 실패, CPU로 재시도', e);
+        S.gpuBad[loaded.key] = true; store.set('gpuBad', S.gpuBad);
+        toast('이 그래픽카드에서는 ' + MODELS[loaded.key].name + ' GPU 처리가 안 돼 CPU로 다시 처리합니다 (조금 느립니다)');
+        updateDevInfo(); renderModels();
       } else throw e;
+      await ensureModel(true);
+      res = await runOnce(await createImageBitmap(it.bitmap));
     }
     it.base = res.alpha; it.fg = res.fg; it.hasAlpha = res.hasAlpha; it.ms = res.ms; it.inferMs = res.inferMs; it.device = res.device; it.modelName = MODELS[loaded.key].name;
     if (!it.orig) {
@@ -1401,14 +1408,15 @@ function bindAi() {
   $('#oTta').onchange = (e) => { S.ai.tta = e.target.checked; saveAi(); };
   $('#oRefine').onchange = (e) => { S.ai.refine = e.target.checked; saveAi(); };
   $('#oDecon').onchange = (e) => { S.ai.decontam = e.target.checked; saveAi(); };
-  $('#oDevice').onchange = (e) => { S.ai.device = e.target.value; saveAi(); renderModels(); updateDevInfo(); updateOffline(); };
+  $('#oDevice').onchange = (e) => { S.ai.device = e.target.value; if (e.target.value === 'webgpu') { S.gpuBad = {}; store.set('gpuBad', {}); } saveAi(); renderModels(); updateDevInfo(); updateOffline(); };
   $('#oPrec').onchange = (e) => { S.ai.prec = e.target.value; saveAi(); renderModels(); updateOffline(); };
 }
 function updateDevInfo() {
   const d = devFor(S.ai.model);
   const gpu = S.caps.webgpu ? `WebGPU 사용 가능${S.caps.f16 ? ' (fp16 가속)' : ''}${S.caps.adapter ? ' · ' + S.caps.adapter : ''}` : 'WebGPU 없음 → CPU로 처리';
   const thr = S.caps.isolated ? `CPU 멀티스레드 ${S.caps.threads > 1 ? S.caps.threads + '개' : '사용 가능'}` : 'CPU 단일 스레드 (새로고침하면 멀티스레드가 켜질 수 있음)';
-  $('#devInfo').innerHTML = `<b>현재: ${d === 'webgpu' ? 'GPU' : 'CPU'}</b><br>${gpu}<br>${thr}`;
+  const bad = S.gpuBad[S.ai.model] ? `<br><span style="color:var(--warn)">${MODELS[S.ai.model].name}은(는) 이 그래픽카드에서 GPU 실행이 안 돼 CPU로 처리합니다. 처리 장치를 'GPU'로 고르면 다시 시도합니다.</span>` : '';
+  $('#devInfo').innerHTML = `<b>현재: ${d === 'webgpu' ? 'GPU' : 'CPU'}</b><br>${gpu}<br>${thr}${bad}`;
   if (!loaded) updateEngineChip();
 }
 async function updateOffline() {
