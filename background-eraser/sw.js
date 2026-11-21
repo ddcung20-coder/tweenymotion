@@ -1,5 +1,5 @@
 // Background Eraser — 오프라인 캐시 + cross-origin isolation(멀티스레드 WASM용)
-const VERSION = 'bgeraser-shell-v1';
+const VERSION = 'bgeraser-shell-v2';
 const SHELL = [
   './',
   './index.html',
@@ -42,6 +42,7 @@ self.addEventListener('fetch', (e) => {
   if (req.cache === 'only-if-cached' && req.mode !== 'same-origin') return;
   const scope = new URL(self.registration.scope);
   const inScope = url.pathname.startsWith(scope.pathname);
+  if (url.pathname.includes('/models/')) { e.respondWith(fetch(req).then(isolate)); return; } // 모델은 앱이 직접 캐시
   const immutable = url.pathname.includes('/ort/');
   e.respondWith((async () => {
     const cache = await caches.open(VERSION);

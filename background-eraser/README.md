@@ -9,6 +9,7 @@
   - RMBG-1.4: 빠름, 저사양 기기용 (비상업 라이선스, int8 44MB)
   - MODNet: 인물 전용 초경량 (Apache-2.0, 26MB, 항상 CPU에서 실행)
 - **품질 파이프라인**: 좌우 반전 앙상블(TTA) → 가이디드 필터로 원본 해상도 경계 보정 → Blur-Fusion 전경색 추정으로 배경색 번짐 제거
+- **AI 선택 브러시**: "AI 남기기"로 남길 물체 위를 칠하면 AI(MobileSAM)가 윤곽을 찾아 나머지를 모두 지우고, "AI 빼기"로 칠한 물체는 통째로 지웁니다. 경계의 머리카락 같은 세부는 누끼 모델 결과를 살려 합칩니다. 이 모델(43MB)은 앱에 들어 있어 처음부터 오프라인으로 작동합니다.
 - **편집**: 경계 선명도·이동·부드럽게, 잡티 제거, 구멍 메우기, 복원/지우기 브러시(경도 조절), 되돌리기, 원본 비교, 확대·이동
 - **배경**: 투명, 단색, 원본 흐림, 사진, 바닥 그림자
 - **저장**: PNG/WebP/JPG, 피사체에 맞춰 자르기, 크기 조절, 클립보드 복사, 여러 장 일괄 처리 후 ZIP 저장
@@ -29,3 +30,5 @@ HTTPS로 서비스되는 정적 호스팅(GitHub Pages, Netlify, Cloudflare Page
 | `engine.worker.js` | 모델 추론(WebGPU/WASM)과 경계·색 보정 |
 | `sw.js` | 오프라인 캐시, CPU 멀티스레드 추론용 cross-origin isolation |
 | `ort/` | ONNX Runtime Web 1.31.1 (MIT) |
+| `models/` | MobileSAM 이미지 인코더 + SAM 마스크 디코더 (Apache-2.0, `@geti-ui/smart-tools` 1.7.1에서 가져옴) |
+| `tools/build-artifact.py` | claude.ai 아티팩트용 빌드 (외부 다운로드가 막힌 환경이라 런타임·모델을 조각 파일로 함께 올림) |

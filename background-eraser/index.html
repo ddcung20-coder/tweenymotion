@@ -122,6 +122,7 @@ select{background:var(--card);border:1px solid var(--line2);border-radius:var(--
 .tb{background:none;border:0;border-radius:10px;min-width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;gap:5px;color:var(--sub);padding:0 9px;font-size:12px;font-weight:600;flex:none}
 .tb:hover{background:#2e2e2e;color:var(--text)}
 .tb[aria-pressed=true]{background:var(--accent);color:var(--on-accent)}
+.tb.ai[data-tool=sc][aria-pressed=true]{background:#ff7a7a;color:#2a0b0b}
 .tb svg{width:18px;height:18px;flex:none}
 .tsep{width:1px;height:24px;background:var(--line2);margin:0 3px;flex:none}
 .tbsize{display:flex;align-items:center;gap:6px;padding:0 6px;color:var(--sub);font-size:12px;flex:none}
@@ -199,6 +200,10 @@ select{background:var(--card);border:1px solid var(--line2);border-radius:var(--
     <div class="busy" id="busy" hidden><div class="spin"></div><span id="busyTxt">처리 중</span><div class="bar"><i id="busyBar"></i></div></div>
     <div class="toolbar" id="toolbar" hidden>
       <button class="tb" data-tool="pan" aria-pressed="true" title="이동 (H / 스페이스)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg><span class="lbl">이동</span></button>
+      <span class="tsep"></span>
+      <button class="tb ai" data-tool="sk" aria-pressed="false" title="AI 남기기 (A): 남길 물체 위를 쓱 칠하면 나머지 배경을 알아서 지웁니다"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 10-10"/><path d="M15 4V2M15 10V8M11.5 6.5 10 5M20 6h2M18.5 3.5 20 2M18.5 8.5 20 10"/><circle cx="15" cy="6" r="1"/></svg><span class="lbl">AI 남기기</span></button>
+      <button class="tb ai" data-tool="sc" aria-pressed="false" title="AI 빼기 (X): 지우고 싶은 물체 위를 칠하면 그 물체만 통째로 지웁니다"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 10-10"/><path d="M13 5h7"/></svg><span class="lbl">AI 빼기</span></button>
+      <span class="tsep"></span>
       <button class="tb" data-tool="keep" aria-pressed="false" title="복원 브러시 (R)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span class="lbl">복원</span></button>
       <button class="tb" data-tool="cut" aria-pressed="false" title="지우기 브러시 (E)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg><span class="lbl">지우기</span></button>
       <div class="tbsize" title="브러시 크기 ( [ / ] )"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg><input type="range" id="brushSize" min="4" max="300" value="48" aria-label="브러시 크기"></div>
@@ -228,6 +233,9 @@ select{background:var(--card);border:1px solid var(--line2);border-radius:var(--
       <div class="slider"><div class="top"><span>떨어진 잡티 제거</span><span id="vSpeck">약</span></div><input type="range" id="aSpeck" min="0" max="10" value="1"></div>
       <div class="row"><label for="aHoles">닫힌 작은 구멍 메우기</label><span class="switch"><input type="checkbox" id="aHoles"><span></span></span></div>
       <div class="grid2" style="margin-top:12px"><button class="btn" id="resetAdj" type="button">조정 초기화</button><button class="btn" id="clearBrush" type="button">브러시 지우기</button></div>
+      <h3>AI 선택 브러시</h3>
+      <div class="info"><b>AI 남기기</b>로 남길 물체 위를 쓱 칠하면, AI가 그 물체의 윤곽을 찾아 <b>나머지는 전부 지웁니다</b>. 여러 물체는 각각 칠하면 됩니다. <b>AI 빼기</b>로 칠한 물체는 통째로 사라집니다. 경계의 머리카락 같은 세부는 AI 누끼 결과를 그대로 살립니다.</div>
+      <div class="row"><span class="hint" id="selInfo" style="flex:1;margin:0">아직 칠한 영역이 없습니다.</span><button class="btn sm" id="clearSel" type="button" disabled>AI 선택 초기화</button></div>
       <h3>손으로 고치기</h3>
       <div class="info">아래 도구에서 <b>복원</b>으로 지워진 부분을 되살리고, <b>지우기</b>로 남은 배경을 지웁니다. 경도를 낮추면 머리카락처럼 부드럽게 칠해집니다.<div class="kbd" style="margin-top:6px"><kbd>R</kbd> 복원 · <kbd>E</kbd> 지우기 · <kbd>H</kbd>/<kbd>Space</kbd> 이동 · <kbd>[</kbd><kbd>]</kbd> 크기 · 휠 확대 · <kbd>C</kbd> 비교</div></div>
     </div>
@@ -347,6 +355,11 @@ const MODELS = {
 };
 const MODEL_CACHE = 'bgeraser-models-v1';
 const MAX_SIDE = 8192, MAX_PIX = 40e6;
+// 빌드 설정: 사이트용은 그대로, 아티팩트용은 빌드 스크립트가 값을 바꿉니다
+const APP_MODE = 'site';
+const PARTS = {};
+const ORT_PARTS = null;
+const isArtifact = APP_MODE === 'artifact';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -390,7 +403,7 @@ function chip(el, state, txt, txtEl) { el.className = 'chip ' + (state || ''); $
 // ======================================================================
 //  서비스 워커 (오프라인 + 멀티스레드용 cross-origin isolation)
 // ======================================================================
-const swOK = 'serviceWorker' in navigator && location.protocol !== 'file:';
+const swOK = !isArtifact && 'serviceWorker' in navigator && location.protocol !== 'file:';
 if (swOK) {
   navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('SW', e));
   if (!self.crossOriginIsolated) {
@@ -413,6 +426,7 @@ let loaded = null; // { key, device, variant }
 function getWorker() {
   if (worker) return workerReady;
   worker = new Worker('./engine.worker.js', { type: 'module' });
+  worker.postMessage({ type: 'config', parts: PARTS, ortParts: ORT_PARTS });
   workerReady = new Promise((res, rej) => {
     const to = setTimeout(() => rej(new Error('엔진을 시작하지 못했습니다')), 30000);
     worker.addEventListener('message', function first(e) { if (e.data.type === 'ready') { clearTimeout(to); S.caps.threads = e.data.threads; S.caps.isolated = e.data.isolated; worker.removeEventListener('message', first); res(); updateDevInfo(); } });
@@ -451,11 +465,12 @@ function deviceFor() { const d = S.ai.device; if (d === 'webgpu' && S.caps.webgp
 function devFor(key) { return MODELS[key].cpuOnly ? 'wasm' : deviceFor(); }
 function variantFor(key, device) {
   const m = MODELS[key];
+  if (isArtifact) { const b = Object.keys(m.files).find((v) => PARTS[m.files[v].url]); if (b) return b; }
   if (S.ai.prec !== 'auto' && m.files[S.ai.prec]) return S.ai.prec;
   if (device === 'webgpu') { let v = m.gpu; if (v === 'fp16' && (!S.caps.f16 || S.badF16[key])) v = 'fp32'; return m.files[v] ? v : 'fp32'; }
   return m.files[m.cpu] ? m.cpu : 'fp32';
 }
-function defaultModel() { return S.caps.webgpu ? 'birefnet-lite' : 'rmbg14'; }
+function defaultModel() { return isArtifact || !S.caps.webgpu ? 'rmbg14' : 'birefnet-lite'; }
 
 let loadingPromise = null;
 function ensureModel(force) {
@@ -468,6 +483,7 @@ function ensureModel(force) {
         if (!force && loaded && loaded.sig === sig) return loaded;
         try { return await loadOnce(key, device, variant, sig); }
         catch (e) {
+          if (isArtifact && e.code === 'FETCH' && !PARTS[MODELS[key].files[variant].url]) throw new Error('이 버전에서는 ' + MODELS[key].name + ' 모델을 인터넷에서 받을 수 없습니다. AI 엔진 탭에서 .onnx 파일을 불러오거나 RMBG-1.4를 쓰세요');
           if (attempt === 0 && device === 'webgpu' && S.ai.device !== 'webgpu' && e.code !== 'FETCH') {
             console.warn('WebGPU 실패, CPU로 전환', e);
             toast('GPU에서 모델을 열지 못해 CPU로 전환합니다');
@@ -596,9 +612,10 @@ const adjWorker = new Worker(URL.createObjectURL(new Blob([adjustSrc], { type: '
 const adjPending = new Map(); let adjId = 0;
 adjWorker.onmessage = (e) => { const p = adjPending.get(e.data.id); if (p) { adjPending.delete(e.data.id); e.data.error ? p.reject(new Error(e.data.error)) : p.resolve(e.data.adj); } };
 function runAdjust(item, sendBase) {
+  const baseArr = item.selBase || item.base;
   const id = ++adjId;
   const msg = { id, item: item.id, w: item.W, h: item.H, p: item.adjust };
-  if (sendBase) msg.base = item.base.slice();
+  if (sendBase) msg.base = baseArr.slice();
   return new Promise((resolve, reject) => { adjPending.set(id, { resolve, reject }); adjWorker.postMessage(msg, msg.base ? [msg.base.buffer] : []); });
 }
 
@@ -669,6 +686,7 @@ async function processItem(it) {
       const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(it.bitmap, 0, 0);
       it.orig = x.getImageData(0, 0, it.W, it.H).data;
     }
+    it.selBase = it.selMaps ? fuseSelection(it) : null;
     it.adj = await runAdjust(it, true);
     ensureCanvas(it); composeAll(it);
     it.status = 'done';
@@ -759,7 +777,7 @@ function select(it) {
   S.cur = it || null;
   $('#drop').hidden = !!it; $('#toolbar').hidden = !it;
   if (!it) { setBusy(null); $('#stats').hidden = true; draw(); renderQueue(); updateAfterChange(); return; }
-  fit(); syncAdjustUI(); renderQueue(); updateAfterChange();
+  fit(); syncAdjustUI(); renderQueue(); updateAfterChange(); updateSelInfo();
   if (it.status === 'processing') setBusy('처리 중…', null); else if (it.status === 'queued') setBusy('순서를 기다리는 중…', null); else setBusy(null);
 }
 function updateAfterChange() {
@@ -857,11 +875,12 @@ function drawNow() {
   }
   sb.hidden = !(ready && S.compare);
   if (!sb.hidden) sb.style.left = ox + w * S.split - 1 + 'px';
-  if (hover && (S.tool === 'keep' || S.tool === 'cut') && ready && !S.compare) {
+  if (ready && (S.tool === 'sk' || S.tool === 'sc' || (gesture && gesture.type === 'smart'))) drawStrokes(ctx, it);
+  if (hover && ['keep', 'cut', 'sk', 'sc'].includes(S.tool) && ready && !S.compare) {
     ctx.beginPath(); ctx.arc(hover.x, hover.y, S.brush.size / 2, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(0,0,0,.8)'; ctx.lineWidth = 3; ctx.stroke();
-    ctx.strokeStyle = S.tool === 'keep' ? '#5ad19a' : '#ff6b6b'; ctx.lineWidth = 1.5; ctx.stroke();
-    if (S.brush.hard < 0.98) { ctx.beginPath(); ctx.arc(hover.x, hover.y, (S.brush.size / 2) * S.brush.hard, 0, Math.PI * 2); ctx.setLineDash([3, 3]); ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]); }
+    ctx.strokeStyle = S.tool === 'keep' || S.tool === 'sk' ? '#5ad19a' : '#ff6b6b'; ctx.lineWidth = 1.5; ctx.stroke();
+    if (S.brush.hard < 0.98 && (S.tool === 'keep' || S.tool === 'cut')) { ctx.beginPath(); ctx.arc(hover.x, hover.y, (S.brush.size / 2) * S.brush.hard, 0, Math.PI * 2); ctx.setLineDash([3, 3]); ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]); }
   }
 }
 
@@ -892,6 +911,7 @@ view.addEventListener('pointerdown', (e) => {
   const p = localPt(e); pointers.set(e.pointerId, p);
   if (pointers.size === 2) {
     if (gesture && gesture.type === 'paint') endPaint(true);
+    if (gesture && gesture.type === 'smart') gesture = null;
     const [a, b] = [...pointers.values()];
     gesture = { type: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
     return;
@@ -904,6 +924,7 @@ view.addEventListener('pointerdown', (e) => {
   }
   const panMode = S.tool === 'pan' || spaceDown || e.button === 1 || e.button === 2 || !ready;
   if (panMode) gesture = { type: 'pan', x: p.x, y: p.y };
+  else if (S.tool === 'sk' || S.tool === 'sc') startSmart(p);
   else startPaint(p);
 });
 view.addEventListener('pointermove', (e) => {
@@ -920,12 +941,14 @@ view.addEventListener('pointermove', (e) => {
     gesture.d = d; gesture.cx = cx; gesture.cy = cy;
   } else if (gesture.type === 'pan') {
     S.view.ox += p.x - gesture.x; S.view.oy += p.y - gesture.y; gesture.x = p.x; gesture.y = p.y; S.view.fitted = false; draw();
-  } else if (gesture.type === 'paint') { const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e]; for (const ce of evs) paintTo(localPt(ce)); }
+  } else if (gesture.type === 'smart') { const q = toImg(p.x, p.y); gesture.pts.push([q.x, q.y]); draw(); }
+  else if (gesture.type === 'paint') { const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e]; for (const ce of evs) paintTo(localPt(ce)); }
   else if (gesture.type === 'split') moveSplit(p);
 });
 const upHandler = (e) => {
   pointers.delete(e.pointerId);
   if (gesture && gesture.type === 'paint') endPaint();
+  else if (gesture && gesture.type === 'smart') endSmart();
   if (pointers.size === 0) gesture = null;
   else if (gesture && gesture.type === 'pinch') { const [a] = [...pointers.values()]; gesture = { type: 'pan', x: a.x, y: a.y }; }
 };
@@ -986,9 +1009,15 @@ function endPaint(cancel) {
 function patch(arr, W, [x0, y0, x1, y1]) { const w = x1 - x0, out = new Uint8Array(w * (y1 - y0)); for (let y = y0; y < y1; y++) out.set(arr.subarray(y * W + x0, y * W + x1), (y - y0) * w); return out; }
 function unpatch(arr, W, [x0, y0, x1, y1], p) { const w = x1 - x0; for (let y = y0; y < y1; y++) arr.set(p.subarray((y - y0) * w, (y - y0 + 1) * w), y * W + x0); }
 function undoRedo(redo) {
-  const it = S.cur; if (!it || !it.keep) return;
+  const it = S.cur; if (!it) return;
   const from = redo ? it.redo : it.undo, to = redo ? it.undo : it.redo;
   const st = from.pop(); if (!st) return;
+  if (st.sel) {
+    to.push({ sel: { pos: it.sel.pos.slice(), neg: it.sel.neg.slice() } });
+    it.sel = { pos: st.sel.pos.slice(), neg: st.sel.neg.slice() };
+    updateUndo(); runSmart(it); return;
+  }
+  if (!it.keep) return;
   to.push({ rect: st.rect, keep: patch(it.keep, it.W, st.rect), cut: patch(it.cut, it.W, st.rect) });
   unpatch(it.keep, it.W, st.rect, st.keep); unpatch(it.cut, it.W, st.rect, st.cut);
   composeRect(it, ...st.rect); draw(); updateUndo(); thumbSoon(it);
@@ -996,7 +1025,7 @@ function undoRedo(redo) {
 function updateUndo() { const it = S.cur; $('#undoBtn').disabled = !(it && it.undo.length); $('#redoBtn').disabled = !(it && it.redo.length); }
 let thumbT; function thumbSoon(it) { clearTimeout(thumbT); thumbT = setTimeout(() => { makeThumb(it); renderQueue(); updateSaveInfo(); }, 400); }
 
-function setTool(t) { S.tool = t; $$('.tb[data-tool]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.tool === t ? 'true' : 'false')); view.style.cursor = t === 'pan' ? 'grab' : 'none'; draw(); }
+function setTool(t) { S.tool = t; $$('.tb[data-tool]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.tool === t ? 'true' : 'false')); view.style.cursor = t === 'pan' ? 'grab' : 'none'; draw(); if ((t === 'sk' || t === 'sc') && S.cur && S.cur.status === 'done') prepareSmart(S.cur).catch(() => {}); }
 $$('.tb[data-tool]').forEach((b) => (b.onclick = () => setTool(b.dataset.tool)));
 $('#brushSize').oninput = (e) => { S.brush.size = +e.target.value; draw(); };
 $('#brushHard').oninput = (e) => { S.brush.hard = +e.target.value / 100; draw(); };
@@ -1014,12 +1043,136 @@ window.addEventListener('keydown', (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.code === 'Space') { if (!spaceDown) { spaceDown = true; view.style.cursor = 'grab'; } e.preventDefault(); return; }
   if (!S.cur) return;
-  if (k === 'h') setTool('pan'); else if (k === 'r' || k === 'b') setTool('keep'); else if (k === 'e') setTool('cut');
+  if (k === 'h') setTool('pan'); else if (k === 'a') setTool('sk'); else if (k === 'x') setTool('sc'); else if (k === 'r' || k === 'b') setTool('keep'); else if (k === 'e') setTool('cut');
   else if (k === '[' || k === ']') { S.brush.size = Math.max(4, Math.min(300, Math.round(S.brush.size * (k === ']' ? 1.2 : 1 / 1.2)))); $('#brushSize').value = S.brush.size; draw(); }
   else if (k === 'c') $('#cmpBtn').click(); else if (k === '0') fit();
   else if (k === '=' || k === '+') zoomAt(vw / 2, vh / 2, 1.25); else if (k === '-') zoomAt(vw / 2, vh / 2, 0.8);
 });
 window.addEventListener('keyup', (e) => { if (e.code === 'Space') { spaceDown = false; setTool(S.tool); } });
+
+// ======================================================================
+//  AI 선택 브러시 (MobileSAM + 누끼 결과 융합)
+// ======================================================================
+const SAM_URLS = [new URL('./models/mobile_sam.encoder.onnx', location.href).href, new URL('./models/sam_decoder.onnx', location.href).href];
+function startSmart(p) {
+  const it = S.cur; if (!it.sel) it.sel = { pos: [], neg: [] };
+  const q = toImg(p.x, p.y);
+  gesture = { type: 'smart', mode: S.tool, pts: [[q.x, q.y]] };
+  prepareSmart(it).catch(() => {});
+  draw();
+}
+function endSmart() {
+  const g = gesture, it = S.cur; gesture = null;
+  if (!g || !it) return;
+  const pts = g.pts.filter((q) => q[0] >= 0 && q[1] >= 0 && q[0] < it.W && q[1] < it.H);
+  if (!pts.length) { draw(); return; }
+  it.undo.push({ sel: { pos: it.sel.pos.slice(), neg: it.sel.neg.slice() } }); it.redo.length = 0;
+  (g.mode === 'sk' ? it.sel.pos : it.sel.neg).push(pts);
+  updateUndo(); runSmart(it);
+}
+// 획을 길이 기준으로 고르게 점 샘플링 (최대 10점)
+function sampleStroke(pts, it) {
+  if (pts.length === 1) return [pts[0]];
+  const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  const tot = L[L.length - 1]; if (tot < 2) return [pts[0]];
+  const n = Math.max(2, Math.min(10, Math.round(tot / (Math.max(it.W, it.H) * 0.05)) + 1));
+  const out = []; let j = 0;
+  for (let k = 0; k < n; k++) { const t = (tot * k) / (n - 1); while (j < L.length - 2 && L[j + 1] < t) j++; const f = (t - L[j]) / Math.max(1e-6, L[j + 1] - L[j]); out.push([pts[j][0] + (pts[j + 1][0] - pts[j][0]) * f, pts[j][1] + (pts[j + 1][1] - pts[j][1]) * f]); }
+  return out;
+}
+let samPrep = null;
+async function prepareSmart(it) {
+  if (it.samReady && S.samKey === it.id) return;
+  if (samPrep && samPrep.it === it) return samPrep.p;
+  const p = (async () => {
+    const bmp = await createImageBitmap(it.bitmap);
+    await call({ type: 'samEmbed', key: it.id, bitmap: bmp }, [bmp], (pm) => {
+      if (S.cur !== it) return;
+      if (pm.type === 'download') setBusy(`AI 선택 모델 받는 중… ${fmtMB(pm.got)} / ${fmtMB(pm.total || 44.6 * MB)} (최초 1회)`, pm.got / (pm.total || 44.6 * MB));
+      else if (pm.stage === 'samEmbed') setBusy('AI가 사진 구조를 파악하는 중…', null);
+    });
+    S.samKey = it.id; S.samCached = true; S.items.forEach((x) => (x.samReady = x === it));
+  })();
+  samPrep = { it, p };
+  try { await p; } finally { if (samPrep && samPrep.p === p) samPrep = null; }
+}
+let smartBusy = false, smartAgain = false;
+async function runSmart(it) {
+  if (smartBusy) { smartAgain = true; return; }
+  smartBusy = true;
+  try {
+    do {
+      smartAgain = false;
+      const sel = it.sel || { pos: [], neg: [] };
+      if (!sel.pos.length && !sel.neg.length) { it.selMaps = null; it.selBase = null; }
+      else {
+        if (S.cur === it) setBusy('AI가 선택 영역을 찾는 중…', null);
+        await prepareSmart(it);
+        if (S.samKey !== it.id) await prepareSmart(it);
+        const r = await call({ type: 'samSegment', key: it.id, pos: sel.pos.map((s) => sampleStroke(s, it)), neg: sel.neg.map((s) => sampleStroke(s, it)) });
+        it.selMaps = { nw: r.nw, nh: r.nh, pos: r.pos, neg: r.neg };
+        it.selBase = fuseSelection(it);
+      }
+      it.adj = await runAdjust(it, true);
+      composeAll(it); draw();
+    } while (smartAgain);
+  } catch (e) { console.error(e); toast('AI 선택 실패: ' + e.message, true); }
+  finally { smartBusy = false; if (S.cur === it) setBusy(null); updateSelInfo(); thumbSoon(it); }
+}
+function boxF(src, w, h, r) {
+  const tmp = new Float32Array(w * h), out = new Float32Array(w * h);
+  for (let y = 0; y < h; y++) { const o = y * w; let s = 0, c = 0; for (let x = 0; x <= r && x < w; x++) { s += src[o + x]; c++; }
+    for (let x = 0; x < w; x++) { tmp[o + x] = s / c; const a = x + r + 1, b = x - r; if (a < w) { s += src[o + a]; c++; } if (b >= 0) { s -= src[o + b]; c--; } } }
+  const col = new Float64Array(w); let c = 0;
+  for (let y = 0; y <= r && y < h; y++) { for (let x = 0; x < w; x++) col[x] += tmp[y * w + x]; c++; }
+  for (let y = 0; y < h; y++) { for (let x = 0; x < w; x++) out[y * w + x] = col[x] / c;
+    const a = y + r + 1, b = y - r; if (a < h) { for (let x = 0; x < w; x++) col[x] += tmp[a * w + x]; c++; } if (b >= 0) { for (let x = 0; x < w; x++) col[x] -= tmp[b * w + x]; c--; } }
+  return out;
+}
+// 융합 규칙: AI 선택 영역 밖(여유 띠 바깥)은 0, 안쪽은 누끼 결과가 AI 선택과 크게 어긋나지 않으면
+// 누끼 결과(머리카락 등 세부)를, 어긋나면 AI 선택값을 씀. 'AI 빼기' 물체는 곱해서 제거.
+function fuseSelection(it) {
+  const m = it.selMaps; if (!m || (!m.pos && !m.neg)) return null;
+  const { nw, nh } = m, W = it.W, H = it.H, base = it.base, out = new Uint8Array(W * H);
+  let D = null;
+  if (m.pos) { const bin = new Float32Array(nw * nh); for (let i = 0; i < bin.length; i++) bin[i] = m.pos[i] > 0.5 ? 1 : 0; D = boxF(bin, nw, nh, Math.max(2, Math.round(Math.max(nw, nh) * 0.02))); }
+  const x0 = new Int32Array(W), x1 = new Int32Array(W), fx = new Float32Array(W);
+  for (let x = 0; x < W; x++) { let s = ((x + 0.5) * nw) / W - 0.5; if (s < 0) s = 0; if (s > nw - 1) s = nw - 1; const i = Math.floor(s); x0[x] = i; x1[x] = Math.min(nw - 1, i + 1); fx[x] = s - i; }
+  const samp = (arr, r0, r1, fy, x) => { const a = arr[r0 + x0[x]] + (arr[r0 + x1[x]] - arr[r0 + x0[x]]) * fx[x], b = arr[r1 + x0[x]] + (arr[r1 + x1[x]] - arr[r1 + x0[x]]) * fx[x]; return a + (b - a) * fy; };
+  for (let y = 0; y < H; y++) {
+    let s = ((y + 0.5) * nh) / H - 0.5; if (s < 0) s = 0; if (s > nh - 1) s = nh - 1;
+    const yy = Math.floor(s), fy = s - yy, r0 = yy * nw, r1 = Math.min(nh - 1, yy + 1) * nw;
+    for (let x = 0; x < W; x++) {
+      const i = y * W + x; let a = base[i];
+      if (m.pos) {
+        if (samp(D, r0, r1, fy, x) < 0.02) a = 0;
+        else { const s8 = samp(m.pos, r0, r1, fy, x) * 255; let w = (Math.abs(a - s8) - 64) / 96; if (w > 0) { if (w > 1) w = 1; w = w * w * (3 - 2 * w); a = a + (s8 - a) * w; } }
+      }
+      if (m.neg) { let n = (samp(m.neg, r0, r1, fy, x) - 0.25) / 0.35; n = n < 0 ? 0 : n > 1 ? 1 : n; a *= 1 - n * n * (3 - 2 * n); }
+      out[i] = a;
+    }
+  }
+  return out;
+}
+function drawStrokes(ctx, it) {
+  const sel = it.sel || { pos: [], neg: [] };
+  const line = (pts, color, alpha) => {
+    if (!pts.length) return;
+    ctx.save(); ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineCap = ctx.lineJoin = 'round';
+    ctx.lineWidth = Math.max(4, Math.min(S.brush.size, 28));
+    ctx.beginPath(); pts.forEach((q, k) => { const x = S.view.ox + q[0] * S.view.s, y = S.view.oy + q[1] * S.view.s; k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+    if (pts.length === 1) { const x = S.view.ox + pts[0][0] * S.view.s, y = S.view.oy + pts[0][1] * S.view.s; ctx.lineTo(x + 0.1, y); }
+    ctx.stroke(); ctx.restore();
+  };
+  sel.pos.forEach((p) => line(p, '#34e0a1', 0.35)); sel.neg.forEach((p) => line(p, '#ff6b6b', 0.35));
+  if (gesture && gesture.type === 'smart') line(gesture.pts, gesture.mode === 'sk' ? '#34e0a1' : '#ff6b6b', 0.7);
+}
+function updateSelInfo() {
+  const it = S.cur, sel = it && it.sel, n = sel ? sel.pos.length + sel.neg.length : 0;
+  $('#clearSel').disabled = !n;
+  $('#selInfo').textContent = n ? `남기기 ${sel.pos.length}획 · 빼기 ${sel.neg.length}획 적용됨` : '아직 칠한 영역이 없습니다.';
+}
+$('#clearSel').onclick = () => { const it = S.cur; if (!it || !it.sel) return; it.undo.push({ sel: { pos: it.sel.pos.slice(), neg: it.sel.neg.slice() } }); it.redo.length = 0; it.sel = { pos: [], neg: [] }; updateUndo(); runSmart(it); };
 
 // ======================================================================
 //  조정 패널
@@ -1120,7 +1273,14 @@ function renderExport(it) {
 const mime = () => 'image/' + S.exp.fmt;
 const ext = () => (S.exp.fmt === 'jpeg' ? 'jpg' : S.exp.fmt);
 function toBlob(c) { return new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error('인코딩 실패'))), mime(), S.exp.fmt === 'png' ? undefined : S.exp.q)); }
-function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+async function download(blob, name) {
+  if (isArtifact) {
+    const dl = window.claude && (await window.claude.use('downloads'));
+    if (!dl) { toast('이 화면에서는 파일 저장을 쓸 수 없습니다. 클립보드 복사를 이용해 주세요', true); return; }
+    try { await dl.save({ filename: name, data: blob }); toast('저장했습니다'); }
+    catch (e) { if (e && e.code !== 'declined') toast('저장하지 못했습니다 (' + (e.code || e.message) + ')', true); }
+    return;
+  } const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
 function outName(it) { return it.name + '-nobg.' + ext(); }
 function updateSaveInfo() {
   const it = S.cur, el = $('#saveInfo');
@@ -1183,6 +1343,7 @@ $('#zipBtn').onclick = async () => {
 async function refreshCached() {
   S.cached = {};
   try { const c = await caches.open(MODEL_CACHE); for (const r of await c.keys()) S.cached[r.url] = true; } catch (e) {}
+  S.samCached = isArtifact || SAM_URLS.every((u) => S.cached[u]);
 }
 function renderModels() {
   const box = $('#models'); box.textContent = '';
@@ -1193,7 +1354,7 @@ function renderModels() {
     lab.innerHTML = `<input type="radio" name="model" value="${key}" ${S.ai.model === key ? 'checked' : ''}>
       <div class="t">${m.name} <span class="tag ${key === 'birefnet-lite' ? '' : 'g'}">${m.tag}</span></div>
       <p>${m.desc}</p>
-      <div class="meta"><span>${v} · ${fmtMB(f.bytes)}${m.cpuOnly ? ' · CPU 전용' : ''}</span><span>라이선스 ${m.license}</span>${S.cached[f.url] ? '<span class="saved">✓ 기기에 저장됨</span>' : '<span>최초 1회 다운로드</span>'}</div>
+      <div class="meta"><span>${v} · ${fmtMB(f.bytes)}${m.cpuOnly ? ' · CPU 전용' : ''}</span><span>라이선스 ${m.license}</span>${S.cached[f.url] ? '<span class="saved">✓ 기기에 저장됨</span>' : isArtifact ? (PARTS[f.url] ? '<span class="saved">✓ 포함됨</span>' : '<span>.onnx 파일 필요</span>') : '<span>최초 1회 다운로드</span>'}</div>
       ${m.heavy && dev !== 'webgpu' ? '<p style="color:var(--warn);margin:6px 0 0">CPU에서는 매우 느리고 메모리가 많이 필요합니다.</p>' : ''}
       <div class="acts"></div>`;
     const acts = $('.acts', lab);
@@ -1244,14 +1405,21 @@ async function updateOffline() {
   let usage = '';
   try { const est = await navigator.storage.estimate(); usage = `저장 공간 사용 ${fmtMB(est.usage || 0)}`; } catch (e) {}
   let persisted = false; try { persisted = await navigator.storage.persisted(); } catch (e) {}
-  $('#offInfo').innerHTML = `앱 파일: <b>${shell ? '저장됨 ✓' : swOK ? '저장 중…' : '이 방식으로 열면 저장 불가'}</b><br>${m.name} 모델: <b>${model ? '저장됨 ✓' : '아직 없음 (' + fmtMB(f.bytes) + ')'}</b><br>${usage}${persisted ? ' · 자동 삭제 방지 켜짐' : ''}`;
+  $('#offInfo').innerHTML = `앱 파일: <b>${shell ? '저장됨 ✓' : swOK ? '저장 중…' : '이 방식으로 열면 저장 불가'}</b><br>${m.name} 모델: <b>${model ? '저장됨 ✓' : '아직 없음 (' + fmtMB(f.bytes) + ')'}</b><br>AI 선택 브러시 모델: <b>${S.samCached ? '저장됨 ✓' : '처음 쓸 때 저장 (43MB)'}</b><br>${usage}${persisted ? ' · 자동 삭제 방지 켜짐' : ''}`;
+  if (isArtifact) {
+    $('#offInfo').innerHTML = `사진은 이 기기 안에서만 처리됩니다.<br>${m.name} 모델: <b>${PARTS[f.url] || model ? '포함됨 ✓' : '.onnx 파일을 불러와야 함'}</b><br>AI 선택 브러시 모델: <b>포함됨 ✓</b>`;
+    chip($('#chipOffline'), 'ok', '기기 안에서 처리', '#offTxt');
+    $('#prefetchBtn').hidden = true; $('#persistBtn').hidden = true;
+    $('#firstNote').textContent = '사진은 어디에도 업로드되지 않고 이 기기 안에서만 처리됩니다.';
+    return;
+  }
   const ready = shell && model;
   chip($('#chipOffline'), ready ? 'ok' : 'warn', ready ? '오프라인 준비 완료' : model ? '앱 저장 중' : '모델 받으면 오프라인 가능', '#offTxt');
-  $('#prefetchBtn').disabled = model;
+  $('#prefetchBtn').disabled = model && S.samCached;
   $('#firstNote').textContent = model ? `${m.name} 모델이 기기에 저장되어 있어 인터넷 없이도 바로 처리됩니다.` : `처음 한 번 ${m.name} 모델(${fmtMB(f.bytes)})을 받고 나면, 그다음부터는 인터넷 없이도 작동합니다. 사진은 어디에도 업로드되지 않습니다.`;
 }
 $('#persistBtn').onclick = async () => { try { const ok = await navigator.storage.persist(); toast(ok ? '브라우저가 저장한 모델을 임의로 지우지 않도록 고정했습니다' : '브라우저가 고정을 허용하지 않았습니다 (홈 화면에 앱 추가 시 허용되는 경우가 많습니다)'); updateOffline(); } catch (e) { toast('지원하지 않는 브라우저입니다', true); } };
-$('#prefetchBtn').onclick = async () => { try { await ensureModel(); toast('모델 준비 완료 — 이제 오프라인에서도 작동합니다'); } catch (e) { toast('모델 받기 실패: ' + e.message, true); } };
+$('#prefetchBtn').onclick = async () => { try { await ensureModel(); await call({ type: 'samLoad' }); S.samCached = true; updateOffline(); toast('모델 준비 완료 — 이제 오프라인에서도 작동합니다'); } catch (e) { toast('모델 받기 실패: ' + e.message, true); } };
 $('#rerunBtn').onclick = () => { const it = S.cur; if (!it || it.status === 'processing') return; it.status = 'queued'; it.canvas = null; it.thumb = null; it.blurC = null; select(it); pump(); };
 
 // tabs

@@ -11,6 +11,29 @@ ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.max(1, Math.min(8, (na
 ort.env.logLevel = 'error';
 
 const MODEL_CACHE = 'bgeraser-models-v1';
+// 실행 환경 설정 (사이트: 비어 있음 / 아티팩트: 모델·런타임을 조각 파일로 받음)
+let CFG = { parts: {} };
+let configured, setConfigured;
+configured = new Promise((r) => (setConfigured = r));
+async function fetchParts(list, id, total) {
+  const bufs = []; let got = 0;
+  for (const u of list) {
+    const r = await fetch(new URL(u, self.location.href).href);
+    if (!r.ok) throw Object.assign(new Error('파일 조각을 읽지 못했습니다 (HTTP ' + r.status + ')'), { code: 'FETCH' });
+    const b = new Uint8Array(await r.arrayBuffer()); bufs.push(b); got += b.length;
+    if (id != null) post({ type: 'download', id, got, total: total || got });
+  }
+  const out = new Uint8Array(got); let o = 0; for (const b of bufs) { out.set(b, o); o += b.length; }
+  return out;
+}
+async function applyConfig(c) {
+  CFG = c || { parts: {} };
+  if (CFG.ortParts && CFG.ortParts.length) {
+    const wasm = await fetchParts(CFG.ortParts);
+    ort.env.wasm.wasmPaths = { mjs: new URL('./ort/ort-wasm-simd-threaded.asyncify.mjs', import.meta.url).href, wasm: URL.createObjectURL(new Blob([wasm], { type: 'application/wasm' })) };
+  }
+  setConfigured();
+}
 let session = null;
 let sessionInfo = null; // { key, device, cfg }
 
@@ -43,9 +66,14 @@ function tensorToF32(t) {
 
 // ---------- model loading ----------
 async function fetchModel(url, bytesHint, id) {
-  const cache = await caches.open(MODEL_CACHE);
-  const hit = await cache.match(url);
-  if (hit) { progress(id, 'cache', 1); return new Uint8Array(await hit.arrayBuffer()); }
+  let cache = null;
+  try { cache = await caches.open(MODEL_CACHE); const hit = await cache.match(url); if (hit) { progress(id, 'cache', 1); return new Uint8Array(await hit.arrayBuffer()); } } catch (e) { cache = null; }
+  const parts = CFG.parts[url] || CFG.parts[url.replace(new URL('./', import.meta.url).href, '')];
+  if (parts) {
+    const data = await fetchParts(parts, id, bytesHint);
+    if (cache) try { await cache.put(url, new Response(data, { headers: { 'content-type': 'application/octet-stream' } })); } catch (e) {}
+    return data;
+  }
   let res;
   try { res = await fetch(url, { mode: 'cors' }); } catch (e) { throw Object.assign(new Error('모델을 내려받지 못했습니다. 인터넷 연결을 확인해 주세요 (최초 1회 필요)'), { code: 'FETCH' }); }
   if (!res.ok) throw Object.assign(new Error('모델 다운로드 실패 (HTTP ' + res.status + ')'), { code: 'FETCH' });
@@ -62,7 +90,7 @@ async function fetchModel(url, bytesHint, id) {
   }
   post({ type: 'download', id, got, total: got });
   const data = got === buf.length ? buf : buf.slice(0, got);
-  try { await cache.put(url, new Response(data, { headers: { 'content-type': 'application/octet-stream', 'content-length': String(got) } })); } catch (e) { post({ type: 'warn', message: '저장 공간이 부족해 모델을 캐시하지 못했습니다. 다음 실행 때 다시 받아야 합니다.' }); }
+  if (cache) try { await cache.put(url, new Response(data, { headers: { 'content-type': 'application/octet-stream', 'content-length': String(got) } })); } catch (e) { post({ type: 'warn', message: '저장 공간이 부족해 모델을 캐시하지 못했습니다. 다음 실행 때 다시 받아야 합니다.' }); }
   return data;
 }
 
@@ -367,11 +395,97 @@ async function run(msg) {
   post({ type: 'result', id, W, H, alpha, fg, hasAlpha, ms: performance.now() - t0, inferMs: tInfer, device: sessionInfo.device, model: [mw, mh] }, [alpha.buffer, fg.buffer]);
 }
 
+// ---------- AI 선택 브러시 (MobileSAM, 앱에 포함된 모델) ----------
+const SAM = { enc: null, dec: null, emb: null, key: null, W: 0, H: 0, s: 1, nw: 0, nh: 0 };
+const SAM_FILES = {
+  enc: { url: new URL('./models/mobile_sam.encoder.onnx', import.meta.url).href, bytes: 28106856 },
+  dec: { url: new URL('./models/sam_decoder.onnx', import.meta.url).href, bytes: 16509322 },
+};
+async function samLoad(id) {
+  if (SAM.enc && SAM.dec) return;
+  const opts = { executionProviders: ['wasm'], graphOptimizationLevel: 'all' };
+  if (!SAM.enc) SAM.enc = await ort.InferenceSession.create(await fetchModel(SAM_FILES.enc.url, SAM_FILES.enc.bytes, id), opts);
+  if (!SAM.dec) SAM.dec = await ort.InferenceSession.create(await fetchModel(SAM_FILES.dec.url, SAM_FILES.dec.bytes, id), opts);
+}
+async function samEmbed(msg) {
+  const { id, key, bitmap } = msg;
+  await samLoad(id);
+  if (SAM.key === key && SAM.emb) { bitmap.close && bitmap.close(); post({ type: 'samReady', id, cached: true }); return; }
+  progress(id, 'samEmbed', 0);
+  const t0 = performance.now();
+  const W = bitmap.width, H = bitmap.height, s = 1024 / Math.max(W, H);
+  const nw = Math.max(1, Math.round(W * s)), nh = Math.max(1, Math.round(H * s));
+  const px = drawScaled(bitmap, W, H, nw, nh, false, true);
+  bitmap.close && bitmap.close();
+  const S = 1024, n = S * S, f = new Float32Array(3 * n); // 정규화 후 0으로 패딩 (SAM 원본 방식)
+  const mean = [0.485, 0.456, 0.406], std = [0.229, 0.224, 0.225];
+  for (let y = 0; y < nh; y++) for (let x = 0; x < nw; x++) {
+    const j = (y * nw + x) * 4, i = y * S + x;
+    f[i] = (px[j] / 255 - mean[0]) / std[0]; f[n + i] = (px[j + 1] / 255 - mean[1]) / std[1]; f[2 * n + i] = (px[j + 2] / 255 - mean[2]) / std[2];
+  }
+  const out = await SAM.enc.run({ [SAM.enc.inputNames[0]]: new ort.Tensor('float32', f, [1, 3, S, S]) });
+  const t = out[SAM.enc.outputNames[0]];
+  SAM.emb = new ort.Tensor('float32', Float32Array.from(tensorToF32(t)), t.dims);
+  Object.assign(SAM, { key, W, H, s, nw, nh });
+  post({ type: 'samReady', id, ms: performance.now() - t0 });
+}
+async function samDecode(points, labels) {
+  const { nw, nh, s } = SAM;
+  const pc = [], pl = [];
+  for (let i = 0; i < points.length; i++) { pc.push(points[i][0] * s, points[i][1] * s); pl.push(labels[i]); }
+  pc.push(0, 0); pl.push(-1);
+  const feeds = {
+    image_embeddings: SAM.emb,
+    point_coords: new ort.Tensor('float32', new Float32Array(pc), [1, pl.length, 2]),
+    point_labels: new ort.Tensor('float32', new Float32Array(pl), [1, pl.length]),
+    mask_input: new ort.Tensor('float32', new Float32Array(256 * 256), [1, 1, 256, 256]),
+    has_mask_input: new ort.Tensor('float32', new Float32Array([0]), [1]),
+    orig_im_size: new ort.Tensor('float32', new Float32Array([nh, nw]), [2]),
+  };
+  const nPos = labels.filter((l) => l === 1).length;
+  const pick = (iou) => { if (nPos > 1) return 0; let k = 1; for (let i = 2; i < iou.length; i++) if (iou[i] > iou[k]) k = i; return k; };
+  // 1차 예측 → 저해상 마스크를 다시 넣어 2차 정제 (SAM 반복 정제)
+  let r = await SAM.dec.run(feeds);
+  let k = pick(tensorToF32(r.iou_predictions));
+  const low = r.low_res_masks, ls = 256 * 256;
+  feeds.mask_input = new ort.Tensor('float32', Float32Array.from(tensorToF32(low).subarray(k * ls, (k + 1) * ls)), [1, 1, 256, 256]);
+  feeds.has_mask_input = new ort.Tensor('float32', new Float32Array([1]), [1]);
+  r = await SAM.dec.run(feeds);
+  k = pick(tensorToF32(r.iou_predictions));
+  const m = tensorToF32(r.masks), sz = r.masks.dims[2] * r.masks.dims[3];
+  return Float32Array.from(m.subarray(k * sz, (k + 1) * sz));
+}
+async function samSegment(msg) {
+  const { id, key, pos, neg } = msg;
+  if (SAM.key !== key || !SAM.emb) throw new Error('선택용 이미지 분석이 준비되지 않았습니다');
+  const t0 = performance.now();
+  const allNeg = neg.flat(), allPos = pos.flat();
+  const union = async (strokes, others) => {
+    let acc = null;
+    for (const st of strokes) {
+      const lg = await samDecode([...st, ...others], [...st.map(() => 1), ...others.map(() => 0)]);
+      if (!acc) acc = lg; else for (let i = 0; i < acc.length; i++) if (lg[i] > acc[i]) acc[i] = lg[i];
+    }
+    if (acc) for (let i = 0; i < acc.length; i++) acc[i] = 1 / (1 + Math.exp(-acc[i]));
+    return acc;
+  };
+  // 남길 획: 빼기 획을 음성 점으로 / 뺄 획: 그 물체를 분할(남길 획은 음성 점)
+  const p = pos.length ? await union(pos, allNeg) : null;
+  const n = neg.length ? await union(neg, []) : null; // 빼기는 항상 우선
+  const tr = []; if (p) tr.push(p.buffer); if (n) tr.push(n.buffer);
+  post({ type: 'samResult', id, nw: SAM.nw, nh: SAM.nh, pos: p, neg: n, ms: performance.now() - t0 }, tr);
+}
+
 self.onmessage = async (e) => {
   const msg = e.data;
+  if (msg.type === 'config') { applyConfig(msg).catch((err) => { post({ type: 'warn', message: 'AI 런타임을 불러오지 못했습니다: ' + err.message }); setConfigured(); }); return; }
   try {
+    await configured;
     if (msg.type === 'load') await loadModel(msg);
     else if (msg.type === 'run') await run(msg);
+    else if (msg.type === 'samLoad') { await samLoad(msg.id); post({ type: 'samLoaded', id: msg.id }); }
+    else if (msg.type === 'samEmbed') await samEmbed(msg);
+    else if (msg.type === 'samSegment') await samSegment(msg);
     else if (msg.type === 'unload') { if (session) await session.release(); session = null; sessionInfo = null; post({ type: 'unloaded', id: msg.id }); }
   } catch (err) {
     post({ type: 'error', id: msg.id, op: msg.type, code: err && err.code, message: String((err && err.message) || err) });
