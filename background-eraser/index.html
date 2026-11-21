@@ -470,6 +470,7 @@ function variantFor(key, device) {
   if (device === 'webgpu') { let v = m.gpu; if (v === 'fp16' && (!S.caps.f16 || S.badF16[key])) v = 'fp32'; return m.files[v] ? v : 'fp32'; }
   return m.files[m.cpu] ? m.cpu : 'fp32';
 }
+function needsFile(key) { if (!isArtifact) return false; const f = MODELS[key].files[variantFor(key, devFor(key))]; return !PARTS[f.url] && !S.cached[f.url]; }
 function defaultModel() { return isArtifact || !S.caps.webgpu ? 'rmbg14' : 'birefnet-lite'; }
 
 let loadingPromise = null;
@@ -483,7 +484,7 @@ function ensureModel(force) {
         if (!force && loaded && loaded.sig === sig) return loaded;
         try { return await loadOnce(key, device, variant, sig); }
         catch (e) {
-          if (isArtifact && e.code === 'FETCH' && !PARTS[MODELS[key].files[variant].url]) throw new Error('이 버전에서는 ' + MODELS[key].name + ' 모델을 인터넷에서 받을 수 없습니다. AI 엔진 탭에서 .onnx 파일을 불러오거나 RMBG-1.4를 쓰세요');
+          if (isArtifact && e.code === 'FETCH' && !PARTS[MODELS[key].files[variant].url]) throw Object.assign(new Error(MODELS[key].name + ' 모델 파일이 아직 없습니다'), { code: 'NEEDFILE' });
           if (attempt === 0 && device === 'webgpu' && S.ai.device !== 'webgpu' && e.code !== 'FETCH') {
             console.warn('WebGPU 실패, CPU로 전환', e);
             toast('GPU에서 모델을 열지 못해 CPU로 전환합니다');
@@ -663,6 +664,7 @@ async function pump() {
 async function processItem(it) {
   it.status = 'processing'; renderQueue();
   try {
+    if (needsFile(S.ai.model)) { toast(MODELS[S.ai.model].name + ' 파일이 없어 이번엔 RMBG-1.4로 처리합니다'); S.ai.model = 'rmbg14'; saveAi(); renderModels(); updateOffline(); }
     await ensureModel();
     const name = MODELS[loaded.key].name;
     const label = (s, p) => s === 'infer' ? `AI 분석 중 · ${name}${S.ai.tta ? ' · 정밀' : ''}` : '경계 다듬고 색 번짐 제거 중';
@@ -1358,12 +1360,16 @@ function renderModels() {
       ${m.heavy && dev !== 'webgpu' ? '<p style="color:var(--warn);margin:6px 0 0">CPU에서는 매우 느리고 메모리가 많이 필요합니다.</p>' : ''}
       <div class="acts"></div>`;
     const acts = $('.acts', lab);
+    if (needsFile(key)) { const a = document.createElement('a'); a.className = 'btn sm'; a.href = f.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = '모델 파일 받기 (' + fmtMB(f.bytes) + ')'; a.onclick = (e) => e.stopPropagation(); acts.appendChild(a); }
     if (saved.length) { const del = document.createElement('button'); del.type = 'button'; del.className = 'btn sm danger'; del.textContent = '저장된 모델 삭제'; del.onclick = async (e) => { e.preventDefault(); const c = await caches.open(MODEL_CACHE); for (const x of saved) await c.delete(x.url); if (loaded && loaded.key === key) { loaded = null; call({ type: 'unload' }).catch(() => {}); } await refreshCached(); renderModels(); updateOffline(); updateEngineChip(); }; acts.appendChild(del); }
     const imp = document.createElement('button'); imp.type = 'button'; imp.className = 'btn sm'; imp.textContent = '.onnx 파일로 불러오기';
     imp.title = `인터넷 없이 설치: ${f.url.split('/resolve/')[0].replace(HF, '')} 의 ${f.url.split('/').pop()} 파일`;
     imp.onclick = (e) => { e.preventDefault(); importTarget = { key, v }; $('#modelFile').click(); };
     acts.appendChild(imp);
-    $('input', lab).onchange = () => { S.ai.model = key; saveAi(); renderModels(); updateOffline(); };
+    $('input', lab).onchange = () => {
+      if (needsFile(key)) { renderModels(); importTarget = { key, v }; toast(m.name + ' 모델 파일(.onnx)을 골라 주세요. 고르면 바로 적용됩니다'); $('#modelFile').click(); return; }
+      S.ai.model = key; saveAi(); renderModels(); updateOffline();
+    };
     box.appendChild(lab);
   }
 }
@@ -1454,6 +1460,7 @@ window.addEventListener('paste', (e) => {
   if (!S.ai.model || !MODELS[S.ai.model]) S.ai.model = defaultModel();
   bindAi();
   await refreshCached();
+  if (needsFile(S.ai.model)) S.ai.model = 'rmbg14';
   renderModels(); updateDevInfo(); updateOffline();
   if (swOK) navigator.serviceWorker.ready.then(() => setTimeout(updateOffline, 1500)).catch(() => {});
   // 유휴 시간에 엔진 미리 시작
